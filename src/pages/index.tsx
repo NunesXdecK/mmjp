@@ -1,11 +1,15 @@
+import Head from "next/head"
 import Layout from "../components/layout/layout"
-import List from "../components/list/list"
-import Table from "../components/table/table"
 
 export default function Index() {
     return (
-        <Layout>
-            <List/>
+        <Layout
+            title="Dashboard">
+            <Head>
+                <title>Dashboard</title>
+                <meta name="description" content="Dashboard" />
+                <link rel="icon" href="/favicon.ico" />
+            </Head>
         </Layout>
     )
 }

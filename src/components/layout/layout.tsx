@@ -9,11 +9,8 @@ const user = {
         'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80',
 }
 const navigation = [
-    { name: 'Dashboard', href: '#', current: false },
-    { name: 'Team', href: '#', current: false },
-    { name: 'Projects', href: '#', current: false },
-    { name: 'Calendar', href: '#', current: false },
-    { name: 'Reports', href: '#', current: false },
+    { name: 'Dashboard', href: "/", current: false },
+    { name: 'Pessoas', href: "/person", current: false },
 ]
 const userNavigation = [
     { name: 'Your Profile', href: '#' },
@@ -70,6 +67,8 @@ export default function Layout(props) {
                                             </div>
                                         </div>
                                     </div>
+
+                                    {/*
                                     <div className="hidden md:block">
                                         <div className="ml-4 flex items-center md:ml-6">
                                             <button
@@ -80,7 +79,7 @@ export default function Layout(props) {
                                                 <BellIcon className="h-6 w-6" aria-hidden="true" />
                                             </button>
 
-                                            {/* Profile dropdown */}
+                                            Profile dropdown 
                                             <Menu as="div" className="ml-3 relative">
                                                 <div>
                                                     <Menu.Button className="max-w-xs bg-gray-800 rounded-full flex items-center text-sm focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-800 focus:ring-white">
@@ -117,12 +116,14 @@ export default function Layout(props) {
                                                 </Transition>
                                             </Menu>
                                         </div>
+
                                     </div>
+                                            */}
 
                                     <div className="-mr-2 flex md:hidden">
                                         {/* Mobile menu button */}
                                         <Disclosure.Button className="bg-gray-800 inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-white hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-800 focus:ring-white">
-                                            <span className="sr-only">Open main menu</span>
+                                            <span className="sr-only">Abrir menu</span>
                                             {open ? (
                                                 <XIcon className="block h-6 w-6" aria-hidden="true" />
                                             ) : (
@@ -151,6 +152,7 @@ export default function Layout(props) {
                                     ))}
                                 </div>
 
+                                {/*
                                 <div className="pt-4 pb-3 border-t border-gray-700">
                                     <div className="flex items-center px-5">
                                         <div className="flex-shrink-0">
@@ -161,7 +163,6 @@ export default function Layout(props) {
                                             <div className="text-sm font-medium leading-none text-gray-400">{user.email}</div>
                                         </div>
 
-                                        {/*
                                         <button
                                             type="button"
                                             className="ml-auto bg-gray-800 flex-shrink-0 p-1 rounded-full text-gray-400 hover:text-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-800 focus:ring-white"
@@ -169,7 +170,6 @@ export default function Layout(props) {
                                             <span className="sr-only">View notifications</span>
                                             <BellIcon className="h-6 w-6" aria-hidden="true" />
                                         </button>
-                                        */}
                                     </div>
                                     <div className="mt-3 px-2 space-y-1">
                                         {userNavigation.map((item) => (
@@ -184,6 +184,7 @@ export default function Layout(props) {
                                         ))}
                                     </div>
                                 </div>
+                                    */}
                             </Disclosure.Panel>
                         </>
                     )}
@@ -191,7 +192,7 @@ export default function Layout(props) {
 
                 <header className="bg-white shadow">
                     <div className="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
-                        <h1 className="text-3xl font-bold text-gray-900">Dashboard</h1>
+                        <h1 className="text-3xl font-bold text-gray-900">{props.title}</h1>
                     </div>
                 </header>
 
