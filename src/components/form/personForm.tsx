@@ -1,6 +1,13 @@
+import { Dialog } from "@headlessui/react";
+import { useState } from "react";
+import Button from "../button/button";
 import InputText from "../inputText/inputText";
 
-export default function PersonForm() {
+export default function PersonForm(props) {
+    const [name, setName] = useState("")
+    const [cpf, setCpf] = useState("")
+    const [rg, setRg] = useState("")
+
     let listForTest = []
     let listForTest2 = []
 
@@ -12,6 +19,13 @@ export default function PersonForm() {
         listForTest2.push({ id: i })
     }
 
+    const save = () => {
+        console.log({
+            name: name,
+            cpf: cpf,
+            rg: rg,
+        })
+    }
 
     return (
         <div className="md:grid md:grid-cols-3 md:gap-6">
@@ -22,55 +36,66 @@ export default function PersonForm() {
                 </div>
             </div>
 
-            <div className="mt-5 md:mt-0 md:col-span-2">
-                <form action="#" method="POST">
-                    <div className="shadow overflow-hidden sm:rounded-md">
-                        <div className="bg-white sm:py-1 px-4">
-                            <div className="grid grid-cols-6 gap-6">
-                                <div className="col-span-6 sm:col-span-6">
-                                    <InputText
-                                        id="sp1"
-                                        title="Espaço 1" />
-                                </div>
-                            </div>
+            <div className="mt-5 md:mt-0 md:col-span-2 ">
+                <div className="shadow overflow-hidden sm:rounded-md">
+                    <div className="bg-white sm:py-1 px-4">
 
-                            <div className="sm:mt-2 grid grid-cols-6 gap-6">
-                                <div className="col-span-6 sm:col-span-3">
-                                    <InputText
-                                        id="sp2"
-                                        title="Espaço 2" />
-                                </div>
-
-                                <div className="col-span-6 sm:col-span-3">
-                                    <InputText
-                                        id="sp3"
-                                        title="Espaço 3" />
-                                </div>
-                            </div>
-
-                            <div className="sm:mt-2 grid grid-cols-6 gap-6">
-                                {listForTest2.map((e, index) => (
-                                    <div className="col-span-6 sm:col-span-2">
-                                        <InputText
-                                            id={"sp" + (index + 4)}
-                                            title={"Espaço " + (index + 4)} />
-                                    </div>
-                                ))}
-                            </div>
-
-                            <div className="sm:mt-2 grid grid-cols-6 gap-6">
-                                {listForTest.map((e, index) => (
-                                    <div className="col-span-6 sm:col-span-1">
-                                        <InputText
-                                            id={"sp" + (index + 7)}
-                                            title={"Espaço " + (index + 7)} />
-                                    </div>
-                                ))}
+                        <div className="grid grid-cols-6 sm:gap-6">
+                            <div className="col-span-6 sm:col-span-6">
+                                <InputText
+                                    onChange={(event) => { setName(event.target.value) }}
+                                    id="fullname"
+                                    title="Nome completo" />
                             </div>
                         </div>
+
+                        <div className="mt-2 grid grid-cols-6 sm:gap-6">
+                            <div className="col-span-6 sm:col-span-3">
+                                <InputText
+                                    onChange={(event) => { setCpf(event.target.value) }}
+                                    id="cpf"
+                                    title="CPF" />
+                            </div>
+
+                            <div className="mt-2 sm:mt-0 col-span-6 sm:col-span-3">
+                                <InputText
+                                    onChange={(event) => { setRg(event.target.value) }}
+                                    id="rg"
+                                    title="RG" />
+                            </div>
+                        </div>
+
+                        <div className="py-2 grid grid-cols-6 gap-6">
+                            <div className="col-span-6 sm:col-span-6 justify-self-end">
+                                <Button
+                                    onClick={save}>
+                                    Salvar
+                                </Button>
+                            </div>
+                        </div>
+                        {/*
+                                <div className="sm:mt-2 grid grid-cols-6 gap-6">
+                                    {listForTest2.map((e, index) => (
+                                        <div className="col-span-6 sm:col-span-2">
+                                            <InputText
+                                                id={"sp" + (index + 4)}
+                                                title={"Espaço " + (index + 4)} />
+                                        </div>
+                                    ))}
+                                </div>
+                                <div className="sm:mt-2 grid grid-cols-6 gap-6">
+                                    {listForTest.map((e, index) => (
+                                        <div className="col-span-6 sm:col-span-1">
+                                            <InputText
+                                                id={"sp" + (index + 7)}
+                                                title={"Espaço " + (index + 7)} />
+                                        </div>
+                                    ))}
+                                </div>
+                            */}
                     </div>
-                </form>
+                </div>
             </div>
-        </div >
+        </div>
     )
 }

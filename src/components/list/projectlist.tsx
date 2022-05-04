@@ -1,12 +1,13 @@
 import { useEffect, useState } from "react"
 import data from "../../data/dados.json"
+import Button from "../button/button"
 
 const subtitle = "mt-1 max-w-2xl text-sm text-gray-500"
 const titleClassName = "px-4 py-5 text-md leading-6 font-medium text-gray-900"
 const contentClassName = "mt-1 text-sm text-gray-900 px-4 py-5"
 
 
-export default function List() {
+export default function ProjectList() {
     const [inputSearch, setInputSearch] = useState("")
     const [listItems, setListItems] = useState([])
     let listItemsFiltered = []
@@ -46,20 +47,11 @@ export default function List() {
 
                         <div className="pl-4 self-end">
                             <div>
-                                <button
+                                <Button
                                     type="submit"
-                                    onClick={filterList}
-                                    className={`
-                                    justify-center py-2 px-4 
-                                    border border-transparent 
-                                    shadow-sm 
-                                    text-sm font-medium rounded-md text-white 
-                                    focus:outline-none focus:ring-2 focus:ring-offset-2 
-                                    focus:border-indigo-500 focus:ring-indigo-500
-                                    bg-indigo-600 hover:bg-indigo-700 
-                                    `}>
+                                    onClick={filterList}>
                                     Pesquisar
-                                </button>
+                                </Button>
                             </div>
                         </div>
                     </div>

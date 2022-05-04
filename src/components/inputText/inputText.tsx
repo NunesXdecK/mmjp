@@ -8,6 +8,7 @@ export default function InputText(props) {
 
             <input
                 type="text"
+                onChange={props.onChange}
                 name={props.title}
                 id={props.id}
                 className={`
