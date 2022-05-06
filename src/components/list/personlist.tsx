@@ -16,7 +16,8 @@ export default function PersonList(props) {
 
     let listItemsFiltered = []
 
-    const filterList = () => {
+    function filterList(event) {
+        event.preventDefault()
         listItemsFiltered = persons.slice(0, 100).filter((element, index) => {
             return element.name.toUpperCase().includes(inputSearch.toUpperCase())
         })
@@ -44,7 +45,7 @@ export default function PersonList(props) {
                     </div>
                 </div>
 
-                <div className="mt-5 flex">
+                <form className="mt-5 flex" onSubmit={filterList}>
                     <div className="w-full self-end">
                         <label htmlFor="search-input" className={subtitle}>
                             Pesquisa
@@ -67,12 +68,12 @@ export default function PersonList(props) {
                     <div className="pl-4 self-end">
                         <div>
                             <Button
-                                onClick={filterList}>
+                                type="submit">
                                 Pesquisar
                             </Button>
                         </div>
                     </div>
-                </div>
+                </form>
             </div>
 
             <div className="grid grid-cols-1 gap-4 p-4 bg-white">

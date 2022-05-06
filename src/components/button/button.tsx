@@ -2,7 +2,7 @@ export default function Button(props) {
     return (
         <>
             <button
-                type={props.type ?? ""}
+                type={props.type ?? "button"}
                 onClick={props.onClick}
                 className={`
                             justify-center py-2 px-4 
