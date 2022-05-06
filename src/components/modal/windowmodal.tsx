@@ -1,5 +1,7 @@
 import { Dialog, Transition } from "@headlessui/react";
+import { XIcon } from "@heroicons/react/outline";
 import { Fragment, useRef } from "react";
+import HeaderModal from "./headerModal";
 
 export default function WindowModal(props) {
     let cancelButtonRef = useRef(null)
@@ -45,12 +47,8 @@ export default function WindowModal(props) {
                                 sm:my-8 sm:align-middle sm:max-w-lg sm:w-full
                                 p-4
                                 `}>
-                                <div className="flex w-full justify-end p-4">
-                                    <span
-                                        onClick={() => props.setIsOpen(false)}>
-                                        X
-                                    </span>
-                                </div>
+                                <HeaderModal
+                                    onClose={() => props.setIsOpen(false)} />
                                 <div>
                                     {props.children}
                                 </div>

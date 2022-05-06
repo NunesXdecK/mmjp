@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react"
 import data from "../../data/dados.json"
-import Button from "../button/Button"
+import Button from "../button/button"
 
 const subtitle = "mt-1 max-w-2xl text-sm text-gray-500"
 const titleClassName = "px-4 py-5 text-md leading-6 font-medium text-gray-900"

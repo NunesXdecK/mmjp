@@ -9,7 +9,7 @@ const titleClassName = "px-4 py-5 text-md leading-6 font-medium text-gray-900"
 const contentClassName = "mt-1 text-sm text-gray-900 px-4 py-5"
 
 
-export default function ProjectList(props) {
+export default function PersonList(props) {
     const [isOpen, setIsOpen] = useState(false)
     const [inputSearch, setInputSearch] = useState("")
     const [listItems, setListItems] = useState([])
@@ -21,6 +21,10 @@ export default function ProjectList(props) {
             return element.name.toUpperCase().includes(inputSearch.toUpperCase())
         })
         setListItems(listItemsFiltered)
+    }
+
+    function handleAfterSaveOperation() {
+        setIsOpen(false)
     }
 
     return (
@@ -77,7 +81,7 @@ export default function ProjectList(props) {
                         onClick={() => {
                             props.onListItemClick ? props.onListItemClick(element) : null
                         }}
-                        className="bg-white p-4 rounded-sm shadow items-center">
+                        className="bg-white p-4 rounded-sm shadow items-center text-left">
                         <div className="flex">
                             <div><span className={titleClassName}>{index + 1}</span></div>
                             <div><span className={titleClassName}>{element.name}</span></div>
@@ -91,7 +95,11 @@ export default function ProjectList(props) {
             <IOSModal
                 isOpen={isOpen}
                 setIsOpen={setIsOpen}>
-                <PersonForm />
+                <PersonForm
+                    title="Informações pessoais"
+                    subtitle="Dados importantes sobre a pessoa"
+                    afterSave={handleAfterSaveOperation}
+                />
             </IOSModal>
         </div>
     )

@@ -1,5 +1,7 @@
 import { Dialog, Transition } from "@headlessui/react";
+import { XIcon } from "@heroicons/react/outline";
 import { Fragment, useRef } from "react";
+import HeaderModal from "./headerModal";
 
 export default function IOSModal(props) {
     let cancelButtonRef = useRef(null)
@@ -45,12 +47,8 @@ export default function IOSModal(props) {
                                 leave="ease-in duration-200"
                                 leaveFrom="opacity-100"
                                 leaveTo="opacity-0">
-                                <div className="flex w-full justify-end p-4">
-                                    <button
-                                        onClick={() => props.setIsOpen(false)}>
-                                        X
-                                    </button>
-                                </div>
+                                <HeaderModal
+                                    onClose={() => props.setIsOpen(false)}/>
                                 <div className="p-4">
                                     {props.children}
                                 </div>

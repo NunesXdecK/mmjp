@@ -7,6 +7,7 @@ export default function InputText(props) {
             </label>
 
             <input
+                disabled={props.isForSelect}
                 type="text"
                 onChange={props.onChange}
                 name={props.title}
