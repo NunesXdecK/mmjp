@@ -1,13 +1,13 @@
 import { useEffect, useState } from "react"
 import data from "../../data/dados.json"
-import Button from "../button/button"
+import Button from "../button/Button"
 
 const subtitle = "mt-1 max-w-2xl text-sm text-gray-500"
 const titleClassName = "px-4 py-5 text-md leading-6 font-medium text-gray-900"
 const contentClassName = "mt-1 text-sm text-gray-900 px-4 py-5"
 
 
-export default function ProjectList() {
+export default function ProjectList(props) {
     const [inputSearch, setInputSearch] = useState("")
     const [listItems, setListItems] = useState([])
     let listItemsFiltered = []
@@ -60,7 +60,10 @@ export default function ProjectList() {
 
             <div className="grid grid-cols-1 gap-4 p-4 bg-white">
                 {listItems.map((element, index) => (
-                    <div key={index.toString() + element.codigoBarras}
+                    <button key={index.toString() + element.codigoBarras}
+                        onClick={() => {
+                            props.onListItemClick ? props.onListItemClick(element) : null
+                        }}
                         className="bg-white p-4 rounded-sm shadow items-center">
                         <div className="flex">
                             <div><span className={titleClassName}>{index + 1}</span></div>
@@ -68,7 +71,7 @@ export default function ProjectList() {
                         </div>
                         <div><span className={contentClassName}>{element.valorVenda}</span></div>
                         <div><span className={contentClassName}>{element.dataU}</span></div>
-                    </div>
+                    </button>
                 ))}
 
             </div>

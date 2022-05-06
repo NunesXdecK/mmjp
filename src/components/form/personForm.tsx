@@ -48,7 +48,6 @@ export default function PersonForm(props) {
                                     title="Nome completo" />
                             </div>
                         </div>
-
                         <div className="mt-2 grid grid-cols-6 sm:gap-6">
                             <div className="col-span-6 sm:col-span-3">
                                 <InputText
@@ -68,7 +67,8 @@ export default function PersonForm(props) {
                         <div className="py-2 grid grid-cols-6 gap-6">
                             <div className="col-span-6 sm:col-span-6 justify-self-end">
                                 <Button
-                                    onClick={save}>
+                                    onClick={save}
+                                    type="submit">
                                     Salvar
                                 </Button>
                             </div>

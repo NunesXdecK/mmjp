@@ -2,15 +2,14 @@ import { useState } from "react"
 import persons from "../../data/persons.json"
 import Button from "../button/button"
 import PersonForm from "../form/personForm"
-import IOSModal from "../modal/iosmodal"
-import WindowModal from "../modal/windowmodal"
+import IOSModal from "../modal/iosModal"
 
 const subtitle = "mt-1 max-w-2xl text-sm text-gray-500"
 const titleClassName = "px-4 py-5 text-md leading-6 font-medium text-gray-900"
 const contentClassName = "mt-1 text-sm text-gray-900 px-4 py-5"
 
 
-export default function ProjectList() {
+export default function ProjectList(props) {
     const [isOpen, setIsOpen] = useState(false)
     const [inputSearch, setInputSearch] = useState("")
     const [listItems, setListItems] = useState([])
@@ -74,7 +73,10 @@ export default function ProjectList() {
 
             <div className="grid grid-cols-1 gap-4 p-4 bg-white">
                 {listItems.map((element, index) => (
-                    <div key={index.toString() + element.codigoBarras}
+                    <button key={index.toString() + element.codigoBarras}
+                        onClick={() => {
+                            props.onListItemClick ? props.onListItemClick(element) : null
+                        }}
                         className="bg-white p-4 rounded-sm shadow items-center">
                         <div className="flex">
                             <div><span className={titleClassName}>{index + 1}</span></div>
@@ -82,7 +84,7 @@ export default function ProjectList() {
                         </div>
                         <div><span className={contentClassName}>{element.rg}</span></div>
                         <div><span className={contentClassName}>{element.cpf}</span></div>
-                    </div>
+                    </button>
                 ))}
             </div>
 

@@ -11,8 +11,8 @@ export default function IOSModal(props) {
                 initialFocus={cancelButtonRef}
                 open={props.isOpen}
                 onClose={() => { }}>
-                <div className="fex flex-col justify-center h-full px-1 pt-4 sm:block sm:p-0 p-10 pb-0">
 
+                <div className="fex flex-col px-1 pt-10 justify-center h-full sm:block">
                     <Transition.Child
                         as={Fragment}
                         enter="ease-out duration-300"
@@ -26,27 +26,35 @@ export default function IOSModal(props) {
 
                     <Transition.Child
                         as={Fragment}
-                        enter="ease-out duration-300"
-                        enterFrom="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
-                        enterTo="opacity-100 translate-y-0 sm:scale-100"
-                        leave="ease-in duration-200"
-                        leaveFrom="opacity-100 translate-y-0 sm:scale-100"
-                        leaveTo="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95">
-
+                        enter="transform transition ease-in-out duration-200 sm:duration-300"
+                        enterFrom="translate-y-full"
+                        enterTo="translate-y-0"
+                        leave="transform transition ease-in-out duration-200 sm:duration-300"
+                        leaveFrom="translate-y-0"
+                        leaveTo="translate-y-full"
+                    >
                         <Dialog.Panel className={`
-                                z-0 flex flex-col w-full h-full
+                                z-0 flex flex-col h-full
                                 bg-white rounded-t-lg shadow-xl
-                                
                                 `}>
-                            <div className="flex w-full justify-end p-4">
-                                <span
-                                    onClick={() => props.setIsOpen(false)}>
-                                    X
-                                </span>
-                            </div>
-                            <div className="p-4">
-                                {props.children}
-                            </div>
+
+                            <Transition.Child
+                                enter="ease-out duration-300"
+                                enterFrom="opacity-0"
+                                enterTo="opacity-100"
+                                leave="ease-in duration-200"
+                                leaveFrom="opacity-100"
+                                leaveTo="opacity-0">
+                                <div className="flex w-full justify-end p-4">
+                                    <button
+                                        onClick={() => props.setIsOpen(false)}>
+                                        X
+                                    </button>
+                                </div>
+                                <div className="p-4">
+                                    {props.children}
+                                </div>
+                            </Transition.Child>
                         </Dialog.Panel>
                     </Transition.Child>
                 </div>
