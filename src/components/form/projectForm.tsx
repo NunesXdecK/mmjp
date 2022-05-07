@@ -3,19 +3,21 @@ import Button from "../button/button";
 import InputText from "../inputText/inputText";
 import Form from "./form";
 import PersonForm from "./personForm";
+import ProjectStageForm from "./projectStageForm";
 
 export default function ProjectForm(props) {
     const [name, setName] = useState("")
+    const [person, setPerson] = useState({})
+    const [stages, setStages] = useState([])
 
-    function handleSelectPerson(person) {
-        console.log("handleSelectPerson()")
-        console.log(person)
+    function handleSelectPerson(personSelected) {
+        setPerson(personSelected)
     }
 
     function save() {
-        console.log({
-            name: name,
-        })
+        console.log(name)
+        console.log(person)
+        console.log(stages)
 
         if (props.afterSave) {
             props.afterSave()
@@ -46,9 +48,15 @@ export default function ProjectForm(props) {
                 subtitle="Informações sobre o titular do projeto"
             />
 
+            <ProjectStageForm
+                stages={stages}
+                setStages={setStages}
+                title="Etapas do projeto"
+                subtitle="Corpo das etapas" />
+
             <div className="p-2 flex justify-end">
                 <Button
-                    onClick={save}
+                    onClick={() => save()}
                     type="submit">
                     Salvar
                 </Button>

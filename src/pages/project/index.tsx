@@ -3,7 +3,6 @@ import ProjectForm from "../../components/form/projectForm"
 import Layout from "../../components/layout/layout"
 
 export default function Project() {
-
     
     return (
         <Layout

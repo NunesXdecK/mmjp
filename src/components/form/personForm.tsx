@@ -54,6 +54,7 @@ export default function PersonForm(props) {
                 <div className="grid grid-cols-6 sm:gap-6">
                     <div className="p-2 col-span-6 sm:col-span-6">
                         <InputText
+                            isDisabled={props.isForSelect}
                             value={name}
                             onChange={(event) => { setName(event.target.value) }}
                             id="fullname"
@@ -64,6 +65,7 @@ export default function PersonForm(props) {
                 <div className="grid grid-cols-6 sm:gap-6 md:pt-2">
                     <div className="p-2 col-span-6 sm:col-span-3">
                         <InputText
+                            isDisabled={props.isForSelect}
                             value={cpf}
                             onChange={(event) => { setCpf(event.target.value) }}
                             id="cpf"
@@ -72,6 +74,7 @@ export default function PersonForm(props) {
 
                     <div className="p-2 sm:mt-0 col-span-6 sm:col-span-3">
                         <InputText
+                            isDisabled={props.isForSelect}
                             value={rg}
                             onChange={(event) => { setRg(event.target.value) }}
                             id="rg"
