@@ -11,6 +11,7 @@ export default function InputText(props) {
                 type="text"
                 onChange={props.onChange}
                 name={props.title}
+                value={props.value}
                 id={props.id}
                 className={`
                     p-2 mt-1 

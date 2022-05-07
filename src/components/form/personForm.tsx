@@ -3,33 +3,25 @@ import Button from "../button/button";
 import InputText from "../inputText/inputText";
 import PersonList from "../list/personList";
 import IOSModal from "../modal/iosModal";
+import Form from "./form";
 
 export default function PersonForm(props) {
-    const cleanPerson = {name: "", cpf: "", rg: ""}
-
-    const [person, setPerson] = useState(cleanPerson)
     const [name, setName] = useState("")
     const [cpf, setCpf] = useState("")
     const [rg, setRg] = useState("")
 
     const [isOpen, setIsOpen] = useState(false)
 
-    useEffect(() => {
-        console.log(person)
-        console.log(person.name, person.cpf, person.rg)
+    function handleListItemClick(person) {
+        props.onSelectPerson(person)
         setName(person.name)
         setCpf(person.cpf)
         setRg(person.rg)
-        console.log(name, cpf, rg)
-    }, [person])
-
-    function handleListItemClick(person) {
-        setPerson(person)
-        props.onSelectPerson(person)
         setIsOpen(false)
     }
 
     function save() {
+        console.log("save()")
         console.log({
             name: name,
             cpf: cpf,
@@ -42,69 +34,63 @@ export default function PersonForm(props) {
     }
 
     return (
-        <div className="md:grid md:grid-cols-3 md:gap-6">
-            <div className="md:cols-span-1">
-                <div className="px-4 sm:px-0">
-                    <h3 className="text-lg font-medium leading-6 text-gray-900">{props.title}</h3>
-                    <p className="mt-1 text-sm text-gray-600">{props.subtitle}</p>
-                </div>
-            </div>
+        <>
+            <Form
+                title={props.title}
+                subtitle={props.subtitle}>
 
-            <div className="mt-5 md:mt-0 md:col-span-2 ">
-                <div className="shadow overflow-hidden sm:rounded-md">
-                    <div className="bg-white sm:py-1 px-4">
-
-                        {props.isForSelect ? (
-                            <div className="pt-1 grid grid-cols-6 sm:gap-6">
-                                <div className="col-span-6 sm:col-span-6 justify-self-end">
-                                    <Button
-                                        onClick={() => setIsOpen(true)}
-                                        type="button">
-                                        Pesquisar
-                                    </Button>
-                                </div>
-                            </div>
-                        ) : null}
-
-                        <div className="grid grid-cols-6 sm:gap-6">
-                            <div className="col-span-6 sm:col-span-6">
-                                <InputText
-                                    isDisabled={props.isForSelect}
-                                    onChange={(event) => { setName(event.target.value) }}
-                                    id="fullname"
-                                    title="Nome completo" />
-                            </div>
-                        </div>
-                        <div className="mt-2 grid grid-cols-6 sm:gap-6">
-                            <div className="col-span-6 sm:col-span-3">
-                                <InputText
-                                    isDisabled={props.isForSelect}
-                                    onChange={(event) => { setCpf(event.target.value) }}
-                                    id="cpf"
-                                    title="CPF" />
-                            </div>
-
-                            <div className="mt-2 sm:mt-0 col-span-6 sm:col-span-3">
-                                <InputText
-                                    isDisabled={props.isForSelect}
-                                    onChange={(event) => { setRg(event.target.value) }}
-                                    id="rg"
-                                    title="RG" />
-                            </div>
-                        </div>
-
-                        <div className="py-2 grid grid-cols-6 gap-6">
-                            <div className="col-span-6 sm:col-span-6 justify-self-end">
-                                <Button
-                                    onClick={save}
-                                    type="submit">
-                                    Salvar
-                                </Button>
-                            </div>
+                {props.isForSelect ? (
+                    <div className="grid grid-cols-6 sm:gap-6">
+                        <div className="p-2 col-span-6 sm:col-span-6 justify-self-end">
+                            <Button
+                                onClick={() => setIsOpen(true)}
+                                type="button">
+                                Pesquisar pessoa
+                            </Button>
                         </div>
                     </div>
+                ) : null}
+
+                <div className="grid grid-cols-6 sm:gap-6">
+                    <div className="p-2 col-span-6 sm:col-span-6">
+                        <InputText
+                            value={name}
+                            onChange={(event) => { setName(event.target.value) }}
+                            id="fullname"
+                            title="Nome completo" />
+                    </div>
                 </div>
-            </div>
+
+                <div className="grid grid-cols-6 sm:gap-6 md:pt-2">
+                    <div className="p-2 col-span-6 sm:col-span-3">
+                        <InputText
+                            value={cpf}
+                            onChange={(event) => { setCpf(event.target.value) }}
+                            id="cpf"
+                            title="CPF" />
+                    </div>
+
+                    <div className="p-2 sm:mt-0 col-span-6 sm:col-span-3">
+                        <InputText
+                            value={rg}
+                            onChange={(event) => { setRg(event.target.value) }}
+                            id="rg"
+                            title="RG" />
+                    </div>
+                </div>
+
+                {!props.isForSelect ? (
+                    <div className="grid grid-cols-6 gap-6">
+                        <div className="p-2 col-span-6 sm:col-span-6 justify-self-end">
+                            <Button
+                                onClick={save}
+                                type="submit">
+                                Salvar
+                            </Button>
+                        </div>
+                    </div>
+                ) : null}
+            </Form>
 
             {props.isForSelect ? (
                 <IOSModal
@@ -115,6 +101,7 @@ export default function PersonForm(props) {
                         onListItemClick={handleListItemClick} />
                 </IOSModal>
             ) : null}
-        </div>
+        </>
+
     )
 }

@@ -1,12 +1,10 @@
 import Head from "next/head"
-import PersonForm from "../../components/form/personForm"
+import ProjectForm from "../../components/form/projectForm"
 import Layout from "../../components/layout/layout"
 
 export default function Project() {
 
-    function handleSelectPerson(person) {
-    }
-
+    
     return (
         <Layout
             title="Projeto">
@@ -16,11 +14,9 @@ export default function Project() {
                 <link rel="icon" href="/favicon.ico" />
             </Head>
 
-            <PersonForm
-                onSelectPerson={handleSelectPerson}
-                isForSelect={true}
-                title="Dono do projeto"
-                subtitle="Dados importantes sobre o dono do projeto" />
+            <ProjectForm 
+                title="Informações básicas"
+                subtitle="Informações básicas sobre o projeto"/>
 
         </Layout>
     )
