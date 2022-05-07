@@ -37,12 +37,15 @@ export default function PersonList(props) {
                         <h3 className="text-lg leading-6 font-medium text-gray-900">Lista de pessoas</h3>
                         <p className={subtitle}>subtitulo lindo</p>
                     </div>
-                    <div className="self-center">
-                        <Button
-                            onClick={() => setIsOpen(true)}>
-                            Novo
-                        </Button>
-                    </div>
+
+                    {!props.isForSelect ? (
+                        <div className="self-center">
+                            <Button
+                                onClick={() => setIsOpen(true)}>
+                                Novo
+                            </Button>
+                        </div>
+                    ) : null}
                 </div>
 
                 <form className="mt-5 flex" onSubmit={filterList}>
@@ -58,11 +61,11 @@ export default function PersonList(props) {
                             name="search"
                             id="search-input"
                             className={`
-                                p-2 block w-full 
-                                shadow-sm rounded-md
-                                sm:text-sm 
-                                focus:ring-indigo-500 focus:border-indigo-500 
-                                `} />
+                            p-2 block w-full 
+                            shadow-sm rounded-md
+                            sm:text-sm 
+                            focus:ring-indigo-500 focus:border-indigo-500 
+                            `} />
                     </div>
 
                     <div className="pl-4 self-end">
@@ -92,16 +95,18 @@ export default function PersonList(props) {
                     </button>
                 ))}
             </div>
-
-            <IOSModal
-                isOpen={isOpen}
-                setIsOpen={setIsOpen}>
-                <PersonForm
-                    title="Informações pessoais"
-                    subtitle="Dados importantes sobre a pessoa"
-                    afterSave={handleAfterSaveOperation}
-                />
-            </IOSModal>
+            
+            {!props.isForSelect ? (
+                <IOSModal
+                    isOpen={isOpen}
+                    setIsOpen={setIsOpen}>
+                    <PersonForm
+                        title="Informações pessoais"
+                        subtitle="Dados importantes sobre a pessoa"
+                        afterSave={handleAfterSaveOperation}
+                    />
+                </IOSModal>
+            ) : null}
         </div>
     )
 }

@@ -1,13 +1,35 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Button from "../button/button";
 import InputText from "../inputText/inputText";
+import PersonList from "../list/personList";
+import IOSModal from "../modal/iosModal";
 
 export default function PersonForm(props) {
+    const cleanPerson = {name: "", cpf: "", rg: ""}
+
+    const [person, setPerson] = useState(cleanPerson)
     const [name, setName] = useState("")
     const [cpf, setCpf] = useState("")
     const [rg, setRg] = useState("")
 
-    const save = () => {
+    const [isOpen, setIsOpen] = useState(false)
+
+    useEffect(() => {
+        console.log(person)
+        console.log(person.name, person.cpf, person.rg)
+        setName(person.name)
+        setCpf(person.cpf)
+        setRg(person.rg)
+        console.log(name, cpf, rg)
+    }, [person])
+
+    function handleListItemClick(person) {
+        setPerson(person)
+        props.onSelectPerson(person)
+        setIsOpen(false)
+    }
+
+    function save() {
         console.log({
             name: name,
             cpf: cpf,
@@ -32,10 +54,22 @@ export default function PersonForm(props) {
                 <div className="shadow overflow-hidden sm:rounded-md">
                     <div className="bg-white sm:py-1 px-4">
 
+                        {props.isForSelect ? (
+                            <div className="pt-1 grid grid-cols-6 sm:gap-6">
+                                <div className="col-span-6 sm:col-span-6 justify-self-end">
+                                    <Button
+                                        onClick={() => setIsOpen(true)}
+                                        type="button">
+                                        Pesquisar
+                                    </Button>
+                                </div>
+                            </div>
+                        ) : null}
+
                         <div className="grid grid-cols-6 sm:gap-6">
                             <div className="col-span-6 sm:col-span-6">
                                 <InputText
-                                    blocked={props.isForSelect}
+                                    isDisabled={props.isForSelect}
                                     onChange={(event) => { setName(event.target.value) }}
                                     id="fullname"
                                     title="Nome completo" />
@@ -44,7 +78,7 @@ export default function PersonForm(props) {
                         <div className="mt-2 grid grid-cols-6 sm:gap-6">
                             <div className="col-span-6 sm:col-span-3">
                                 <InputText
-                                    blocked={props.isForSelect}
+                                    isDisabled={props.isForSelect}
                                     onChange={(event) => { setCpf(event.target.value) }}
                                     id="cpf"
                                     title="CPF" />
@@ -52,7 +86,7 @@ export default function PersonForm(props) {
 
                             <div className="mt-2 sm:mt-0 col-span-6 sm:col-span-3">
                                 <InputText
-                                    blocked={props.isForSelect}
+                                    isDisabled={props.isForSelect}
                                     onChange={(event) => { setRg(event.target.value) }}
                                     id="rg"
                                     title="RG" />
@@ -71,6 +105,16 @@ export default function PersonForm(props) {
                     </div>
                 </div>
             </div>
+
+            {props.isForSelect ? (
+                <IOSModal
+                    isOpen={isOpen}
+                    setIsOpen={setIsOpen}>
+                    <PersonList
+                        isForSelect={true}
+                        onListItemClick={handleListItemClick} />
+                </IOSModal>
+            ) : null}
         </div>
     )
 }
