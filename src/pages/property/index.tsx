@@ -1,6 +1,6 @@
 import Head from "next/head"
 import Layout from "../../components/layout/layout"
-import ProjectList from "../../components/list/projectList"
+import PropertyList from "../../components/list/propertyList"
 export default function Person() {
 
     function handleListItemClick(person) {
@@ -9,14 +9,14 @@ export default function Person() {
 
     return (
         <Layout
-            title="Projeto">
+            title="Propriedade">
             <Head>
                 <title>Propriedade</title>
-                <meta name="description" content="Projeto" />
+                <meta name="description" content="Propriedade" />
                 <link rel="icon" href="/favicon.ico" />
             </Head>
 
-            <ProjectList
+            <PropertyList
                 onListItemClick={handleListItemClick} />
         </Layout>
     )

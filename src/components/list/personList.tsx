@@ -50,7 +50,7 @@ export default function PersonList(props) {
 
                 <form className="mt-5 flex" onSubmit={filterList}>
                     <div className="w-full self-end">
-                        <label htmlFor="search-input" className={subtitle}>
+                        <label htmlFor="person-search-input" className={subtitle}>
                             Pesquisa
                         </label>
                         <input
@@ -59,7 +59,7 @@ export default function PersonList(props) {
                             }}
                             type="text"
                             name="search"
-                            id="search-input"
+                            id="person-search-input"
                             className={`
                             p-2 block w-full 
                             shadow-sm rounded-md

@@ -36,6 +36,7 @@ export default function IOSModal(props) {
                         leaveTo="translate-y-full"
                     >
                         <Dialog.Panel className={`
+                                overflow-auto
                                 z-0 flex flex-col h-full
                                 bg-white rounded-t-lg shadow-xl
                                 `}>
@@ -48,7 +49,7 @@ export default function IOSModal(props) {
                                 leaveFrom="opacity-100"
                                 leaveTo="opacity-0">
                                 <HeaderModal
-                                    onClose={() => props.setIsOpen(false)}/>
+                                    onClose={() => props.setIsOpen(false)} />
                                 <div className="p-4">
                                     {props.children}
                                 </div>

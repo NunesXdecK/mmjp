@@ -4,20 +4,29 @@ import InputText from "../inputText/inputText";
 import Form from "./form";
 import PersonForm from "./personForm";
 import ProjectStageForm from "./projectStageForm";
+import PropertyForm from "./propertyForm";
 
 export default function ProjectForm(props) {
     const [name, setName] = useState("")
     const [person, setPerson] = useState({})
+    const [property, setProperty] = useState({})
     const [stages, setStages] = useState([])
+
+    function handleSelectProperty(propertySelected) {
+        setProperty(propertySelected)
+    }
 
     function handleSelectPerson(personSelected) {
         setPerson(personSelected)
     }
 
     function save() {
-        console.log(name)
-        console.log(person)
-        console.log(stages)
+        console.log(JSON.stringify({
+            "name": name,
+            "person": person,
+            "property": property,
+            "stages": stages,
+        }))
 
         if (props.afterSave) {
             props.afterSave()
@@ -38,7 +47,6 @@ export default function ProjectForm(props) {
                             title="Nome do projeto" />
                     </div>
                 </div>
-
             </Form>
 
             <PersonForm
@@ -46,6 +54,13 @@ export default function ProjectForm(props) {
                 isForSelect={true}
                 title="Titular do projeto"
                 subtitle="Informações sobre o titular do projeto"
+            />
+
+            <PropertyForm
+                onSelectPerson={handleSelectProperty}
+                isForSelect={true}
+                title="Propriedade do projeto"
+                subtitle="Informações sobre a propriedade do projeto"
             />
 
             <ProjectStageForm
