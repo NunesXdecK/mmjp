@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-export default function InputTextStage(props) {
+export default function InputTextWithButton(props) {
     const [text, setText] = useState(props.value ?? "")
 
     return (

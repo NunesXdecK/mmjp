@@ -2,23 +2,23 @@ import { PlusIcon, TrashIcon } from "@heroicons/react/outline";
 import InputTextWithButton from "../inputText/inputTextWithButton";
 import Form from "./form";
 
-export default function ProjectStageForm(props) {
+export default function ProjectPaymentForm(props) {
 
-    function addStage(text, cleanFunction) {
-        let localStages = [...props.stages]
-        if (localStages.indexOf(text) === -1) {
-            localStages.push(text)
-            props.setStages(localStages)
+    function addPayment(text, cleanFunction) {
+        let localPayments = [...props.stages]
+        if (localPayments.indexOf(text) === -1) {
+            localPayments.push(text)
+            props.setStages(localPayments)
             cleanFunction("")
         }
     }
 
-    function handleRemoveStage(text) {
-        let localStages = [...props.stages]
-        if (localStages.length > -1) {
-            const index = localStages.indexOf(text)
-            localStages.splice(index, 1)
-            props.setStages(localStages)
+    function handleRemovePayment(text) {
+        let localPayments = [...props.stages]
+        if (localPayments.length > -1) {
+            const index = localPayments.indexOf(text)
+            localPayments.splice(index, 1)
+            props.setStages(localPayments)
         }
     }
 
@@ -29,7 +29,7 @@ export default function ProjectStageForm(props) {
                 subtitle={props.subtitle}>
 
                 <InputTextWithButton
-                    onClick={addStage}>
+                    onClick={addPayment}>
                     <PlusIcon className="text-green-600 block h-6 w-6" aria-hidden="true" />
                 </InputTextWithButton>
 
@@ -39,7 +39,7 @@ export default function ProjectStageForm(props) {
                         value={element}
                         disabled={true}
                         key={index + element}
-                        onClick={handleRemoveStage}>
+                        onClick={handleRemovePayment}>
                         <TrashIcon className="text-red-600 block h-6 w-6" aria-hidden="true" />
                     </InputTextWithButton>
                 ))}

@@ -3,6 +3,7 @@ import Button from "../button/button";
 import InputText from "../inputText/inputText";
 import Form from "./form";
 import PersonForm from "./personForm";
+import ProjectPaymentForm from "./projectPaymentForm";
 import ProjectStageForm from "./projectStageForm";
 import PropertyForm from "./propertyForm";
 
@@ -11,6 +12,7 @@ export default function ProjectForm(props) {
     const [person, setPerson] = useState({})
     const [property, setProperty] = useState({})
     const [stages, setStages] = useState([])
+    const [payments, setPayments] = useState([])
 
     function handleSelectProperty(propertySelected) {
         setProperty(propertySelected)
@@ -26,6 +28,7 @@ export default function ProjectForm(props) {
             "person": person,
             "property": property,
             "stages": stages,
+            "payment": payments,
         }))
 
         if (props.afterSave) {
@@ -68,6 +71,12 @@ export default function ProjectForm(props) {
                 setStages={setStages}
                 title="Etapas do projeto"
                 subtitle="Corpo das etapas" />
+
+            <ProjectPaymentForm
+                stages={payments}
+                setStages={setPayments}
+                title="Pagamento"
+                subtitle="Informações sobre o pagamento" />
 
             <div className="p-2 flex justify-end">
                 <Button
