@@ -1,8 +1,8 @@
 export default function Form(props) {
     return (
         <div className="py-4 md:grid md:grid-cols-3 md:gap-6">
-            <div className="md:cols-span-1">
-                <div className="py-1 md:px-4 px-0">
+            <div className="py-2 md:cols-span-1">
+                <div className="md:px-4 px-0">
                     <h3 className="text-lg font-medium leading-6 text-gray-900">{props.title}</h3>
                     <p className="mt-1 text-sm text-gray-600">{props.subtitle}</p>
                 </div>

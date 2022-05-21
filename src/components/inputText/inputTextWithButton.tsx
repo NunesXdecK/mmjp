@@ -1,6 +1,14 @@
 import { useState } from "react";
 
-export default function InputTextWithButton(props) {
+interface InputTextWithButton {
+    value?: string,
+    index?: number,
+    children?: any,
+    disabled?: boolean,
+    onClick?: (string, any) => void,
+}
+
+export default function InputTextWithButton(props: InputTextWithButton) {
     const [text, setText] = useState(props.value ?? "")
 
     return (
@@ -13,26 +21,26 @@ export default function InputTextWithButton(props) {
                         onChange={(event) => setText(event.target.value)}
                         type="text"
                         className={`
-                            z-0
-                            flex-1 block w-full 
-                            rounded-none rounded-l-md sm:text-sm border-gray-300
-                            focus:ring-indigo-500 focus:border-indigo-500 
-                        `}
+                                z-0
+                                flex-1 block w-full 
+                                rounded-none rounded-l-md sm:text-sm border-gray-300
+                                focus:ring-indigo-500 focus:border-indigo-500 
+                            `}
                     />
 
                     <button
                         type="button"
-                        onClick={() => {
+                        onClick={(event) => {
                             props.onClick(text, setText)
                         }}
                         className={`
-                            px-4
-                            rounded-r-md 
-                            border border-l-0 border-gray-300
-                            inline-flex items-center 
-                            bg-gray-50 
-                            text-gray-500 text-sm
-                        `}>
+                                px-4
+                                rounded-r-md 
+                                border border-l-0 border-gray-300
+                                inline-flex items-center 
+                                bg-gray-50 
+                                text-gray-500 text-sm
+                            `}>
                         {props.children}
                     </button>
                 </div>

@@ -1,8 +1,14 @@
-export default function Button(props) {
+interface ButtonProps {
+    children: any,
+    onClick?: () => void,
+    type?: "button" | "submit" | "reset"
+}
+
+export default function Button(props: ButtonProps) {
     return (
         <>
             <button
-                type={props.type ?? "button"}
+                type={props.type}
                 onClick={props.onClick}
                 className={`
                             justify-center py-2 px-4 

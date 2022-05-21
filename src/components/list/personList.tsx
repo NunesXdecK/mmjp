@@ -1,5 +1,7 @@
 import { useState } from "react"
-import persons from "../../data/persons.json"
+import data from "../../data/data.json"
+import { Person } from "../../interfaces/objectInterfaces"
+import { ElementFromBase, extratePerson } from "../../util/ConverterUtil"
 import Button from "../button/button"
 import PersonForm from "../form/personForm"
 import IOSModal from "../modal/iosModal"
@@ -18,7 +20,14 @@ export default function PersonList(props) {
 
     function filterList(event) {
         event.preventDefault()
-        listItemsFiltered = persons.slice(0, 100).filter((element, index) => {
+        const dataList = data.Plan1.slice(data.Plan1.length - 500, data.Plan1.length - 0)
+        let arrayList = []
+        
+        dataList.map((element: ElementFromBase, index) => {
+            arrayList = [...arrayList, extratePerson(element)]
+        })
+
+        listItemsFiltered = arrayList.filter((element: Person, index) => {
             return element.name.toUpperCase().includes(inputSearch.toUpperCase())
         })
         setListItems(listItemsFiltered)
@@ -81,7 +90,7 @@ export default function PersonList(props) {
 
             <div className="grid grid-cols-1 gap-4 p-4 bg-white">
                 {listItems.map((element, index) => (
-                    <button key={index.toString() + element.codigoBarras}
+                    <button key={index.toString()}
                         onClick={() => {
                             props.onListItemClick ? props.onListItemClick(element) : null
                         }}
@@ -95,7 +104,7 @@ export default function PersonList(props) {
                     </button>
                 ))}
             </div>
-            
+
             {!props.isForSelect ? (
                 <IOSModal
                     isOpen={isOpen}

@@ -1,10 +1,9 @@
 import { useState } from "react";
 import Button from "../button/button";
 import InputText from "../inputText/inputText";
+import ArrayTextForm from "./arrayTextForm";
 import Form from "./form";
 import PersonForm from "./personForm";
-import ProjectPaymentForm from "./projectPaymentForm";
-import ProjectStageForm from "./projectStageForm";
 import PropertyForm from "./propertyForm";
 
 export default function ProjectForm(props) {
@@ -66,15 +65,15 @@ export default function ProjectForm(props) {
                 subtitle="Informações sobre a propriedade do projeto"
             />
 
-            <ProjectStageForm
-                stages={stages}
-                setStages={setStages}
+            <ArrayTextForm
+                texts={stages}
+                setTexts={setStages}
                 title="Etapas do projeto"
                 subtitle="Corpo das etapas" />
 
-            <ProjectPaymentForm
-                stages={payments}
-                setStages={setPayments}
+            <ArrayTextForm
+                texts={payments}
+                setTexts={setPayments}
                 title="Pagamento"
                 subtitle="Informações sobre o pagamento" />
 
