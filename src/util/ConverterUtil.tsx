@@ -2,36 +2,43 @@ import { Person, PersonAddress } from "../interfaces/objectInterfaces"
 
 export interface ElementFromBase {
     "Nome Prop."?: string,
-    "CPF Prop.": string,
-    "RG Prop.": string,
-    "Nacionalidade Prop.": string,
-    "Naturalidade Prop.": string,
-    "Estado Civíl Prop.": string,
-    "Profissão Prop.": string,
-    "Telefone Prop.": string,
-    "Logradouro End.": string,
-    "Numero End.": string,
-    "Bairro End.": string,
-    "CEP End.": string,
-    "Município/UF End.": string,
-    "Lote": string,
-    "Data": string,
-    "Data Simples": string,
-    "Nome Prof.": string,
-    "CPF Prof.": string,
-    "RG Prof.": string,
-    "Título Prof.": string,
-    "CREA Prof.": string,
-    "Cod. Credenciado": string,
-    "Endereço Prof.": string,
-    "Bairro Prof.": string,
-    "Cidade/UF Prof.": string,
-    "CEP": string,
-    "Telefone Prof. ": string
+    "CPF Prop."?: string,
+    "RG Prop."?: string,
+    "Nacionalidade Prop."?: string,
+    "Naturalidade Prop."?: string,
+    "Estado Civíl Prop."?: string,
+    "Profissão Prop."?: string,
+    "Telefone Prop."?: string,
+    "Logradouro End."?: string,
+    "Numero End."?: string,
+    "Bairro End."?: string,
+    "CEP End."?: string,
+    "Município/UF End."?: string,
+    "Lote"?: string,
+    "Data"?: string,
+    "Data Simples"?: string,
+    "Nome Prof."?: string,
+    "CPF Prof."?: string,
+    "RG Prof."?: string,
+    "Título Prof."?: string,
+    "CREA Prof."?: string,
+    "Cod. Credenciado"?: string,
+    "Endereço Prof."?: string,
+    "Bairro Prof."?: string,
+    "Cidade/UF Prof."?: string,
+    "CEP"?: string,
+    "Telefone Prof. "?: string
 }
 
 export const extratePerson = (element: ElementFromBase) => {
-    let personAddress: PersonAddress = {}
+    let personAddress: PersonAddress = {
+        publicPlace: "",
+        number: "",
+        district: "",
+        county: "",
+        cep: "",
+    }
+
     let person: Person = {
         name: "",
         cpf: "",
@@ -46,7 +53,7 @@ export const extratePerson = (element: ElementFromBase) => {
     }
 
     let dateCadUTC = 0
-    let dateCad = element["Data Simples"]?.trim() ?? ""
+    let dateCad = checkStringForNull(element["Data Simples"])
     if (dateCad) {
         let dateCadArray = dateCad.split("/")
         let day = parseInt(dateCadArray[0])
@@ -63,10 +70,13 @@ export const extratePerson = (element: ElementFromBase) => {
         let personRG = checkStringForNull(element["RG Prop."])
         let personRGIssuer = ""
 
-        if (personRG.indexOf(" ") > -1) {
-            let personRGArray = personRG?.replaceAll("-", "").replaceAll(".", "").split(" ")
-            personRGIssuer = checkStringForNull(personRGArray[1])
-            personRG = checkStringForNull(personRGArray[0])
+        if (personRG) {
+            let personRGArray = personRG?.replaceAll("-", "").replaceAll(".", "")
+            if (personRG.indexOf(" ") > -1) {
+                personRGArray = personRG?.split(" ")
+                personRGIssuer = checkStringForNull(personRGArray[1])
+                personRG = checkStringForNull(personRGArray[0])
+            }
         }
 
         let personTelephones = []

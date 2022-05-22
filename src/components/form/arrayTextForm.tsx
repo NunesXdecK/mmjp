@@ -10,7 +10,8 @@ interface ArrayTextFormProps {
 }
 
 export default function ArrayTextForm(props: ArrayTextFormProps) {
-    const addText = (text, cleanFunction) => {
+    const addText = (event, text, cleanFunction) => {
+        event.preventDefault()
         let localTexts = [...props.texts]
         if (localTexts.indexOf(text) === -1) {
             localTexts = [...localTexts, text]

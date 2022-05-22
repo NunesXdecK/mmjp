@@ -11,6 +11,7 @@ export interface Person {
     dateInsertUTC?: number,
     address?: PersonAddress,
     telephones?: string[],
+    oldPerson?: object,
 }
 
 export interface PersonAddress {

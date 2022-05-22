@@ -23,6 +23,7 @@ export default function Person() {
 
             <PersonForm
                 isForSelect={true}
+                isForOldRegister={true}
                 title="Informações pessoais"
                 subtitle="Dados importantes sobre a pessoa"
                 afterSave={handleAfterSaveOperation} />
