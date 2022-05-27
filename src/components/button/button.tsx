@@ -1,7 +1,7 @@
 interface ButtonProps {
-    type?: "button" | "submit" | "reset",
-    isDisabled?: boolean,
     children?: any,
+    isDisabled?: boolean,
+    type?: "button" | "submit" | "reset",
     onClick?: () => void,
 }
 

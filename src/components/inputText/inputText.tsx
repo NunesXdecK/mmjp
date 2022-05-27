@@ -1,24 +1,24 @@
 import { useState } from "react"
-import { CPF_MARK, CPF_PATTERN, NOT_NULL_MARK, ONLY_CHARACTERS_PATTERN, ONLY_NUMBERS_PATTERN, ONLY_WHITESPACES_PATTERN } from "../../util/PatternValidationUtil"
+import { CPF_MARK, CPF_PATTERN, NOT_NULL_MARK, NUMBER_MARK, ONLY_CHARACTERS_PATTERN, ONLY_NUMBERS_PATTERN, RG_MARK, TELEPHONE_MARK } from "../../util/PatternValidationUtil"
 
 interface InputTextProps {
     id?: string,
-    maxLength?: number,
     type?: string,
-    mask?: string,
-    validation?: string,
-    validationMessage?: string,
     value?: string,
     title?: string,
-    children?: any,
+    validation?: string,
+    validationMessage?: string,
+    maxLength?: number,
     isDisabled?: boolean,
     isRequired?: boolean,
+    children?: any,
+    mask?: "cpf" | "rg" | "cnpj" | "currency" | "telephone" | "cep",
     onChange?: (any) => void,
-    onValidate?: (boolean) => void,
     setText?: (string) => void,
+    onValidate?: (boolean) => void,
 }
 
-const mountTextCPFCurrency = (text, dig1, dig2) => {
+const handleMountCPFCurrency = (text, dig1, dig2) => {
     let maskedText = ""
     const length = text.length
     for (let i = length; i > 0; i--) {
@@ -41,7 +41,7 @@ const mountTextCPFCurrency = (text, dig1, dig2) => {
     return maskedText
 }
 
-const mountTextRG = (text, dig1, dig2) => {
+const handleMountRG = (text, dig1, dig2) => {
     let maskedText = ""
     const length = text.length
 
@@ -66,25 +66,61 @@ const mountTextRG = (text, dig1, dig2) => {
     return maskedText
 }
 
-const maskCPF = (text) => {
+const handleMountMask = (text: string, mask: string) => {
+    let lastDigit = 0
+    let maskedText = ""
+    let maskLength = mask.length
+    let length = text.length
+
+    if (length > 2) {
+        for (let i = 1; i <= length; i++) {
+            const textChar = text.substring(i, i - 1)
+            for (let im = 1; im <= maskLength; im++) {
+                const maskChar = mask.substring(im, im - 1)
+                if (maskChar === "9" && im > lastDigit) {
+                    maskedText = maskedText + textChar
+                    lastDigit = im
+                    break
+                } else if (maskChar !== "9" && maskedText.indexOf(maskChar) === -1) {
+                    maskedText = maskedText + maskChar
+                }
+            }
+        }
+    } else {
+        maskedText = text
+    }
+    return maskedText
+}
+
+const handleMaskCEP = (text: string) => {
+    text = text.replaceAll(".", "").replaceAll("-", "")
+    return handleMountMask(text, "99.999-999")
+}
+
+const handleMaskTelephone = (text: string) => {
+    text = text.replaceAll("(", "").replaceAll(")", "").replaceAll(" ", "").replaceAll("-", "")
+    return handleMountMask(text, "(99) 99999-9999")
+}
+
+const handleMaskCPF = (text) => {
     const dig1 = "-"
     const dig2 = "."
     const unMaskedText = text.replaceAll(dig1, "").replaceAll(dig2, "")
-    return mountTextCPFCurrency(unMaskedText, dig1, dig2)
+    return handleMountCPFCurrency(unMaskedText, dig1, dig2)
 }
 
-const maskRG = (text) => {
+const handleMaskRG = (text) => {
     const dig1 = "-"
     const dig2 = "."
     const unMaskedText = text.replaceAll(dig1, "").replaceAll(dig2, "")
-    return mountTextRG(unMaskedText, dig1, dig2)
+    return handleMountRG(unMaskedText, dig1, dig2)
 }
 
-const maskCurrency = (text) => {
+const handleMaskCurrency = (text) => {
     const dig1 = ","
     const dig2 = "."
     const unMaskedText = text.replaceAll(dig1, "").replaceAll(dig2, "")
-    return mountTextCPFCurrency(unMaskedText, dig1, dig2)
+    return handleMountCPFCurrency(unMaskedText, dig1, dig2)
 }
 
 export default function InputText(props: InputTextProps) {
@@ -106,19 +142,27 @@ export default function InputText(props: InputTextProps) {
     }
 
     if (props.mask) {
-        className = className + " text-right"
         if (value) {
             switch (props.mask) {
                 case "cpf":
-                    value = maskCPF(value)
+                    className = className + " text-right"
+                    value = handleMaskCPF(value)
                     break
                 case "rg":
-                    value = maskRG(value)
+                    className = className + " text-right"
+                    value = handleMaskRG(value)
                     break
                 case "cnpj":
                     break
                 case "currency":
-                    value = maskCurrency(value)
+                    className = className + " text-right"
+                    value = handleMaskCurrency(value)
+                    break
+                case "telephone":
+                    value = handleMaskTelephone(value)
+                    break
+                case "cep":
+                    value = handleMaskCEP(value)
                     break
             }
         }
@@ -130,13 +174,24 @@ export default function InputText(props: InputTextProps) {
         switch (props.validation) {
             case NOT_NULL_MARK:
                 text = text.replace(new RegExp(ONLY_NUMBERS_PATTERN), "")
-                test = !(text.trim() === "")
+                test = text.trim() !== ""
                 setIsValid(test)
                 break
             case CPF_MARK:
                 text = text.trim()
                 text = text.replace(new RegExp(ONLY_CHARACTERS_PATTERN), "")
-                test = new RegExp(CPF_PATTERN).test(text)
+                test = text.length === 0 || new RegExp(CPF_PATTERN).test(text)
+                setIsValid(test)
+                break
+            case NUMBER_MARK:
+                text = text.trim()
+                text = text.replace(new RegExp(ONLY_CHARACTERS_PATTERN), "")
+                setIsValid(test)
+                break
+            case TELEPHONE_MARK:
+                text = text.trim()
+                text = text.replace(new RegExp(ONLY_CHARACTERS_PATTERN), "")
+                test = text.length === 0 || text.length === 15
                 setIsValid(test)
                 break
         }
@@ -151,15 +206,21 @@ export default function InputText(props: InputTextProps) {
     const handleMask = (event) => {
         switch (props.mask) {
             case "cpf":
-                event.target.value = maskCPF(event.target.value)
+                event.target.value = handleMaskCPF(event.target.value)
                 break
             case "rg":
-                event.target.value = maskRG(event.target.value)
+                event.target.value = handleMaskRG(event.target.value)
                 break
             case "cnpj":
                 break
             case "currency":
-                event.target.value = maskCurrency(event.target.value)
+                event.target.value = handleMaskCurrency(event.target.value)
+                break
+            case "telephone":
+                event.target.value = handleMaskTelephone(event.target.value)
+                break
+            case "cep":
+                event.target.value = handleMaskCEP(event.target.value)
                 break
         }
     }
@@ -172,11 +233,12 @@ export default function InputText(props: InputTextProps) {
             </label>
 
             <input
-                type={props.type ?? "text"}
                 id={props.id}
-                name={props.title}
-                maxLength={props.maxLength}
                 value={value}
+                name={props.title}
+                className={className}
+                maxLength={props.maxLength}
+                type={props.type ?? "text"}
                 disabled={props.isDisabled}
                 required={props.isRequired}
                 onChange={(event) => {
@@ -184,7 +246,6 @@ export default function InputText(props: InputTextProps) {
                     handleValidation(event)
                     props.setText(event.target.value)
                 }}
-                className={className}
             />
             {!isValid && (<p className="text-red-600">{props.validationMessage}</p>)}
         </>

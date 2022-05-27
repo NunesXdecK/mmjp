@@ -1,15 +1,15 @@
-import { useState } from "react"
-import { Person, PersonAddress } from "../../interfaces/objectInterfaces"
-import { ElementFromBase } from "../../util/ConverterUtil"
-import { CPF_MARK, CPF_PATTERN, NOT_NULL_MARK, NOT_NULL_PATTERN } from "../../util/PatternValidationUtil"
-import Button from "../button/button"
-import InputText from "../inputText/inputText"
-import PersonList from "../list/personList"
-import IOSModal from "../modal/iosModal"
-import AddressForm from "./addressForm"
-import ArrayTextForm from "./arrayTextForm"
 import Form from "./form"
+import { useState } from "react"
+import Button from "../button/button"
+import AddressForm from "./addressForm"
+import IOSModal from "../modal/iosModal"
+import PersonList from "../list/personList"
+import ArrayTextForm from "./arrayTextForm"
 import { OldDataProps } from "./oldDataForm"
+import InputText from "../inputText/inputText"
+import { ElementFromBase } from "../../util/ConverterUtil"
+import { Person, PersonAddress } from "../../interfaces/objectInterfaces"
+import { CPF_MARK, NOT_NULL_MARK, TELEPHONE_MARK } from "../../util/PatternValidationUtil"
 
 const defaultAddress: PersonAddress = {
     cep: "",
@@ -155,91 +155,100 @@ export default function PersonForm(props: PersonFormProps) {
                     <div className="grid grid-cols-6 sm:gap-6">
                         <div className="p-2 col-span-6 sm:col-span-6">
                             <InputText
+                                value={name}
+                                id="fullname"
+                                setText={setName}
+                                title="Nome completo"
                                 validation={NOT_NULL_MARK}
-                                validationMessage="O nome não pode ficar em branco."
                                 isDisabled={props.isForDisable}
                                 onValidate={handleChangeFormValidation}
-                                value={name}
-                                setText={setName}
-                                id="fullname"
-                                title="Nome completo" />
+                                validationMessage="O nome não pode ficar em branco."
+                            />
                         </div>
                     </div>
 
                     <div className="grid grid-cols-6 sm:gap-6 md:pt-2">
                         <div className="p-2 col-span-6 sm:col-span-3">
                             <InputText
+                                id="cpf"
+                                mask="cpf"
+                                title="CPF"
+                                value={cpf}
                                 maxLength={14}
+                                setText={setCpf}
                                 validation={CPF_MARK}
+                                isDisabled={props.isForDisable}
                                 onValidate={handleChangeFormValidation}
                                 validationMessage="O CPF está invalido"
-                                isDisabled={props.isForDisable}
-                                mask="cpf"
-                                value={cpf}
-                                setText={setCpf}
-                                id="cpf"
-                                title="CPF" />
+                            />
                         </div>
                     </div>
 
                     <div className="grid grid-cols-6 sm:gap-6 md:pt-2">
                         <div className="p-2 sm:mt-0 col-span-6 sm:col-span-3">
                             <InputText
-                                isDisabled={props.isForDisable}
+                                id="rg"
                                 mask="rg"
+                                title="RG"
+                                validation="number"
                                 value={rg}
                                 setText={setRg}
-                                id="rg"
-                                title="RG" />
+                                isDisabled={props.isForDisable}
+                            />
                         </div>
 
                         <div className="p-2 sm:mt-0 col-span-6 sm:col-span-3">
                             <InputText
-                                isDisabled={props.isForDisable}
-                                value={rgIssuer}
-                                setText={setRgIssuer}
                                 id="rg-issuer"
-                                title="Emissor RG" />
+                                value={rgIssuer}
+                                title="Emissor RG"
+                                setText={setRgIssuer}
+                                isDisabled={props.isForDisable}
+                            />
                         </div>
                     </div>
 
                     <div className="grid grid-cols-6 sm:gap-6 md:pt-2">
                         <div className="p-2 sm:mt-0 col-span-6 sm:col-span-3">
                             <InputText
-                                isDisabled={props.isForDisable}
-                                value={naturalness}
-                                setText={setNaturalness}
                                 id="naturalness"
-                                title="Naturalidade" />
+                                value={naturalness}
+                                title="Naturalidade"
+                                setText={setNaturalness}
+                                isDisabled={props.isForDisable}
+                            />
                         </div>
 
                         <div className="p-2 sm:mt-0 col-span-6 sm:col-span-3">
                             <InputText
-                                isDisabled={props.isForDisable}
+                                id="nationality"
+                                title="Nacionalidade"
                                 value={nationality}
                                 setText={setNationality}
-                                id="nationality"
-                                title="Nacionalidade" />
+                                isDisabled={props.isForDisable}
+                            />
                         </div>
                     </div>
 
                     <div className="grid grid-cols-6 sm:gap-6 md:pt-2">
                         <div className="p-2 sm:mt-0 col-span-6 sm:col-span-3">
                             <InputText
-                                isDisabled={props.isForDisable}
+                                id="martial-status"
+                                title="Estado Civil"
                                 value={maritalStatus}
                                 setText={setMaritalStatus}
-                                id="martial-status"
-                                title="Estado Civil" />
+                                isDisabled={props.isForDisable}
+                            />
                         </div>
 
                         <div className="p-2 sm:mt-0 col-span-6 sm:col-span-3">
                             <InputText
-                                isDisabled={props.isForDisable}
+                                id="profession"
+                                title="Profissão"
                                 value={profession}
                                 setText={setProfession}
-                                id="profession"
-                                title="Profissão" />
+                                isDisabled={props.isForDisable}
+                            />
                         </div>
                     </div>
                 </Form>
@@ -252,17 +261,23 @@ export default function PersonForm(props: PersonFormProps) {
             </form>
 
             <ArrayTextForm
-                texts={telephones}
-                setTexts={setTelephones}
+                id="telephone"
+                mask="telephone"
                 title="Telefones"
-                subtitle="Informações sobre os contatos" />
+                texts={telephones}
+                inputTitle="Telephone"
+                setTexts={setTelephones}
+                validation={TELEPHONE_MARK}
+                subtitle="Informações sobre os contatos"
+                validationMessage="Faltam números no telefone"
+            />
 
             <form
                 onSubmit={save}>
                 <AddressForm
+                    title="Endereço"
                     address={address}
                     setAddress={setAddress}
-                    title="Endereço"
                     subtitle="Informações sobre o endereço"
                 />
                 {/*
