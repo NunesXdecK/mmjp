@@ -27,7 +27,6 @@ export default function InputTextWithButton(props: InputTextWithButtonProps) {
                 const textChar = text.substring(i, i - 1)
                 for (let im = 1; im <= maskLength; im++) {
                     const maskChar = mask.substring(im, im - 1)
-                    console.log(maskedText.indexOf(maskChar))
                     if (maskChar === "9" && im > lastDigit) {
                         maskedText = maskedText + textChar
                         lastDigit = im

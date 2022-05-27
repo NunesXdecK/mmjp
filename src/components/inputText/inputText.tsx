@@ -1,5 +1,5 @@
 import { useState } from "react"
-import { CPF_MARK, CPF_PATTERN, NOT_NULL_MARK, ONLY_CHARACTERS_PATTERN, ONLY_NUMBERS_PATTERN, ONLY_SPACES_PATTERN } from "../../util/PatternValidationUtil"
+import { CPF_MARK, CPF_PATTERN, NOT_NULL_MARK, ONLY_CHARACTERS_PATTERN, ONLY_NUMBERS_PATTERN, ONLY_WHITESPACES_PATTERN } from "../../util/PatternValidationUtil"
 
 interface InputTextProps {
     id?: string,
@@ -129,7 +129,7 @@ export default function InputText(props: InputTextProps) {
         switch (props.validation) {
             case NOT_NULL_MARK:
                 text = text.replace(new RegExp(ONLY_NUMBERS_PATTERN), "")
-                test = text && text !== ""
+                test = !(text.trim() === "")
                 setIsValid(test)
                 break
             case CPF_MARK:

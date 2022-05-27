@@ -1,4 +1,5 @@
 interface ButtonProps {
+    isDisabled?: boolean,
     children: any,
     onClick?: () => void,
     type?: "button" | "submit" | "reset"
@@ -8,6 +9,7 @@ export default function Button(props: ButtonProps) {
     return (
         <>
             <button
+                disabled={props.isDisabled}
                 type={props.type}
                 onClick={props.onClick}
                 className={`
@@ -16,6 +18,7 @@ export default function Button(props: ButtonProps) {
                             shadow-sm 
                             text-sm font-medium rounded-md text-white 
                             focus:outline-none focus:ring-2 focus:ring-offset-2 
+                            disabled:opacity-80
                             focus:border-indigo-500 focus:ring-indigo-500
                             bg-indigo-600 hover:bg-indigo-700 
                     `}>

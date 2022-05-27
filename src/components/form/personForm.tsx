@@ -97,7 +97,7 @@ export default function PersonForm(props: PersonFormProps) {
         setIsOpen(false)
     }
 
-    const handleChangeValid = (isValid) => {
+    const handleChangeFormValidation = (isValid) => {
         setIsFormValid(isValid)
     }
 
@@ -158,7 +158,7 @@ export default function PersonForm(props: PersonFormProps) {
                                 validation={NOT_NULL_MARK}
                                 validationMessage="O nome não pode ficar em branco."
                                 isDisabled={props.isForDisable}
-                                onValidate={handleChangeValid}
+                                onValidate={handleChangeFormValidation}
                                 value={name}
                                 setText={setName}
                                 id="fullname"
@@ -171,7 +171,7 @@ export default function PersonForm(props: PersonFormProps) {
                             <InputText
                                 maxLength={14}
                                 validation={CPF_MARK}
-                                onValidate={handleChangeValid}
+                                onValidate={handleChangeFormValidation}
                                 validationMessage="O CPF está invalido"
                                 isDisabled={props.isForDisable}
                                 mask="cpf"
@@ -272,6 +272,7 @@ export default function PersonForm(props: PersonFormProps) {
                 <div className="grid grid-cols-6 gap-6">
                     <div className="p-2 col-span-6 sm:col-span-6 justify-self-end">
                         <Button
+                            isDisabled={!isFormValid}
                             type="submit">
                             Salvar
                         </Button>
