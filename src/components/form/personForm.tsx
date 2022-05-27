@@ -1,6 +1,7 @@
 import { useState } from "react"
 import { Person, PersonAddress } from "../../interfaces/objectInterfaces"
 import { ElementFromBase } from "../../util/ConverterUtil"
+import { CPF_MARK, CPF_PATTERN, NOT_NULL_MARK, NOT_NULL_PATTERN } from "../../util/PatternValidationUtil"
 import Button from "../button/button"
 import InputText from "../inputText/inputText"
 import PersonList from "../list/personList"
@@ -59,6 +60,8 @@ interface PersonFormProps {
 }
 
 export default function PersonForm(props: PersonFormProps) {
+    const [isFormValid, setIsFormValid] = useState(false)
+
     const [name, setName] = useState("")
     const [cpf, setCpf] = useState("")
     const [rg, setRg] = useState("")
@@ -94,25 +97,33 @@ export default function PersonForm(props: PersonFormProps) {
         setIsOpen(false)
     }
 
+    const handleChangeValid = (isValid) => {
+        setIsFormValid(isValid)
+    }
+
     const save = (event) => {
         event.preventDefault()
         console.log("save")
-        const person = {
-            name: name,
-            cpf: cpf,
-            rg: rg,
-            rgIssuer: rgIssuer,
-            nationality: nationality,
-            naturalness: naturalness,
-            maritalStatus: maritalStatus,
-            profession: profession,
-            address: address,
-            telephones: telephones,
-        }
-        console.log(person)
+        if (isFormValid) {
+            console.log("valid")
+            const person = {
+                name: name,
+                cpf: cpf,
+                rg: rg,
+                rgIssuer: rgIssuer,
+                nationality: nationality,
+                naturalness: naturalness,
+                maritalStatus: maritalStatus,
+                profession: profession,
+                address: address,
+                telephones: telephones,
+            }
 
-        if (props.afterSave) {
-            props.afterSave({})
+            console.log(person)
+
+            if (props.afterSave) {
+                props.afterSave({})
+            }
         }
     }
 
@@ -141,14 +152,15 @@ export default function PersonForm(props: PersonFormProps) {
                         </div>
                     )}
 
-
-
                     <div className="grid grid-cols-6 sm:gap-6">
                         <div className="p-2 col-span-6 sm:col-span-6">
                             <InputText
+                                validation={NOT_NULL_MARK}
+                                validationMessage="O nome não pode ficar em branco."
                                 isDisabled={props.isForDisable}
+                                onValidate={handleChangeValid}
                                 value={name}
-                                onChange={(event) => { setName(event.target.value) }}
+                                setText={setName}
                                 id="fullname"
                                 title="Nome completo" />
                         </div>
@@ -157,9 +169,14 @@ export default function PersonForm(props: PersonFormProps) {
                     <div className="grid grid-cols-6 sm:gap-6 md:pt-2">
                         <div className="p-2 col-span-6 sm:col-span-3">
                             <InputText
+                                maxLength={14}
+                                validation={CPF_MARK}
+                                onValidate={handleChangeValid}
+                                validationMessage="O CPF está invalido"
                                 isDisabled={props.isForDisable}
+                                mask="cpf"
                                 value={cpf}
-                                onChange={(event) => { setCpf(event.target.value) }}
+                                setText={setCpf}
                                 id="cpf"
                                 title="CPF" />
                         </div>
@@ -169,8 +186,9 @@ export default function PersonForm(props: PersonFormProps) {
                         <div className="p-2 sm:mt-0 col-span-6 sm:col-span-3">
                             <InputText
                                 isDisabled={props.isForDisable}
+                                mask="rg"
                                 value={rg}
-                                onChange={(event) => { setRg(event.target.value) }}
+                                setText={setRg}
                                 id="rg"
                                 title="RG" />
                         </div>
@@ -179,7 +197,7 @@ export default function PersonForm(props: PersonFormProps) {
                             <InputText
                                 isDisabled={props.isForDisable}
                                 value={rgIssuer}
-                                onChange={(event) => { setRgIssuer(event.target.value) }}
+                                setText={setRgIssuer}
                                 id="rg-issuer"
                                 title="Emissor RG" />
                         </div>
@@ -190,7 +208,7 @@ export default function PersonForm(props: PersonFormProps) {
                             <InputText
                                 isDisabled={props.isForDisable}
                                 value={naturalness}
-                                onChange={(event) => { setNaturalness(event.target.value) }}
+                                setText={setNaturalness}
                                 id="naturalness"
                                 title="Naturalidade" />
                         </div>
@@ -199,7 +217,7 @@ export default function PersonForm(props: PersonFormProps) {
                             <InputText
                                 isDisabled={props.isForDisable}
                                 value={nationality}
-                                onChange={(event) => { setNationality(event.target.value) }}
+                                setText={setNationality}
                                 id="nationality"
                                 title="Nacionalidade" />
                         </div>
@@ -210,7 +228,7 @@ export default function PersonForm(props: PersonFormProps) {
                             <InputText
                                 isDisabled={props.isForDisable}
                                 value={maritalStatus}
-                                onChange={(event) => { setMaritalStatus(event.target.value) }}
+                                setText={setMaritalStatus}
                                 id="martial-status"
                                 title="Estado Civil" />
                         </div>
@@ -219,7 +237,7 @@ export default function PersonForm(props: PersonFormProps) {
                             <InputText
                                 isDisabled={props.isForDisable}
                                 value={profession}
-                                onChange={(event) => { setProfession(event.target.value) }}
+                                setText={setProfession}
                                 id="profession"
                                 title="Profissão" />
                         </div>

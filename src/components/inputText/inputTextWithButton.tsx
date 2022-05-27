@@ -1,6 +1,8 @@
 import { useState } from "react";
 
-interface InputTextWithButton {
+interface InputTextWithButtonProps {
+    id?: string,
+    title?: string,
     value?: string,
     index?: number,
     children?: any,
@@ -8,17 +10,27 @@ interface InputTextWithButton {
     onClick?: (object, string, any) => void,
 }
 
-export default function InputTextWithButton(props: InputTextWithButton) {
+export default function InputTextWithButton(props: InputTextWithButtonProps) {
     const [text, setText] = useState(props.value ?? "")
 
     return (
         <form onSubmit={(event) => {
-            props.onClick(event,text, setText)
+            props.onClick(event, text, setText)
         }}>
             <div className="grid grid-cols-6">
                 <div className="p-2 col-span-6">
+                    {props.title && (
+                        <label
+                            htmlFor={props.id}
+                            className="block text-sm font-medium text-gray-700">
+                            {props.title}
+                        </label>
+                    )}
+
                     <div className="mt-1 flex rounded-md shadow-sm">
+
                         <input
+                            id={props.id}
                             disabled={props.disabled}
                             value={text}
                             onChange={(event) => setText(event.target.value)}

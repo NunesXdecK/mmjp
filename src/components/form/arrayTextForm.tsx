@@ -36,6 +36,8 @@ export default function ArrayTextForm(props: ArrayTextFormProps) {
                 subtitle={props.subtitle}>
 
                 <InputTextWithButton
+                    id="telephone"
+                    title="Telephone"
                     onClick={addText}>
                     <PlusIcon className="text-green-600 block h-6 w-6" aria-hidden="true" />
                 </InputTextWithButton>
@@ -45,6 +47,7 @@ export default function ArrayTextForm(props: ArrayTextFormProps) {
                         index={index}
                         value={element}
                         disabled={true}
+                        id={index + element}
                         key={index + element}
                         onClick={handleRemoveText}>
                         <TrashIcon className="text-red-600 block h-6 w-6" aria-hidden="true" />
