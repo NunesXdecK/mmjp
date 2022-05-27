@@ -46,7 +46,7 @@ export default function ArrayTextForm(props: ArrayTextFormProps) {
                     <InputTextWithButton
                         index={index}
                         value={element}
-                        disabled={true}
+                        isDisabled={true}
                         id={index + element}
                         key={index + element}
                         onClick={handleRemoveText}>

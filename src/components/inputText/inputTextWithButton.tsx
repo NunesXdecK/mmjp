@@ -6,7 +6,7 @@ interface InputTextWithButtonProps {
     value?: string,
     index?: number,
     children?: any,
-    disabled?: boolean,
+    isDisabled?: boolean,
     onClick?: (object, string, any) => void,
 }
 
@@ -60,7 +60,7 @@ export default function InputTextWithButton(props: InputTextWithButtonProps) {
 
                         <input
                             id={props.id}
-                            disabled={props.disabled}
+                            disabled={props.isDisabled}
                             value={text}
                             onChange={(event) => {
                                 let value = event.target.value

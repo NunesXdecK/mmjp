@@ -1,4 +1,3 @@
-import { useState } from "react"
 import { PersonAddress } from "../../interfaces/objectInterfaces"
 import InputText from "../inputText/inputText"
 import Form from "./form"
@@ -7,8 +6,8 @@ interface AddressFormProps {
     title?: string,
     subtitle?: string,
     isForSelect?: boolean,
-    address: PersonAddress,
-    setAddress: any,
+    address?: PersonAddress,
+    setAddress?: any,
 }
 
 export default function AddressForm(props: AddressFormProps) {

@@ -13,6 +13,7 @@ interface InputTextProps {
     children?: any,
     isDisabled?: boolean,
     isRequired?: boolean,
+    onChange?: (any) => void,
     onValidate?: (boolean) => void,
     setText?: (string) => void,
 }
