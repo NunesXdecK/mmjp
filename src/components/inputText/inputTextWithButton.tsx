@@ -13,6 +13,36 @@ interface InputTextWithButtonProps {
 export default function InputTextWithButton(props: InputTextWithButtonProps) {
     const [text, setText] = useState(props.value ?? "")
 
+    const handleTelephoneMask = (text: string) => {
+        text = text.replaceAll("(", "").replaceAll(")", "").replaceAll(" ", "").replaceAll("-", "")
+        let lastDigit = 0
+        let maskedText = ""
+
+        const mask = "(99) 99999-9999"
+        let maskLength = mask.length
+        let length = text.length
+
+        if (length > 2) {
+            for (let i = 1; i <= length; i++) {
+                const textChar = text.substring(i, i - 1)
+                for (let im = 1; im <= maskLength; im++) {
+                    const maskChar = mask.substring(im, im - 1)
+                    console.log(maskedText.indexOf(maskChar))
+                    if (maskChar === "9" && im > lastDigit) {
+                        maskedText = maskedText + textChar
+                        lastDigit = im
+                        break
+                    } else if (maskedText.indexOf(maskChar) === -1) {
+                        maskedText = maskedText + maskChar
+                    }
+                }
+            }
+        } else {
+            maskedText = text
+        }
+        return maskedText
+    }
+
     return (
         <form onSubmit={(event) => {
             props.onClick(event, text, setText)
@@ -33,7 +63,11 @@ export default function InputTextWithButton(props: InputTextWithButtonProps) {
                             id={props.id}
                             disabled={props.disabled}
                             value={text}
-                            onChange={(event) => setText(event.target.value)}
+                            onChange={(event) => {
+                                let value = event.target.value
+                                value = handleTelephoneMask(value)
+                                setText(value)
+                            }}
                             type="text"
                             className={`
                                 z-0
