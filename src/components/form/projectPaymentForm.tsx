@@ -37,7 +37,7 @@ export default function ProjectPaymentForm(props) {
                     <InputTextWithButton
                         index={index}
                         value={element}
-                        disabled={true}
+                        isDisabled={true}
                         key={index + element}
                         onClick={handleRemovePayment}>
                         <TrashIcon className="text-red-600 block h-6 w-6" aria-hidden="true" />
