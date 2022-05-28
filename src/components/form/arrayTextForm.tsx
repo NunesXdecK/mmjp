@@ -3,7 +3,7 @@ import { useState } from "react";
 import Button from "../button/button";
 import InputText from "../inputText/inputText";
 import { TrashIcon } from "@heroicons/react/outline";
-import { handleMaskTelephone } from "../../util/MaskUtil";
+import { handleMaskTelephone } from "../../util/maskUtil";
 import InputTextWithButton from "../inputText/inputTextWithButton";
 
 interface ArrayTextFormProps {
@@ -58,13 +58,14 @@ export default function ArrayTextForm(props: ArrayTextFormProps) {
                 <form
                     onSubmit={handleAddText}>
                     <div className="grid grid-cols-6 sm:gap-6">
-                        <div className="p-2 col-span-6 sm:col-span-6">
+                        <div className="py-1 px-2 col-span-6 sm:col-span-6">
                             <InputText
                                 value={text}
                                 id={props.id}
-                                onSetText={setText}
                                 mask={props.mask}
+                                onSetText={setText}
                                 title={props.inputTitle}
+                                isLoading={props.isLoading}
                                 validation={props.validation}
                                 validationMessage={props.validationMessage}
                                 onValidate={handleChangeFormValidation}
@@ -73,10 +74,12 @@ export default function ArrayTextForm(props: ArrayTextFormProps) {
                     </div>
 
                     <div className="grid grid-cols-6 gap-6">
-                        <div className="p-2 col-span-6 sm:col-span-6 justify-self-end">
+                        <div className="py-1 px-2 col-span-6 sm:col-span-6 justify-self-end">
                             <Button
+                                type="submit"
                                 isDisabled={!isFormValid}
-                                type="submit">
+                                isLoading={props.isLoading}
+                            >
                                 Adicionar
                             </Button>
                         </div>

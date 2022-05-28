@@ -1,4 +1,4 @@
-import { STYLE_FOR_INPUT_LOADING } from "../../util/PatternValidationUtil"
+import { STYLE_FOR_INPUT_LOADING } from "../../util/patternValidationUtil"
 
 interface InputSelectProps {
     id?: string,
@@ -39,11 +39,13 @@ export default function InputSelect(props: InputSelectProps) {
             <select
                 id={props.id}
                 name={props.id}
+                className={classNameInput}
                 value={props.value.toLowerCase()}
+                disabled={props.isDisabled || props.isLoading}
                 onChange={(event) => {
                     props.onSetText(event.target.value)
                 }}
-                className={classNameInput}>
+                >
                 {props.options.map((element, index) => {
                     return (
                         <option

@@ -41,7 +41,7 @@ export default function ProjectForm(props) {
                 title={props.title}
                 subtitle={props.subtitle}>
                 <div className="grid grid-cols-6 sm:gap-6">
-                    <div className="p-2 col-span-6 sm:col-span-6">
+                    <div className="py-1 px-2 col-span-6 sm:col-span-6">
                         <InputText
                             value={name}
                             onChange={(event) => { setName(event.target.value) }}
@@ -77,7 +77,7 @@ export default function ProjectForm(props) {
                 title="Pagamento"
                 subtitle="Informações sobre o pagamento" />
 
-            <div className="p-2 flex justify-end">
+            <div className="py-1 px-2 flex justify-end">
                 <Button
                     onClick={() => save()}
                     type="submit">

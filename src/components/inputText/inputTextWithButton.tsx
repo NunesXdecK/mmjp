@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { STYLE_FOR_INPUT_LOADING } from "../../util/PatternValidationUtil";
+import { STYLE_FOR_INPUT_LOADING } from "../../util/patternValidationUtil";
 
 interface InputTextWithButtonProps {
     id?: string,
@@ -49,7 +49,7 @@ export default function InputTextWithButton(props: InputTextWithButtonProps) {
                     <div className="mt-1 flex rounded-md shadow-sm">
                         <input
                             id={props.id}
-                            disabled={props.isDisabled}
+                            disabled={props.isDisabled || props.isLoading}
                             value={text}
                             onChange={(event) => {
                                 let value = event.target.value
@@ -57,9 +57,10 @@ export default function InputTextWithButton(props: InputTextWithButtonProps) {
                             }}
                             type="text"
                             className={classNameInput}
-                        />
+                            />
 
                         <button
+                            disabled={props.isDisabled || props.isLoading}
                             type="submit"
                             className={classNameButton}>
                             {props.children}

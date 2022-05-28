@@ -7,20 +7,21 @@ import PersonList from "../list/personList"
 import ArrayTextForm from "./arrayTextForm"
 import { OldDataProps } from "./oldDataForm"
 import InputText from "../inputText/inputText"
-import { ElementFromBase } from "../../util/ConverterUtil"
+import { ElementFromBase } from "../../util/converterUtil"
 import { Person, PersonAddress } from "../../interfaces/objectInterfaces"
-import { CPF_MARK, NOT_NULL_MARK, TELEPHONE_MARK } from "../../util/PatternValidationUtil"
-import { addDoc, collection } from "firebase/firestore"
+import { CPF_MARK, NOT_NULL_MARK, TELEPHONE_MARK } from "../../util/patternValidationUtil"
+import { addDoc, collection, doc, updateDoc } from "firebase/firestore"
 import { PersonConversor } from "../../db/converters"
 import { db, PERSON_COLLECTION_NAME } from "../../db/firebaseDB"
 import InputSelect from "../inputText/inputSelect"
 
 const defaultAddress: PersonAddress = {
     cep: "",
-    publicPlace: "",
     number: "",
-    district: "",
     county: "",
+    district: "",
+    complement: "",
+    publicPlace: "",
 }
 
 const defaultElementFromBase: ElementFromBase = {
@@ -53,7 +54,6 @@ const defaultElementFromBase: ElementFromBase = {
     "Telefone Prof. ": "",
 }
 
-let oldCadDate
 
 interface PersonFormProps {
     title?: string,
@@ -66,8 +66,12 @@ interface PersonFormProps {
 }
 
 export default function PersonForm(props: PersonFormProps) {
+
     const [isFormValid, setIsFormValid] = useState(false)
     const [isLoading, setIsLoading] = useState(false)
+
+    const [personID, setPersonID] = useState("")
+    const [personDateInsertUTC, setPersonDateInsertUTC] = useState(0)
 
     const [name, setName] = useState("")
     const [cpf, setCpf] = useState("")
@@ -91,6 +95,9 @@ export default function PersonForm(props: PersonFormProps) {
             props.onSelectPerson(person)
         }
 
+        setPersonID(person.id)
+        setPersonDateInsertUTC(person.dateInsertUTC)
+
         setName(person.name)
         setCpf(person.cpf)
         setRg(person.rg)
@@ -112,38 +119,54 @@ export default function PersonForm(props: PersonFormProps) {
 
     const save = async (event) => {
         event.preventDefault()
-        console.log("save")
         if (isFormValid) {
             console.log("valid")
-            const person = {
-                name: name,
-                cpf: cpf,
+            let person: Person = {
                 rg: rg,
+                cpf: cpf,
+                name: name,
                 rgIssuer: rgIssuer,
+                profession: profession,
                 nationality: nationality,
                 naturalness: naturalness,
                 maritalStatus: maritalStatus,
-                profession: profession,
                 address: address,
                 telephones: telephones,
             }
 
-            console.log(person)
-            setIsLoading(true)
-            setTimeout(() => { 
-                console.log("foi pola")
-                setIsLoading(false)
-             }, 5000)
-
-            try {
-                {/*
-                const personCollection = collection(db, PERSON_COLLECTION_NAME).withConverter(PersonConversor)
-                const docRef = await addDoc(personCollection, person)
-                console.log(docRef.id)
-                */}
-            } catch (e) {
-                console.error("Error adding document: ", e)
+            if (personDateInsertUTC === 0) {
+                person = { ...person, dateInsertUTC: Date.parse(new Date().toUTCString()) }
             }
+
+            console.log(personID)
+            console.log(person)
+
+            setIsLoading(true)
+            {/*
+            const personCollection = collection(db, PERSON_COLLECTION_NAME).withConverter(PersonConversor)
+            if (personID === "") {
+                console.log("save")
+                try {
+                    const docRef = await addDoc(personCollection, person)
+                    console.log(docRef.id)
+                    setPersonID(docRef.id)
+                    console.log(person)
+
+                } catch (e) {
+                    console.error("Error adding document: ", e)
+                }
+            } else {
+                console.log("update")
+                try {
+                    const docRef = doc(personCollection, personID)
+                    await updateDoc(docRef, person)
+                } catch (e) {
+                    console.error("Error upddating document: ", e)
+                }
+            }
+        */}
+
+            setIsLoading(false)
 
             if (props.afterSave) {
                 props.afterSave({})
@@ -166,10 +189,12 @@ export default function PersonForm(props: PersonFormProps) {
                     subtitle={props.subtitle}>
                     {(props.isForSelect || props.isForOldRegister) && (
                         <div className="grid grid-cols-6 sm:gap-6">
-                            <div className="p-2 col-span-6 sm:col-span-6 justify-self-end">
+                            <div className="py-1 px-2 col-span-6 sm:col-span-6 justify-self-end">
                                 <Button
+                                    type="button"
+                                    isLoading={isLoading}
                                     onClick={() => setIsOpen(true)}
-                                    type="button">
+                                >
                                     Pesquisar pessoa
                                 </Button>
                             </div>
@@ -177,7 +202,7 @@ export default function PersonForm(props: PersonFormProps) {
                     )}
 
                     <div className="grid grid-cols-6 sm:gap-6">
-                        <div className="p-2 col-span-6 sm:col-span-6">
+                        <div className="py-1 px-2 col-span-6 sm:col-span-6">
                             <InputText
                                 value={name}
                                 id="fullname"
@@ -193,7 +218,7 @@ export default function PersonForm(props: PersonFormProps) {
                     </div>
 
                     <div className="grid grid-cols-6 sm:gap-6 md:pt-2">
-                        <div className="p-2 col-span-6 sm:col-span-3">
+                        <div className="py-1 px-2 col-span-6 sm:col-span-3">
                             <InputText
                                 id="cpf"
                                 mask="cpf"
@@ -211,7 +236,7 @@ export default function PersonForm(props: PersonFormProps) {
                     </div>
 
                     <div className="grid grid-cols-6 sm:gap-6 md:pt-2">
-                        <div className="p-2 sm:mt-0 col-span-6 sm:col-span-3">
+                        <div className="py-1 px-2 sm:mt-0 col-span-6 sm:col-span-3">
                             <InputText
                                 id="rg"
                                 title="RG"
@@ -223,7 +248,7 @@ export default function PersonForm(props: PersonFormProps) {
                             />
                         </div>
 
-                        <div className="p-2 sm:mt-0 col-span-6 sm:col-span-3">
+                        <div className="py-1 px-2 sm:mt-0 col-span-6 sm:col-span-3">
                             <InputText
                                 id="rg-issuer"
                                 value={rgIssuer}
@@ -236,7 +261,7 @@ export default function PersonForm(props: PersonFormProps) {
                     </div>
 
                     <div className="grid grid-cols-6 sm:gap-6 md:pt-2">
-                        <div className="p-2 sm:mt-0 col-span-6 sm:col-span-3">
+                        <div className="py-1 px-2 sm:mt-0 col-span-6 sm:col-span-3">
                             <InputText
                                 id="naturalness"
                                 value={naturalness}
@@ -247,7 +272,7 @@ export default function PersonForm(props: PersonFormProps) {
                             />
                         </div>
 
-                        <div className="p-2 sm:mt-0 col-span-6 sm:col-span-3">
+                        <div className="py-1 px-2 sm:mt-0 col-span-6 sm:col-span-3">
                             <InputText
                                 id="nationality"
                                 value={nationality}
@@ -260,7 +285,7 @@ export default function PersonForm(props: PersonFormProps) {
                     </div>
 
                     <div className="grid grid-cols-6 sm:gap-6 md:pt-2">
-                        <div className="p-2 sm:mt-0 col-span-6 sm:col-span-3">
+                        <div className="py-1 px-2 sm:mt-0 col-span-6 sm:col-span-3">
                             <InputSelect
                                 id="martial-status"
                                 title="Estado Civil"
@@ -272,7 +297,7 @@ export default function PersonForm(props: PersonFormProps) {
                             />
                         </div>
 
-                        <div className="p-2 sm:mt-0 col-span-6 sm:col-span-3">
+                        <div className="py-1 px-2 sm:mt-0 col-span-6 sm:col-span-3">
                             <InputText
                                 id="profession"
                                 title="Profissão"
@@ -319,8 +344,9 @@ export default function PersonForm(props: PersonFormProps) {
                     )}
                 */}
                 <div className="grid grid-cols-6 gap-6">
-                    <div className="p-2 col-span-6 sm:col-span-6 justify-self-end">
+                    <div className="py-1 px-2 col-span-6 sm:col-span-6 justify-self-end">
                         <Button
+                            isLoading={isLoading}
                             isDisabled={!isFormValid}
                             type="submit">
                             Salvar

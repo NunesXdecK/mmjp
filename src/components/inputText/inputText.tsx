@@ -1,6 +1,6 @@
 import { useState } from "react"
-import { handleMaskCPF, handleMaskTelephone, handleMountCPFCurrency, handleMountMask, handleRemoveCEPMask, handleRemoveTelephoneMask } from "../../util/MaskUtil"
-import { CPF_MARK, CPF_PATTERN, NOT_NULL_MARK, NUMBER_MARK, ONLY_CHARACTERS_PATTERN, ONLY_NUMBERS_PATTERN, STYLE_FOR_INPUT_LOADING, TELEPHONE_MARK } from "../../util/PatternValidationUtil"
+import { handleMaskCPF, handleMaskTelephone, handleMountCPFCurrency, handleMountMask, handleRemoveCEPMask, handleRemoveTelephoneMask } from "../../util/maskUtil"
+import { CEP_MARK, CPF_MARK, CPF_PATTERN, NOT_NULL_MARK, NUMBER_MARK, ONLY_CHARACTERS_PATTERN, ONLY_NUMBERS_PATTERN, STYLE_FOR_INPUT_LOADING, TELEPHONE_MARK } from "../../util/patternValidationUtil"
 
 interface InputTextProps {
     id?: string,
@@ -116,6 +116,11 @@ export default function InputText(props: InputTextProps) {
         let text = event.target.value
         let test = true
         switch (props.validation) {
+            case CEP_MARK:
+                text = handleRemoveCEPMask(text)
+                test = text.trim() !== ""
+                setIsValid(test)
+                break
             case NOT_NULL_MARK:
                 text = text.replace(new RegExp(ONLY_NUMBERS_PATTERN), "")
                 test = text.trim() !== ""
@@ -139,10 +144,12 @@ export default function InputText(props: InputTextProps) {
                 setIsValid(test)
                 break
         }
-
+        
         if (props.onValidate) {
             props.onValidate(test)
         }
+
+        return text
     }
 
     const handleMask = (event) => {
@@ -166,6 +173,7 @@ export default function InputText(props: InputTextProps) {
                 value = handleMaskCEP(event.target.value)
                 break
         }
+
         if (value) {
             event.target.value = value
         }
@@ -184,12 +192,12 @@ export default function InputText(props: InputTextProps) {
                 className={classNameInput}
                 type={props.type ?? "text"}
                 maxLength={props.maxLength}
-                disabled={props.isDisabled}
+                disabled={props.isDisabled || props.isLoading}
                 required={props.isRequired}
                 onChange={(event) => {
-                    handleValidation(event)
                     handleMask(event)
-                    props.onSetText(event.target.value)
+                    const value = handleValidation(event)
+                    props.onSetText(value)
                 }}
             />
             {!isValid && (<p className="text-red-600">{props.validationMessage}</p>)}

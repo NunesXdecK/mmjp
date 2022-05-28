@@ -1,18 +1,8 @@
 import Form from "./form"
 import InputText from "../inputText/inputText"
 import { PersonAddress } from "../../interfaces/objectInterfaces"
-import { ONLY_NUMBERS_PATTERN_TWO } from "../../util/PatternValidationUtil"
 import { useState } from "react"
-import { handleRemoveCEPMask } from "../../util/MaskUtil"
-
-interface AddressFormProps {
-    title?: string,
-    subtitle?: string,
-    isLoading?: boolean,
-    isForSelect?: boolean,
-    setAddress?: any,
-    address?: PersonAddress,
-}
+import { handleRemoveCEPMask } from "../../util/maskUtil"
 
 interface AddressFromViaCEP {
     uf?: string,
@@ -27,6 +17,15 @@ interface AddressFromViaCEP {
     complemento?: string,
 }
 
+interface AddressFormProps {
+    title?: string,
+    subtitle?: string,
+    isLoading?: boolean,
+    isForSelect?: boolean,
+    setAddress?: any,
+    address?: PersonAddress,
+}
+
 export default function AddressForm(props: AddressFormProps) {
 
     const [isSearching, setIsSearching] = useState(false)
@@ -39,10 +38,14 @@ export default function AddressForm(props: AddressFormProps) {
 
             try {
                 fetch(url).then(res => res.json()).then((data: AddressFromViaCEP) => {
-
-                    let publicPlace = props.address.publicPlace
-                    let district = props.address.district
                     let county = props.address.county
+                    let district = props.address.district
+                    let complement = props.address.complement
+                    let publicPlace = props.address.publicPlace
+                    
+                    if (data.complemento && data.complemento.length > 0) {
+                        complement = data.complemento
+                    }
 
                     if (data.logradouro && data.logradouro.length > 0) {
                         publicPlace = data.logradouro
@@ -56,14 +59,13 @@ export default function AddressForm(props: AddressFormProps) {
                         county = data.localidade + "/" + data.uf
                     }
 
-                    {/*
-                */}
                     props.setAddress({
                         ...props.address,
-                        publicPlace: publicPlace,
-                        district: district,
+                        cep: value,
                         county: county,
-                        cep: value
+                        district: district,
+                        complement: complement,
+                        publicPlace: publicPlace,
                     })
 
                     setIsSearching(false)
@@ -93,6 +95,10 @@ export default function AddressForm(props: AddressFormProps) {
         props.setAddress({ ...props.address, county: value })
     }
 
+    const handleOnChangeComplement = (value: string) => {
+        props.setAddress({ ...props.address, complement: value })
+    }
+
     return (
         <>
             <Form
@@ -100,25 +106,25 @@ export default function AddressForm(props: AddressFormProps) {
                 subtitle={props.subtitle}>
                 <div className="relative">
                     <div className="grid grid-cols-6 sm:gap-6">
-                        <div className="p-2 col-span-6 sm:col-span-2">
+                        <div className="py-1 px-2 col-span-6 sm:col-span-2">
                             <InputText
                                 id="cep"
                                 mask="cep"
                                 title="CEP"
-                                validation="number"
+                                validation="cep"
                                 isLoading={isSearching || props.isLoading}
-                                isDisabled={isSearching}
+                                isDisabled={isSearching || props.isLoading}
                                 value={props.address.cep}
                                 onSetText={handleOnChangeCep}
                             />
                         </div>
 
-                        <div className="p-2 col-span-6 sm:col-span-4">
+                        <div className="py-1 px-2 col-span-6 sm:col-span-4">
                             <InputText
                                 id="public-place"
                                 title="Logradouro"
                                 isLoading={isSearching || props.isLoading}
-                                isDisabled={isSearching}
+                                isDisabled={isSearching || props.isLoading}
                                 value={props.address.publicPlace}
                                 onSetText={handleOnChangePublicPlace}
                             />
@@ -126,35 +132,49 @@ export default function AddressForm(props: AddressFormProps) {
                     </div>
 
                     <div className="grid grid-cols-6 sm:gap-6">
-                        <div className="p-2 col-span-6 sm:col-span-2">
+                        <div className="py-1 px-2 col-span-6 sm:col-span-2">
                             <InputText
                                 id="number"
                                 title="Número"
                                 isLoading={props.isLoading}
+                                isDisabled={props.isLoading}
                                 value={props.address.number}
                                 onSetText={handleOnChangeNumber}
                             />
                         </div>
 
-                        <div className="p-2 col-span-6 sm:col-span-2">
+                        <div className="py-1 px-2 col-span-6 sm:col-span-2">
                             <InputText
                                 id="district"
                                 title="Bairro"
                                 isLoading={isSearching || props.isLoading}
-                                isDisabled={isSearching}
+                                isDisabled={isSearching || props.isLoading}
                                 value={props.address.district}
                                 onSetText={handleOnChangeDistrict}
                             />
                         </div>
 
-                        <div className="p-2 col-span-6 sm:col-span-2">
+                        <div className="py-1 px-2 col-span-6 sm:col-span-2">
                             <InputText
                                 id="county"
                                 title="Cidade"
                                 isLoading={isSearching || props.isLoading}
-                                isDisabled={isSearching}
+                                isDisabled={isSearching || props.isLoading}
                                 value={props.address.county}
                                 onSetText={handleOnChangeCounty}
+                            />
+                        </div>
+                    </div>
+
+                    <div className="grid grid-cols-6 sm:gap-6">
+                        <div className="py-1 px-2 col-span-6 sm:col-span-6">
+                            <InputText
+                                id="complement"
+                                title="Complemento"
+                                isLoading={isSearching || props.isLoading}
+                                isDisabled={isSearching || props.isLoading}
+                                value={props.address.complement}
+                                onSetText={handleOnChangeComplement}
                             />
                         </div>
                     </div>

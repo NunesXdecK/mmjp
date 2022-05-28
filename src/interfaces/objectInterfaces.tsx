@@ -1,26 +1,27 @@
 export interface Person {
     id?: string,
-    name?: string,
-    cpf?: string,
     rg?: string,
+    cpf?: string,
+    name?: string,
     rgIssuer?: string,
+    profession?: string,
     nationality?: string,
     naturalness?: string,
     maritalStatus?: string,
-    profession?: string,
     dateInsertUTC?: number,
-    address?: PersonAddress,
     telephones?: string[],
+    address?: PersonAddress,
     oldPerson?: object,
 }
 
 export interface PersonAddress {
     id?: string,
-    publicPlace?: string,
-    number?: string,
-    district?: string,
-    county?: string,
     cep?: string,
+    number?: string,
+    county?: string,
+    district?: string,
+    complement?: string,
+    publicPlace?: string,
 }
 
 export interface Professional {
@@ -39,14 +40,14 @@ export interface Property {
     county?: string,
     area?: number,
     perimeter?: number,
-    owners?: any[],
     dateInsertUTC?: number,
+    owners?: any[],
 }
 
 export interface Process {
     id?: string,
-    date?: number,
     number?: string,
+    date?: number,
     client?: any,
     property?: any,
     professional?: any,

@@ -1,4 +1,5 @@
 export const RG_MARK = "rg"
+export const CEP_MARK = "nt"
 export const CPF_MARK = "cpf"
 export const NOT_NULL_MARK = "nt"
 export const TELEPHONE_MARK = "tlp"

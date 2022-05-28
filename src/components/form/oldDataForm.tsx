@@ -31,7 +31,7 @@ export function OldDataProps(props: OldDataProps) {
                 title={props.title}
                 subtitle={props.subtitle}>
                 <div className="grid grid-cols-6 sm:gap-6">
-                    <div className="p-2 col-span-6 sm:col-span-6">
+                    <div className="py-1 px-2 col-span-6 sm:col-span-6">
                         <span
                             className={spanClassTitle}>
                             Data cadastro: <span className={spanClassData}>{dateCad}</span>
@@ -40,7 +40,7 @@ export function OldDataProps(props: OldDataProps) {
                 </div>
 
                 <div className="grid grid-cols-6 sm:gap-6">
-                    <div className="p-2 col-span-6 sm:col-span-6">
+                    <div className="py-1 px-2 col-span-6 sm:col-span-6">
                         <span
                             className={spanClassTitle}>
                             Nome: <span className={spanClassData}>{name}</span>
@@ -49,14 +49,14 @@ export function OldDataProps(props: OldDataProps) {
                 </div>
 
                 <div className="grid grid-cols-6 sm:gap-6">
-                    <div className="p-2 col-span-6 sm:col-span-3">
+                    <div className="py-1 px-2 col-span-6 sm:col-span-3">
                         <span
                             className={spanClassTitle}>
                             CPF: <span className={spanClassData}>{personCPF}</span>
                         </span>
                     </div>
 
-                    <div className="p-2 col-span-6 sm:col-span-3">
+                    <div className="py-1 px-2 col-span-6 sm:col-span-3">
                         <span
                             className={spanClassTitle}>
                             RG: <span className={spanClassData}>{personRG}</span>
@@ -65,14 +65,14 @@ export function OldDataProps(props: OldDataProps) {
                 </div>
 
                 <div className="grid grid-cols-6 sm:gap-6">
-                    <div className="p-2 col-span-6 sm:col-span-3">
+                    <div className="py-1 px-2 col-span-6 sm:col-span-3">
                         <span
                             className={spanClassTitle}>
                             Profissão: <span className={spanClassData}>{profession}</span>
                         </span>
                     </div>
 
-                    <div className="p-2 col-span-6 sm:col-span-3">
+                    <div className="py-1 px-2 col-span-6 sm:col-span-3">
                         <span
                             className={spanClassTitle}>
                             Nacionalidade: <span className={spanClassData}>{nationality}</span>
@@ -81,14 +81,14 @@ export function OldDataProps(props: OldDataProps) {
                 </div>
 
                 <div className="grid grid-cols-6 sm:gap-6">
-                    <div className="p-2 col-span-6 sm:col-span-3">
+                    <div className="py-1 px-2 col-span-6 sm:col-span-3">
                         <span
                             className={spanClassTitle}>
                             Naturalidade: <span className={spanClassData}>{naturalness}</span>
                         </span>
                     </div>
 
-                    <div className="p-2 col-span-6 sm:col-span-3">
+                    <div className="py-1 px-2 col-span-6 sm:col-span-3">
                         <span
                             className={spanClassTitle}>
                             Estado Civil: <span className={spanClassData}>{maritalStatus}</span>
@@ -97,14 +97,14 @@ export function OldDataProps(props: OldDataProps) {
                 </div>
 
                 <div className="grid grid-cols-6 sm:gap-6">
-                    <div className="p-2 col-span-6 sm:col-span-2">
+                    <div className="py-1 px-2 col-span-6 sm:col-span-2">
                         <span
                             className={spanClassTitle}>
                             CEP: <span className={spanClassData}>{personCEP}</span>
                         </span>
                     </div>
 
-                    <div className="p-2 col-span-6 sm:col-span-4">
+                    <div className="py-1 px-2 col-span-6 sm:col-span-4">
                         <span
                             className={spanClassTitle}>
                             Logradouro: <span className={spanClassData}>{publicPlace}</span>
@@ -113,21 +113,21 @@ export function OldDataProps(props: OldDataProps) {
                 </div>
 
                 <div className="grid grid-cols-6 sm:gap-6">
-                    <div className="p-2 col-span-6 sm:col-span-2">
+                    <div className="py-1 px-2 col-span-6 sm:col-span-2">
                         <span
                             className={spanClassTitle}>
                             Número: <span className={spanClassData}>{number}</span>
                         </span>
                     </div>
 
-                    <div className="p-2 col-span-6 sm:col-span-2">
+                    <div className="py-1 px-2 col-span-6 sm:col-span-2">
                         <span
                             className={spanClassTitle}>
                             Bairro: <span className={spanClassData}>{district}</span>
                         </span>
                     </div>
 
-                    <div className="p-2 col-span-6 sm:col-span-2">
+                    <div className="py-1 px-2 col-span-6 sm:col-span-2">
                         <span
                             className={spanClassTitle}>
                             Cidade: <span className={spanClassData}>{county}</span>

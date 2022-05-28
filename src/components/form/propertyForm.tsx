@@ -41,7 +41,7 @@ export default function PropertyForm(props) {
 
                 {props.isForSelect ? (
                     <div className="grid grid-cols-6 sm:gap-6">
-                        <div className="p-2 col-span-6 sm:col-span-6 justify-self-end">
+                        <div className="py-1 px-2 col-span-6 sm:col-span-6 justify-self-end">
                             <Button
                                 onClick={() => setIsOpen(true)}
                                 type="button">
@@ -52,7 +52,7 @@ export default function PropertyForm(props) {
                 ) : null}
 
                 <div className="grid grid-cols-6 sm:gap-6">
-                    <div className="p-2 col-span-6 sm:col-span-6">
+                    <div className="py-1 px-2 col-span-6 sm:col-span-6">
                         <InputText
                             isDisabled={props.isForSelect}
                             value={name}
@@ -63,7 +63,7 @@ export default function PropertyForm(props) {
                 </div>
 
                 <div className="grid grid-cols-6 sm:gap-6 md:pt-2">
-                    <div className="p-2 col-span-6 sm:col-span-3">
+                    <div className="py-1 px-2 col-span-6 sm:col-span-3">
                         <InputText
                             isDisabled={props.isForSelect}
                             value={area}
@@ -72,7 +72,7 @@ export default function PropertyForm(props) {
                             title="Área" />
                     </div>
 
-                    <div className="p-2 sm:mt-0 col-span-6 sm:col-span-3">
+                    <div className="py-1 px-2 sm:mt-0 col-span-6 sm:col-span-3">
                         <InputText
                             isDisabled={props.isForSelect}
                             value={municipio}
@@ -84,7 +84,7 @@ export default function PropertyForm(props) {
 
                 {!props.isForSelect ? (
                     <div className="grid grid-cols-6 gap-6">
-                        <div className="p-2 col-span-6 sm:col-span-6 justify-self-end">
+                        <div className="py-1 px-2 col-span-6 sm:col-span-6 justify-self-end">
                             <Button
                                 onClick={save}
                                 type="submit">

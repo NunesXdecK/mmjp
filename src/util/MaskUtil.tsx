@@ -1,4 +1,4 @@
-import { ONLY_NUMBERS_PATTERN_TWO } from "./PatternValidationUtil"
+import { ONLY_NUMBERS_PATTERN_TWO } from "./patternValidationUtil"
 
 export const handleMaskCPF = (text) => {
     const dig1 = "-"
