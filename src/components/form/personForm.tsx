@@ -121,6 +121,11 @@ export default function PersonForm(props: PersonFormProps) {
         event.preventDefault()
         if (isFormValid) {
             console.log("valid")
+
+            if (personDateInsertUTC === 0) {
+               setPersonDateInsertUTC(Date.parse(new Date().toUTCString()))
+            }
+
             let person: Person = {
                 rg: rg,
                 cpf: cpf,
@@ -130,13 +135,11 @@ export default function PersonForm(props: PersonFormProps) {
                 nationality: nationality,
                 naturalness: naturalness,
                 maritalStatus: maritalStatus,
+                dateInsertUTC: personDateInsertUTC,
                 address: address,
                 telephones: telephones,
             }
 
-            if (personDateInsertUTC === 0) {
-                person = { ...person, dateInsertUTC: Date.parse(new Date().toUTCString()) }
-            }
 
             console.log(personID)
             console.log(person)
