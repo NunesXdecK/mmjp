@@ -1,5 +1,6 @@
 import { useState } from "react"
-import { CPF_MARK, CPF_PATTERN, NOT_NULL_MARK, NUMBER_MARK, ONLY_CHARACTERS_PATTERN, ONLY_NUMBERS_PATTERN, RG_MARK, TELEPHONE_MARK } from "../../util/PatternValidationUtil"
+import { handleMountMask, handleRemoveTelephoneMask } from "../../util/MaskUtil"
+import { CPF_MARK, CPF_PATTERN, NOT_NULL_MARK, NUMBER_MARK, ONLY_CHARACTERS_PATTERN, ONLY_NUMBERS_PATTERN, TELEPHONE_MARK } from "../../util/PatternValidationUtil"
 
 interface InputTextProps {
     id?: string,
@@ -9,12 +10,13 @@ interface InputTextProps {
     validation?: string,
     validationMessage?: string,
     maxLength?: number,
+    isLoading?: boolean,
     isDisabled?: boolean,
     isRequired?: boolean,
     children?: any,
     mask?: "cpf" | "rg" | "cnpj" | "currency" | "telephone" | "cep",
     onChange?: (any) => void,
-    setText?: (string) => void,
+    onSetText?: (string) => void,
     onValidate?: (boolean) => void,
 }
 
@@ -66,40 +68,18 @@ const handleMountRG = (text, dig1, dig2) => {
     return maskedText
 }
 
-const handleMountMask = (text: string, mask: string) => {
-    let lastDigit = 0
-    let maskedText = ""
-    let maskLength = mask.length
-    let length = text.length
-
-    if (length > 2) {
-        for (let i = 1; i <= length; i++) {
-            const textChar = text.substring(i, i - 1)
-            for (let im = 1; im <= maskLength; im++) {
-                const maskChar = mask.substring(im, im - 1)
-                if (maskChar === "9" && im > lastDigit) {
-                    maskedText = maskedText + textChar
-                    lastDigit = im
-                    break
-                } else if (maskChar !== "9" && maskedText.indexOf(maskChar) === -1) {
-                    maskedText = maskedText + maskChar
-                }
-            }
-        }
-    } else {
-        maskedText = text
-    }
-    return maskedText
-}
-
 const handleMaskCEP = (text: string) => {
-    text = text.replaceAll(".", "").replaceAll("-", "")
+    text = handleRemoveTelephoneMask(text)
     return handleMountMask(text, "99.999-999")
 }
 
 const handleMaskTelephone = (text: string) => {
     text = text.replaceAll("(", "").replaceAll(")", "").replaceAll(" ", "").replaceAll("-", "")
-    return handleMountMask(text, "(99) 99999-9999")
+    let mask = "(99) 99999-9999"
+    if (text.length === 10) {
+        mask = "(99) 9999-9999"
+    }
+    return handleMountMask(text, mask)
 }
 
 const handleMaskCPF = (text) => {
@@ -137,6 +117,10 @@ export default function InputText(props: InputTextProps) {
                         focus:ring-indigo-500 focus:border-indigo-500 
                          
                     `
+    if (props.isLoading) {
+        className = className + " animate-pulse bg-gray-300"
+    }
+
     if (!isValid) {
         className = className + " ring-red-600 border-red-600  focus:ring-red-600 focus:border-red-600"
     }
@@ -145,11 +129,9 @@ export default function InputText(props: InputTextProps) {
         if (value) {
             switch (props.mask) {
                 case "cpf":
-                    className = className + " text-right"
                     value = handleMaskCPF(value)
                     break
                 case "rg":
-                    className = className + " text-right"
                     value = handleMaskRG(value)
                     break
                 case "cnpj":
@@ -191,7 +173,7 @@ export default function InputText(props: InputTextProps) {
             case TELEPHONE_MARK:
                 text = text.trim()
                 text = text.replace(new RegExp(ONLY_CHARACTERS_PATTERN), "")
-                test = text.length === 0 || text.length === 15
+                test = text.length === 0 || (text.length > 13 && text.length < 16)
                 setIsValid(test)
                 break
         }
@@ -231,20 +213,19 @@ export default function InputText(props: InputTextProps) {
                 className="block text-sm font-medium text-gray-700">
                 {props.title}
             </label>
-
             <input
                 id={props.id}
                 value={value}
                 name={props.title}
                 className={className}
-                maxLength={props.maxLength}
                 type={props.type ?? "text"}
+                maxLength={props.maxLength}
                 disabled={props.isDisabled}
                 required={props.isRequired}
                 onChange={(event) => {
                     handleMask(event)
                     handleValidation(event)
-                    props.setText(event.target.value)
+                    props.onSetText(event.target.value)
                 }}
             />
             {!isValid && (<p className="text-red-600">{props.validationMessage}</p>)}

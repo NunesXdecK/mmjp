@@ -10,6 +10,10 @@ import InputText from "../inputText/inputText"
 import { ElementFromBase } from "../../util/ConverterUtil"
 import { Person, PersonAddress } from "../../interfaces/objectInterfaces"
 import { CPF_MARK, NOT_NULL_MARK, TELEPHONE_MARK } from "../../util/PatternValidationUtil"
+import { addDoc, collection } from "firebase/firestore"
+import { PersonConversor } from "../../db/converters"
+import { db, PERSON_COLLECTION_NAME } from "../../db/firebaseDB"
+import InputSelect from "../inputText/inputSelect"
 
 const defaultAddress: PersonAddress = {
     cep: "",
@@ -101,7 +105,7 @@ export default function PersonForm(props: PersonFormProps) {
         setIsFormValid(isValid)
     }
 
-    const save = (event) => {
+    const save = async (event) => {
         event.preventDefault()
         console.log("save")
         if (isFormValid) {
@@ -120,6 +124,16 @@ export default function PersonForm(props: PersonFormProps) {
             }
 
             console.log(person)
+
+            try {
+                {/*
+                const personCollection = collection(db, PERSON_COLLECTION_NAME).withConverter(PersonConversor)
+                const docRef = await addDoc(personCollection, person)
+                console.log(docRef.id)
+                */}
+            } catch (e) {
+                console.error("Error adding document: ", e)
+            }
 
             if (props.afterSave) {
                 props.afterSave({})
@@ -157,7 +171,7 @@ export default function PersonForm(props: PersonFormProps) {
                             <InputText
                                 value={name}
                                 id="fullname"
-                                setText={setName}
+                                onSetText={setName}
                                 title="Nome completo"
                                 validation={NOT_NULL_MARK}
                                 isDisabled={props.isForDisable}
@@ -175,7 +189,7 @@ export default function PersonForm(props: PersonFormProps) {
                                 title="CPF"
                                 value={cpf}
                                 maxLength={14}
-                                setText={setCpf}
+                                onSetText={setCpf}
                                 validation={CPF_MARK}
                                 isDisabled={props.isForDisable}
                                 onValidate={handleChangeFormValidation}
@@ -188,11 +202,10 @@ export default function PersonForm(props: PersonFormProps) {
                         <div className="p-2 sm:mt-0 col-span-6 sm:col-span-3">
                             <InputText
                                 id="rg"
-                                mask="rg"
                                 title="RG"
                                 validation="number"
                                 value={rg}
-                                setText={setRg}
+                                onSetText={setRg}
                                 isDisabled={props.isForDisable}
                             />
                         </div>
@@ -202,7 +215,7 @@ export default function PersonForm(props: PersonFormProps) {
                                 id="rg-issuer"
                                 value={rgIssuer}
                                 title="Emissor RG"
-                                setText={setRgIssuer}
+                                onSetText={setRgIssuer}
                                 isDisabled={props.isForDisable}
                             />
                         </div>
@@ -214,7 +227,7 @@ export default function PersonForm(props: PersonFormProps) {
                                 id="naturalness"
                                 value={naturalness}
                                 title="Naturalidade"
-                                setText={setNaturalness}
+                                onSetText={setNaturalness}
                                 isDisabled={props.isForDisable}
                             />
                         </div>
@@ -224,7 +237,7 @@ export default function PersonForm(props: PersonFormProps) {
                                 id="nationality"
                                 title="Nacionalidade"
                                 value={nationality}
-                                setText={setNationality}
+                                onSetText={setNationality}
                                 isDisabled={props.isForDisable}
                             />
                         </div>
@@ -232,12 +245,13 @@ export default function PersonForm(props: PersonFormProps) {
 
                     <div className="grid grid-cols-6 sm:gap-6 md:pt-2">
                         <div className="p-2 sm:mt-0 col-span-6 sm:col-span-3">
-                            <InputText
+                            <InputSelect
                                 id="martial-status"
                                 title="Estado Civil"
                                 value={maritalStatus}
-                                setText={setMaritalStatus}
+                                onSetText={setMaritalStatus}
                                 isDisabled={props.isForDisable}
+                                options={["","casado","divorciado","separado","solteiro","viuvo"]}
                             />
                         </div>
 
@@ -246,7 +260,7 @@ export default function PersonForm(props: PersonFormProps) {
                                 id="profession"
                                 title="Profissão"
                                 value={profession}
-                                setText={setProfession}
+                                onSetText={setProfession}
                                 isDisabled={props.isForDisable}
                             />
                         </div>
@@ -266,7 +280,7 @@ export default function PersonForm(props: PersonFormProps) {
                 title="Telefones"
                 texts={telephones}
                 inputTitle="Telephone"
-                setTexts={setTelephones}
+                onSetTexts={setTelephones}
                 validation={TELEPHONE_MARK}
                 subtitle="Informações sobre os contatos"
                 validationMessage="Faltam números no telefone"

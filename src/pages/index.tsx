@@ -10,6 +10,16 @@ export default function Index() {
                 <meta name="description" content="Dashboard" />
                 <link rel="icon" href="/favicon.ico" />
             </Head>
+
+            <div
+                className={`
+                h-full
+                w-full
+animate-pulse
+                `}
+            >
+
+            </div>
         </Layout>
     )
 }

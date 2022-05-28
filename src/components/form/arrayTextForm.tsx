@@ -14,7 +14,7 @@ interface ArrayTextFormProps {
     validationMessage?: string,
     mask?: "cpf" | "rg" | "cnpj" | "currency" | "telephone",
     texts?: string[],
-    setTexts?: (array) => void,
+    onSetTexts?: (array) => void,
 }
 
 export default function ArrayTextForm(props: ArrayTextFormProps) {
@@ -23,13 +23,12 @@ export default function ArrayTextForm(props: ArrayTextFormProps) {
 
     const handleAddText = (event) => {
         event.preventDefault()
-        console.log("add")
         if (isFormValid && text.trim() !== "") {
             let localTexts = [...props.texts]
             if (localTexts.indexOf(text) === -1) {
-                console.log("valid")
                 localTexts = [...localTexts, text]
-                props.setTexts(localTexts)
+                if (props.mask)
+                props.onSetTexts(localTexts)
                 setText("")
             }
         }
@@ -45,7 +44,7 @@ export default function ArrayTextForm(props: ArrayTextFormProps) {
         if (localTexts.length > -1) {
             const index = localTexts.indexOf(text)
             localTexts.splice(index, 1)
-            props.setTexts(localTexts)
+            props.onSetTexts(localTexts)
         }
     }
 
@@ -62,7 +61,7 @@ export default function ArrayTextForm(props: ArrayTextFormProps) {
                             <InputText
                                 value={text}
                                 id={props.id}
-                                setText={setText}
+                                onSetText={setText}
                                 mask={props.mask}
                                 title={props.inputTitle}
                                 validation={props.validation}

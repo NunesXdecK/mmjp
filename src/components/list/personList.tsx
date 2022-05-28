@@ -21,8 +21,11 @@ export default function PersonList(props) {
     function filterList(event) {
         event.preventDefault()
         let arrayList = []
+
+        const startList = 0
+        const endList = data.Plan1.length - 0
         
-        const dataList = data.Plan1.slice(data.Plan1.length - 500, data.Plan1.length - 0)
+        const dataList = data.Plan1.slice(startList, endList)
         dataList.map((element: ElementFromBase, index) => {
             let newElement: Person = extratePerson(element)
             newElement = {...newElement, oldPerson: element}

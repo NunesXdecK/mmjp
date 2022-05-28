@@ -24,3 +24,5 @@ const app = initializeApp(firebaseConfig);
 const db = getFirestore()
 
 export { db }
+
+export const PERSON_COLLECTION_NAME = "person"
