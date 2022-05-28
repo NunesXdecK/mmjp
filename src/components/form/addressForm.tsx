@@ -3,13 +3,15 @@ import InputText from "../inputText/inputText"
 import { PersonAddress } from "../../interfaces/objectInterfaces"
 import { ONLY_NUMBERS_PATTERN_TWO } from "../../util/PatternValidationUtil"
 import { useState } from "react"
+import { handleRemoveCEPMask } from "../../util/MaskUtil"
 
 interface AddressFormProps {
     title?: string,
     subtitle?: string,
+    isLoading?: boolean,
     isForSelect?: boolean,
-    address?: PersonAddress,
     setAddress?: any,
+    address?: PersonAddress,
 }
 
 interface AddressFromViaCEP {
@@ -30,30 +32,40 @@ export default function AddressForm(props: AddressFormProps) {
     const [isSearching, setIsSearching] = useState(false)
 
     const handleOnChangeCep = (value: string) => {
-        if (value && value.length === 10) {
-            let cep = value.replaceAll(" ", "").replaceAll("-", "")
-            cep = value.replace(new RegExp(ONLY_NUMBERS_PATTERN_TWO), "")
+        if (value && value.length === 9) {
+            let cep = handleRemoveCEPMask(value)
             const url = `https://viacep.com.br/ws/${cep}/json/`
             setIsSearching(true)
 
             try {
                 fetch(url).then(res => res.json()).then((data: AddressFromViaCEP) => {
-                    if (data.cep && data.cep.length > 0) {
-                        props.setAddress({...props.address, publicPlace: data.logradouro})
-                    }
-                    
+
+                    let publicPlace = props.address.publicPlace
+                    let district = props.address.district
+                    let county = props.address.county
+
                     if (data.logradouro && data.logradouro.length > 0) {
-                        props.setAddress({...props.address, publicPlace: data.logradouro})
+                        publicPlace = data.logradouro
                     }
-                    
+
                     if (data.bairro && data.bairro.length > 0) {
-                        props.setAddress({...props.address, district: data.bairro})
+                        district = data.bairro
                     }
-                    
+
                     if (data.localidade && data.uf) {
-                        props.setAddress({...props.address, county: data.localidade + "/" + data.uf})
+                        county = data.localidade + "/" + data.uf
                     }
-                    
+
+                    {/*
+                */}
+                    props.setAddress({
+                        ...props.address,
+                        publicPlace: publicPlace,
+                        district: district,
+                        county: county,
+                        cep: value
+                    })
+
                     setIsSearching(false)
                 })
             } catch (error) {
@@ -94,18 +106,18 @@ export default function AddressForm(props: AddressFormProps) {
                                 mask="cep"
                                 title="CEP"
                                 validation="number"
-                                isLoading={isSearching}
+                                isLoading={isSearching || props.isLoading}
                                 isDisabled={isSearching}
                                 value={props.address.cep}
                                 onSetText={handleOnChangeCep}
-                                />
+                            />
                         </div>
 
                         <div className="p-2 col-span-6 sm:col-span-4">
                             <InputText
                                 id="public-place"
                                 title="Logradouro"
-                                isLoading={isSearching}
+                                isLoading={isSearching || props.isLoading}
                                 isDisabled={isSearching}
                                 value={props.address.publicPlace}
                                 onSetText={handleOnChangePublicPlace}
@@ -118,6 +130,7 @@ export default function AddressForm(props: AddressFormProps) {
                             <InputText
                                 id="number"
                                 title="Número"
+                                isLoading={props.isLoading}
                                 value={props.address.number}
                                 onSetText={handleOnChangeNumber}
                             />
@@ -127,7 +140,7 @@ export default function AddressForm(props: AddressFormProps) {
                             <InputText
                                 id="district"
                                 title="Bairro"
-                                isLoading={isSearching}
+                                isLoading={isSearching || props.isLoading}
                                 isDisabled={isSearching}
                                 value={props.address.district}
                                 onSetText={handleOnChangeDistrict}
@@ -138,7 +151,7 @@ export default function AddressForm(props: AddressFormProps) {
                             <InputText
                                 id="county"
                                 title="Cidade"
-                                isLoading={isSearching}
+                                isLoading={isSearching || props.isLoading}
                                 isDisabled={isSearching}
                                 value={props.address.county}
                                 onSetText={handleOnChangeCounty}

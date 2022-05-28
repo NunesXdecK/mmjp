@@ -3,6 +3,7 @@ import { useState } from "react";
 import Button from "../button/button";
 import InputText from "../inputText/inputText";
 import { TrashIcon } from "@heroicons/react/outline";
+import { handleMaskTelephone } from "../../util/MaskUtil";
 import InputTextWithButton from "../inputText/inputTextWithButton";
 
 interface ArrayTextFormProps {
@@ -12,6 +13,7 @@ interface ArrayTextFormProps {
     inputTitle?: string,
     validation?: string,
     validationMessage?: string,
+    isLoading?: boolean,
     mask?: "cpf" | "rg" | "cnpj" | "currency" | "telephone",
     texts?: string[],
     onSetTexts?: (array) => void,
@@ -28,7 +30,7 @@ export default function ArrayTextForm(props: ArrayTextFormProps) {
             if (localTexts.indexOf(text) === -1) {
                 localTexts = [...localTexts, text]
                 if (props.mask)
-                props.onSetTexts(localTexts)
+                    props.onSetTexts(localTexts)
                 setText("")
             }
         }
@@ -53,7 +55,6 @@ export default function ArrayTextForm(props: ArrayTextFormProps) {
             <Form
                 title={props.title}
                 subtitle={props.subtitle}>
-
                 <form
                     onSubmit={handleAddText}>
                     <div className="grid grid-cols-6 sm:gap-6">
@@ -71,7 +72,6 @@ export default function ArrayTextForm(props: ArrayTextFormProps) {
                         </div>
                     </div>
 
-
                     <div className="grid grid-cols-6 gap-6">
                         <div className="p-2 col-span-6 sm:col-span-6 justify-self-end">
                             <Button
@@ -86,11 +86,13 @@ export default function ArrayTextForm(props: ArrayTextFormProps) {
                 {props.texts.map((element, index) => (
                     <InputTextWithButton
                         index={index}
-                        value={element}
+                        isLoading={props.isLoading}
                         isDisabled={true}
                         id={index + element}
                         key={index + element}
-                        onClick={handleRemoveText}>
+                        onClick={handleRemoveText}
+                        value={handleMaskTelephone(element)}
+                    >
                         <TrashIcon className="text-red-600 block h-6 w-6" aria-hidden="true" />
                     </InputTextWithButton>
                 ))}

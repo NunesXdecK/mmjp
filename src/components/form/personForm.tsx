@@ -53,6 +53,8 @@ const defaultElementFromBase: ElementFromBase = {
     "Telefone Prof. ": "",
 }
 
+let oldCadDate
+
 interface PersonFormProps {
     title?: string,
     subtitle?: string,
@@ -65,6 +67,7 @@ interface PersonFormProps {
 
 export default function PersonForm(props: PersonFormProps) {
     const [isFormValid, setIsFormValid] = useState(false)
+    const [isLoading, setIsLoading] = useState(false)
 
     const [name, setName] = useState("")
     const [cpf, setCpf] = useState("")
@@ -87,6 +90,7 @@ export default function PersonForm(props: PersonFormProps) {
         if (props.onSelectPerson) {
             props.onSelectPerson(person)
         }
+
         setName(person.name)
         setCpf(person.cpf)
         setRg(person.rg)
@@ -99,6 +103,7 @@ export default function PersonForm(props: PersonFormProps) {
         setTelephones(person.telephones)
         setOldPerson(person.oldPerson)
         setIsOpen(false)
+        setIsFormValid(true)
     }
 
     const handleChangeFormValidation = (isValid) => {
@@ -124,6 +129,11 @@ export default function PersonForm(props: PersonFormProps) {
             }
 
             console.log(person)
+            setIsLoading(true)
+            setTimeout(() => { 
+                console.log("foi pola")
+                setIsLoading(false)
+             }, 5000)
 
             try {
                 {/*
@@ -173,6 +183,7 @@ export default function PersonForm(props: PersonFormProps) {
                                 id="fullname"
                                 onSetText={setName}
                                 title="Nome completo"
+                                isLoading={isLoading}
                                 validation={NOT_NULL_MARK}
                                 isDisabled={props.isForDisable}
                                 onValidate={handleChangeFormValidation}
@@ -190,6 +201,7 @@ export default function PersonForm(props: PersonFormProps) {
                                 value={cpf}
                                 maxLength={14}
                                 onSetText={setCpf}
+                                isLoading={isLoading}
                                 validation={CPF_MARK}
                                 isDisabled={props.isForDisable}
                                 onValidate={handleChangeFormValidation}
@@ -206,6 +218,7 @@ export default function PersonForm(props: PersonFormProps) {
                                 validation="number"
                                 value={rg}
                                 onSetText={setRg}
+                                isLoading={isLoading}
                                 isDisabled={props.isForDisable}
                             />
                         </div>
@@ -215,6 +228,7 @@ export default function PersonForm(props: PersonFormProps) {
                                 id="rg-issuer"
                                 value={rgIssuer}
                                 title="Emissor RG"
+                                isLoading={isLoading}
                                 onSetText={setRgIssuer}
                                 isDisabled={props.isForDisable}
                             />
@@ -227,6 +241,7 @@ export default function PersonForm(props: PersonFormProps) {
                                 id="naturalness"
                                 value={naturalness}
                                 title="Naturalidade"
+                                isLoading={isLoading}
                                 onSetText={setNaturalness}
                                 isDisabled={props.isForDisable}
                             />
@@ -235,8 +250,9 @@ export default function PersonForm(props: PersonFormProps) {
                         <div className="p-2 sm:mt-0 col-span-6 sm:col-span-3">
                             <InputText
                                 id="nationality"
-                                title="Nacionalidade"
                                 value={nationality}
+                                title="Nacionalidade"
+                                isLoading={isLoading}
                                 onSetText={setNationality}
                                 isDisabled={props.isForDisable}
                             />
@@ -249,9 +265,10 @@ export default function PersonForm(props: PersonFormProps) {
                                 id="martial-status"
                                 title="Estado Civil"
                                 value={maritalStatus}
+                                isLoading={isLoading}
                                 onSetText={setMaritalStatus}
                                 isDisabled={props.isForDisable}
-                                options={["","casado","divorciado","separado","solteiro","viuvo"]}
+                                options={["", "casado", "divorciado", "separado", "solteiro", "viuvo"]}
                             />
                         </div>
 
@@ -260,6 +277,7 @@ export default function PersonForm(props: PersonFormProps) {
                                 id="profession"
                                 title="Profissão"
                                 value={profession}
+                                isLoading={isLoading}
                                 onSetText={setProfession}
                                 isDisabled={props.isForDisable}
                             />
@@ -279,6 +297,7 @@ export default function PersonForm(props: PersonFormProps) {
                 mask="telephone"
                 title="Telefones"
                 texts={telephones}
+                isLoading={isLoading}
                 inputTitle="Telephone"
                 onSetTexts={setTelephones}
                 validation={TELEPHONE_MARK}
@@ -291,6 +310,7 @@ export default function PersonForm(props: PersonFormProps) {
                 <AddressForm
                     title="Endereço"
                     address={address}
+                    isLoading={isLoading}
                     setAddress={setAddress}
                     subtitle="Informações sobre o endereço"
                 />

@@ -2,6 +2,7 @@ import { useState } from "react"
 import data from "../../data/data.json"
 import { Person } from "../../interfaces/objectInterfaces"
 import { ElementFromBase, extratePerson } from "../../util/ConverterUtil"
+import { handleMaskCPF } from "../../util/MaskUtil"
 import Button from "../button/button"
 import PersonForm from "../form/personForm"
 import IOSModal from "../modal/iosModal"
@@ -97,15 +98,14 @@ export default function PersonList(props) {
                 {listItems.map((element, index) => (
                     <button key={index.toString()}
                         onClick={() => {
-                            props.onListItemClick ? props.onListItemClick(element) : null
+                            props.onListItemClick && props.onListItemClick(element)
                         }}
                         className="bg-white p-4 rounded-sm shadow items-center text-left">
                         <div className="flex">
-                            <div><span className={titleClassName}>{index + 1}</span></div>
                             <div><span className={titleClassName}>{element.name}</span></div>
                         </div>
+                        <div><span className={contentClassName}>{handleMaskCPF(element.cpf)}</span></div>
                         <div><span className={contentClassName}>{element.rg}</span></div>
-                        <div><span className={contentClassName}>{element.cpf}</span></div>
                     </button>
                 ))}
             </div>

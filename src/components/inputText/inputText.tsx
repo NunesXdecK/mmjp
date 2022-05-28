@@ -1,6 +1,6 @@
 import { useState } from "react"
-import { handleMountMask, handleRemoveTelephoneMask } from "../../util/MaskUtil"
-import { CPF_MARK, CPF_PATTERN, NOT_NULL_MARK, NUMBER_MARK, ONLY_CHARACTERS_PATTERN, ONLY_NUMBERS_PATTERN, TELEPHONE_MARK } from "../../util/PatternValidationUtil"
+import { handleMaskCPF, handleMaskTelephone, handleMountCPFCurrency, handleMountMask, handleRemoveCEPMask, handleRemoveTelephoneMask } from "../../util/MaskUtil"
+import { CPF_MARK, CPF_PATTERN, NOT_NULL_MARK, NUMBER_MARK, ONLY_CHARACTERS_PATTERN, ONLY_NUMBERS_PATTERN, STYLE_FOR_INPUT_LOADING, TELEPHONE_MARK } from "../../util/PatternValidationUtil"
 
 interface InputTextProps {
     id?: string,
@@ -18,29 +18,6 @@ interface InputTextProps {
     onChange?: (any) => void,
     onSetText?: (string) => void,
     onValidate?: (boolean) => void,
-}
-
-const handleMountCPFCurrency = (text, dig1, dig2) => {
-    let maskedText = ""
-    const length = text.length
-    for (let i = length; i > 0; i--) {
-        const char = text.substring(i, i - 1)
-        const iz = (length - i) + 1
-        if (i === (length - 2)) {
-            maskedText = dig1 + maskedText
-        }
-
-        if (
-            i !== 0
-            && iz > 3
-            && iz % 3 === 0
-        ) {
-            maskedText = dig2 + maskedText
-        }
-
-        maskedText = char + maskedText
-    }
-    return maskedText
 }
 
 const handleMountRG = (text, dig1, dig2) => {
@@ -69,24 +46,8 @@ const handleMountRG = (text, dig1, dig2) => {
 }
 
 const handleMaskCEP = (text: string) => {
-    text = handleRemoveTelephoneMask(text)
-    return handleMountMask(text, "99.999-999")
-}
-
-const handleMaskTelephone = (text: string) => {
-    text = text.replaceAll("(", "").replaceAll(")", "").replaceAll(" ", "").replaceAll("-", "")
-    let mask = "(99) 99999-9999"
-    if (text.length === 10) {
-        mask = "(99) 9999-9999"
-    }
-    return handleMountMask(text, mask)
-}
-
-const handleMaskCPF = (text) => {
-    const dig1 = "-"
-    const dig2 = "."
-    const unMaskedText = text.replaceAll(dig1, "").replaceAll(dig2, "")
-    return handleMountCPFCurrency(unMaskedText, dig1, dig2)
+    text = handleRemoveCEPMask(text)
+    return handleMountMask(text, "99999-999")
 }
 
 const handleMaskRG = (text) => {
@@ -108,21 +69,22 @@ export default function InputText(props: InputTextProps) {
 
     let value = props.value ?? ""
 
-    let className = `
-                        peer
-                        p-2 mt-1 
-                        block w-full 
-                        shadow-sm sm:text-sm 
-                        border-gray-300 rounded-md
-                        focus:ring-indigo-500 focus:border-indigo-500 
-                         
-                    `
+    let classNameInput = `
+                            peer
+                            p-2 mt-1 
+                            block w-full 
+                            shadow-sm sm:text-sm 
+                            border-gray-300 rounded-md
+                            focus:ring-indigo-500 focus:border-indigo-500 
+                        `
+    let classNameLabel = "block text-sm font-medium text-gray-700"
     if (props.isLoading) {
-        className = className + " animate-pulse bg-gray-300"
+        classNameInput = classNameInput + STYLE_FOR_INPUT_LOADING
+        classNameLabel = classNameLabel + STYLE_FOR_INPUT_LOADING
     }
 
     if (!isValid) {
-        className = className + " ring-red-600 border-red-600  focus:ring-red-600 focus:border-red-600"
+        classNameInput = classNameInput + " ring-red-600 border-red-600  focus:ring-red-600 focus:border-red-600"
     }
 
     if (props.mask) {
@@ -137,7 +99,7 @@ export default function InputText(props: InputTextProps) {
                 case "cnpj":
                     break
                 case "currency":
-                    className = className + " text-right"
+                    classNameInput = classNameInput + " text-right"
                     value = handleMaskCurrency(value)
                     break
                 case "telephone":
@@ -181,50 +143,52 @@ export default function InputText(props: InputTextProps) {
         if (props.onValidate) {
             props.onValidate(test)
         }
-
-        event.target.value = text
     }
 
     const handleMask = (event) => {
+        let value
         switch (props.mask) {
             case "cpf":
-                event.target.value = handleMaskCPF(event.target.value)
+                value = handleMaskCPF(event.target.value)
                 break
             case "rg":
-                event.target.value = handleMaskRG(event.target.value)
+                value = handleMaskRG(event.target.value)
                 break
             case "cnpj":
                 break
             case "currency":
-                event.target.value = handleMaskCurrency(event.target.value)
+                value = handleMaskCurrency(event.target.value)
                 break
             case "telephone":
-                event.target.value = handleMaskTelephone(event.target.value)
+                value = handleMaskTelephone(event.target.value)
                 break
             case "cep":
-                event.target.value = handleMaskCEP(event.target.value)
+                value = handleMaskCEP(event.target.value)
                 break
+        }
+        if (value) {
+            event.target.value = value
         }
     }
 
     return (
         <>
             <label htmlFor={props.id}
-                className="block text-sm font-medium text-gray-700">
+                className={classNameLabel}>
                 {props.title}
             </label>
             <input
                 id={props.id}
                 value={value}
                 name={props.title}
-                className={className}
+                className={classNameInput}
                 type={props.type ?? "text"}
                 maxLength={props.maxLength}
                 disabled={props.isDisabled}
                 required={props.isRequired}
                 onChange={(event) => {
-                    handleMask(event)
                     handleValidation(event)
+                    handleMask(event)
                     props.onSetText(event.target.value)
                 }}
             />

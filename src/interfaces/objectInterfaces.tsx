@@ -39,7 +39,7 @@ export interface Property {
     county?: string,
     area?: number,
     perimeter?: number,
-    person?: any,
+    owners?: any[],
     dateInsertUTC?: number,
 }
 
