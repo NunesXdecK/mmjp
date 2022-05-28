@@ -67,13 +67,13 @@ export default function ProjectForm(props) {
 
             <ArrayTextForm
                 texts={stages}
-                setTexts={setStages}
+                onSetTexts={setStages}
                 title="Etapas do projeto"
                 subtitle="Corpo das etapas" />
 
             <ArrayTextForm
                 texts={payments}
-                setTexts={setPayments}
+                onSetTexts={setPayments}
                 title="Pagamento"
                 subtitle="Informações sobre o pagamento" />
 
