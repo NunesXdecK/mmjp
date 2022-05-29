@@ -60,7 +60,7 @@ export default function InputTextWithButton(props: InputTextWithButtonProps) {
                             />
 
                         <button
-                            disabled={props.isDisabled || props.isLoading}
+                            disabled={props.isDisabled && props.isLoading}
                             type="submit"
                             className={classNameButton}>
                             {props.children}

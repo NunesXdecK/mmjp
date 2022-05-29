@@ -1,6 +1,6 @@
 import { useState } from "react"
 import { handleMaskCPF, handleMaskTelephone, handleMountCPFCurrency, handleMountMask, handleRemoveCEPMask, handleRemoveTelephoneMask } from "../../util/maskUtil"
-import { CEP_MARK, CPF_MARK, CPF_PATTERN, NOT_NULL_MARK, NUMBER_MARK, ONLY_CHARACTERS_PATTERN, ONLY_NUMBERS_PATTERN, STYLE_FOR_INPUT_LOADING, TELEPHONE_MARK } from "../../util/patternValidationUtil"
+import { CEP_MARK, CPF_MARK, CPF_PATTERN, NOT_NULL_MARK, NUMBER_MARK, ONLY_CHARACTERS_PATTERN, ONLY_CHARACTERS_PATTERN_TWO, STYLE_FOR_INPUT_LOADING, TELEPHONE_MARK } from "../../util/patternValidationUtil"
 
 interface InputTextProps {
     id?: string,
@@ -112,17 +112,16 @@ export default function InputText(props: InputTextProps) {
         }
     }
 
-    const handleValidation = (event) => {
-        let text = event.target.value
+    const handleValidation = (text) => {
         let test = true
         switch (props.validation) {
-            case CEP_MARK:
-                text = handleRemoveCEPMask(text)
+            case NOT_NULL_MARK:
+                text = text.replaceAll(ONLY_CHARACTERS_PATTERN_TWO,'')
                 test = text.trim() !== ""
                 setIsValid(test)
                 break
-            case NOT_NULL_MARK:
-                text = text.replace(new RegExp(ONLY_NUMBERS_PATTERN), "")
+            case CEP_MARK:
+                text = handleRemoveCEPMask(text)
                 test = text.trim() !== ""
                 setIsValid(test)
                 break
@@ -196,7 +195,7 @@ export default function InputText(props: InputTextProps) {
                 required={props.isRequired}
                 onChange={(event) => {
                     handleMask(event)
-                    const value = handleValidation(event)
+                    const value = handleValidation(event.target.value)
                     props.onSetText(value)
                 }}
             />

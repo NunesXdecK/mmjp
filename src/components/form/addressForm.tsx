@@ -31,8 +31,8 @@ export default function AddressForm(props: AddressFormProps) {
     const [isSearching, setIsSearching] = useState(false)
 
     const handleOnChangeCep = (value: string) => {
+        let cep = handleRemoveCEPMask(value)
         if (value && value.length === 9) {
-            let cep = handleRemoveCEPMask(value)
             const url = `https://viacep.com.br/ws/${cep}/json/`
             setIsSearching(true)
 

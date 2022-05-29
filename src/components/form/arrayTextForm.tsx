@@ -42,6 +42,7 @@ export default function ArrayTextForm(props: ArrayTextFormProps) {
 
     const handleRemoveText = (event, text) => {
         event.preventDefault()
+        console.log(text)
         let localTexts = [...props.texts]
         if (localTexts.length > -1) {
             const index = localTexts.indexOf(text)
