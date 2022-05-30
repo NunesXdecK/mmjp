@@ -1,5 +1,7 @@
 import { useState } from "react";
 import { STYLE_FOR_INPUT_LOADING } from "../../util/patternValidationUtil";
+import FormRow from "../form/formRow";
+import FormRowColumn from "../form/formRowColumn";
 
 interface InputTextWithButtonProps {
     id?: string,
@@ -36,8 +38,8 @@ export default function InputTextWithButton(props: InputTextWithButtonProps) {
         <form onSubmit={(event) => {
             props.onClick(event, text)
         }}>
-            <div className="grid grid-cols-6">
-                <div className="p-2 col-span-6">
+            <FormRow>
+                <FormRowColumn unit="6">
                     {props.title && (
                         <label
                             htmlFor={props.id}
@@ -57,7 +59,7 @@ export default function InputTextWithButton(props: InputTextWithButtonProps) {
                             }}
                             type="text"
                             className={classNameInput}
-                            />
+                        />
 
                         <button
                             disabled={props.isDisabled && props.isLoading}
@@ -66,8 +68,8 @@ export default function InputTextWithButton(props: InputTextWithButtonProps) {
                             {props.children}
                         </button>
                     </div>
-                </div>
-            </div>
+                </FormRowColumn>
+            </FormRow>
         </form>
     )
 }

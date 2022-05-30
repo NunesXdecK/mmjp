@@ -15,6 +15,8 @@ import { PersonConversor } from "../../db/converters"
 import { db, PERSON_COLLECTION_NAME } from "../../db/firebaseDB"
 import InputSelect from "../inputText/inputSelect"
 import { handleRemoveCEPMask, handleRemoveCPFMask } from "../../util/maskUtil"
+import FormRow from "./formRow"
+import FormRowColumn from "./formRowColumn"
 
 const defaultAddress: PersonAddress = {
     cep: "",
@@ -153,7 +155,6 @@ export default function PersonForm(props: PersonFormProps) {
 
             setIsLoading(true)
 
-            {/*
             if (personID === "") {
                 try {
                     const docRef = await addDoc(personCollection, person)
@@ -169,6 +170,7 @@ export default function PersonForm(props: PersonFormProps) {
                     console.error("Error upddating document: ", e)
                 }
             }
+            {/*
         */}
             setIsLoading(false)
 
@@ -192,8 +194,8 @@ export default function PersonForm(props: PersonFormProps) {
                     title={props.title}
                     subtitle={props.subtitle}>
                     {(props.isForSelect || props.isForOldRegister) && (
-                        <div className="grid grid-cols-6 sm:gap-6">
-                            <div className="py-1 px-2 col-span-6 sm:col-span-6 justify-self-end">
+                        <FormRow>
+                            <FormRowColumn unit="6" className="justify-self-end">
                                 <Button
                                     type="button"
                                     isLoading={isLoading}
@@ -201,12 +203,12 @@ export default function PersonForm(props: PersonFormProps) {
                                 >
                                     Pesquisar pessoa
                                 </Button>
-                            </div>
-                        </div>
+                            </FormRowColumn>
+                        </FormRow>
                     )}
 
-                    <div className="grid grid-cols-6 sm:gap-6">
-                        <div className="py-1 px-2 col-span-6 sm:col-span-6">
+                    <FormRow>
+                        <FormRowColumn unit="6">
                             <InputText
                                 value={name}
                                 id="fullname"
@@ -218,11 +220,11 @@ export default function PersonForm(props: PersonFormProps) {
                                 onValidate={handleChangeFormValidation}
                                 validationMessage="O nome não pode ficar em branco."
                             />
-                        </div>
-                    </div>
+                        </FormRowColumn>
+                    </FormRow>
 
-                    <div className="grid grid-cols-6 sm:gap-6 md:pt-2">
-                        <div className="py-1 px-2 col-span-6 sm:col-span-3">
+                    <FormRow>
+                        <FormRowColumn unit="3">
                             <InputText
                                 id="cpf"
                                 mask="cpf"
@@ -236,11 +238,11 @@ export default function PersonForm(props: PersonFormProps) {
                                 onValidate={handleChangeFormValidation}
                                 validationMessage="O CPF está invalido"
                             />
-                        </div>
-                    </div>
+                        </FormRowColumn>
+                    </FormRow>
 
-                    <div className="grid grid-cols-6 sm:gap-6 md:pt-2">
-                        <div className="py-1 px-2 sm:mt-0 col-span-6 sm:col-span-3">
+                    <FormRow>
+                        <FormRowColumn unit="3">
                             <InputText
                                 id="rg"
                                 title="RG"
@@ -250,9 +252,9 @@ export default function PersonForm(props: PersonFormProps) {
                                 isLoading={isLoading}
                                 isDisabled={props.isForDisable}
                             />
-                        </div>
+                        </FormRowColumn>
 
-                        <div className="py-1 px-2 sm:mt-0 col-span-6 sm:col-span-3">
+                        <FormRowColumn unit="3">
                             <InputText
                                 id="rg-issuer"
                                 value={rgIssuer}
@@ -261,11 +263,11 @@ export default function PersonForm(props: PersonFormProps) {
                                 onSetText={setRgIssuer}
                                 isDisabled={props.isForDisable}
                             />
-                        </div>
-                    </div>
+                        </FormRowColumn>
+                    </FormRow>
 
-                    <div className="grid grid-cols-6 sm:gap-6 md:pt-2">
-                        <div className="py-1 px-2 sm:mt-0 col-span-6 sm:col-span-3">
+                    <FormRow>
+                        <FormRowColumn unit="3">
                             <InputText
                                 id="naturalness"
                                 value={naturalness}
@@ -274,9 +276,9 @@ export default function PersonForm(props: PersonFormProps) {
                                 onSetText={setNaturalness}
                                 isDisabled={props.isForDisable}
                             />
-                        </div>
+                        </FormRowColumn>
 
-                        <div className="py-1 px-2 sm:mt-0 col-span-6 sm:col-span-3">
+                        <FormRowColumn unit="3">
                             <InputText
                                 id="nationality"
                                 value={nationality}
@@ -285,11 +287,11 @@ export default function PersonForm(props: PersonFormProps) {
                                 onSetText={setNationality}
                                 isDisabled={props.isForDisable}
                             />
-                        </div>
-                    </div>
+                        </FormRowColumn>
+                    </FormRow>
 
-                    <div className="grid grid-cols-6 sm:gap-6 md:pt-2">
-                        <div className="py-1 px-2 sm:mt-0 col-span-6 sm:col-span-3">
+                    <FormRow>
+                        <FormRowColumn unit="3">
                             <InputSelect
                                 id="martial-status"
                                 title="Estado Civil"
@@ -299,9 +301,9 @@ export default function PersonForm(props: PersonFormProps) {
                                 isDisabled={props.isForDisable}
                                 options={["", "casado", "divorciado", "separado", "solteiro", "viuvo"]}
                             />
-                        </div>
+                        </FormRowColumn>
 
-                        <div className="py-1 px-2 sm:mt-0 col-span-6 sm:col-span-3">
+                        <FormRowColumn unit="3">
                             <InputText
                                 id="profession"
                                 title="Profissão"
@@ -310,8 +312,8 @@ export default function PersonForm(props: PersonFormProps) {
                                 onSetText={setProfession}
                                 isDisabled={props.isForDisable}
                             />
-                        </div>
-                    </div>
+                        </FormRowColumn>
+                    </FormRow>
                 </Form>
 
                 <div className="hidden">
@@ -347,16 +349,16 @@ export default function PersonForm(props: PersonFormProps) {
                 {!props.isForSelect && (
                     )}
                 */}
-                <div className="grid grid-cols-6 gap-6">
-                    <div className="py-1 px-2 col-span-6 sm:col-span-6 justify-self-end">
+                <FormRow>
+                    <FormRowColumn unit="6" className="justify-self-end">
                         <Button
                             isLoading={isLoading}
                             isDisabled={!isFormValid}
                             type="submit">
                             Salvar
                         </Button>
-                    </div>
-                </div>
+                    </FormRowColumn>
+                </FormRow>
             </form>
 
             {(props.isForSelect || props.isForOldRegister) && (

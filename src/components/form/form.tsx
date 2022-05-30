@@ -1,4 +1,10 @@
-export default function Form(props) {
+interface FormProps {
+    title?: string,
+    subtitle?: string,
+    children?: any,
+}
+
+export default function Form(props: FormProps) {
     return (
         <div className="py-4 md:grid md:grid-cols-3 md:gap-6">
             <div className="py-2 md:cols-span-1">

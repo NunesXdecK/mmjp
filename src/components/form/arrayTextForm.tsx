@@ -5,6 +5,8 @@ import InputText from "../inputText/inputText";
 import { TrashIcon } from "@heroicons/react/outline";
 import { handleMaskTelephone } from "../../util/maskUtil";
 import InputTextWithButton from "../inputText/inputTextWithButton";
+import FormRow from "./formRow";
+import FormRowColumn from "./formRowColumn";
 
 interface ArrayTextFormProps {
     id?: string,
@@ -58,8 +60,8 @@ export default function ArrayTextForm(props: ArrayTextFormProps) {
                 subtitle={props.subtitle}>
                 <form
                     onSubmit={handleAddText}>
-                    <div className="grid grid-cols-6 sm:gap-6">
-                        <div className="py-1 px-2 col-span-6 sm:col-span-6">
+                    <FormRow>
+                        <FormRowColumn unit="6">
                             <InputText
                                 value={text}
                                 id={props.id}
@@ -71,11 +73,12 @@ export default function ArrayTextForm(props: ArrayTextFormProps) {
                                 validationMessage={props.validationMessage}
                                 onValidate={handleChangeFormValidation}
                             />
-                        </div>
-                    </div>
+                        </FormRowColumn>
+                    </FormRow>
 
-                    <div className="grid grid-cols-6 gap-6">
-                        <div className="py-1 px-2 col-span-6 sm:col-span-6 justify-self-end">
+
+                    <FormRow>
+                        <FormRowColumn unit="6">
                             <Button
                                 type="submit"
                                 isDisabled={!isFormValid}
@@ -83,8 +86,8 @@ export default function ArrayTextForm(props: ArrayTextFormProps) {
                             >
                                 Adicionar
                             </Button>
-                        </div>
-                    </div>
+                        </FormRowColumn>
+                    </FormRow>
                 </form>
 
                 {props.texts.map((element, index) => (

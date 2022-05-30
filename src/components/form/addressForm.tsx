@@ -3,6 +3,8 @@ import InputText from "../inputText/inputText"
 import { PersonAddress } from "../../interfaces/objectInterfaces"
 import { useState } from "react"
 import { handleRemoveCEPMask } from "../../util/maskUtil"
+import FormRow from "./formRow"
+import FormRowColumn from "./formRowColumn"
 
 interface AddressFromViaCEP {
     uf?: string,
@@ -42,7 +44,7 @@ export default function AddressForm(props: AddressFormProps) {
                     let district = props.address.district
                     let complement = props.address.complement
                     let publicPlace = props.address.publicPlace
-                    
+
                     if (data.complemento && data.complemento.length > 0) {
                         complement = data.complemento
                     }
@@ -104,81 +106,80 @@ export default function AddressForm(props: AddressFormProps) {
             <Form
                 title={props.title}
                 subtitle={props.subtitle}>
-                <div className="relative">
-                    <div className="grid grid-cols-6 sm:gap-6">
-                        <div className="py-1 px-2 col-span-6 sm:col-span-2">
-                            <InputText
-                                id="cep"
-                                mask="cep"
-                                title="CEP"
-                                validation="cep"
-                                isLoading={isSearching || props.isLoading}
-                                isDisabled={isSearching || props.isLoading}
-                                value={props.address.cep}
-                                onSetText={handleOnChangeCep}
-                            />
-                        </div>
 
-                        <div className="py-1 px-2 col-span-6 sm:col-span-4">
-                            <InputText
-                                id="public-place"
-                                title="Logradouro"
-                                isLoading={isSearching || props.isLoading}
-                                isDisabled={isSearching || props.isLoading}
-                                value={props.address.publicPlace}
-                                onSetText={handleOnChangePublicPlace}
-                            />
-                        </div>
-                    </div>
+                <FormRow>
+                    <FormRowColumn unit="2">
+                        <InputText
+                            id="cep"
+                            mask="cep"
+                            title="CEP"
+                            validation="cep"
+                            isLoading={isSearching || props.isLoading}
+                            isDisabled={isSearching || props.isLoading}
+                            value={props.address.cep}
+                            onSetText={handleOnChangeCep}
+                        />
+                    </FormRowColumn>
 
-                    <div className="grid grid-cols-6 sm:gap-6">
-                        <div className="py-1 px-2 col-span-6 sm:col-span-2">
-                            <InputText
-                                id="number"
-                                title="Número"
-                                isLoading={props.isLoading}
-                                isDisabled={props.isLoading}
-                                value={props.address.number}
-                                onSetText={handleOnChangeNumber}
-                            />
-                        </div>
+                    <FormRowColumn unit="4">
+                        <InputText
+                            id="public-place"
+                            title="Logradouro"
+                            isLoading={isSearching || props.isLoading}
+                            isDisabled={isSearching || props.isLoading}
+                            value={props.address.publicPlace}
+                            onSetText={handleOnChangePublicPlace}
+                        />
+                    </FormRowColumn>
+                </FormRow>
 
-                        <div className="py-1 px-2 col-span-6 sm:col-span-2">
-                            <InputText
-                                id="district"
-                                title="Bairro"
-                                isLoading={isSearching || props.isLoading}
-                                isDisabled={isSearching || props.isLoading}
-                                value={props.address.district}
-                                onSetText={handleOnChangeDistrict}
-                            />
-                        </div>
+                <FormRow>
+                    <FormRowColumn unit="2">
+                        <InputText
+                            id="number"
+                            title="Número"
+                            isLoading={props.isLoading}
+                            isDisabled={props.isLoading}
+                            value={props.address.number}
+                            onSetText={handleOnChangeNumber}
+                        />
+                    </FormRowColumn>
 
-                        <div className="py-1 px-2 col-span-6 sm:col-span-2">
-                            <InputText
-                                id="county"
-                                title="Cidade"
-                                isLoading={isSearching || props.isLoading}
-                                isDisabled={isSearching || props.isLoading}
-                                value={props.address.county}
-                                onSetText={handleOnChangeCounty}
-                            />
-                        </div>
-                    </div>
+                    <FormRowColumn unit="2">
+                        <InputText
+                            id="district"
+                            title="Bairro"
+                            isLoading={isSearching || props.isLoading}
+                            isDisabled={isSearching || props.isLoading}
+                            value={props.address.district}
+                            onSetText={handleOnChangeDistrict}
+                        />
+                    </FormRowColumn>
 
-                    <div className="grid grid-cols-6 sm:gap-6">
-                        <div className="py-1 px-2 col-span-6 sm:col-span-6">
-                            <InputText
-                                id="complement"
-                                title="Complemento"
-                                isLoading={isSearching || props.isLoading}
-                                isDisabled={isSearching || props.isLoading}
-                                value={props.address.complement}
-                                onSetText={handleOnChangeComplement}
-                            />
-                        </div>
-                    </div>
-                </div>
+                    <FormRowColumn unit="2">
+                        <InputText
+                            id="county"
+                            title="Cidade"
+                            isLoading={isSearching || props.isLoading}
+                            isDisabled={isSearching || props.isLoading}
+                            value={props.address.county}
+                            onSetText={handleOnChangeCounty}
+                        />
+                    </FormRowColumn>
+                </FormRow>
+
+                <FormRow>
+                    <FormRowColumn unit="6">
+                        <InputText
+                            id="complement"
+                            title="Complemento"
+                            isLoading={isSearching || props.isLoading}
+                            isDisabled={isSearching || props.isLoading}
+                            value={props.address.complement}
+                            onSetText={handleOnChangeComplement}
+                        />
+                    </FormRowColumn>
+                </FormRow>
             </Form>
         </>
     )
