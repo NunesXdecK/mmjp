@@ -3,7 +3,7 @@ import { ONLY_NUMBERS_PATTERN_TWO } from "./patternValidationUtil"
 export const handleMaskCPF = (text) => {
     const dig1 = "-"
     const dig2 = "."
-    const unMaskedText = text.replaceAll(dig1, "").replaceAll(dig2, "")
+    const unMaskedText = handleRemoveCPFMask(text)
     return handleMountCPFCurrency(unMaskedText, dig1, dig2)
 }
 
@@ -14,6 +14,10 @@ export const handleMaskTelephone = (text: string) => {
         mask = "(99) 9999-9999"
     }
     return handleMountMask(text, mask)
+}
+
+export const handleRemoveCPFMask = (text: string) => {
+    return text.replaceAll("-", "").replaceAll(".", "")
 }
 
 export const handleRemoveCEPMask = (text: string) => {

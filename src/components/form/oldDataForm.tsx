@@ -49,14 +49,14 @@ export function OldDataProps(props: OldDataProps) {
                 </div>
 
                 <div className="grid grid-cols-6 sm:gap-6">
-                    <div className="py-1 px-2 col-span-6 sm:col-span-3">
+                    <div className="py-1 px-2 col-span-6 sm:col-span-2">
                         <span
                             className={spanClassTitle}>
                             CPF: <span className={spanClassData}>{personCPF}</span>
                         </span>
                     </div>
 
-                    <div className="py-1 px-2 col-span-6 sm:col-span-3">
+                    <div className="py-1 px-2 col-span-6 sm:col-span-2">
                         <span
                             className={spanClassTitle}>
                             RG: <span className={spanClassData}>{personRG}</span>
@@ -65,14 +65,14 @@ export function OldDataProps(props: OldDataProps) {
                 </div>
 
                 <div className="grid grid-cols-6 sm:gap-6">
-                    <div className="py-1 px-2 col-span-6 sm:col-span-3">
+                    <div className="py-1 px-2 col-span-6 sm:col-span-2">
                         <span
                             className={spanClassTitle}>
                             Profissão: <span className={spanClassData}>{profession}</span>
                         </span>
                     </div>
 
-                    <div className="py-1 px-2 col-span-6 sm:col-span-3">
+                    <div className="py-1 px-2 col-span-6 sm:col-span-2">
                         <span
                             className={spanClassTitle}>
                             Nacionalidade: <span className={spanClassData}>{nationality}</span>
@@ -81,14 +81,14 @@ export function OldDataProps(props: OldDataProps) {
                 </div>
 
                 <div className="grid grid-cols-6 sm:gap-6">
-                    <div className="py-1 px-2 col-span-6 sm:col-span-3">
+                    <div className="py-1 px-2 col-span-6 sm:col-span-2">
                         <span
                             className={spanClassTitle}>
                             Naturalidade: <span className={spanClassData}>{naturalness}</span>
                         </span>
                     </div>
 
-                    <div className="py-1 px-2 col-span-6 sm:col-span-3">
+                    <div className="py-1 px-2 col-span-6 sm:col-span-2">
                         <span
                             className={spanClassTitle}>
                             Estado Civil: <span className={spanClassData}>{maritalStatus}</span>

@@ -10,10 +10,11 @@ import InputText from "../inputText/inputText"
 import { ElementFromBase } from "../../util/converterUtil"
 import { Person, PersonAddress } from "../../interfaces/objectInterfaces"
 import { CPF_MARK, NOT_NULL_MARK, TELEPHONE_MARK } from "../../util/patternValidationUtil"
-import { addDoc, collection, doc, updateDoc } from "firebase/firestore"
+import { addDoc, collection, doc, getDocs, updateDoc } from "firebase/firestore"
 import { PersonConversor } from "../../db/converters"
 import { db, PERSON_COLLECTION_NAME } from "../../db/firebaseDB"
 import InputSelect from "../inputText/inputSelect"
+import { handleRemoveCEPMask, handleRemoveCPFMask } from "../../util/maskUtil"
 
 const defaultAddress: PersonAddress = {
     cep: "",
@@ -66,6 +67,7 @@ interface PersonFormProps {
 }
 
 export default function PersonForm(props: PersonFormProps) {
+    const personCollection = collection(db, PERSON_COLLECTION_NAME).withConverter(PersonConversor)
 
     const [isFormValid, setIsFormValid] = useState(false)
     const [isLoading, setIsLoading] = useState(false)
@@ -90,7 +92,7 @@ export default function PersonForm(props: PersonFormProps) {
 
     const [isOpen, setIsOpen] = useState(false)
 
-    const handleListItemClick = (person: Person) => {
+    const handleListItemClick = async (person: Person) => {
         if (props.onSelectPerson) {
             props.onSelectPerson(person)
         }
@@ -98,19 +100,30 @@ export default function PersonForm(props: PersonFormProps) {
         setPersonID(person.id)
         setPersonDateInsertUTC(person.dateInsertUTC)
 
-        setName(person.name)
-        setCpf(person.cpf)
         setRg(person.rg)
+        setCpf(person.cpf)
+        setName(person.name)
+        setAddress(person.address)
         setRgIssuer(person.rgIssuer)
+        setOldPerson(person.oldPerson)
+        setTelephones(person.telephones)
+        setProfession(person.profession)
         setNationality(person.nationality)
         setNaturalness(person.naturalness)
         setMaritalStatus(person.maritalStatus)
-        setProfession(person.profession)
-        setAddress(person.address)
-        setTelephones(person.telephones)
-        setOldPerson(person.oldPerson)
         setIsOpen(false)
         setIsFormValid(true)
+        setIsLoading(true)
+        const querySnapshot = await getDocs(personCollection)
+        querySnapshot.forEach((doc) => {
+            const id = doc.id
+            const name = doc.data().name
+            const cpf = doc.data().cpf
+            if (doc.id && person.cpf === cpf || person.name === name) {
+                setPersonID(() => id)
+            }
+        })
+        setIsLoading(false)
     }
 
     const handleChangeFormValidation = (isValid) => {
@@ -120,15 +133,13 @@ export default function PersonForm(props: PersonFormProps) {
     const save = async (event) => {
         event.preventDefault()
         if (isFormValid) {
-            console.log("valid")
-
             if (personDateInsertUTC === 0) {
-               setPersonDateInsertUTC(Date.parse(new Date().toUTCString()))
+                setPersonDateInsertUTC(Date.parse(new Date().toUTCString()))
             }
 
             let person: Person = {
                 rg: rg,
-                cpf: cpf,
+                cpf: handleRemoveCPFMask(cpf),
                 name: name,
                 rgIssuer: rgIssuer,
                 profession: profession,
@@ -136,30 +147,21 @@ export default function PersonForm(props: PersonFormProps) {
                 naturalness: naturalness,
                 maritalStatus: maritalStatus,
                 dateInsertUTC: personDateInsertUTC,
-                address: address,
+                address: { ...address, cep: handleRemoveCEPMask(address.cep) },
                 telephones: telephones,
             }
 
-
-            console.log(personID)
-            console.log(person)
-
             setIsLoading(true)
+
             {/*
-            const personCollection = collection(db, PERSON_COLLECTION_NAME).withConverter(PersonConversor)
             if (personID === "") {
-                console.log("save")
                 try {
                     const docRef = await addDoc(personCollection, person)
-                    console.log(docRef.id)
                     setPersonID(docRef.id)
-                    console.log(person)
-
                 } catch (e) {
                     console.error("Error adding document: ", e)
                 }
             } else {
-                console.log("update")
                 try {
                     const docRef = doc(personCollection, personID)
                     await updateDoc(docRef, person)
@@ -168,7 +170,6 @@ export default function PersonForm(props: PersonFormProps) {
                 }
             }
         */}
-
             setIsLoading(false)
 
             if (props.afterSave) {
@@ -368,6 +369,5 @@ export default function PersonForm(props: PersonFormProps) {
                 </IOSModal>
             )}
         </>
-
     )
 }
