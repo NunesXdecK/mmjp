@@ -61,7 +61,8 @@ export default function PersonForm(props: PersonFormProps) {
         setIsOpen(false)
         setIsFormValid(true)
         setIsLoading(true)
-        if (person.id !== "" && props.isForOldRegister) {
+        if (person.id !== "" || props.isForOldRegister) {
+            setOldPerson(person.oldPerson)
             const querySnapshot = await getDocs(personCollection)
             querySnapshot.forEach((doc) => {
                 const name = doc.data().name
