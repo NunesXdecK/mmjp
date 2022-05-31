@@ -52,3 +52,28 @@ export interface Process {
     property?: any,
     professional?: any,
 }
+
+export const defaultAddress: PersonAddress = {
+    cep: "",
+    number: "",
+    county: "",
+    district: "",
+    complement: "",
+    publicPlace: "",
+}
+
+export const defaultPerson: Person = {
+    id: "",
+    rg: "",
+    cpf: "",
+    name: "",
+    rgIssuer: "",
+    profession: "",
+    nationality: "",
+    naturalness: "",
+    maritalStatus: "",
+    dateInsertUTC: 0,
+    telephones: [],
+    address: defaultAddress,
+    oldPerson: {},
+}

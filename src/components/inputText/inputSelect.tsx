@@ -45,7 +45,8 @@ export default function InputSelect(props: InputSelectProps) {
                 onChange={(event) => {
                     props.onSetText(event.target.value)
                 }}
-                >
+            >
+                <option value="">Selecione uma opção</option>
                 {props.options.map((element, index) => {
                     return (
                         <option

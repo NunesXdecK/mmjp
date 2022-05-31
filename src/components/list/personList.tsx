@@ -1,45 +1,68 @@
 import { useState } from "react"
-import data from "../../data/data.json"
-import { Person } from "../../interfaces/objectInterfaces"
-import { ElementFromBase, extratePerson } from "../../util/converterUtil"
-import { handleMaskCPF } from "../../util/maskUtil"
 import Button from "../button/button"
-import PersonForm from "../form/personForm"
 import IOSModal from "../modal/iosModal"
+import data from "../../data/data.json"
+import PersonForm from "../form/personForm"
+import InputText from "../inputText/inputText"
+import { PersonConversor } from "../../db/converters"
+import { collection, getDocs } from "firebase/firestore"
+import { Person } from "../../interfaces/objectInterfaces"
+import { db, PERSON_COLLECTION_NAME } from "../../db/firebaseDB"
+import { handleMaskCPF, handleRemoveCPFMask } from "../../util/maskUtil"
+import { ElementFromBase, extratePerson } from "../../util/converterUtil"
 
 const subtitle = "mt-1 max-w-2xl text-sm text-gray-500"
-const titleClassName = "px-4 py-5 text-md leading-6 font-medium text-gray-900"
-const contentClassName = "mt-1 text-sm text-gray-900 px-4 py-5"
+const titleClassName = "sm:px-4 sm:py-5 text-md leading-6 font-medium text-gray-900"
+const contentClassName = "sm:px-4 sm:py-5 mt-1 text-sm text-gray-900"
 
+interface PersonListProps {
+    isOldBase?: boolean,
+    isForSelect?: boolean,
+    onListItemClick?: (any) => void,
+}
 
-export default function PersonList(props) {
+export default function PersonList(props: PersonListProps) {
+    const personCollection = collection(db, PERSON_COLLECTION_NAME).withConverter(PersonConversor)
+
     const [isOpen, setIsOpen] = useState(false)
+    const [isLoading, setIsLoading] = useState(false)
     const [inputSearch, setInputSearch] = useState("")
     const [listItems, setListItems] = useState([])
 
     let listItemsFiltered = []
 
-    function filterList(event) {
+    const filterList = async (event) => {
         event.preventDefault()
-        let arrayList = []
+        setIsLoading(true)
+        let arrayList: Person[] = []
 
-        const startList = 0
-        const endList = data.Plan1.length - 0
-        
-        const dataList = data.Plan1.slice(startList, endList)
-        dataList.map((element: ElementFromBase, index) => {
-            let newElement: Person = extratePerson(element)
-            newElement = {...newElement, oldPerson: element}
-            arrayList = [...arrayList, newElement]
-        })
+        if (props.isOldBase) {
+            const startList = 0
+            const endList = data.Plan1.length - 0
+            const dataList = data.Plan1.slice(startList, endList)
+            dataList.map((element: ElementFromBase, index) => {
+                let newElement: Person = extratePerson(element)
+                newElement = { ...newElement, oldPerson: element }
+                arrayList = [...arrayList, newElement]
+            })
+        } else {
+            const querySnapshot = await getDocs(personCollection)
+            querySnapshot.forEach((doc) => {
+                arrayList = [...arrayList, doc.data()]
+            })
+        }
 
         listItemsFiltered = arrayList.filter((element: Person, index) => {
-            return element.name.toUpperCase().includes(inputSearch.toUpperCase())
+            let matchCPF = handleRemoveCPFMask(element.cpf).includes(handleRemoveCPFMask(inputSearch))
+            let matchName = element.name.toUpperCase().includes(inputSearch.toUpperCase())
+            return matchCPF || matchName
         })
+
         setListItems(listItemsFiltered)
+        setIsLoading(false)
     }
 
-    function handleAfterSaveOperation() {
+    const handleAfterSaveOperation = () => {
         setIsOpen(false)
     }
 
@@ -56,6 +79,8 @@ export default function PersonList(props) {
                     {!props.isForSelect ? (
                         <div className="self-center">
                             <Button
+                                isLoading={isLoading}
+                                isDisabled={isLoading}
                                 onClick={() => setIsOpen(true)}>
                                 Novo
                             </Button>
@@ -65,27 +90,21 @@ export default function PersonList(props) {
 
                 <form className="mt-5 flex" onSubmit={filterList}>
                     <div className="w-full self-end">
-                        <label htmlFor="person-search-input" className={subtitle}>
-                            Pesquisa
-                        </label>
-                        <input
-                            onChange={(event) => {
-                                setInputSearch(event.target.value)
-                            }}
-                            type="text"
-                            name="search"
-                            id="person-search-input"
-                            className={`
-                            p-2 block w-full 
-                            shadow-sm rounded-md
-                            sm:text-sm 
-                            focus:ring-indigo-500 focus:border-indigo-500 
-                            `} />
+                        <InputText
+                            id="inputSearch"
+                            title="Pesquisar"
+                            value={inputSearch}
+                            isLoading={isLoading}
+                            isDisabled={isLoading}
+                            onSetText={setInputSearch}
+                        />
                     </div>
 
                     <div className="pl-4 self-end">
                         <div>
                             <Button
+                                isDisabled={isLoading}
+                                isLoading={isLoading}
                                 type="submit">
                                 Pesquisar
                             </Button>
@@ -110,17 +129,17 @@ export default function PersonList(props) {
                 ))}
             </div>
 
-            {!props.isForSelect ? (
+            {!props.isForSelect && (
                 <IOSModal
                     isOpen={isOpen}
                     setIsOpen={setIsOpen}>
                     <PersonForm
                         title="Informações pessoais"
                         subtitle="Dados importantes sobre a pessoa"
-                        afterSave={handleAfterSaveOperation}
+                        onAfterSave={handleAfterSaveOperation}
                     />
                 </IOSModal>
-            ) : null}
+            )}
         </div>
     )
 }

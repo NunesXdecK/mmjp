@@ -1,62 +1,23 @@
 import Form from "./form"
+import FormRow from "./formRow"
 import { useState } from "react"
 import Button from "../button/button"
 import AddressForm from "./addressForm"
 import IOSModal from "../modal/iosModal"
 import PersonList from "../list/personList"
+import FormRowColumn from "./formRowColumn"
 import ArrayTextForm from "./arrayTextForm"
 import { OldDataProps } from "./oldDataForm"
 import InputText from "../inputText/inputText"
-import { ElementFromBase } from "../../util/converterUtil"
-import { Person, PersonAddress } from "../../interfaces/objectInterfaces"
-import { CPF_MARK, NOT_NULL_MARK, TELEPHONE_MARK } from "../../util/patternValidationUtil"
-import { addDoc, collection, doc, getDocs, updateDoc } from "firebase/firestore"
+import InputSelect from "../inputText/inputSelect"
 import { PersonConversor } from "../../db/converters"
 import { db, PERSON_COLLECTION_NAME } from "../../db/firebaseDB"
-import InputSelect from "../inputText/inputSelect"
-import { handleRemoveCEPMask, handleRemoveCPFMask } from "../../util/maskUtil"
-import FormRow from "./formRow"
-import FormRowColumn from "./formRowColumn"
-
-const defaultAddress: PersonAddress = {
-    cep: "",
-    number: "",
-    county: "",
-    district: "",
-    complement: "",
-    publicPlace: "",
-}
-
-const defaultElementFromBase: ElementFromBase = {
-    "Nome Prop.": "",
-    "CPF Prop.": "",
-    "RG Prop.": "",
-    "Nacionalidade Prop.": "",
-    "Naturalidade Prop.": "",
-    "Estado Civíl Prop.": "",
-    "Profissão Prop.": "",
-    "Telefone Prop.": "",
-    "Logradouro End.": "",
-    "Numero End.": "",
-    "Bairro End.": "",
-    "CEP End.": "",
-    "Município/UF End.": "",
-    "Lote": "",
-    "Data": "",
-    "Data Simples": "",
-    "Nome Prof.": "",
-    "CPF Prof.": "",
-    "RG Prof.": "",
-    "Título Prof.": "",
-    "CREA Prof.": "",
-    "Cod. Credenciado": "",
-    "Endereço Prof.": "",
-    "Bairro Prof.": "",
-    "Cidade/UF Prof.": "",
-    "CEP": "",
-    "Telefone Prof. ": "",
-}
-
+import { defaultPerson, Person } from "../../interfaces/objectInterfaces"
+import { addDoc, collection, doc, getDocs, updateDoc } from "firebase/firestore"
+import { defaultElementFromBase, ElementFromBase } from "../../util/converterUtil"
+import { CPF_MARK, NOT_NULL_MARK, TELEPHONE_MARK } from "../../util/patternValidationUtil"
+import { handlePersonValidationForDB } from "../../util/validationUtil"
+import { FeedbackMessage } from "../modal/feedbackMessageModal"
 
 interface PersonFormProps {
     title?: string,
@@ -64,8 +25,9 @@ interface PersonFormProps {
     isForSelect?: boolean,
     isForDisable?: boolean,
     isForOldRegister?: boolean,
+    person?: Person,
     onSelectPerson?: (object) => void,
-    afterSave?: (object) => void,
+    onAfterSave?: (object) => void,
 }
 
 export default function PersonForm(props: PersonFormProps) {
@@ -73,58 +35,42 @@ export default function PersonForm(props: PersonFormProps) {
 
     const [isFormValid, setIsFormValid] = useState(false)
     const [isLoading, setIsLoading] = useState(false)
-
-    const [personID, setPersonID] = useState("")
-    const [personDateInsertUTC, setPersonDateInsertUTC] = useState(0)
-
-    const [name, setName] = useState("")
-    const [cpf, setCpf] = useState("")
-    const [rg, setRg] = useState("")
-    const [rgIssuer, setRgIssuer] = useState("")
-    const [nationality, setNationality] = useState("")
-    const [naturalness, setNaturalness] = useState("")
-    const [maritalStatus, setMaritalStatus] = useState("")
-    const [profession, setProfession] = useState("")
+    const [person, setPerson] = useState<Person>(props.person ?? defaultPerson)
 
     const [oldPerson, setOldPerson] = useState<ElementFromBase>(defaultElementFromBase)
-    const [address, setAddress] = useState<PersonAddress>(defaultAddress)
-
-    const [telephones, setTelephones] = useState([])
-
 
     const [isOpen, setIsOpen] = useState(false)
+
+
+    const handleSetPersonName = (text) => { setPerson({ ...person, name: text }) }
+    const handleSetPersonCPF = (text) => { setPerson({ ...person, cpf: text }) }
+    const handleSetPersonRG = (text) => { setPerson({ ...person, rg: text }) }
+    const handleSetPersonRgIssuer = (text) => { setPerson({ ...person, rgIssuer: text }) }
+    const handleSetPersonNaturalness = (text) => { setPerson({ ...person, naturalness: text }) }
+    const handleSetPersonNationality = (text) => { setPerson({ ...person, nationality: text }) }
+    const handleSetPersonMaritalStatus = (text) => { setPerson({ ...person, maritalStatus: text }) }
+    const handleSetPersonProfession = (text) => { setPerson({ ...person, profession: text }) }
+    const handleSetPersonTelephones = (texts) => { setPerson({ ...person, telephones: texts }) }
+    const handleSetPersonAddress = (address) => { setPerson({ ...person, address: address }) }
 
     const handleListItemClick = async (person: Person) => {
         if (props.onSelectPerson) {
             props.onSelectPerson(person)
         }
-
-        setPersonID(person.id)
-        setPersonDateInsertUTC(person.dateInsertUTC)
-
-        setRg(person.rg)
-        setCpf(person.cpf)
-        setName(person.name)
-        setAddress(person.address)
-        setRgIssuer(person.rgIssuer)
-        setOldPerson(person.oldPerson)
-        setTelephones(person.telephones)
-        setProfession(person.profession)
-        setNationality(person.nationality)
-        setNaturalness(person.naturalness)
-        setMaritalStatus(person.maritalStatus)
+        setPerson(person)
         setIsOpen(false)
         setIsFormValid(true)
         setIsLoading(true)
-        const querySnapshot = await getDocs(personCollection)
-        querySnapshot.forEach((doc) => {
-            const id = doc.id
-            const name = doc.data().name
-            const cpf = doc.data().cpf
-            if (doc.id && person.cpf === cpf || person.name === name) {
-                setPersonID(() => id)
-            }
-        })
+        if (person.id !== "" && props.isForOldRegister) {
+            const querySnapshot = await getDocs(personCollection)
+            querySnapshot.forEach((doc) => {
+                const name = doc.data().name
+                const cpf = doc.data().cpf
+                if (doc.id && (person.cpf === cpf || person.name === name)) {
+                    setPerson(doc.data())
+                }
+            })
+        }
         setIsLoading(false)
     }
 
@@ -134,49 +80,55 @@ export default function PersonForm(props: PersonFormProps) {
 
     const save = async (event) => {
         event.preventDefault()
-        if (isFormValid) {
-            if (personDateInsertUTC === 0) {
-                setPersonDateInsertUTC(Date.parse(new Date().toUTCString()))
-            }
+        let feedbackMessage: FeedbackMessage = { messages: ["Algo estranho aconteceu"], messageType: "SUCCESS" }
 
-            let person: Person = {
-                rg: rg,
-                cpf: handleRemoveCPFMask(cpf),
-                name: name,
-                rgIssuer: rgIssuer,
-                profession: profession,
-                nationality: nationality,
-                naturalness: naturalness,
-                maritalStatus: maritalStatus,
-                dateInsertUTC: personDateInsertUTC,
-                address: { ...address, cep: handleRemoveCEPMask(address.cep) },
-                telephones: telephones,
+        let nowID = ""
+        const querySnapshot = await getDocs(personCollection)
+        querySnapshot.forEach((doc) => {
+            const cpf = doc.data().cpf
+            if (doc.id && person.cpf === cpf) {
+                nowID = doc.id
+            }
+        })
+
+        const isSave = nowID === ""
+        const isValid = handlePersonValidationForDB(person)
+
+        if (isValid.validation) {
+            if (person.dateInsertUTC === 0) {
+                setPerson({ ...person, dateInsertUTC: Date.parse(new Date().toUTCString()) })
             }
 
             setIsLoading(true)
 
-            if (personID === "") {
+            if (isSave) {
                 try {
                     const docRef = await addDoc(personCollection, person)
-                    setPersonID(docRef.id)
+                    setPerson({ ...person, id: docRef.id })
+                    feedbackMessage = { ...feedbackMessage, messages: ["Salvo com sucesso!"] }
                 } catch (e) {
+                    feedbackMessage = { ...feedbackMessage, messages: ["Erro em salvar!"], messageType: "ERROR" }
                     console.error("Error adding document: ", e)
                 }
             } else {
                 try {
-                    const docRef = doc(personCollection, personID)
+                    const docRef = doc(personCollection, nowID)
                     await updateDoc(docRef, person)
+                    feedbackMessage = { ...feedbackMessage, messages: ["Atualizado com sucesso!"] }
                 } catch (e) {
+                    feedbackMessage = { ...feedbackMessage, messages: ["Erro em atualizar!"], messageType: "ERROR" }
                     console.error("Error upddating document: ", e)
                 }
             }
-            {/*
-        */}
-            setIsLoading(false)
 
-            if (props.afterSave) {
-                props.afterSave({})
-            }
+            setIsLoading(false)
+            handleListItemClick(defaultPerson)
+        } else {
+            feedbackMessage = { ...feedbackMessage, messages: isValid.messages, messageType: "ERROR" }
+        }
+
+        if (props.onAfterSave) {
+            props.onAfterSave(feedbackMessage)
         }
     }
 
@@ -210,9 +162,9 @@ export default function PersonForm(props: PersonFormProps) {
                     <FormRow>
                         <FormRowColumn unit="6">
                             <InputText
-                                value={name}
+                                value={person.name}
                                 id="fullname"
-                                onSetText={setName}
+                                onSetText={handleSetPersonName}
                                 title="Nome completo"
                                 isLoading={isLoading}
                                 validation={NOT_NULL_MARK}
@@ -229,9 +181,9 @@ export default function PersonForm(props: PersonFormProps) {
                                 id="cpf"
                                 mask="cpf"
                                 title="CPF"
-                                value={cpf}
+                                value={person.cpf}
                                 maxLength={14}
-                                onSetText={setCpf}
+                                onSetText={handleSetPersonCPF}
                                 isLoading={isLoading}
                                 validation={CPF_MARK}
                                 isDisabled={props.isForDisable}
@@ -247,8 +199,8 @@ export default function PersonForm(props: PersonFormProps) {
                                 id="rg"
                                 title="RG"
                                 validation="number"
-                                value={rg}
-                                onSetText={setRg}
+                                value={person.rg}
+                                onSetText={handleSetPersonRG}
                                 isLoading={isLoading}
                                 isDisabled={props.isForDisable}
                             />
@@ -257,10 +209,10 @@ export default function PersonForm(props: PersonFormProps) {
                         <FormRowColumn unit="3">
                             <InputText
                                 id="rg-issuer"
-                                value={rgIssuer}
+                                value={person.rgIssuer}
                                 title="Emissor RG"
                                 isLoading={isLoading}
-                                onSetText={setRgIssuer}
+                                onSetText={handleSetPersonRgIssuer}
                                 isDisabled={props.isForDisable}
                             />
                         </FormRowColumn>
@@ -270,10 +222,10 @@ export default function PersonForm(props: PersonFormProps) {
                         <FormRowColumn unit="3">
                             <InputText
                                 id="naturalness"
-                                value={naturalness}
+                                value={person.naturalness}
                                 title="Naturalidade"
                                 isLoading={isLoading}
-                                onSetText={setNaturalness}
+                                onSetText={handleSetPersonNaturalness}
                                 isDisabled={props.isForDisable}
                             />
                         </FormRowColumn>
@@ -281,10 +233,10 @@ export default function PersonForm(props: PersonFormProps) {
                         <FormRowColumn unit="3">
                             <InputText
                                 id="nationality"
-                                value={nationality}
+                                value={person.nationality}
                                 title="Nacionalidade"
                                 isLoading={isLoading}
-                                onSetText={setNationality}
+                                onSetText={handleSetPersonNationality}
                                 isDisabled={props.isForDisable}
                             />
                         </FormRowColumn>
@@ -295,11 +247,11 @@ export default function PersonForm(props: PersonFormProps) {
                             <InputSelect
                                 id="martial-status"
                                 title="Estado Civil"
-                                value={maritalStatus}
+                                value={person.maritalStatus}
                                 isLoading={isLoading}
-                                onSetText={setMaritalStatus}
+                                onSetText={handleSetPersonMaritalStatus}
                                 isDisabled={props.isForDisable}
-                                options={["", "casado", "divorciado", "separado", "solteiro", "viuvo"]}
+                                options={["casado", "divorciado", "separado", "solteiro", "viuvo"]}
                             />
                         </FormRowColumn>
 
@@ -307,9 +259,9 @@ export default function PersonForm(props: PersonFormProps) {
                             <InputText
                                 id="profession"
                                 title="Profissão"
-                                value={profession}
+                                value={person.profession}
                                 isLoading={isLoading}
-                                onSetText={setProfession}
+                                onSetText={handleSetPersonProfession}
                                 isDisabled={props.isForDisable}
                             />
                         </FormRowColumn>
@@ -327,11 +279,11 @@ export default function PersonForm(props: PersonFormProps) {
                 id="telephone"
                 mask="telephone"
                 title="Telefones"
-                texts={telephones}
                 isLoading={isLoading}
                 inputTitle="Telephone"
-                onSetTexts={setTelephones}
+                texts={person.telephones}
                 validation={TELEPHONE_MARK}
+                onSetTexts={handleSetPersonTelephones}
                 subtitle="Informações sobre os contatos"
                 validationMessage="Faltam números no telefone"
             />
@@ -340,9 +292,9 @@ export default function PersonForm(props: PersonFormProps) {
                 onSubmit={save}>
                 <AddressForm
                     title="Endereço"
-                    address={address}
+                    address={person.address}
                     isLoading={isLoading}
-                    setAddress={setAddress}
+                    setAddress={handleSetPersonAddress}
                     subtitle="Informações sobre o endereço"
                 />
                 {/*
@@ -361,11 +313,13 @@ export default function PersonForm(props: PersonFormProps) {
                 </FormRow>
             </form>
 
+
             {(props.isForSelect || props.isForOldRegister) && (
                 <IOSModal
                     isOpen={isOpen}
                     setIsOpen={setIsOpen}>
                     <PersonList
+                        isOldBase={true}
                         isForSelect={true}
                         onListItemClick={handleListItemClick} />
                 </IOSModal>

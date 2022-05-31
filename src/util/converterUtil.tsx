@@ -1,6 +1,36 @@
 import { Person, PersonAddress } from "../interfaces/objectInterfaces"
 import { handleRemoveCEPMask } from "./maskUtil"
 
+export const defaultElementFromBase: ElementFromBase = {
+    "Nome Prop.": "",
+    "CPF Prop.": "",
+    "RG Prop.": "",
+    "Nacionalidade Prop.": "",
+    "Naturalidade Prop.": "",
+    "Estado Civíl Prop.": "",
+    "Profissão Prop.": "",
+    "Telefone Prop.": "",
+    "Logradouro End.": "",
+    "Numero End.": "",
+    "Bairro End.": "",
+    "CEP End.": "",
+    "Município/UF End.": "",
+    "Lote": "",
+    "Data": "",
+    "Data Simples": "",
+    "Nome Prof.": "",
+    "CPF Prof.": "",
+    "RG Prof.": "",
+    "Título Prof.": "",
+    "CREA Prof.": "",
+    "Cod. Credenciado": "",
+    "Endereço Prof.": "",
+    "Bairro Prof.": "",
+    "Cidade/UF Prof.": "",
+    "CEP": "",
+    "Telefone Prof. ": "",
+}
+
 export interface ElementFromBase {
     "Nome Prop."?: string,
     "CPF Prop."?: string,

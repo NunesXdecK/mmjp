@@ -128,7 +128,7 @@ export default function InputText(props: InputTextProps) {
             case CPF_MARK:
                 text = text.trim()
                 text = text.replace(new RegExp(ONLY_CHARACTERS_PATTERN), "")
-                test = text.length === 0 || new RegExp(CPF_PATTERN).test(text)
+                test = new RegExp(CPF_PATTERN).test(text)
                 setIsValid(test)
                 break
             case NUMBER_MARK:

@@ -1,7 +1,29 @@
 import { Fragment } from 'react'
 import { Disclosure, Menu, Transition } from '@headlessui/react'
 import { BellIcon, MenuIcon, XIcon } from '@heroicons/react/outline'
+import LayoutMenu from './layoutMenu'
+import LayoutMenuMobile from './layoutMenuMobile'
 
+export interface LayoutMenuItem {
+    name?: string,
+    href?: string,
+    current?: boolean,
+    disabled?: boolean,
+    subMenus?: LayoutMenuItem[],
+}
+
+const menus: LayoutMenuItem[] = [
+    { name: 'Dashboard', href: "/", current: false, disabled: false },
+    {
+        name: 'Pessoas', current: false, disabled: false, subMenus: [
+            { name: 'Nova pessoa', href: "/person", current: false, disabled: false },
+            { name: 'Lista de pessoas', href: "/person/persons", current: false, disabled: false },
+            { name: 'Pessoas da base antiga', href: "/person/personoldbase", current: false, disabled: false },
+        ]
+    },
+    { name: 'Propriedades', href: "/property", current: false, disabled: false },
+    { name: 'Projetos', href: "/project", current: false, disabled: false },
+]
 const user = {
     name: 'Tom Cook',
     email: 'tom@example.com',
@@ -25,6 +47,8 @@ const userNavigation = [
 function classNames(...classes) {
     return classes.filter(Boolean).join(' ')
 }
+
+interface LayoutMenuProps { }
 
 export default function Layout(props) {
     return (
@@ -53,6 +77,9 @@ export default function Layout(props) {
                                         </div>
                                         <div className="hidden md:block">
                                             <div className="ml-10 flex items-baseline space-x-4">
+                                                <LayoutMenu menus={menus} />
+
+                                                {/*
                                                 {navigation.map((item) => (
                                                     <a
                                                         key={item.name}
@@ -68,6 +95,7 @@ export default function Layout(props) {
                                                         {item.name}
                                                     </a>
                                                 ))}
+                                            */}
                                             </div>
                                         </div>
                                     </div>
@@ -140,20 +168,24 @@ export default function Layout(props) {
 
                             <Disclosure.Panel className="md:hidden">
                                 <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3">
+                                    <LayoutMenuMobile menus={menus} />
+                                    {/*
                                     {navigation.map((item) => (
                                         <Disclosure.Button
-                                            key={item.name}
+                                        key={item.name}
                                             as="a"
                                             href={item.href}
                                             className={classNames(
-                                                item.current ? 'bg-gray-900 text-white' : 'text-gray-300 hover:bg-gray-700 hover:text-white',
+                                                item.current ? 'bg-gray-900 text-white' :
+                                                'text-gray-300 hover:bg-gray-700 hover:text-white',
                                                 'block px-3 py-2 rounded-md text-base font-medium'
                                             )}
                                             aria-current={item.current ? 'page' : undefined}
                                         >
-                                            {item.name}
+                                        {item.name}
                                         </Disclosure.Button>
-                                    ))}
+                                        ))}
+                                    */}
                                 </div>
 
                                 {/*

@@ -1,9 +1,14 @@
 import { Dialog, Transition } from "@headlessui/react";
-import { XIcon } from "@heroicons/react/outline";
 import { Fragment, useRef } from "react";
 import HeaderModal from "./headerModal";
 
-export default function WindowModal(props) {
+interface WindowModalProps {
+    isOpen?: boolean,
+    children?: any,
+    setIsOpen?: (boolean) => void,
+}
+
+export default function WindowModal(props: WindowModalProps) {
     let cancelButtonRef = useRef(null)
 
     return (
