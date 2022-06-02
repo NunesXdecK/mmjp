@@ -8,7 +8,7 @@ export default function PersonOldBase() {
     const [isFeedbackOpen, setIsFeedbackOpen] = useState(false)
     const [feedbackMessage, setFeedbackMessage] = useState<FeedbackMessage>(defaultFeedbackMessage)
 
-    const handleAfterSave = (feedbackMessage: FeedbackMessage) => {
+    const handleShowMessage = (feedbackMessage: FeedbackMessage) => {
         if (isFeedbackOpen === false) {
             setFeedbackMessage(feedbackMessage)
             setIsFeedbackOpen((isFeedbackOpen) => true)
@@ -29,7 +29,8 @@ export default function PersonOldBase() {
                 isForSelect={true}
                 isForOldRegister={true}
                 title="Informações pessoais"
-                onAfterSave={handleAfterSave}
+                onAfterSave={handleShowMessage}
+                onShowMessage={handleShowMessage}
                 subtitle="Dados importantes sobre a pessoa" />
 
             <FeedbackMessageModal

@@ -18,7 +18,7 @@ export default function Persons() {
         setTitle("Editar pessoa")
     }
 
-    const handleAfterSave = (feedbackMessage: FeedbackMessage) => {
+    const handleShowMessage = (feedbackMessage: FeedbackMessage) => {
         setPerson(defaultPerson)
         if (isFeedbackOpen === false) {
             setFeedbackMessage(feedbackMessage)
@@ -38,12 +38,15 @@ export default function Persons() {
             {person.id === "" ? (
                 <PersonList
                     isForSelect={true}
-                    onListItemClick={handleListItemClick} />
+                    onShowMessage={handleShowMessage}
+                    onListItemClick={handleListItemClick}
+                />
             ) : (
                 <PersonForm
                     person={person}
                     title="Informações pessoais"
-                    onAfterSave={handleAfterSave}
+                    onAfterSave={handleShowMessage}
+                    onShowMessage={handleShowMessage}
                     subtitle="Dados importantes sobre a pessoa" />
             )}
 

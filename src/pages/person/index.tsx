@@ -1,14 +1,14 @@
 import Head from "next/head"
 import { useState } from "react"
-import PersonForm from "../../components/form/personForm"
 import Layout from "../../components/layout/layout"
+import PersonForm from "../../components/form/personForm"
 import FeedbackMessageModal, { defaultFeedbackMessage, FeedbackMessage } from "../../components/modal/feedbackMessageModal"
 
 export default function Person() {
     const [isFeedbackOpen, setIsFeedbackOpen] = useState(false)
     const [feedbackMessage, setFeedbackMessage] = useState<FeedbackMessage>(defaultFeedbackMessage)
 
-    const handleAfterSave = (feedbackMessage: FeedbackMessage) => {
+    const handleShowMessage = (feedbackMessage: FeedbackMessage) => {
         if (isFeedbackOpen === false) {
             setFeedbackMessage(feedbackMessage)
             setIsFeedbackOpen((isFeedbackOpen) => true)
@@ -27,7 +27,8 @@ export default function Person() {
 
             <PersonForm
                 title="Informações pessoais"
-                onAfterSave={handleAfterSave}
+                onAfterSave={handleShowMessage}
+                onShowMessage={handleShowMessage}
                 subtitle="Dados importantes sobre a pessoa" />
 
             <FeedbackMessageModal

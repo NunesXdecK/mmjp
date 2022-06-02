@@ -78,6 +78,7 @@ export default function InputText(props: InputTextProps) {
                             focus:ring-indigo-500 focus:border-indigo-500 
                         `
     let classNameLabel = "block text-sm font-medium text-gray-700"
+
     if (props.isLoading) {
         classNameInput = classNameInput + STYLE_FOR_INPUT_LOADING
         classNameLabel = classNameLabel + STYLE_FOR_INPUT_LOADING
@@ -116,7 +117,7 @@ export default function InputText(props: InputTextProps) {
         let test = true
         switch (props.validation) {
             case NOT_NULL_MARK:
-                text = text.replaceAll(ONLY_CHARACTERS_PATTERN_TWO,'')
+                text = text.replaceAll(ONLY_CHARACTERS_PATTERN_TWO, '')
                 test = text.trim() !== ""
                 setIsValid(test)
                 break
@@ -143,7 +144,7 @@ export default function InputText(props: InputTextProps) {
                 setIsValid(test)
                 break
         }
-        
+
         if (props.onValidate) {
             props.onValidate(test)
         }

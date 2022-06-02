@@ -2,6 +2,7 @@ import { STYLE_FOR_INPUT_LOADING } from "../../util/patternValidationUtil"
 
 interface ButtonProps {
     children?: any,
+    isHidden?: boolean,
     isLoading?: boolean,
     isDisabled?: boolean,
     type?: "button" | "submit" | "reset",
@@ -22,6 +23,10 @@ export default function Button(props: ButtonProps) {
                     `
     if (props.isLoading) {
         className = className + STYLE_FOR_INPUT_LOADING
+    }
+
+    if (props.isHidden) {
+        className = className + " hidden"
     }
     
     return (

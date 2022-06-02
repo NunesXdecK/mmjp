@@ -10,6 +10,7 @@ import { Person } from "../../interfaces/objectInterfaces"
 import { db, PERSON_COLLECTION_NAME } from "../../db/firebaseDB"
 import { handleMaskCPF, handleRemoveCPFMask } from "../../util/maskUtil"
 import { ElementFromBase, extratePerson } from "../../util/converterUtil"
+import { FeedbackMessage } from "../modal/feedbackMessageModal"
 
 const subtitle = "mt-1 max-w-2xl text-sm text-gray-500"
 const titleClassName = "sm:px-4 sm:py-5 text-md leading-6 font-medium text-gray-900"
@@ -18,22 +19,34 @@ const contentClassName = "sm:px-4 sm:py-5 mt-1 text-sm text-gray-900"
 interface PersonListProps {
     isOldBase?: boolean,
     isForSelect?: boolean,
+    onShowMessage?: (any) => void,
     onListItemClick?: (any) => void,
 }
 
 export default function PersonList(props: PersonListProps) {
     const personCollection = collection(db, PERSON_COLLECTION_NAME).withConverter(PersonConversor)
 
+    const [page, setPage] = useState(-1)
+
     const [isOpen, setIsOpen] = useState(false)
     const [isLoading, setIsLoading] = useState(false)
     const [inputSearch, setInputSearch] = useState("")
+
     const [listItems, setListItems] = useState([])
 
-    let listItemsFiltered = []
 
-    const filterList = async (event) => {
+    const handlePaginationMinus = () => {
+        setPage(page - 1)
+    }
+
+    const handlePaginationPlus = () => {
+        setPage(page + 1)
+    }
+
+    const handleFilterList = async (event) => {
         event.preventDefault()
         setIsLoading(true)
+        let listItemsFiltered = []
         let arrayList: Person[] = []
 
         if (props.isOldBase) {
@@ -46,10 +59,18 @@ export default function PersonList(props: PersonListProps) {
                 arrayList = [...arrayList, newElement]
             })
         } else {
-            const querySnapshot = await getDocs(personCollection)
-            querySnapshot.forEach((doc) => {
-                arrayList = [...arrayList, doc.data()]
-            })
+            try {
+                const querySnapshot = await getDocs(personCollection)
+                querySnapshot.forEach((doc) => {
+                    arrayList = [...arrayList, doc.data()]
+                })
+            } catch (err) {
+                console.error(err)
+                if (props.onShowMessage) {
+                    let feedbackMessage: FeedbackMessage = { messages: ["Algo estranho aconteceu, tente novamente."], messageType: "ERROR" }
+                    props.onShowMessage(feedbackMessage)
+                }
+            }
         }
 
         listItemsFiltered = arrayList.filter((element: Person, index) => {
@@ -58,7 +79,30 @@ export default function PersonList(props: PersonListProps) {
             return matchCPF || matchName
         })
 
-        setListItems(listItemsFiltered)
+        listItemsFiltered = listItemsFiltered.sort((elementOne: Person, elementTwo: Person) => {
+            return elementOne.name.localeCompare(elementTwo.name)
+        })
+
+        let pagesArray = []
+        let lastPOS = 0
+        const perPage = 5
+        const listLenght = listItemsFiltered.length
+        const pages = Math.ceil(listLenght / perPage)
+
+        for (let i = 0; i < listLenght; i++) {
+            const lastIndex = lastPOS + perPage
+            if (lastPOS < (listLenght - 1)) {
+                if (lastIndex < (listLenght - 1)) {
+                    pagesArray = [...pagesArray, listItemsFiltered.slice(lastPOS, lastIndex)]
+                } else {
+                    pagesArray = [...pagesArray, listItemsFiltered.slice(lastPOS, (listLenght - 1))]
+                }
+                lastPOS = lastIndex
+            }
+        }
+
+        setListItems(pagesArray)
+        setPage(0)
         setIsLoading(false)
     }
 
@@ -88,7 +132,7 @@ export default function PersonList(props: PersonListProps) {
                     ) : null}
                 </div>
 
-                <form className="mt-5 flex" onSubmit={filterList}>
+                <form className="mt-5 flex" onSubmit={handleFilterList}>
                     <div className="w-full self-end">
                         <InputText
                             id="inputSearch"
@@ -114,7 +158,7 @@ export default function PersonList(props: PersonListProps) {
             </div>
 
             <div className="grid grid-cols-1 gap-4 p-4 bg-white">
-                {listItems.map((element, index) => (
+                {listItems[page]?.map((element, index) => (
                     <button key={index.toString()}
                         onClick={() => {
                             props.onListItemClick && props.onListItemClick(element)
@@ -127,6 +171,22 @@ export default function PersonList(props: PersonListProps) {
                         <div><span className={contentClassName}>{element.rg}</span></div>
                     </button>
                 ))}
+            </div>
+
+            <div className="p-2 flex-1 flex justify-between">
+                <Button
+                    isDisabled={page === 0}
+                    onClick={handlePaginationMinus}
+                    >
+                    Previous
+                </Button>
+                <span>{page + 1}</span>
+                <Button
+                    onClick={handlePaginationPlus}
+                    isDisabled={page === (listItems?.length - 1)}
+                    >
+                    Next
+                </Button>
             </div>
 
             {!props.isForSelect && (

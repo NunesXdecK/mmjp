@@ -26,8 +26,9 @@ interface PersonFormProps {
     isForDisable?: boolean,
     isForOldRegister?: boolean,
     person?: Person,
-    onSelectPerson?: (object) => void,
+    onShowMessage?: (any) => void,
     onAfterSave?: (object) => void,
+    onSelectPerson?: (object) => void,
 }
 
 export default function PersonForm(props: PersonFormProps) {
@@ -62,15 +63,23 @@ export default function PersonForm(props: PersonFormProps) {
         setIsFormValid(true)
         setIsLoading(true)
         if (person.id !== "" || props.isForOldRegister) {
-            setOldPerson(person.oldPerson)
-            const querySnapshot = await getDocs(personCollection)
-            querySnapshot.forEach((doc) => {
-                const name = doc.data().name
-                const cpf = doc.data().cpf
-                if (doc.id && (person.cpf === cpf || person.name === name)) {
-                    setPerson(doc.data())
+            try {
+                setOldPerson(person.oldPerson)
+                const querySnapshot = await getDocs(personCollection)
+                querySnapshot.forEach((doc) => {
+                    const name = doc.data().name
+                    const cpf = doc.data().cpf
+                    if (doc.id && (person.cpf === cpf || person.name === name)) {
+                        setPerson(doc.data())
+                    }
+                })
+            } catch (err) {
+                console.error(err)
+                if (props.onShowMessage) {
+                    let feedbackMessage: FeedbackMessage = { messages: ["Algo estranho aconteceu, tente novamente."], messageType: "ERROR" }
+                    props.onShowMessage(feedbackMessage)
                 }
-            })
+            }
         }
         setIsLoading(false)
     }
