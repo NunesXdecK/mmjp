@@ -6,7 +6,7 @@ import PersonForm from "../form/personForm"
 import InputText from "../inputText/inputText"
 import { PersonConversor } from "../../db/converters"
 import { collection, getDocs } from "firebase/firestore"
-import { Person } from "../../interfaces/objectInterfaces"
+import { defaultPerson, Person } from "../../interfaces/objectInterfaces"
 import { db, PERSON_COLLECTION_NAME } from "../../db/firebaseDB"
 import { handleMaskCPF, handleRemoveCPFMask } from "../../util/maskUtil"
 import { ElementFromBase, extratePerson } from "../../util/converterUtil"
@@ -95,19 +95,32 @@ export default function PersonList(props: PersonListProps) {
                 if (lastIndex < (listLenght - 1)) {
                     pagesArray = [...pagesArray, listItemsFiltered.slice(lastPOS, lastIndex)]
                 } else {
-                    pagesArray = [...pagesArray, listItemsFiltered.slice(lastPOS, (listLenght - 1))]
+                    let lastPage = listItemsFiltered.slice(lastPOS, (listLenght - 1))
+                    {/*
+                    let diference = perPage - lastPage.length
+                    for (let ii = 0; ii < diference; ii++) {
+                        lastPage = [...lastPage, defaultPerson]
+                    }
+                */}
+                    pagesArray = [...pagesArray, lastPage]
                 }
                 lastPOS = lastIndex
             }
         }
 
-        setListItems(pagesArray)
         setPage(0)
+        setListItems(pagesArray)
         setIsLoading(false)
     }
 
     const handleAfterSaveOperation = () => {
         setIsOpen(false)
+    }
+
+    let classNavigationBar = "bg-white px-4 py-3 flex items-center justify-between border-t border-gray-200 sm:px-6"
+
+    if (listItems.length < 2) {
+        classNavigationBar = classNavigationBar + " hidden"
     }
 
     return (
@@ -159,9 +172,13 @@ export default function PersonList(props: PersonListProps) {
 
             <div className="grid grid-cols-1 gap-4 p-4 bg-white">
                 {listItems[page]?.map((element, index) => (
-                    <button key={index.toString()}
+                    <button
+                        disabled={element.name === "" && element.cpf === ""}
+                        key={index.toString()}
                         onClick={() => {
-                            props.onListItemClick && props.onListItemClick(element)
+                            if (element.name !== "" && element.cpf !== "") {
+                                props.onListItemClick && props.onListItemClick(element)
+                            }
                         }}
                         className="bg-white p-4 rounded-sm shadow items-center text-left">
                         <div className="flex">
@@ -173,21 +190,26 @@ export default function PersonList(props: PersonListProps) {
                 ))}
             </div>
 
-            <div className="p-2 flex-1 flex justify-between">
-                <Button
-                    isDisabled={page === 0}
-                    onClick={handlePaginationMinus}
+            <div className={classNavigationBar}>
+                <div className="p-2 flex-1 flex justify-between">
+                    <Button
+                        isDisabled={page < 1}
+                        onClick={handlePaginationMinus}
                     >
-                    Previous
-                </Button>
-                <span>{page + 1}</span>
-                <Button
-                    onClick={handlePaginationPlus}
-                    isDisabled={page === (listItems?.length - 1)}
+                        Anterior
+                    </Button>
+
+                    <span className={subtitle}>{(page + 1) + " de " + (listItems.length)}</span>
+
+                    <Button
+                        onClick={handlePaginationPlus}
+                        isDisabled={page === (listItems?.length - 1)}
                     >
-                    Next
-                </Button>
+                        Próxima
+                    </Button>
+                </div>
             </div>
+
 
             {!props.isForSelect && (
                 <IOSModal

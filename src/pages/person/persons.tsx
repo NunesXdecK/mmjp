@@ -35,6 +35,7 @@ export default function Persons() {
                 <meta name="description" content={title} />
                 <link rel="icon" href="/favicon.ico" />
             </Head>
+            
             {person.id === "" ? (
                 <PersonList
                     isForSelect={true}

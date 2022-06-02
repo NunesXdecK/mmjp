@@ -36,12 +36,11 @@ export default function PersonForm(props: PersonFormProps) {
 
     const [isFormValid, setIsFormValid] = useState(false)
     const [isLoading, setIsLoading] = useState(false)
-    const [person, setPerson] = useState<Person>(props.person ?? defaultPerson)
+    const [person, setPerson] = useState<Person>(props?.person ?? defaultPerson)
 
-    const [oldPerson, setOldPerson] = useState<ElementFromBase>(defaultElementFromBase)
+    const [oldPerson, setOldPerson] = useState<ElementFromBase>(props?.person?.oldPerson ?? defaultElementFromBase)
 
     const [isOpen, setIsOpen] = useState(false)
-
 
     const handleSetPersonName = (text) => { setPerson({ ...person, name: text }) }
     const handleSetPersonCPF = (text) => { setPerson({ ...person, cpf: text }) }
@@ -133,13 +132,14 @@ export default function PersonForm(props: PersonFormProps) {
 
             setIsLoading(false)
             handleListItemClick(defaultPerson)
+            
+            if (props.onAfterSave) {
+                props.onAfterSave(feedbackMessage)
+            }
         } else {
             feedbackMessage = { ...feedbackMessage, messages: isValid.messages, messageType: "ERROR" }
         }
 
-        if (props.onAfterSave) {
-            props.onAfterSave(feedbackMessage)
-        }
     }
 
     return (
@@ -150,12 +150,13 @@ export default function PersonForm(props: PersonFormProps) {
                     subtitle="Dados da base antiga"
                     oldData={oldPerson} />
             )}
+
             <form
                 onSubmit={save}>
                 <Form
                     title={props.title}
                     subtitle={props.subtitle}>
-                    {(props.isForSelect || props.isForOldRegister) && (
+                    {props.isForSelect && (
                         <FormRow>
                             <FormRowColumn unit="6" className="justify-self-end">
                                 <Button
@@ -307,10 +308,7 @@ export default function PersonForm(props: PersonFormProps) {
                     setAddress={handleSetPersonAddress}
                     subtitle="Informações sobre o endereço"
                 />
-                {/*
-                {!props.isForSelect && (
-                    )}
-                */}
+
                 <FormRow>
                     <FormRowColumn unit="6" className="justify-self-end">
                         <Button
@@ -324,7 +322,7 @@ export default function PersonForm(props: PersonFormProps) {
             </form>
 
 
-            {(props.isForSelect || props.isForOldRegister) && (
+            {props.isForSelect && (
                 <IOSModal
                     isOpen={isOpen}
                     setIsOpen={setIsOpen}>
