@@ -34,14 +34,14 @@ interface PersonFormProps {
 export default function PersonForm(props: PersonFormProps) {
     const personCollection = collection(db, PERSON_COLLECTION_NAME).withConverter(PersonConversor)
 
-    const [isFormValid, setIsFormValid] = useState(false)
-    const [isLoading, setIsLoading] = useState(false)
     const [person, setPerson] = useState<Person>(props?.person ?? defaultPerson)
-
+    const [isLoading, setIsLoading] = useState(false)
+    const [isFormValid, setIsFormValid] = useState(handlePersonValidationForDB(person).validation)
+    
     const [oldPerson, setOldPerson] = useState<ElementFromBase>(props?.person?.oldPerson ?? defaultElementFromBase)
-
+    
     const [isOpen, setIsOpen] = useState(false)
-
+    
     const handleSetPersonName = (text) => { setPerson({ ...person, name: text }) }
     const handleSetPersonCPF = (text) => { setPerson({ ...person, cpf: text }) }
     const handleSetPersonRG = (text) => { setPerson({ ...person, rg: text }) }
@@ -139,7 +139,6 @@ export default function PersonForm(props: PersonFormProps) {
         } else {
             feedbackMessage = { ...feedbackMessage, messages: isValid.messages, messageType: "ERROR" }
         }
-
     }
 
     return (
@@ -320,14 +319,12 @@ export default function PersonForm(props: PersonFormProps) {
                     </FormRowColumn>
                 </FormRow>
             </form>
-
-
+            
             {props.isForSelect && (
                 <IOSModal
                     isOpen={isOpen}
                     setIsOpen={setIsOpen}>
                     <PersonList
-                        isOldBase={true}
                         isForSelect={true}
                         onListItemClick={handleListItemClick} />
                 </IOSModal>

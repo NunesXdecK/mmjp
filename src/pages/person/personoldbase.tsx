@@ -70,7 +70,6 @@ export default function PersonOldBase() {
             ) : (
                 <PersonForm
                     person={person}
-                    isForSelect={true}
                     isForOldRegister={true}
                     title="Informações pessoais"
                     onAfterSave={handleAfterSave}

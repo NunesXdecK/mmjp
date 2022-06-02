@@ -6,15 +6,15 @@ import PersonForm from "../form/personForm"
 import InputText from "../inputText/inputText"
 import { PersonConversor } from "../../db/converters"
 import { collection, getDocs } from "firebase/firestore"
-import { defaultPerson, Person } from "../../interfaces/objectInterfaces"
+import { FeedbackMessage } from "../modal/feedbackMessageModal"
 import { db, PERSON_COLLECTION_NAME } from "../../db/firebaseDB"
 import { handleMaskCPF, handleRemoveCPFMask } from "../../util/maskUtil"
+import { Person } from "../../interfaces/objectInterfaces"
 import { ElementFromBase, extratePerson } from "../../util/converterUtil"
-import { FeedbackMessage } from "../modal/feedbackMessageModal"
 
 const subtitle = "mt-1 max-w-2xl text-sm text-gray-500"
-const titleClassName = "sm:px-4 sm:py-5 text-md leading-6 font-medium text-gray-900"
 const contentClassName = "sm:px-4 sm:py-5 mt-1 text-sm text-gray-900"
+const titleClassName = "sm:px-4 sm:py-5 text-md leading-6 font-medium text-gray-900"
 
 interface PersonListProps {
     isOldBase?: boolean,
@@ -45,10 +45,10 @@ export default function PersonList(props: PersonListProps) {
 
     const handleFilterList = async (event) => {
         event.preventDefault()
+
         setIsLoading(true)
         let listItemsFiltered = []
         let arrayList: Person[] = []
-
         if (props.isOldBase) {
             const startList = 0
             const endList = data.Plan1.length - 0
@@ -209,7 +209,6 @@ export default function PersonList(props: PersonListProps) {
                     </Button>
                 </div>
             </div>
-
 
             {!props.isForSelect && (
                 <IOSModal
