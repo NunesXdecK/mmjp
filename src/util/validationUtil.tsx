@@ -8,12 +8,12 @@ export const handlePersonValidationForDB = (person) => {
     let nameCheck = true
     let cpfCheck = true
 
-    if (!handleValidationTextNotNull(person.name)) {
+    if (!handleValidationTextNotNull(person?.name)) {
         validation = {...validation, messages: [...validation.messages, "O campo nome está em branco."]}
         nameCheck = false
     }
     
-    if (!handleValidationCPF(person.cpf)) {
+    if (!handleValidationCPF(person?.cpf)) {
         validation = {...validation, messages: [...validation.messages, "O campo CPF está invalido."]}
         cpfCheck = false
     }
@@ -24,14 +24,14 @@ export const handlePersonValidationForDB = (person) => {
 }
 
 export const handleValidationCPF = (text) => {
-    text = text.trim()
-    text = text.replace(new RegExp(ONLY_CHARACTERS_PATTERN), "")
+    text = text?.trim()
+    text = text?.replace(new RegExp(ONLY_CHARACTERS_PATTERN), "")
     const test = new RegExp(CPF_PATTERN).test(text)
     return test
 }
 
 export const handleValidationTextNotNull = (text) => {
-    text = text.replaceAll(ONLY_CHARACTERS_PATTERN_TWO, '')
-    const test = text.trim() !== ""
+    text = text?.replaceAll(ONLY_CHARACTERS_PATTERN_TWO, '')
+    const test = text?.trim() !== ""
     return test
 }
