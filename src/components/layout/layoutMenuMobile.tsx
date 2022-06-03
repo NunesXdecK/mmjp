@@ -8,7 +8,7 @@ interface LayoutMenuMobileProps {
 
 export default function LayoutMenuMobile(props: LayoutMenuMobileProps) {
 
-    const aClassName = "w-full block px-3 py-2 text-gray-300 hover:bg-gray-700 hover:text-white disabled:opacity-75"
+    const aClassName = "w-full block px-2 py-6 text-gray-300 hover:bg-gray-700 hover:text-white disabled:opacity-75"
     return (
         <>
             {props.menus.map((element, index) => (

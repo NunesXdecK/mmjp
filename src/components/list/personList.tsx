@@ -6,11 +6,13 @@ import PersonForm from "../form/personForm"
 import InputText from "../inputText/inputText"
 import { PersonConversor } from "../../db/converters"
 import { collection, getDocs } from "firebase/firestore"
+import { Person } from "../../interfaces/objectInterfaces"
 import { FeedbackMessage } from "../modal/feedbackMessageModal"
 import { db, PERSON_COLLECTION_NAME } from "../../db/firebaseDB"
 import { handleMaskCPF, handleRemoveCPFMask } from "../../util/maskUtil"
-import { Person } from "../../interfaces/objectInterfaces"
 import { ElementFromBase, extratePerson } from "../../util/converterUtil"
+import Link from "next/link"
+import { handleValidationOnlyNumbersNotNull, handleValidationOnlyTextNotNull } from "../../util/validationUtil"
 
 const subtitle = "mt-1 max-w-2xl text-sm text-gray-500"
 const contentClassName = "sm:px-4 sm:py-5 mt-1 text-sm text-gray-900"
@@ -49,6 +51,7 @@ export default function PersonList(props: PersonListProps) {
         setIsLoading(true)
         let listItemsFiltered = []
         let arrayList: Person[] = []
+
         if (props.isOldBase) {
             const startList = 0
             const endList = data.Plan1.length - 0
@@ -74,9 +77,16 @@ export default function PersonList(props: PersonListProps) {
         }
 
         listItemsFiltered = arrayList.filter((element: Person, index) => {
-            let matchCPF = handleRemoveCPFMask(element.cpf).includes(handleRemoveCPFMask(inputSearch))
-            let matchName = element.name.toUpperCase().includes(inputSearch.toUpperCase())
-            return matchCPF || matchName
+            if (handleValidationOnlyNumbersNotNull(handleRemoveCPFMask(inputSearch))) {
+                let matchCPF = handleRemoveCPFMask(element.cpf).includes(handleRemoveCPFMask(inputSearch))
+                return matchCPF
+            }
+
+            if (handleValidationOnlyTextNotNull(inputSearch)) {
+                let matchName = element.name.toLowerCase().includes(inputSearch.toLowerCase())
+                return matchName
+            }
+            return true
         })
 
         listItemsFiltered = listItemsFiltered.sort((elementOne: Person, elementTwo: Person) => {
@@ -84,28 +94,32 @@ export default function PersonList(props: PersonListProps) {
         })
 
         let pagesArray = []
-        let lastPOS = 0
-        const perPage = 5
-        const listLenght = listItemsFiltered.length
-        const pages = Math.ceil(listLenght / perPage)
+        if (listItemsFiltered.length > 5) {
+            let lastPOS = 0
+            const perPage = 5
+            const listLenght = listItemsFiltered.length
+            const pages = Math.ceil(listLenght / perPage)
 
-        for (let i = 0; i < listLenght; i++) {
-            const lastIndex = lastPOS + perPage
-            if (lastPOS < (listLenght - 1)) {
-                if (lastIndex < (listLenght - 1)) {
-                    pagesArray = [...pagesArray, listItemsFiltered.slice(lastPOS, lastIndex)]
-                } else {
-                    let lastPage = listItemsFiltered.slice(lastPOS, (listLenght - 1))
-                    {/*
+            for (let i = 0; i < listLenght; i++) {
+                const lastIndex = lastPOS + perPage
+                if (lastPOS < (listLenght - 1)) {
+                    if (lastIndex < (listLenght - 1)) {
+                        pagesArray = [...pagesArray, listItemsFiltered.slice(lastPOS, lastIndex)]
+                    } else {
+                        let lastPage = listItemsFiltered.slice(lastPOS, (listLenght - 1))
+                        {/*
                     let diference = perPage - lastPage.length
                     for (let ii = 0; ii < diference; ii++) {
                         lastPage = [...lastPage, defaultPerson]
                     }
                 */}
-                    pagesArray = [...pagesArray, lastPage]
+                        pagesArray = [...pagesArray, lastPage]
+                    }
+                    lastPOS = lastIndex
                 }
-                lastPOS = lastIndex
             }
+        } else {
+            pagesArray = [...pagesArray, listItemsFiltered]
         }
 
         setPage(0)
@@ -133,16 +147,15 @@ export default function PersonList(props: PersonListProps) {
                         <p className={subtitle}>subtitulo lindo</p>
                     </div>
 
-                    {!props.isForSelect ? (
-                        <div className="self-center">
-                            <Button
-                                isLoading={isLoading}
-                                isDisabled={isLoading}
-                                onClick={() => setIsOpen(true)}>
+                    <div className="self-center">
+                        <Button
+                            isLoading={isLoading}
+                            isDisabled={isLoading}>
+                            <Link href="/person">
                                 Novo
-                            </Button>
-                        </div>
-                    ) : null}
+                            </Link>
+                        </Button>
+                    </div>
                 </div>
 
                 <form className="mt-5 flex" onSubmit={handleFilterList}>
@@ -209,18 +222,6 @@ export default function PersonList(props: PersonListProps) {
                     </Button>
                 </div>
             </div>
-
-            {!props.isForSelect && (
-                <IOSModal
-                    isOpen={isOpen}
-                    setIsOpen={setIsOpen}>
-                    <PersonForm
-                        title="Informações pessoais"
-                        subtitle="Dados importantes sobre a pessoa"
-                        onAfterSave={handleAfterSaveOperation}
-                    />
-                </IOSModal>
-            )}
         </div>
     )
 }

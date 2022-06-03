@@ -11,13 +11,15 @@ import { OldDataProps } from "./oldDataForm"
 import InputText from "../inputText/inputText"
 import InputSelect from "../inputText/inputSelect"
 import { PersonConversor } from "../../db/converters"
+import { FeedbackMessage } from "../modal/feedbackMessageModal"
 import { db, PERSON_COLLECTION_NAME } from "../../db/firebaseDB"
+import { handlePersonValidationForDB } from "../../util/validationUtil"
 import { defaultPerson, Person } from "../../interfaces/objectInterfaces"
 import { addDoc, collection, doc, getDocs, updateDoc } from "firebase/firestore"
 import { defaultElementFromBase, ElementFromBase } from "../../util/converterUtil"
 import { CPF_MARK, NOT_NULL_MARK, TELEPHONE_MARK } from "../../util/patternValidationUtil"
-import { handlePersonValidationForDB } from "../../util/validationUtil"
-import { FeedbackMessage } from "../modal/feedbackMessageModal"
+import { handleRemoveCEPMask, handleRemoveCPFMask, handleRemoveTelephoneMask } from "../../util/maskUtil"
+import { handleNewDateToUTC } from "../../util/dateUtils"
 
 interface PersonFormProps {
     title?: string,
@@ -26,8 +28,8 @@ interface PersonFormProps {
     isForDisable?: boolean,
     isForOldRegister?: boolean,
     person?: Person,
-    onShowMessage?: (any) => void,
     onAfterSave?: (object) => void,
+    onShowMessage?: (any) => void,
     onSelectPerson?: (object) => void,
 }
 
@@ -37,11 +39,11 @@ export default function PersonForm(props: PersonFormProps) {
     const [person, setPerson] = useState<Person>(props?.person ?? defaultPerson)
     const [isLoading, setIsLoading] = useState(false)
     const [isFormValid, setIsFormValid] = useState(handlePersonValidationForDB(person).validation)
-    
+
     const [oldPerson, setOldPerson] = useState<ElementFromBase>(props?.person?.oldPerson ?? defaultElementFromBase)
-    
+
     const [isOpen, setIsOpen] = useState(false)
-    
+
     const handleSetPersonName = (text) => { setPerson({ ...person, name: text }) }
     const handleSetPersonCPF = (text) => { setPerson({ ...person, cpf: text }) }
     const handleSetPersonRG = (text) => { setPerson({ ...person, rg: text }) }
@@ -104,15 +106,34 @@ export default function PersonForm(props: PersonFormProps) {
         const isValid = handlePersonValidationForDB(person)
 
         if (isValid.validation) {
+            setIsLoading(true)
+
+            let personForDB: Person = person
             if (person.dateInsertUTC === 0) {
-                setPerson({ ...person, dateInsertUTC: Date.parse(new Date().toUTCString()) })
+                personForDB = { ...personForDB, dateInsertUTC: handleNewDateToUTC() }
             }
 
-            setIsLoading(true)
+            let telephonesWithNoMask = []
+            personForDB.telephones.map((element, index) => {
+                telephonesWithNoMask = [...telephonesWithNoMask, handleRemoveTelephoneMask(element)]
+            })
+
+            if (personForDB.oldPerson) {
+                delete personForDB.oldPerson
+            }
+
+            personForDB = {
+                ...personForDB
+                , cpf: handleRemoveCPFMask(personForDB.cpf)
+                , address: { ...personForDB.address, cep: handleRemoveCEPMask(personForDB.address.cep) }
+                , telephones: telephonesWithNoMask
+            }
+
+            console.log(personForDB)
 
             if (isSave) {
                 try {
-                    const docRef = await addDoc(personCollection, person)
+                    const docRef = await addDoc(personCollection, personForDB)
                     setPerson({ ...person, id: docRef.id })
                     feedbackMessage = { ...feedbackMessage, messages: ["Salvo com sucesso!"] }
                 } catch (e) {
@@ -122,7 +143,7 @@ export default function PersonForm(props: PersonFormProps) {
             } else {
                 try {
                     const docRef = doc(personCollection, nowID)
-                    await updateDoc(docRef, person)
+                    await updateDoc(docRef, personForDB)
                     feedbackMessage = { ...feedbackMessage, messages: ["Atualizado com sucesso!"] }
                 } catch (e) {
                     feedbackMessage = { ...feedbackMessage, messages: ["Erro em atualizar!"], messageType: "ERROR" }
@@ -132,7 +153,7 @@ export default function PersonForm(props: PersonFormProps) {
 
             setIsLoading(false)
             handleListItemClick(defaultPerson)
-            
+
             if (props.onAfterSave) {
                 props.onAfterSave(feedbackMessage)
             }
@@ -319,7 +340,7 @@ export default function PersonForm(props: PersonFormProps) {
                     </FormRowColumn>
                 </FormRow>
             </form>
-            
+
             {props.isForSelect && (
                 <IOSModal
                     isOpen={isOpen}

@@ -20,14 +20,14 @@ export default function InputTextWithButton(props: InputTextWithButtonProps) {
     let classNameInput = `
                             z-0
                             flex-1 block w-full 
-                            rounded-none rounded-l-md sm:text-sm border-gray-300
                             focus:ring-indigo-500 focus:border-indigo-500 
+                            rounded-none rounded-l-md sm:text-sm border-gray-300
                         `
     let classNameButton = `
                             px-4
                             rounded-r-md 
-                            border border-l-0 border-gray-300
                             inline-flex items-center 
+                            border border-l-0 border-gray-300
                         `
     if (props.isLoading) {
         classNameInput = classNameInput + STYLE_FOR_INPUT_LOADING

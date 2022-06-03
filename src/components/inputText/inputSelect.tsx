@@ -21,9 +21,9 @@ export default function InputSelect(props: InputSelectProps) {
                             mt-1 
                             py-2 px-3 
                             sm:text-sm
-                            rounded-md shadow-sm border 
-                            border-gray-300 bg-white 
                             focus:outline-none 
+                            border-gray-300 bg-white 
+                            rounded-md shadow-sm border 
                             focus:ring-indigo-500 focus:border-indigo-500 
                         `
     let classNameLabel = "block text-sm font-medium text-gray-700"
