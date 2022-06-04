@@ -103,7 +103,7 @@ export default function PropertyList(props) {
                     <PropertyForm
                         title="Informações da propriedade"
                         subtitle="Dados importantes sobre a propriedade"
-                        afterSave={handleAfterSaveOperation}
+                        onAfterSave={handleAfterSaveOperation}
                     />
                 </IOSModal>
             ) : null}
