@@ -148,35 +148,31 @@ export default function InputText(props: InputTextProps) {
         if (props.onValidate) {
             props.onValidate(test)
         }
-
         return text
     }
 
-    const handleMask = (event) => {
-        let value
+    const handleMask = (text) => {
+        let value = text
         switch (props.mask) {
             case "cpf":
-                value = handleMaskCPF(event.target.value)
+                value = handleMaskCPF(value)
                 break
             case "rg":
-                value = handleMaskRG(event.target.value)
+                value = handleMaskRG(value)
                 break
             case "cnpj":
                 break
             case "currency":
-                value = handleMaskCurrency(event.target.value)
+                value = handleMaskCurrency(value)
                 break
             case "telephone":
-                value = handleMaskTelephone(event.target.value)
+                value = handleMaskTelephone(value)
                 break
             case "cep":
-                value = handleMaskCEP(event.target.value)
+                value = handleMaskCEP(value)
                 break
         }
-
-        if (value) {
-            event.target.value = value
-        }
+        return value
     }
 
     return (
@@ -195,9 +191,10 @@ export default function InputText(props: InputTextProps) {
                 disabled={props.isDisabled || props.isLoading}
                 required={props.isRequired}
                 onChange={(event) => {
-                    handleMask(event)
-                    const value = handleValidation(event.target.value)
-                    props.onSetText(value)
+                    let text = event.target.value
+                    text = handleMask(text)
+                    text = handleValidation(text)
+                    props.onSetText(text)
                 }}
             />
             {!isValid && (<p className="text-red-600">{props.validationMessage}</p>)}

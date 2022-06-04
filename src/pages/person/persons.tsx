@@ -25,7 +25,6 @@ export default function Persons() {
     }
 
     const handleShowMessage = (feedbackMessage: FeedbackMessage) => {
-        setPerson(defaultPerson)
         if (isFeedbackOpen === false) {
             setFeedbackMessage(feedbackMessage)
             setIsFeedbackOpen((isFeedbackOpen) => true)

@@ -91,7 +91,7 @@ export default function PersonForm(props: PersonFormProps) {
 
     const save = async (event) => {
         event.preventDefault()
-        let feedbackMessage: FeedbackMessage = { messages: ["Algo estranho aconteceu"], messageType: "SUCCESS" }
+        let feedbackMessage: FeedbackMessage = { messages: ["Algo estranho aconteceu"], messageType: "WARNING" }
 
         let nowID = ""
         const querySnapshot = await getDocs(personCollection)
@@ -129,13 +129,11 @@ export default function PersonForm(props: PersonFormProps) {
                 , telephones: telephonesWithNoMask
             }
 
-            console.log(personForDB)
-
             if (isSave) {
                 try {
                     const docRef = await addDoc(personCollection, personForDB)
                     setPerson({ ...person, id: docRef.id })
-                    feedbackMessage = { ...feedbackMessage, messages: ["Salvo com sucesso!"] }
+                    feedbackMessage = { ...feedbackMessage, messages: ["Salvo com sucesso!"], messageType: "SUCCESS" }
                 } catch (e) {
                     feedbackMessage = { ...feedbackMessage, messages: ["Erro em salvar!"], messageType: "ERROR" }
                     console.error("Error adding document: ", e)
@@ -144,7 +142,7 @@ export default function PersonForm(props: PersonFormProps) {
                 try {
                     const docRef = doc(personCollection, nowID)
                     await updateDoc(docRef, personForDB)
-                    feedbackMessage = { ...feedbackMessage, messages: ["Atualizado com sucesso!"] }
+                    feedbackMessage = { ...feedbackMessage, messages: ["Atualizado com sucesso!"], messageType: "SUCCESS" }
                 } catch (e) {
                     feedbackMessage = { ...feedbackMessage, messages: ["Erro em atualizar!"], messageType: "ERROR" }
                     console.error("Error upddating document: ", e)
@@ -159,7 +157,9 @@ export default function PersonForm(props: PersonFormProps) {
             }
         } else {
             feedbackMessage = { ...feedbackMessage, messages: isValid.messages, messageType: "ERROR" }
+            props.onShowMessage(feedbackMessage)
         }
+
     }
 
     return (

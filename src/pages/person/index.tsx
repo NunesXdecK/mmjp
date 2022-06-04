@@ -8,6 +8,14 @@ export default function Person() {
     const [isFeedbackOpen, setIsFeedbackOpen] = useState(false)
     const [feedbackMessage, setFeedbackMessage] = useState<FeedbackMessage>(defaultFeedbackMessage)
 
+    const handleAfterSave = (feedbackMessage: FeedbackMessage) => {
+        if (isFeedbackOpen === false) {
+            setFeedbackMessage(feedbackMessage)
+            setIsFeedbackOpen((isFeedbackOpen) => true)
+            setTimeout(() => setIsFeedbackOpen((isFeedbackOpen) => false), 2000)
+        }
+    }
+
     const handleShowMessage = (feedbackMessage: FeedbackMessage) => {
         if (isFeedbackOpen === false) {
             setFeedbackMessage(feedbackMessage)
@@ -27,7 +35,7 @@ export default function Person() {
 
             <PersonForm
                 title="Informações pessoais"
-                onAfterSave={handleShowMessage}
+                onAfterSave={handleAfterSave}
                 onShowMessage={handleShowMessage}
                 subtitle="Dados importantes sobre a pessoa" />
 

@@ -1,7 +1,10 @@
+import Link from "next/link"
 import { STYLE_FOR_INPUT_LOADING } from "../../util/patternValidationUtil"
 
 interface ButtonProps {
+    href?: string,
     children?: any,
+    isLink?: boolean,
     isHidden?: boolean,
     isLoading?: boolean,
     isDisabled?: boolean,
@@ -32,13 +35,22 @@ export default function Button(props: ButtonProps) {
 
     return (
         <>
-            <button
-                disabled={props.isDisabled}
-                type={props.type}
-                onClick={props.onClick}
-                className={className}>
-                {props.children}
-            </button>
+            {props.isLink ? (
+                <a
+                    href={props.href}
+                    className={className}>
+                    {props.children}
+                </a>
+            ) : (
+                <button
+                    disabled={props.isDisabled}
+                    type={props.type}
+                    onClick={props.onClick}
+                    className={className}>
+                    {props.children}
+                </button>
+            )
+            }
         </>
     )
 }

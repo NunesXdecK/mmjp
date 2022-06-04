@@ -149,11 +149,9 @@ export default function PersonList(props: PersonListProps) {
 
                     <div className="self-center">
                         <Button
-                            isLoading={isLoading}
-                            isDisabled={isLoading}>
-                            <Link href="/person">
-                                Novo
-                            </Link>
+                            isLink={true}
+                            href="/person">
+                            Novo
                         </Button>
                     </div>
                 </div>
