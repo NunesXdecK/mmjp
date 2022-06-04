@@ -1,12 +1,12 @@
 import Form from "./form";
+import FormRow from "./formRow";
 import { useState } from "react";
 import Button from "../button/button";
+import FormRowColumn from "./formRowColumn";
 import InputText from "../inputText/inputText";
 import { TrashIcon } from "@heroicons/react/outline";
-import { handleMaskTelephone } from "../../util/maskUtil";
 import InputTextWithButton from "../inputText/inputTextWithButton";
-import FormRow from "./formRow";
-import FormRowColumn from "./formRowColumn";
+import { handleMaskTelephone, handleRemoveTelephoneMask } from "../../util/maskUtil";
 
 interface ArrayTextFormProps {
     id?: string,
@@ -42,8 +42,14 @@ export default function ArrayTextForm(props: ArrayTextFormProps) {
         setIsFormValid(isValid)
     }
 
-    const handleMask = () => {
-
+    const handleMask = (text) => {
+        switch (props.mask) {
+            case "telephone":
+                text = handleRemoveTelephoneMask(text)
+                text = handleMaskTelephone(text)
+                break
+        }
+        return text
     }
 
     const handleRemoveText = (event, text) => {
@@ -52,7 +58,9 @@ export default function ArrayTextForm(props: ArrayTextFormProps) {
         if (localTexts.length > -1) {
             const index = localTexts.indexOf(text)
             localTexts.splice(index, 1)
-            props.onSetTexts(localTexts)
+            if (props.onSetTexts) {
+                props.onSetTexts(localTexts)
+            }
         }
     }
 
@@ -95,12 +103,12 @@ export default function ArrayTextForm(props: ArrayTextFormProps) {
                 {props.texts.map((element, index) => (
                     <InputTextWithButton
                         index={index}
-                        isLoading={props.isLoading}
                         isDisabled={true}
                         id={index + element}
                         key={index + element}
                         onClick={handleRemoveText}
-                        value={handleMaskTelephone(element)}
+                        value={handleMask(element)}
+                        isLoading={props.isLoading}
                     >
                         <TrashIcon className="text-red-600 block h-6 w-6" aria-hidden="true" />
                     </InputTextWithButton>

@@ -1,4 +1,4 @@
-import { Person, PersonAddress } from "../interfaces/objectInterfaces"
+import { defaultPerson, defaultProperty, Person, PersonAddress, Property } from "../interfaces/objectInterfaces"
 import { handleRemoveCEPMask } from "./maskUtil"
 
 export const defaultElementFromBase: ElementFromBase = {
@@ -61,30 +61,54 @@ export interface ElementFromBase {
     "Telefone Prof. "?: string
 }
 
-export const extratePerson = (element: ElementFromBase) => {
-    let personAddress: PersonAddress = {
-        cep: "",
-        number: "",
-        county: "",
-        district: "",
-        publicPlace: "",
-        complement: "",
+export const extrateProperty = (element: ElementFromBase) => {
+    let property: Property = defaultProperty
+
+    let areaProperty = 0
+    if (element["Área"]) {
+        let areaPropertyString = element["Área"]?.trim() ?? ""
+        areaPropertyString = areaPropertyString.replaceAll(".", "").replace(",", ".")
+        areaProperty = parseFloat(areaPropertyString)
     }
 
-    let person: Person = {
-        id: "",
-        rg: "",
-        cpf: "",
-        name: "",
-        rgIssuer: "",
-        profession: "",
-        nationality: "",
-        naturalness: "",
-        maritalStatus: "",
-        dateInsertUTC: 0,
-        telephones: [],
-        address: personAddress,
+    let perimeterProperty = 0
+    if (element["Perímetro"]) {
+        let perimeterPropertyString = element["Perímetro"]?.trim() ?? ""
+        perimeterPropertyString = perimeterPropertyString.replaceAll(".", "").replace(",", ".")
+        areaProperty = parseFloat(perimeterPropertyString)
     }
+
+    let lote = ""
+    if (element["Lote"]) {
+        lote = element["Lote"]?.trim() ?? ""
+    }
+
+    let land = ""
+    if (element["Gleba"]) {
+        land = element["Gleba"]?.trim() ?? ""
+    }
+
+    let county = ""
+    if (element["Município/UF"]) {
+        county = element["Município/UF"]?.trim() ?? ""
+    }
+
+    property = {
+        ...property,
+        lote: lote,
+        area: areaProperty,
+        perimeter: perimeterProperty,
+        land: land,
+        county: county,
+    }
+
+    return property
+}
+
+export const extratePerson = (element: ElementFromBase) => {
+    let person: Person = defaultPerson
+
+    let personAddress: PersonAddress = person.address
 
     let dateCadUTC = 0
     let dateCad = checkStringForNull(element["Data Simples"])

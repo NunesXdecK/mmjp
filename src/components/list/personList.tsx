@@ -1,8 +1,6 @@
 import { useState } from "react"
 import Button from "../button/button"
-import IOSModal from "../modal/iosModal"
 import data from "../../data/data.json"
-import PersonForm from "../form/personForm"
 import InputText from "../inputText/inputText"
 import { PersonConversor } from "../../db/converters"
 import { collection, getDocs } from "firebase/firestore"
@@ -11,7 +9,6 @@ import { FeedbackMessage } from "../modal/feedbackMessageModal"
 import { db, PERSON_COLLECTION_NAME } from "../../db/firebaseDB"
 import { handleMaskCPF, handleRemoveCPFMask } from "../../util/maskUtil"
 import { ElementFromBase, extratePerson } from "../../util/converterUtil"
-import Link from "next/link"
 import { handleValidationOnlyNumbersNotNull, handleValidationOnlyTextNotNull } from "../../util/validationUtil"
 
 const subtitle = "mt-1 max-w-2xl text-sm text-gray-500"
@@ -20,9 +17,8 @@ const titleClassName = "sm:px-4 sm:py-5 text-md leading-6 font-medium text-gray-
 
 interface PersonListProps {
     isOldBase?: boolean,
-    isForSelect?: boolean,
-    onShowMessage?: (any) => void,
     onListItemClick?: (any) => void,
+    onShowMessage?: (FeedbackMessage) => void,
 }
 
 export default function PersonList(props: PersonListProps) {

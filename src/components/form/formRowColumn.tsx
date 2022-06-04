@@ -4,9 +4,28 @@ interface FormRowColumnProps {
     children?: any,
 }
 export default function FormRowColumn(props: FormRowColumnProps) {
-    let className = `py-1 px-2 sm:mt-0 col-span-6 sm:col-span-${props.unit} `
+    let colSpanClassName = ""
+    switch (props.unit) {
+        case "1":
+            colSpanClassName = "sm:col-span-1"
+            break;
+        case "2":
+            colSpanClassName = "sm:col-span-2"
+            break
+        case "3":
+            colSpanClassName = "sm:col-span-3"
+            break
+        case "4":
+            colSpanClassName = "sm:col-span-4"
+            break
+        case "6":
+            colSpanClassName = "sm:col-span-6"
+            break
+    }
+
+    let className = "py-1 px-2 sm:mt-0 col-span-6 " + colSpanClassName
     if (props.className) {
-        className = className + props.className
+        className = className + " " + props.className
     }
     return (
         <div className={className}>

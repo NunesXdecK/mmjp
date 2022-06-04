@@ -48,12 +48,13 @@ export interface Process {
     id?: string,
     number?: string,
     date?: number,
-    client?: any,
-    property?: any,
-    professional?: any,
+    dateInsertUTC?: number,
+    client?: Person,
+    property?: Property,
+    professional?: Professional,
 }
 
-export const defaultAddress: PersonAddress = {
+export const defaultPersonAddress: PersonAddress = {
     cep: "",
     number: "",
     county: "",
@@ -74,6 +75,17 @@ export const defaultPerson: Person = {
     maritalStatus: "",
     dateInsertUTC: 0,
     telephones: [],
-    address: defaultAddress,
+    address: defaultPersonAddress,
     oldPerson: {},
+}
+
+export const defaultProperty: Property = {
+    id: "",
+    lote: "",
+    land: "",
+    county: "",
+    area: 0,
+    perimeter: 0,
+    dateInsertUTC: 0,
+    owners: [],
 }

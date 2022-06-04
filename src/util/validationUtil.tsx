@@ -1,3 +1,4 @@
+import { Person, Property } from "../interfaces/objectInterfaces"
 import { CPF_PATTERN, ONLY_CHARACTERS_PATTERN, ONLY_CHARACTERS_PATTERN_TWO } from "./patternValidationUtil"
 
 interface ValidationReturn {
@@ -5,7 +6,12 @@ interface ValidationReturn {
     validation: boolean,
 }
 
-export const handlePersonValidationForDB = (person) => {
+export const handlePropertyValidationForDB = (property: Property) => {
+    let validation: ValidationReturn = { validation: false, messages: [] }
+    return validation
+}
+
+export const handlePersonValidationForDB = (person: Person) => {
     let validation: ValidationReturn = { validation: false, messages: [] }
     let nameCheck = true
     let cpfCheck = true

@@ -2,8 +2,8 @@ import Head from "next/head"
 import { useState } from "react"
 import Layout from "../../components/layout/layout"
 import { PersonConversor } from "../../db/converters"
-import PersonList from "../../components/list/personList"
 import { collection, getDocs } from "firebase/firestore"
+import PersonList from "../../components/list/personList"
 import PersonForm from "../../components/form/personForm"
 import { db, PERSON_COLLECTION_NAME } from "../../db/firebaseDB"
 import { defaultPerson, Person } from "../../interfaces/objectInterfaces"
@@ -63,7 +63,6 @@ export default function PersonOldBase() {
             {person.cpf === "" ? (
                 <PersonList
                     isOldBase={true}
-                    isForSelect={true}
                     onShowMessage={handleShowMessage}
                     onListItemClick={handleListItemClick}
                 />

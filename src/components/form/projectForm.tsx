@@ -53,14 +53,12 @@ export default function ProjectForm(props) {
 
             <PersonForm
                 onSelectPerson={handleSelectPerson}
-                isForSelect={true}
                 title="Titular do projeto"
                 subtitle="Informações sobre o titular do projeto"
             />
 
             <PropertyForm
                 onSelectPerson={handleSelectProperty}
-                isForSelect={true}
                 title="Propriedade do projeto"
                 subtitle="Informações sobre a propriedade do projeto"
             />

@@ -43,7 +43,6 @@ export default function Persons() {
             
             {person.id === "" ? (
                 <PersonList
-                    isForSelect={true}
                     onShowMessage={handleShowMessage}
                     onListItemClick={handleListItemClick}
                 />

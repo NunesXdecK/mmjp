@@ -62,7 +62,9 @@ export default function Layout(props) {
         ```
       */}
             <div className="min-h-full">
-                <span className="hidden animate-pulse">hidden</span>
+                <div className="hidden">
+                    <span className="animate-pulse">hidden</span>
+                </div>
                 <Disclosure as="nav" className="bg-gray-800">
                     {({ open }) => (
                         <>

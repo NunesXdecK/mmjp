@@ -3,8 +3,6 @@ import FormRow from "./formRow"
 import { useState } from "react"
 import Button from "../button/button"
 import AddressForm from "./addressForm"
-import IOSModal from "../modal/iosModal"
-import PersonList from "../list/personList"
 import FormRowColumn from "./formRowColumn"
 import ArrayTextForm from "./arrayTextForm"
 import { OldDataProps } from "./oldDataForm"
@@ -24,13 +22,12 @@ import { handleNewDateToUTC } from "../../util/dateUtils"
 interface PersonFormProps {
     title?: string,
     subtitle?: string,
-    isForSelect?: boolean,
     isForDisable?: boolean,
     isForOldRegister?: boolean,
     person?: Person,
     onAfterSave?: (object) => void,
-    onShowMessage?: (any) => void,
     onSelectPerson?: (object) => void,
+    onShowMessage?: (FeedbackMessage) => void,
 }
 
 export default function PersonForm(props: PersonFormProps) {
@@ -38,21 +35,21 @@ export default function PersonForm(props: PersonFormProps) {
 
     const [person, setPerson] = useState<Person>(props?.person ?? defaultPerson)
     const [isLoading, setIsLoading] = useState(false)
+    const [isOpen, setIsOpen] = useState(false)
     const [isFormValid, setIsFormValid] = useState(handlePersonValidationForDB(person).validation)
 
     const [oldPerson, setOldPerson] = useState<ElementFromBase>(props?.person?.oldPerson ?? defaultElementFromBase)
 
-    const [isOpen, setIsOpen] = useState(false)
 
-    const handleSetPersonName = (text) => { setPerson({ ...person, name: text }) }
-    const handleSetPersonCPF = (text) => { setPerson({ ...person, cpf: text }) }
-    const handleSetPersonRG = (text) => { setPerson({ ...person, rg: text }) }
-    const handleSetPersonRgIssuer = (text) => { setPerson({ ...person, rgIssuer: text }) }
-    const handleSetPersonNaturalness = (text) => { setPerson({ ...person, naturalness: text }) }
-    const handleSetPersonNationality = (text) => { setPerson({ ...person, nationality: text }) }
-    const handleSetPersonMaritalStatus = (text) => { setPerson({ ...person, maritalStatus: text }) }
-    const handleSetPersonProfession = (text) => { setPerson({ ...person, profession: text }) }
-    const handleSetPersonTelephones = (texts) => { setPerson({ ...person, telephones: texts }) }
+    const handleSetPersonName = (value) => { setPerson({ ...person, name: value }) }
+    const handleSetPersonCPF = (value) => { setPerson({ ...person, cpf: value }) }
+    const handleSetPersonRG = (value) => { setPerson({ ...person, rg: value }) }
+    const handleSetPersonRgIssuer = (value) => { setPerson({ ...person, rgIssuer: value }) }
+    const handleSetPersonNaturalness = (value) => { setPerson({ ...person, naturalness: value }) }
+    const handleSetPersonNationality = (value) => { setPerson({ ...person, nationality: value }) }
+    const handleSetPersonMaritalStatus = (value) => { setPerson({ ...person, maritalStatus: value }) }
+    const handleSetPersonProfession = (value) => { setPerson({ ...person, profession: value }) }
+    const handleSetPersonTelephones = (values) => { setPerson({ ...person, telephones: values }) }
     const handleSetPersonAddress = (address) => { setPerson({ ...person, address: address }) }
 
     const handleListItemClick = async (person: Person) => {
@@ -89,7 +86,7 @@ export default function PersonForm(props: PersonFormProps) {
         setIsFormValid(isValid)
     }
 
-    const save = async (event) => {
+    const handleSave = async (event) => {
         event.preventDefault()
         let feedbackMessage: FeedbackMessage = { messages: ["Algo estranho aconteceu"], messageType: "WARNING" }
 
@@ -166,39 +163,27 @@ export default function PersonForm(props: PersonFormProps) {
         <>
             {props.isForOldRegister && (oldPerson["Nome Prop."] || oldPerson["CPF Prop."]) && (
                 <OldDataProps
+                    oldData={oldPerson}
                     title="Informações antigas"
                     subtitle="Dados da base antiga"
-                    oldData={oldPerson} />
+                />
             )}
 
             <form
-                onSubmit={save}>
+                onSubmit={handleSave}>
                 <Form
                     title={props.title}
                     subtitle={props.subtitle}>
-                    {props.isForSelect && (
-                        <FormRow>
-                            <FormRowColumn unit="6" className="justify-self-end">
-                                <Button
-                                    type="button"
-                                    isLoading={isLoading}
-                                    onClick={() => setIsOpen(true)}
-                                >
-                                    Pesquisar pessoa
-                                </Button>
-                            </FormRowColumn>
-                        </FormRow>
-                    )}
 
                     <FormRow>
                         <FormRowColumn unit="6">
                             <InputText
-                                value={person.name}
                                 id="fullname"
-                                onSetText={handleSetPersonName}
+                                value={person.name}
                                 title="Nome completo"
                                 isLoading={isLoading}
                                 validation={NOT_NULL_MARK}
+                                onSetText={handleSetPersonName}
                                 isDisabled={props.isForDisable}
                                 onValidate={handleChangeFormValidation}
                                 validationMessage="O nome não pode ficar em branco."
@@ -212,14 +197,14 @@ export default function PersonForm(props: PersonFormProps) {
                                 id="cpf"
                                 mask="cpf"
                                 title="CPF"
-                                value={person.cpf}
                                 maxLength={14}
-                                onSetText={handleSetPersonCPF}
+                                value={person.cpf}
                                 isLoading={isLoading}
                                 validation={CPF_MARK}
+                                onSetText={handleSetPersonCPF}
                                 isDisabled={props.isForDisable}
-                                onValidate={handleChangeFormValidation}
                                 validationMessage="O CPF está invalido"
+                                onValidate={handleChangeFormValidation}
                             />
                         </FormRowColumn>
                     </FormRow>
@@ -229,10 +214,10 @@ export default function PersonForm(props: PersonFormProps) {
                             <InputText
                                 id="rg"
                                 title="RG"
-                                validation="number"
                                 value={person.rg}
-                                onSetText={handleSetPersonRG}
+                                validation="number"
                                 isLoading={isLoading}
+                                onSetText={handleSetPersonRG}
                                 isDisabled={props.isForDisable}
                             />
                         </FormRowColumn>
@@ -240,11 +225,11 @@ export default function PersonForm(props: PersonFormProps) {
                         <FormRowColumn unit="3">
                             <InputText
                                 id="rg-issuer"
-                                value={person.rgIssuer}
                                 title="Emissor RG"
                                 isLoading={isLoading}
-                                onSetText={handleSetPersonRgIssuer}
+                                value={person.rgIssuer}
                                 isDisabled={props.isForDisable}
+                                onSetText={handleSetPersonRgIssuer}
                             />
                         </FormRowColumn>
                     </FormRow>
@@ -253,22 +238,22 @@ export default function PersonForm(props: PersonFormProps) {
                         <FormRowColumn unit="3">
                             <InputText
                                 id="naturalness"
-                                value={person.naturalness}
                                 title="Naturalidade"
                                 isLoading={isLoading}
-                                onSetText={handleSetPersonNaturalness}
+                                value={person.naturalness}
                                 isDisabled={props.isForDisable}
+                                onSetText={handleSetPersonNaturalness}
                             />
                         </FormRowColumn>
 
                         <FormRowColumn unit="3">
                             <InputText
                                 id="nationality"
-                                value={person.nationality}
                                 title="Nacionalidade"
                                 isLoading={isLoading}
-                                onSetText={handleSetPersonNationality}
+                                value={person.nationality}
                                 isDisabled={props.isForDisable}
+                                onSetText={handleSetPersonNationality}
                             />
                         </FormRowColumn>
                     </FormRow>
@@ -278,10 +263,10 @@ export default function PersonForm(props: PersonFormProps) {
                             <InputSelect
                                 id="martial-status"
                                 title="Estado Civil"
-                                value={person.maritalStatus}
                                 isLoading={isLoading}
-                                onSetText={handleSetPersonMaritalStatus}
+                                value={person.maritalStatus}
                                 isDisabled={props.isForDisable}
+                                onSetText={handleSetPersonMaritalStatus}
                                 options={["casado", "divorciado", "separado", "solteiro", "viuvo"]}
                             />
                         </FormRowColumn>
@@ -290,10 +275,10 @@ export default function PersonForm(props: PersonFormProps) {
                             <InputText
                                 id="profession"
                                 title="Profissão"
-                                value={person.profession}
                                 isLoading={isLoading}
-                                onSetText={handleSetPersonProfession}
+                                value={person.profession}
                                 isDisabled={props.isForDisable}
+                                onSetText={handleSetPersonProfession}
                             />
                         </FormRowColumn>
                     </FormRow>
@@ -320,11 +305,11 @@ export default function PersonForm(props: PersonFormProps) {
             />
 
             <form
-                onSubmit={save}>
+                onSubmit={handleSave}>
                 <AddressForm
                     title="Endereço"
-                    address={person.address}
                     isLoading={isLoading}
+                    address={person.address}
                     setAddress={handleSetPersonAddress}
                     subtitle="Informações sobre o endereço"
                 />
@@ -332,24 +317,15 @@ export default function PersonForm(props: PersonFormProps) {
                 <FormRow>
                     <FormRowColumn unit="6" className="justify-self-end">
                         <Button
+                            type="submit"
                             isLoading={isLoading}
                             isDisabled={!isFormValid}
-                            type="submit">
+                        >
                             Salvar
                         </Button>
                     </FormRowColumn>
                 </FormRow>
             </form>
-
-            {props.isForSelect && (
-                <IOSModal
-                    isOpen={isOpen}
-                    setIsOpen={setIsOpen}>
-                    <PersonList
-                        isForSelect={true}
-                        onListItemClick={handleListItemClick} />
-                </IOSModal>
-            )}
         </>
     )
 }

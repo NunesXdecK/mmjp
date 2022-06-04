@@ -1,110 +1,170 @@
+import Form from "./form";
+import FormRow from "./formRow";
 import { useState } from "react";
 import Button from "../button/button";
+import FormRowColumn from "./formRowColumn";
 import InputText from "../inputText/inputText";
-import PropertyList from "../list/propertyList";
-import IOSModal from "../modal/iosModal";
-import Form from "./form";
+import { collection } from "firebase/firestore";
+import SelectPersonForm from "./selectPersonForm";
+import { PersonConversor, PropertyConversor } from "../../db/converters";
+import { handlePropertyValidationForDB } from "../../util/validationUtil";
+import { defaultProperty, Property } from "../../interfaces/objectInterfaces";
+import { NOT_NULL_MARK, NUMBER_MARK } from "../../util/patternValidationUtil";
+import { db, PERSON_COLLECTION_NAME, PROPERTY_COLLECTION_NAME } from "../../db/firebaseDB";
 
-export default function PropertyForm(props) {
-    const [name, setName] = useState("")
-    const [area, setArea] = useState("")
-    const [municipio, setMunicipio] = useState("")
+interface PropertyFormProps {
+    title?: string,
+    subtitle?: string,
+    isForSelect?: boolean,
+    isForDisable?: boolean,
+    isForOldRegister?: boolean,
+    property?: Property,
+    onAfterSave?: (object) => void,
+    onSelectPerson?: (object) => void,
+    onShowMessage?: (FeedbackMessage) => void,
+}
+
+export default function PropertyForm(props: PropertyFormProps) {
+    const personCollection = collection(db, PERSON_COLLECTION_NAME).withConverter(PersonConversor)
+    const propertyCollection = collection(db, PROPERTY_COLLECTION_NAME).withConverter(PropertyConversor)
+    let test = props?.property ?? defaultProperty
+
+    const [property, setProperty] = useState<Property>(test)
+    const [isFormValid, setIsFormValid] = useState(handlePropertyValidationForDB(property).validation)
 
     const [isOpen, setIsOpen] = useState(false)
+    const [isLoading, setIsLoading] = useState(false)
 
-    function handleListItemClick(person) {
-        props.onSelectPerson(person)
-        setName(person.name)
-        setArea(person.area)
-        setMunicipio(person.municipio)
-        setIsOpen(false)
+    const handleSetPropertyLote = (value) => { setProperty({ ...property, lote: value }) }
+    const handleSetPropertyLand = (value) => { setProperty({ ...property, land: value }) }
+    const handleSetPropertyArea = (value) => { setProperty({ ...property, area: value }) }
+    const handleSetPropertyCounty = (value) => { setProperty({ ...property, county: value }) }
+    const handleSetPropertyOwners = (value) => { setProperty({ ...property, owners: value }) }
+    const handleSetPropertyPerimeter = (value) => { setProperty({ ...property, perimeter: value }) }
+
+    function handleSave() {
+        if (props.onAfterSave) {
+            props.onAfterSave({})
+        }
     }
 
-    function save() {
-        console.log("save()")
-        console.log({
-            name: name,
-            area: area,
-            municipio: municipio,
-        })
-
-        if (props.afterSave) {
-            props.afterSave()
-        }
+    const handleChangeFormValidation = (isValid) => {
+        setIsFormValid(isValid)
     }
 
     return (
         <>
-            <Form
-                title={props.title}
-                subtitle={props.subtitle}>
+            <form
+                onSubmit={handleSave}>
+                <Form
+                    title={props.title}
+                    subtitle={props.subtitle}>
 
-                {props.isForSelect ? (
-                    <div className="grid grid-cols-6 sm:gap-6">
-                        <div className="py-1 px-2 col-span-6 sm:col-span-6 justify-self-end">
-                            <Button
-                                onClick={() => setIsOpen(true)}
-                                type="button">
-                                Pesquisar propriedade
-                            </Button>
-                        </div>
+                    <FormRow>
+                        <FormRowColumn unit="6">
+                            <InputText
+                                id="lote"
+                                title="Nome da propriedade"
+                                value={property.lote}
+                                isLoading={isLoading}
+                                validation={NOT_NULL_MARK}
+                                isDisabled={props.isForDisable}
+                                onSetText={handleSetPropertyLote}
+                                onValidate={handleChangeFormValidation}
+                                validationMessage="O nome da propriedade não pode ficar em branco."
+                            />
+                        </FormRowColumn>
+                    </FormRow>
+
+                    <FormRow>
+                        <FormRowColumn unit="3">
+                            <InputText
+                                id="land"
+                                title="Gleba"
+                                value={property.land}
+                                isLoading={isLoading}
+                                validation={NOT_NULL_MARK}
+                                isDisabled={props.isForDisable}
+                                onSetText={handleSetPropertyLand}
+                                onValidate={handleChangeFormValidation}
+                                validationMessage="A gleba não pode ficar em branco."
+                            />
+                        </FormRowColumn>
+
+                        <FormRowColumn unit="3">
+                            <InputText
+                                id="county"
+                                title="Município/UF"
+                                isLoading={isLoading}
+                                value={property.county}
+                                validation={NOT_NULL_MARK}
+                                isDisabled={props.isForDisable}
+                                onSetText={handleSetPropertyCounty}
+                                onValidate={handleChangeFormValidation}
+                                validationMessage="O município não pode ficar em branco."
+                            />
+                        </FormRowColumn>
+                    </FormRow>
+
+                    <FormRow>
+                        <FormRowColumn unit="3">
+                            <InputText
+                                id="area"
+                                title="Área"
+                                isLoading={isLoading}
+                                validation={NUMBER_MARK}
+                                value={property.area + ""}
+                                isDisabled={props.isForDisable}
+                                onSetText={handleSetPropertyArea}
+                                onValidate={handleChangeFormValidation}
+                                validationMessage="A área não pode ficar em branco."
+                            />
+                        </FormRowColumn>
+
+                        <FormRowColumn unit="3">
+                            <InputText
+                                id="perimeter"
+                                title="Perímetro"
+                                isLoading={isLoading}
+                                validation={NUMBER_MARK}
+                                value={property.perimeter + ""}
+                                isDisabled={props.isForDisable}
+                                onSetText={handleSetPropertyPerimeter}
+                                onValidate={handleChangeFormValidation}
+                                validationMessage="O perímetro não pode ficar em branco."
+                            />
+                        </FormRowColumn>
+                    </FormRow>
+
+                    <div className="hidden">
+                        <Button
+                            type="submit">
+                        </Button>
                     </div>
-                ) : null}
+                </Form>
+            </form>
 
-                <div className="grid grid-cols-6 sm:gap-6">
-                    <div className="py-1 px-2 col-span-6 sm:col-span-6">
-                        <InputText
-                            isDisabled={props.isForSelect}
-                            value={name}
-                            onChange={(event) => { setName(event.target.value) }}
-                            id="name"
-                            title="Nome" />
-                    </div>
-                </div>
+            <SelectPersonForm
+                title="Proprietários"
+                persons={property.owners}
+                subtitle="Selecione os proprietários"
+                onSetPersons={handleSetPropertyOwners} 
+                onShowMessage={props.onShowMessage}
+                />
 
-                <div className="grid grid-cols-6 sm:gap-6 md:pt-2">
-                    <div className="py-1 px-2 col-span-6 sm:col-span-3">
-                        <InputText
-                            isDisabled={props.isForSelect}
-                            value={area}
-                            onChange={(event) => { setArea(event.target.value) }}
-                            id="area"
-                            title="Área" />
-                    </div>
-
-                    <div className="py-1 px-2 sm:mt-0 col-span-6 sm:col-span-3">
-                        <InputText
-                            isDisabled={props.isForSelect}
-                            value={municipio}
-                            onChange={(event) => { setMunicipio(event.target.value) }}
-                            id="municipio"
-                            title="Municipio" />
-                    </div>
-                </div>
-
-                {!props.isForSelect ? (
-                    <div className="grid grid-cols-6 gap-6">
-                        <div className="py-1 px-2 col-span-6 sm:col-span-6 justify-self-end">
-                            <Button
-                                onClick={save}
-                                type="submit">
-                                Salvar
-                            </Button>
-                        </div>
-                    </div>
-                ) : null}
-            </Form>
-
-            {props.isForSelect ? (
-                <IOSModal
-                    isOpen={isOpen}
-                    setIsOpen={setIsOpen}>
-                    <PropertyList
-                        isForSelect={true}
-                        onListItemClick={handleListItemClick} />
-                </IOSModal>
-            ) : null}
+            <form
+                onSubmit={handleSave}>
+                <FormRow>
+                    <FormRowColumn unit="6" className="justify-self-end">
+                        <Button
+                            isLoading={isLoading}
+                            isDisabled={!isFormValid}
+                            type="submit">
+                            Salvar
+                        </Button>
+                    </FormRowColumn>
+                </FormRow>
+            </form>
         </>
-
     )
 }

@@ -1,6 +1,6 @@
 import { useState } from "react"
-import { handleMaskCPF, handleMaskTelephone, handleMountCPFCurrency, handleMountMask, handleRemoveCEPMask, handleRemoveTelephoneMask } from "../../util/maskUtil"
-import { CEP_MARK, CPF_MARK, CPF_PATTERN, NOT_NULL_MARK, NUMBER_MARK, ONLY_CHARACTERS_PATTERN, ONLY_CHARACTERS_PATTERN_TWO, STYLE_FOR_INPUT_LOADING, TELEPHONE_MARK } from "../../util/patternValidationUtil"
+import { handleMaskCPF, handleMaskTelephone, handleMountCPFCurrency, handleMountMask, handleRemoveCEPMask } from "../../util/maskUtil"
+import { CEP_MARK, CPF_MARK, CPF_PATTERN, NOT_NULL_MARK, NUMBER_MARK, ONLY_CHARACTERS_PATTERN, ONLY_CHARACTERS_PATTERN_TWO, ONLY_SPECIAL_FOR_NUMBER_PATTERN, STYLE_FOR_INPUT_LOADING, TELEPHONE_MARK } from "../../util/patternValidationUtil"
 
 interface InputTextProps {
     id?: string,
@@ -134,6 +134,7 @@ export default function InputText(props: InputTextProps) {
                 break
             case NUMBER_MARK:
                 text = text.trim()
+                text = text.replace(new RegExp(ONLY_SPECIAL_FOR_NUMBER_PATTERN), "")
                 text = text.replace(new RegExp(ONLY_CHARACTERS_PATTERN), "")
                 setIsValid(test)
                 break
