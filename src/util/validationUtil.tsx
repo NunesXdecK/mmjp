@@ -8,6 +8,15 @@ interface ValidationReturn {
 
 export const handlePropertyValidationForDB = (property: Property) => {
     let validation: ValidationReturn = { validation: false, messages: [] }
+    let nameCheck = handleValidationNotNull(property.name)
+    let ownersCheck = property?.owners?.length > 0 ?? false
+    if (!nameCheck) {
+        validation = { ...validation, messages: [...validation.messages, "O campo nome está em branco."] }
+    }
+    if (!ownersCheck) {
+        validation = { ...validation, messages: [...validation.messages, "A propriedade precisa de ao menos um proprietário."] }
+    }
+    validation = { ...validation, validation: nameCheck && ownersCheck }
     return validation
 }
 
@@ -54,6 +63,13 @@ export const handleValidationOnlyTextNotNull = (text) => {
     let test = false
     if (text) {
         text = text?.replaceAll(ONLY_CHARACTERS_PATTERN_TWO, '')
+        test = handleValidationNotNull(text)
+    }
+    return test
+}
+export const handleValidationNotNull = (text) => {
+    let test = false
+    if (text) {
         test = text?.trim() !== ""
     }
     return test

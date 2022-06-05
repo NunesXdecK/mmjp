@@ -9,7 +9,7 @@ import { FeedbackMessage } from "../modal/feedbackMessageModal"
 import { db, PERSON_COLLECTION_NAME } from "../../db/firebaseDB"
 import { handleMaskCPF, handleRemoveCPFMask } from "../../util/maskUtil"
 import { ElementFromBase, extratePerson } from "../../util/converterUtil"
-import { handleValidationOnlyNumbersNotNull, handleValidationOnlyTextNotNull } from "../../util/validationUtil"
+import { handleValidationNotNull, handleValidationOnlyNumbersNotNull, handleValidationOnlyTextNotNull } from "../../util/validationUtil"
 
 const subtitle = "mt-1 max-w-2xl text-sm text-gray-500"
 const contentClassName = "sm:px-4 sm:py-5 mt-1 text-sm text-gray-900"
@@ -54,8 +54,10 @@ export default function PersonList(props: PersonListProps) {
             const dataList = data.Plan1.slice(startList, endList)
             dataList.map((element: ElementFromBase, index) => {
                 let newElement: Person = extratePerson(element)
-                newElement = { ...newElement, oldPerson: element }
-                arrayList = [...arrayList, newElement]
+                if (handleValidationOnlyTextNotNull(newElement.name)) {
+                    newElement = { ...newElement, oldData: element }
+                    arrayList = [...arrayList, newElement]
+                }
             })
         } else {
             try {
@@ -178,7 +180,7 @@ export default function PersonList(props: PersonListProps) {
             </div>
 
             <div className="grid grid-cols-1 gap-4 p-4 bg-white">
-                {listItems[page]?.map((element, index) => (
+                {listItems[page]?.map((element: Person, index) => (
                     <button
                         disabled={element.name === "" && element.cpf === ""}
                         key={index.toString()}

@@ -1,6 +1,7 @@
 import { useState } from "react"
 import { handleMaskCPF, handleMaskTelephone, handleMountCPFCurrency, handleMountMask, handleRemoveCEPMask } from "../../util/maskUtil"
-import { CEP_MARK, CPF_MARK, CPF_PATTERN, NOT_NULL_MARK, NUMBER_MARK, ONLY_CHARACTERS_PATTERN, ONLY_CHARACTERS_PATTERN_TWO, ONLY_SPECIAL_FOR_NUMBER_PATTERN, STYLE_FOR_INPUT_LOADING, TELEPHONE_MARK } from "../../util/patternValidationUtil"
+import { CEP_MARK, CPF_MARK, CPF_PATTERN, NOT_NULL_MARK, NUMBER_MARK, ONLY_CHARACTERS_PATTERN, ONLY_CHARACTERS_PATTERN_TWO, ONLY_SPECIAL_FOR_NUMBER_PATTERN, STYLE_FOR_INPUT_LOADING, TELEPHONE_MARK, TEXT_NOT_NULL_MARK } from "../../util/patternValidationUtil"
+import { handleValidationNotNull } from "../../util/validationUtil"
 
 interface InputTextProps {
     id?: string,
@@ -117,13 +118,17 @@ export default function InputText(props: InputTextProps) {
         let test = true
         switch (props.validation) {
             case NOT_NULL_MARK:
+                test = handleValidationNotNull(text)
+                setIsValid(test)
+                break
+            case TEXT_NOT_NULL_MARK:
                 text = text.replaceAll(ONLY_CHARACTERS_PATTERN_TWO, '')
-                test = text.trim() !== ""
+                test = handleValidationNotNull(text)
                 setIsValid(test)
                 break
             case CEP_MARK:
                 text = handleRemoveCEPMask(text)
-                test = text.trim() !== ""
+                test = handleValidationNotNull(text)
                 setIsValid(test)
                 break
             case CPF_MARK:

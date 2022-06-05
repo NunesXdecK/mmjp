@@ -8,12 +8,12 @@ import Button from "../components/button/button";
 import { PersonConversor, PropertyConversor } from "../db/converters";
 import { Person, PersonAddress, Process, Professional, Property } from "../interfaces/objectInterfaces";
 
-async function hasProperty(collection, { county, lote, perimeter, area }: Property) {
+async function hasProperty(collection, { county, name, perimeter, area }: Property) {
     let property = {}
     const q = query(collection,
         where("area", "==", area),
         where("county", "==", county),
-        where("lote", "==", lote),
+        where("lote", "==", name),
         where("perimeter", "==", perimeter),
     )
     const querySnapshot = await getDocs(q)
@@ -160,7 +160,7 @@ const buttonFunction = async () => {
             let land = element["Gleba"]?.trim() ?? ""
 
             let property: Property = {
-                lote: element["Lote"]?.trim() ?? "",
+                name: element["Lote"]?.trim() ?? "",
                 area: areaProperty,
                 perimeter: perimeterProperty,
                 land: land,

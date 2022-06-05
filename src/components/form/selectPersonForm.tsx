@@ -80,7 +80,7 @@ export default function SelectPersonForm(props: SelectPersonFormProps) {
                 </FormRow>
 
                 {props.persons?.map((element, index) => (
-                    <form key={index + element.name}
+                    <form key={index + element.dateInsertUTC + element.cpf}
                         onSubmit={(event) => handleRemovePerson(event, element)}>
                         <FormRow>
                             <FormRowColumn unit="3">

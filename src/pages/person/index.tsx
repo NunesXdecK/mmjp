@@ -9,11 +9,7 @@ export default function Person() {
     const [feedbackMessage, setFeedbackMessage] = useState<FeedbackMessage>(defaultFeedbackMessage)
 
     const handleAfterSave = (feedbackMessage: FeedbackMessage) => {
-        if (isFeedbackOpen === false) {
-            setFeedbackMessage(feedbackMessage)
-            setIsFeedbackOpen((isFeedbackOpen) => true)
-            setTimeout(() => setIsFeedbackOpen((isFeedbackOpen) => false), 2000)
-        }
+        handleShowMessage(feedbackMessage)
     }
 
     const handleShowMessage = (feedbackMessage: FeedbackMessage) => {

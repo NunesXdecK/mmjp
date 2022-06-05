@@ -5,7 +5,7 @@ import Button from "../button/button"
 import AddressForm from "./addressForm"
 import FormRowColumn from "./formRowColumn"
 import ArrayTextForm from "./arrayTextForm"
-import { OldDataProps } from "./oldDataForm"
+import { OldDataForm } from "./oldDataForm"
 import InputText from "../inputText/inputText"
 import InputSelect from "../inputText/inputSelect"
 import { PersonConversor } from "../../db/converters"
@@ -15,7 +15,7 @@ import { handlePersonValidationForDB } from "../../util/validationUtil"
 import { defaultPerson, Person } from "../../interfaces/objectInterfaces"
 import { addDoc, collection, doc, getDocs, updateDoc } from "firebase/firestore"
 import { defaultElementFromBase, ElementFromBase } from "../../util/converterUtil"
-import { CPF_MARK, NOT_NULL_MARK, TELEPHONE_MARK } from "../../util/patternValidationUtil"
+import { CPF_MARK, TELEPHONE_MARK, TEXT_NOT_NULL_MARK } from "../../util/patternValidationUtil"
 import { handleRemoveCEPMask, handleRemoveCPFMask, handleRemoveTelephoneMask } from "../../util/maskUtil"
 import { handleNewDateToUTC } from "../../util/dateUtils"
 
@@ -38,7 +38,7 @@ export default function PersonForm(props: PersonFormProps) {
     const [isOpen, setIsOpen] = useState(false)
     const [isFormValid, setIsFormValid] = useState(handlePersonValidationForDB(person).validation)
 
-    const [oldPerson, setOldPerson] = useState<ElementFromBase>(props?.person?.oldPerson ?? defaultElementFromBase)
+    const [oldData, setOldData] = useState<ElementFromBase>(props?.person?.oldData ?? defaultElementFromBase)
 
 
     const handleSetPersonName = (value) => { setPerson({ ...person, name: value }) }
@@ -53,16 +53,16 @@ export default function PersonForm(props: PersonFormProps) {
     const handleSetPersonAddress = (address) => { setPerson({ ...person, address: address }) }
 
     const handleListItemClick = async (person: Person) => {
+        setIsLoading(true)
         if (props.onSelectPerson) {
             props.onSelectPerson(person)
         }
         setPerson(person)
         setIsOpen(false)
         setIsFormValid(true)
-        setIsLoading(true)
         if (person.id !== "" || props.isForOldRegister) {
             try {
-                setOldPerson(person.oldPerson)
+                setOldData(person.oldData)
                 const querySnapshot = await getDocs(personCollection)
                 querySnapshot.forEach((doc) => {
                     const name = doc.data().name
@@ -88,24 +88,23 @@ export default function PersonForm(props: PersonFormProps) {
 
     const handleSave = async (event) => {
         event.preventDefault()
+        setIsLoading(true)
         let feedbackMessage: FeedbackMessage = { messages: ["Algo estranho aconteceu"], messageType: "WARNING" }
 
-        let nowID = ""
-        const querySnapshot = await getDocs(personCollection)
-        querySnapshot.forEach((doc) => {
-            const cpf = doc.data().cpf
-            if (doc.id && person.cpf === cpf) {
-                nowID = doc.id
-            }
-        })
-
-        const isSave = nowID === ""
-        const isValid = handlePersonValidationForDB(person)
-
+        let personForDB: Person = structuredClone(person)
+        const isValid = handlePersonValidationForDB(personForDB)
         if (isValid.validation) {
-            setIsLoading(true)
+            let nowID = personForDB?.id ?? ""
+            
+            const querySnapshot = await getDocs(personCollection)
+            querySnapshot.forEach((doc) => {
+                const cpf = doc.data().cpf
+                if (doc.id && person.cpf === cpf) {
+                    nowID = doc.id
+                }
+            })
 
-            let personForDB: Person = person
+
             if (person.dateInsertUTC === 0) {
                 personForDB = { ...personForDB, dateInsertUTC: handleNewDateToUTC() }
             }
@@ -115,8 +114,8 @@ export default function PersonForm(props: PersonFormProps) {
                 telephonesWithNoMask = [...telephonesWithNoMask, handleRemoveTelephoneMask(element)]
             })
 
-            if (personForDB.oldPerson) {
-                delete personForDB.oldPerson
+            if (personForDB.oldData) {
+                delete personForDB.oldData
             }
 
             personForDB = {
@@ -125,7 +124,8 @@ export default function PersonForm(props: PersonFormProps) {
                 , address: { ...personForDB.address, cep: handleRemoveCEPMask(personForDB.address.cep) }
                 , telephones: telephonesWithNoMask
             }
-
+            
+            const isSave = nowID === ""
             if (isSave) {
                 try {
                     const docRef = await addDoc(personCollection, personForDB)
@@ -146,24 +146,24 @@ export default function PersonForm(props: PersonFormProps) {
                 }
             }
 
-            setIsLoading(false)
             handleListItemClick(defaultPerson)
-
             if (props.onAfterSave) {
                 props.onAfterSave(feedbackMessage)
             }
         } else {
             feedbackMessage = { ...feedbackMessage, messages: isValid.messages, messageType: "ERROR" }
-            props.onShowMessage(feedbackMessage)
+            if (props.onShowMessage) {
+                props.onShowMessage(feedbackMessage)
+            }
         }
-
+        setIsLoading(false)
     }
 
     return (
         <>
-            {props.isForOldRegister && (oldPerson["Nome Prop."] || oldPerson["CPF Prop."]) && (
-                <OldDataProps
-                    oldData={oldPerson}
+            {props.isForOldRegister && (oldData["Nome Prop."] || oldData["CPF Prop."]) && (
+                <OldDataForm
+                    oldData={oldData}
                     title="Informações antigas"
                     subtitle="Dados da base antiga"
                 />
@@ -182,7 +182,7 @@ export default function PersonForm(props: PersonFormProps) {
                                 value={person.name}
                                 title="Nome completo"
                                 isLoading={isLoading}
-                                validation={NOT_NULL_MARK}
+                                validation={TEXT_NOT_NULL_MARK}
                                 onSetText={handleSetPersonName}
                                 isDisabled={props.isForDisable}
                                 onValidate={handleChangeFormValidation}

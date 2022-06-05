@@ -4,12 +4,14 @@ import { useState } from "react";
 import Button from "../button/button";
 import FormRowColumn from "./formRowColumn";
 import InputText from "../inputText/inputText";
-import { collection } from "firebase/firestore";
 import SelectPersonForm from "./selectPersonForm";
+import { FeedbackMessage } from "../modal/feedbackMessageModal";
 import { PersonConversor, PropertyConversor } from "../../db/converters";
 import { handlePropertyValidationForDB } from "../../util/validationUtil";
 import { defaultProperty, Property } from "../../interfaces/objectInterfaces";
 import { NOT_NULL_MARK, NUMBER_MARK } from "../../util/patternValidationUtil";
+import { addDoc, collection, doc, getDocs, updateDoc } from "firebase/firestore";
+import { defaultElementFromBase, ElementFromBase } from "../../util/converterUtil";
 import { db, PERSON_COLLECTION_NAME, PROPERTY_COLLECTION_NAME } from "../../db/firebaseDB";
 
 interface PropertyFormProps {
@@ -35,17 +37,78 @@ export default function PropertyForm(props: PropertyFormProps) {
     const [isOpen, setIsOpen] = useState(false)
     const [isLoading, setIsLoading] = useState(false)
 
-    const handleSetPropertyLote = (value) => { setProperty({ ...property, lote: value }) }
+    const [oldData, setOldData] = useState<ElementFromBase>(props?.property?.oldData ?? defaultElementFromBase)
+
+    const handleSetPropertyName = (value) => { setProperty({ ...property, name: value }) }
     const handleSetPropertyLand = (value) => { setProperty({ ...property, land: value }) }
     const handleSetPropertyArea = (value) => { setProperty({ ...property, area: value }) }
     const handleSetPropertyCounty = (value) => { setProperty({ ...property, county: value }) }
     const handleSetPropertyOwners = (value) => { setProperty({ ...property, owners: value }) }
     const handleSetPropertyPerimeter = (value) => { setProperty({ ...property, perimeter: value }) }
 
-    function handleSave() {
-        if (props.onAfterSave) {
-            props.onAfterSave({})
+    const handleListItemClick = async (property: Property) => {
+        setIsLoading(true)
+        if (props.onSelectPerson) {
+            props.onSelectPerson(property)
         }
+        setProperty(property)
+        setIsOpen(false)
+        setIsFormValid(true)
+        setIsLoading(false)
+    }
+
+    const handleSave = async (event) => {
+        event.preventDefault()
+        setIsLoading(true)
+        let feedbackMessage: FeedbackMessage = { messages: ["Algo estranho aconteceu"], messageType: "WARNING" }
+
+        let propertyForDB: Property = structuredClone(property)
+        const isValid = handlePropertyValidationForDB(propertyForDB)
+        if (isValid.validation) {
+            let nowID = propertyForDB?.id ?? ""
+            let docRefsForDB = []
+
+            if (propertyForDB.owners?.length > 0) {
+                propertyForDB.owners?.map((element, index) => {
+                    if (element.id) {
+                        const docRef = doc(personCollection, element.id)
+                        docRefsForDB = [...docRefsForDB, docRef]
+                    }
+                })
+                propertyForDB = { ...propertyForDB, owners: docRefsForDB }
+            }
+
+            const isSave = nowID === ""
+            if (isSave) {
+                try {
+                    const docRef = await addDoc(propertyCollection, propertyForDB)
+                    setProperty({ ...property, id: docRef.id })
+                    feedbackMessage = { ...feedbackMessage, messages: ["Salvo com sucesso!"], messageType: "SUCCESS" }
+                } catch (e) {
+                    feedbackMessage = { ...feedbackMessage, messages: ["Erro em salvar!"], messageType: "ERROR" }
+                    console.error("Error adding document: ", e)
+                }
+            } else {
+                try {
+                    const docRef = doc(propertyCollection, nowID)
+                    await updateDoc(docRef, propertyForDB)
+                    feedbackMessage = { ...feedbackMessage, messages: ["Atualizado com sucesso!"], messageType: "SUCCESS" }
+                } catch (e) {
+                    feedbackMessage = { ...feedbackMessage, messages: ["Erro em atualizar!"], messageType: "ERROR" }
+                    console.error("Error upddating document: ", e)
+                }
+            }
+            handleListItemClick(defaultProperty)
+            if (props.onAfterSave) {
+                props.onAfterSave(feedbackMessage)
+            }
+        } else {
+            feedbackMessage = { ...feedbackMessage, messages: isValid.messages, messageType: "ERROR" }
+            if (props.onShowMessage) {
+                props.onShowMessage(feedbackMessage)
+            }
+        }
+        setIsLoading(false)
     }
 
     const handleChangeFormValidation = (isValid) => {
@@ -63,13 +126,13 @@ export default function PropertyForm(props: PropertyFormProps) {
                     <FormRow>
                         <FormRowColumn unit="6">
                             <InputText
-                                id="lote"
-                                title="Nome da propriedade"
-                                value={property.lote}
+                                id="propertyname"
+                                value={property.name}
                                 isLoading={isLoading}
                                 validation={NOT_NULL_MARK}
+                                title="Nome da propriedade"
                                 isDisabled={props.isForDisable}
-                                onSetText={handleSetPropertyLote}
+                                onSetText={handleSetPropertyName}
                                 onValidate={handleChangeFormValidation}
                                 validationMessage="O nome da propriedade não pode ficar em branco."
                             />
@@ -83,7 +146,6 @@ export default function PropertyForm(props: PropertyFormProps) {
                                 title="Gleba"
                                 value={property.land}
                                 isLoading={isLoading}
-                                validation={NOT_NULL_MARK}
                                 isDisabled={props.isForDisable}
                                 onSetText={handleSetPropertyLand}
                                 onValidate={handleChangeFormValidation}
@@ -97,7 +159,6 @@ export default function PropertyForm(props: PropertyFormProps) {
                                 title="Município/UF"
                                 isLoading={isLoading}
                                 value={property.county}
-                                validation={NOT_NULL_MARK}
                                 isDisabled={props.isForDisable}
                                 onSetText={handleSetPropertyCounty}
                                 onValidate={handleChangeFormValidation}
@@ -148,9 +209,9 @@ export default function PropertyForm(props: PropertyFormProps) {
                 title="Proprietários"
                 persons={property.owners}
                 subtitle="Selecione os proprietários"
-                onSetPersons={handleSetPropertyOwners} 
+                onSetPersons={handleSetPropertyOwners}
                 onShowMessage={props.onShowMessage}
-                />
+            />
 
             <form
                 onSubmit={handleSave}>

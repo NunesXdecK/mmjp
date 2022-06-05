@@ -11,7 +11,7 @@ export interface Person {
     dateInsertUTC?: number,
     telephones?: string[],
     address?: PersonAddress,
-    oldPerson?: object,
+    oldData?: object,
 }
 
 export interface PersonAddress {
@@ -35,13 +35,14 @@ export interface Professional {
 
 export interface Property {
     id?: string,
-    lote?: string,
+    name?: string,
     land?: string,
     county?: string,
     area?: number,
     perimeter?: number,
     dateInsertUTC?: number,
     owners?: any[],
+    oldData?: object,
 }
 
 export interface Process {
@@ -76,16 +77,17 @@ export const defaultPerson: Person = {
     dateInsertUTC: 0,
     telephones: [],
     address: defaultPersonAddress,
-    oldPerson: {},
+    oldData: {},
 }
 
 export const defaultProperty: Property = {
     id: "",
-    lote: "",
+    name: "",
     land: "",
     county: "",
     area: 0,
     perimeter: 0,
     dateInsertUTC: 0,
     owners: [],
+    oldData: {},
 }

@@ -1,34 +1,34 @@
 export const PersonConversor = {
     toFirestore(person) {
         return {
-            name: person.name,
-            cpf: person.cpf,
             rg: person.rg,
+            cpf: person.cpf,
+            name: person.name,
+            address: person.address,
             rgIssuer: person.rgIssuer,
+            profession: person.profession,
+            telephones: person.telephones,
             nationality: person.nationality,
             naturalness: person.naturalness,
             maritalStatus: person.maritalStatus,
             dateInsertUTC: person.dateInsertUTC,
-            profession: person.profession,
-            telephones: person.telephones,
-            address: person.address,
         }
     },
     fromFirestore(snapshot, options) {
         const data = snapshot?.data(options)
         return {
-            id: snapshot?.id,
-            name: data.name,
-            cpf: data.cpf,
             rg: data.rg,
+            cpf: data.cpf,
+            name: data.name,
+            id: snapshot?.id,
+            address: data.address,
             rgIssuer: data.rgIssuer,
+            profession: data.profession,
+            telephones: data.telephones,
             nationality: data.nationality,
             naturalness: data.naturalness,
             maritalStatus: data.maritalStatus,
             dateInsertUTC: data.dateInsertUTC,
-            profession: data.profession,
-            telephones: data.telephones,
-            address: data.address,
         }
     }
 }
@@ -37,10 +37,10 @@ export const ProfessionalConversor = {
     toFirestore(professional) {
         return {
             title: professional.title,
-            creaNumber: professional.creaNumber,
-            credentialCode: professional.credentialCode,
             person: professional.person,
+            creaNumber: professional.creaNumber,
             dateInsertUTC: professional.dateInsertUTC,
+            credentialCode: professional.credentialCode,
         }
     },
     fromFirestore(snapshot, options) {
@@ -48,10 +48,10 @@ export const ProfessionalConversor = {
         return {
             id: snapshot?.id,
             title: data.title,
-            creaNumber: data.creaNumber,
-            credentialCode: data.credentialCode,
             person: data.person,
+            creaNumber: data.creaNumber,
             dateInsertUTC: data.dateInsertUTC,
+            credentialCode: data.credentialCode,
         }
     }
 }
@@ -59,25 +59,25 @@ export const ProfessionalConversor = {
 export const PropertyConversor = {
     toFirestore(property) {
         return {
-            lote: property.lote,
+            name: property.name,
             land: property.land,
-            county: property.county,
             area: property.area,
+            county: property.county,
+            owners: property.owners,
             perimeter: property.perimeter,
-            person: property.person,
             dateInsertUTC: property.dateInsertUTC,
         }
     },
     fromFirestore(snapshot, options) {
         const data = snapshot?.data(options)
         return {
-            id: snapshot?.id,
-            lote: data.lote,
+            name: data.name,
             land: data.land,
-            county: data.county,
             area: data.area,
+            id: snapshot?.id,
+            county: data.county,
+            owners: data.owners,
             perimeter: data.perimeter,
-            person: data.person,
             dateInsertUTC: data.dateInsertUTC,
         }
     }

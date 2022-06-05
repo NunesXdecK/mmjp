@@ -15,15 +15,28 @@ export interface LayoutMenuItem {
 const menus: LayoutMenuItem[] = [
     { name: 'Dashboard', href: "/", current: false, disabled: false },
     {
-        name: 'Pessoas', current: false, disabled: false, subMenus: [
-            { name: 'Nova pessoa', href: "/person", current: false, disabled: false },
-            { name: 'Lista de pessoas', href: "/person/persons", current: false, disabled: false },
-            { name: 'Pessoas da base antiga', href: "/person/personoldbase", current: false, disabled: false },
-        ]
+        name: 'Pessoas', current: false, disabled: false,
+        subMenus:
+            [
+                { name: 'Nova pessoa', href: "/person", current: false, disabled: false },
+                { name: 'Lista de pessoas', href: "/person/persons", current: false, disabled: false },
+            ]
     },
-    { name: 'Propriedades', href: "/property", current: false, disabled: false },
+    {
+        name: 'Propriedades', current: false, disabled: false,
+        subMenus:
+            [
+                { name: 'Nova propriedade', href: "/property", current: false, disabled: false },
+                { name: 'Lista de propriedades', href: "/property/properties", current: false, disabled: false },
+            ]
+    },
     { name: 'Projetos', href: "/project", current: false, disabled: false },
 ]
+
+{/*
+    { name: 'Pessoas da base antiga', href: "/person/personoldbase", current: false, disabled: true },
+*/}
+
 const user = {
     name: 'Tom Cook',
     email: 'tom@example.com',

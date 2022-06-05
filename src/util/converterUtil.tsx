@@ -78,9 +78,9 @@ export const extrateProperty = (element: ElementFromBase) => {
         areaProperty = parseFloat(perimeterPropertyString)
     }
 
-    let lote = ""
+    let name = ""
     if (element["Lote"]) {
-        lote = element["Lote"]?.trim() ?? ""
+        name = element["Lote"]?.trim() ?? ""
     }
 
     let land = ""
@@ -95,7 +95,7 @@ export const extrateProperty = (element: ElementFromBase) => {
 
     property = {
         ...property,
-        lote: lote,
+        name: name,
         area: areaProperty,
         perimeter: perimeterProperty,
         land: land,

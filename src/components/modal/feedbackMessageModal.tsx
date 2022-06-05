@@ -26,7 +26,7 @@ export default function FeedbackMessageModal(props: FeedbackMessageModalProps) {
                         rounded-md 
                         right-10 bottom-10
                     `
-    switch (props.feedbackMessage.messageType) {
+    switch (props.feedbackMessage?.messageType) {
         case "SUCCESS":
             className = className + " bg-green-600"
             break
@@ -49,7 +49,7 @@ export default function FeedbackMessageModal(props: FeedbackMessageModalProps) {
                 leaveFrom="opacity-100"
                 leaveTo="opacity-0">
                 <div className={className}>
-                    {props.feedbackMessage.messages.map((element, index) => (
+                    {props.feedbackMessage?.messages?.map((element, index) => (
                         <p key={index + element}>{element}</p>
                     ))}
                 </div>

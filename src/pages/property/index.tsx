@@ -10,9 +10,7 @@ export default function Property() {
 
     const handleAfterSave = (feedbackMessage: FeedbackMessage) => {
         if (isFeedbackOpen === false) {
-            setFeedbackMessage(feedbackMessage)
-            setIsFeedbackOpen((isFeedbackOpen) => true)
-            setTimeout(() => setIsFeedbackOpen((isFeedbackOpen) => false), 2000)
+            handleShowMessage(feedbackMessage)
         }
     }
 
