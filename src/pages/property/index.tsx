@@ -9,9 +9,7 @@ export default function Property() {
     const [feedbackMessage, setFeedbackMessage] = useState<FeedbackMessage>(defaultFeedbackMessage)
 
     const handleAfterSave = (feedbackMessage: FeedbackMessage) => {
-        if (isFeedbackOpen === false) {
-            handleShowMessage(feedbackMessage)
-        }
+        handleShowMessage(feedbackMessage)
     }
 
     const handleShowMessage = (feedbackMessage: FeedbackMessage) => {
@@ -27,10 +25,10 @@ export default function Property() {
 
     return (
         <Layout
-            title="Propriedade">
+            title="Nova propriedade">
             <Head>
-                <title>Propriedade</title>
-                <meta name="description" content="Propriedade" />
+                <title>Nova propriedade</title>
+                <meta name="description" content="Nova propriedade" />
                 <link rel="icon" href="/favicon.ico" />
             </Head>
 
