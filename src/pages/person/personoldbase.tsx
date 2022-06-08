@@ -14,13 +14,19 @@ export default function PersonOldBase() {
 
     const [title, setTitle] = useState("Lista de pessoas da base antiga")
     const [person, setPerson] = useState<Person>(defaultPerson)
-    
+
     const [isFeedbackOpen, setIsFeedbackOpen] = useState(false)
     const [feedbackMessage, setFeedbackMessage] = useState<FeedbackMessage>(defaultFeedbackMessage)
-    
-    const handleAfterSave = (feedbackMessage: FeedbackMessage) => {
-        setTitle("Lista de pessoas da base antiga")
+
+    const handleBackClick = (event?) => {
+        if (event) {
+            event.preventDefault()
+        }
         setPerson(defaultPerson)
+        setTitle("Lista de pessoas da base antiga")
+    }
+    const handleAfterSave = (feedbackMessage: FeedbackMessage) => {
+        handleBackClick()
         handleShowMessage(feedbackMessage)
     }
 
@@ -68,8 +74,10 @@ export default function PersonOldBase() {
                 />
             ) : (
                 <PersonForm
+                    isBack={true}
                     person={person}
                     isForOldRegister={true}
+                    onBack={handleBackClick}
                     title="Informações pessoais"
                     onAfterSave={handleAfterSave}
                     onShowMessage={handleShowMessage}

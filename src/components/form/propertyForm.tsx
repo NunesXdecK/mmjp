@@ -17,10 +17,12 @@ import { db, PERSON_COLLECTION_NAME, PROPERTY_COLLECTION_NAME } from "../../db/f
 interface PropertyFormProps {
     title?: string,
     subtitle?: string,
+    isBack?: boolean,
     isForSelect?: boolean,
     isForDisable?: boolean,
     isForOldRegister?: boolean,
     property?: Property,
+    onBack?: (object) => void,
     onAfterSave?: (object) => void,
     onSelectPerson?: (object) => void,
     onShowMessage?: (FeedbackMessage) => void,
@@ -216,7 +218,19 @@ export default function PropertyForm(props: PropertyFormProps) {
             <form
                 onSubmit={handleSave}>
                 <FormRow>
-                    <FormRowColumn unit="6" className="justify-self-end">
+                    {props.isBack && (
+                        <FormRowColumn unit="3" className="justify-self-start">
+                            <Button
+                                onClick={props.onBack}
+                                isLoading={isLoading}
+                                isDisabled={isLoading}
+                            >
+                                Voltar
+                            </Button>
+                        </FormRowColumn>
+                    )}
+
+                    <FormRowColumn unit={props.isBack ? "3" : "6"} className="justify-self-end">
                         <Button
                             isLoading={isLoading}
                             isDisabled={!isFormValid}

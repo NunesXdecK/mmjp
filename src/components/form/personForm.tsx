@@ -22,9 +22,11 @@ import { handleNewDateToUTC } from "../../util/dateUtils"
 interface PersonFormProps {
     title?: string,
     subtitle?: string,
+    isBack?: boolean,
     isForDisable?: boolean,
     isForOldRegister?: boolean,
     person?: Person,
+    onBack?: (object) => void,
     onAfterSave?: (object) => void,
     onSelectPerson?: (object) => void,
     onShowMessage?: (FeedbackMessage) => void,
@@ -95,7 +97,7 @@ export default function PersonForm(props: PersonFormProps) {
         const isValid = handlePersonValidationForDB(personForDB)
         if (isValid.validation) {
             let nowID = personForDB?.id ?? ""
-            
+
             const querySnapshot = await getDocs(personCollection)
             querySnapshot.forEach((doc) => {
                 const cpf = doc.data().cpf
@@ -124,7 +126,7 @@ export default function PersonForm(props: PersonFormProps) {
                 , address: { ...personForDB.address, cep: handleRemoveCEPMask(personForDB.address.cep) }
                 , telephones: telephonesWithNoMask
             }
-            
+
             const isSave = nowID === ""
             if (isSave) {
                 try {
@@ -315,7 +317,19 @@ export default function PersonForm(props: PersonFormProps) {
                 />
 
                 <FormRow>
-                    <FormRowColumn unit="6" className="justify-self-end">
+                    {props.isBack && (
+                        <FormRowColumn unit="3" className="justify-self-start">
+                            <Button
+                                onClick={props.onBack}
+                                isLoading={isLoading}
+                                isDisabled={isLoading}
+                            >
+                                Voltar
+                            </Button>
+                        </FormRowColumn>
+                    )}
+
+                    <FormRowColumn unit={props.isBack ? "3" : "6"} className="justify-self-end">
                         <Button
                             type="submit"
                             isLoading={isLoading}

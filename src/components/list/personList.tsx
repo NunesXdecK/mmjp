@@ -9,7 +9,7 @@ import { FeedbackMessage } from "../modal/feedbackMessageModal"
 import { db, PERSON_COLLECTION_NAME } from "../../db/firebaseDB"
 import { handleMaskCPF, handleRemoveCPFMask } from "../../util/maskUtil"
 import { ElementFromBase, extratePerson } from "../../util/converterUtil"
-import { handleValidationNotNull, handleValidationOnlyNumbersNotNull, handleValidationOnlyTextNotNull } from "../../util/validationUtil"
+import { handleValidationOnlyNumbersNotNull, handleValidationOnlyTextNotNull } from "../../util/validationUtil"
 
 const subtitle = "mt-1 max-w-2xl text-sm text-gray-500"
 const contentClassName = "sm:px-4 sm:py-5 mt-1 text-sm text-gray-900"

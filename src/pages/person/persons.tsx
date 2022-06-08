@@ -1,7 +1,7 @@
 import Head from "next/head"
 import { useState } from "react"
-import PersonForm from "../../components/form/personForm"
 import Layout from "../../components/layout/layout"
+import PersonForm from "../../components/form/personForm"
 import PersonList from "../../components/list/personList"
 import { defaultPerson, Person } from "../../interfaces/objectInterfaces"
 import FeedbackMessageModal, { defaultFeedbackMessage, FeedbackMessage } from "../../components/modal/feedbackMessageModal"
@@ -13,14 +13,21 @@ export default function Persons() {
     const [isFeedbackOpen, setIsFeedbackOpen] = useState(false)
     const [feedbackMessage, setFeedbackMessage] = useState<FeedbackMessage>(defaultFeedbackMessage)
 
+    const handleBackClick = (event?) => {
+        if (event) {
+            event.preventDefault()
+        }
+        setPerson(defaultPerson)
+        setTitle("Lista de pessoas")
+    }
+
     const handleListItemClick = (person) => {
         setPerson(person)
         setTitle("Editar pessoa")
     }
 
     const handleAfterSave = (feedbackMessage: FeedbackMessage) => {
-        setPerson(defaultPerson)
-        setTitle("Lista de pessoas")
+        handleBackClick()
         handleShowMessage(feedbackMessage)
     }
 
@@ -40,7 +47,7 @@ export default function Persons() {
                 <meta name="description" content={title} />
                 <link rel="icon" href="/favicon.ico" />
             </Head>
-            
+
             {person.id === "" ? (
                 <PersonList
                     onShowMessage={handleShowMessage}
@@ -48,7 +55,9 @@ export default function Persons() {
                 />
             ) : (
                 <PersonForm
+                    isBack={true}
                     person={person}
+                    onBack={handleBackClick}
                     title="Informações pessoais"
                     onAfterSave={handleAfterSave}
                     onShowMessage={handleShowMessage}

@@ -1,12 +1,10 @@
 import Head from "next/head"
 import { useState } from "react"
-import PersonForm from "../../components/form/personForm"
 import Layout from "../../components/layout/layout"
-import PersonList from "../../components/list/personList"
-import { defaultPerson, defaultProperty, Person, Property } from "../../interfaces/objectInterfaces"
-import FeedbackMessageModal, { defaultFeedbackMessage, FeedbackMessage } from "../../components/modal/feedbackMessageModal"
 import PropertyForm from "../../components/form/propertyForm"
 import PropertyList from "../../components/list/propertyList"
+import { defaultProperty, Property } from "../../interfaces/objectInterfaces"
+import FeedbackMessageModal, { defaultFeedbackMessage, FeedbackMessage } from "../../components/modal/feedbackMessageModal"
 
 export default function Properties() {
     const [title, setTitle] = useState("Lista de propriedades")
@@ -15,14 +13,21 @@ export default function Properties() {
     const [isFeedbackOpen, setIsFeedbackOpen] = useState(false)
     const [feedbackMessage, setFeedbackMessage] = useState<FeedbackMessage>(defaultFeedbackMessage)
 
+    const handleBackClick = (event?) => {
+        if (event) {
+            event.preventDefault()
+        }
+        setProperty(defaultProperty)
+        setTitle("Lista de propriedades")
+    }
+
     const handleListItemClick = (property) => {
         setProperty(property)
         setTitle("Editar propriedade")
     }
 
     const handleAfterSave = (feedbackMessage: FeedbackMessage) => {
-        setProperty(defaultPerson)
-        setTitle("Lista de propriedades")
+        handleBackClick()
         handleShowMessage(feedbackMessage)
     }
 
@@ -42,7 +47,7 @@ export default function Properties() {
                 <meta name="description" content={title} />
                 <link rel="icon" href="/favicon.ico" />
             </Head>
-            
+
             {property.id === "" ? (
                 <PropertyList
                     onShowMessage={handleShowMessage}
@@ -50,7 +55,9 @@ export default function Properties() {
                 />
             ) : (
                 <PropertyForm
+                    isBack={true}
                     property={property}
+                    onBack={handleBackClick}
                     title="Informações da propriedade"
                     onAfterSave={handleAfterSave}
                     onShowMessage={handleShowMessage}

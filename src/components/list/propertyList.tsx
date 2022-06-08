@@ -2,7 +2,7 @@ import { useState } from "react"
 import Button from "../button/button"
 import data from "../../data/data.json"
 import InputText from "../inputText/inputText"
-import { collection, getDocs } from "firebase/firestore"
+import { collection, doc, getDoc, getDocs } from "firebase/firestore"
 import { handleRemoveCPFMask } from "../../util/maskUtil"
 import { FeedbackMessage } from "../modal/feedbackMessageModal"
 import { Person, Property } from "../../interfaces/objectInterfaces"
@@ -64,17 +64,18 @@ export default function PropertyList(props: PropertyListProps) {
                 const querySnapshotProperty = await getDocs(propertyCollection)
                 querySnapshotProperty.forEach((docProperty) => {
                     let property: Property = docProperty.data()
+                    let ownersIdList = []
                     let ownersList = []
                     property?.owners?.map((element, index) => {
-                        const personPropertyID = element.id
-                        querySnapshotPerson.forEach((docPerson) => {
-                            const personID = docPerson.data().id
-                            if (personPropertyID === personID) {
-                                if (!ownersList.includes(docPerson.data())) {
-                                    ownersList = [...ownersList, docPerson.data()]
-                                }
+                        ownersIdList = [...ownersIdList, element.id]
+                    })
+                    querySnapshotPerson.forEach((docPerson) => {
+                        const personID = docPerson.data().id
+                        if (ownersIdList.includes(personID)) {
+                            if (!ownersList.includes(docPerson.data())) {
+                                ownersList = [...ownersList, docPerson.data()]
                             }
-                        })
+                        }
                     })
                     property = { ...property, owners: ownersList }
                     arrayList = [...arrayList, property]
