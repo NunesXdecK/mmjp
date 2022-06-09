@@ -1,5 +1,5 @@
 import { useState } from "react"
-import { handleMaskCPF, handleMaskTelephone, handleMountCPFCurrency, handleMountMask, handleMountPerimeter, handleRemoveCEPMask } from "../../util/maskUtil"
+import { handleMaskCPF, handleMaskTelephone, handleMountMask, handleMountNumberCurrency, handleRemoveCEPMask } from "../../util/maskUtil"
 import { CEP_MARK, CPF_MARK, CPF_PATTERN, NOT_NULL_MARK, NUMBER_MARK, ONLY_CHARACTERS_PATTERN, ONLY_CHARACTERS_PATTERN_TWO, ONLY_SPECIAL_FOR_NUMBER_PATTERN, STYLE_FOR_INPUT_LOADING, TELEPHONE_MARK, TEXT_NOT_NULL_MARK } from "../../util/patternValidationUtil"
 import { handleValidationNotNull } from "../../util/validationUtil"
 
@@ -54,28 +54,20 @@ const handleMaskCEP = (text: string) => {
 const handleMaskRG = (text) => {
     const dig1 = "-"
     const dig2 = "."
-    const unMaskedText = text?.toString().replaceAll(dig1, "").replaceAll(dig2, "")
+    const unMaskedText = text?.replaceAll(dig1, "").replaceAll(dig2, "")
     return handleMountRG(unMaskedText, dig1, dig2)
 }
 
 const handleMaskPerimeter = (text) => {
-    const dig1 = ","
-    const dig2 = "."
-    const unMaskedText = text?.toString().replaceAll(dig1, "").replaceAll(dig2, "")
-    return handleMountPerimeter(unMaskedText)
+    return handleMountNumberCurrency(text, ".", ",", 3, 4)
 }
 
 const handleMaskCurrency = (text) => {
-    const dig1 = ","
-    const dig2 = "."
-    const unMaskedText = text?.toString().replaceAll(dig1, "").replaceAll(dig2, "")
-    return handleMountCPFCurrency(unMaskedText, dig1, dig2)
+    return handleMountNumberCurrency(text, ".", ",", 3, 2)
 }
 
 export default function InputText(props: InputTextProps) {
     const [isValid, setIsValid] = useState(true)
-
-    let value = props.value ?? ""
 
     let classNameInput = `
                             peer
@@ -94,37 +86,6 @@ export default function InputText(props: InputTextProps) {
 
     if (!isValid) {
         classNameInput = classNameInput + " ring-red-600 border-red-600  focus:ring-red-600 focus:border-red-600"
-    }
-
-    if (props.mask) {
-        if (value) {
-            switch (props.mask) {
-                case "cpf":
-                    value = handleMaskCPF(value)
-                    break
-                case "rg":
-                    value = handleMaskRG(value)
-                    break
-                case "cnpj":
-                    break
-                case "perimeter":
-                    value = handleMaskPerimeter(value)
-                    break
-                case "area":
-                    value = handleMaskCurrency(value)
-                    break
-                case "currency":
-                    classNameInput = classNameInput + " text-right"
-                    value = handleMaskCurrency(value)
-                    break
-                case "telephone":
-                    value = handleMaskTelephone(value)
-                    break
-                case "cep":
-                    value = handleMaskCEP(value)
-                    break
-            }
-        }
     }
 
     const handleValidation = (text) => {
@@ -207,7 +168,7 @@ export default function InputText(props: InputTextProps) {
             </label>
             <input
                 id={props.id}
-                value={value}
+                value={props.value}
                 name={props.title}
                 className={classNameInput}
                 type={props.type ?? "text"}
@@ -216,8 +177,8 @@ export default function InputText(props: InputTextProps) {
                 required={props.isRequired}
                 onChange={(event) => {
                     let text = event.target.value
-                    text = handleMask(text)
                     text = handleValidation(text)
+                    text = handleMask(text)
                     props.onSetText(text)
                 }}
             />

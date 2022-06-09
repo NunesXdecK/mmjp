@@ -50,7 +50,79 @@ export const handleMountMask = (text: string, mask: string) => {
     return maskedText
 }
 
+export const handleMountNumberCurrency = (text, digOne, digTwo, digOneStart, digTwoStart) => {
+    let maskedText = ""
+    if (text) {
+        const localText = text.replaceAll(digOne, "").replaceAll(digTwo, "")
+        const length = localText.length
+        const lengthBetween = length - digTwoStart
+        const digOneCount = Math.floor(lengthBetween / digOneStart)
+        let lastPos = 0
+        let posToSub = []
+        for (let i = 0; i < digOneCount; i++) {
+            lastPos = lastPos + digOneStart
+            posToSub = [...posToSub, (lastPos + digTwoStart)]
+        }
+        for (let i = length; i > 0; i--) {
+            const char = localText.substring(i, i - 1)
+            const iz = (length - i) + 1
+            if (iz === (digTwoStart + 1)) {
+                maskedText = digTwo + maskedText
+            }
+
+            if (posToSub.includes(iz)) {
+                maskedText = digOne + char + maskedText
+            } else {
+                maskedText = char + maskedText
+            }
+        }
+    }
+    if (maskedText.substring(0, 1) === digOne || maskedText.substring(0, 1) === digTwo) {
+        maskedText = maskedText.substring(1, maskedText.length)
+    }
+    return maskedText
+}
+
 export const handleMountPerimeter = (text) => {
+    let maskedText = ""
+    const digOne = "."
+    const digTwo = ","
+
+    const digOneBetween = 3
+    const digTwoStart = 4
+    if (text) {
+        const length = text.length
+        const lengthTwoStart = length - digTwoStart
+        const lengthBetween = length - digTwoStart
+        const digOneCount = Math.floor(lengthBetween / digOneBetween)
+        let lastPos = 0
+        let posToSub = []
+        for (let i = 0; i < digOneCount; i++) {
+            lastPos = lastPos + digOneBetween
+            console.log(i, lastPos, (lastPos + digTwoStart))
+            posToSub = [...posToSub, (lastPos + digTwoStart)]
+        }
+        for (let i = length; i > 0; i--) {
+            const char = text.substring(i, i - 1)
+            const iz = (length - i) + 1
+            if (iz === 5) {
+                maskedText = digTwo + maskedText
+            }
+
+            if (posToSub.includes(iz)) {
+                maskedText = digOne + char + maskedText
+            } else {
+                maskedText = char + maskedText
+            }
+        }
+    }
+    if (maskedText.substring(0, 1) === digOne || maskedText.substring(0, 1) === digTwo) {
+        maskedText = maskedText.substring(1, maskedText.length)
+    }
+    return maskedText
+}
+
+export const handleMountPerimeterOld = (text) => {
     let maskedText = ""
     const digOne = "."
     const digTwo = ","
@@ -63,7 +135,7 @@ export const handleMountPerimeter = (text) => {
         let posToSub = []
         if (lengthBetween > 3) {
             for (let i = 1; i <= digOneCount; i++) {
-                posToSub = [...posToSub,(digOneBetween * i)]
+                posToSub = [...posToSub, (digOneBetween * i)]
             }
         }
         for (let i = 0; i < length; i++) {

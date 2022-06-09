@@ -65,8 +65,9 @@ export default function PropertyForm(props: PropertyFormProps) {
         let feedbackMessage: FeedbackMessage = { messages: ["Algo estranho aconteceu"], messageType: "WARNING" }
 
         let propertyForDB: Property = structuredClone(property)
+        console.log(property)
         const isValid = handlePropertyValidationForDB(propertyForDB)
-        if (isValid.validation) {
+        if (false) {
             let nowID = propertyForDB?.id ?? ""
             let docRefsForDB = []
 
