@@ -135,7 +135,7 @@ export default function InputText(props: InputTextProps) {
                 setIsValid(test)
                 break
             case TEXT_NOT_NULL_MARK:
-                text = text.replaceAll(ONLY_CHARACTERS_PATTERN_TWO, '')
+                text = text?.replaceAll(ONLY_CHARACTERS_PATTERN_TWO, '')
                 test = handleValidationNotNull(text)
                 setIsValid(test)
                 break
@@ -145,21 +145,21 @@ export default function InputText(props: InputTextProps) {
                 setIsValid(test)
                 break
             case CPF_MARK:
-                text = text.trim()
-                text = text.replace(new RegExp(ONLY_CHARACTERS_PATTERN), "")
+                text = text?.trim()
+                text = text?.replace(new RegExp(ONLY_CHARACTERS_PATTERN), "")
                 test = new RegExp(CPF_PATTERN).test(text)
                 setIsValid(test)
                 break
             case NUMBER_MARK:
-                text = text.trim()
-                text = text.replace(new RegExp(ONLY_SPECIAL_FOR_NUMBER_PATTERN), "")
-                text = text.replace(new RegExp(ONLY_CHARACTERS_PATTERN), "")
+                text = text?.trim()
+                text = text?.replace(new RegExp(ONLY_SPECIAL_FOR_NUMBER_PATTERN), "")
+                text = text?.replace(new RegExp(ONLY_CHARACTERS_PATTERN), "")
                 setIsValid(test)
                 break
             case TELEPHONE_MARK:
-                text = text.trim()
-                text = text.replace(new RegExp(ONLY_CHARACTERS_PATTERN), "")
-                test = text.length === 0 || (text.length > 13 && text.length < 16)
+                text = text?.trim()
+                text = text?.replace(new RegExp(ONLY_CHARACTERS_PATTERN), "")
+                test = text?.length === 0 || (text.length > 13 && text.length < 16)
                 setIsValid(test)
                 break
         }
