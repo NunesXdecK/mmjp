@@ -99,7 +99,6 @@ export const handleMountPerimeter = (text) => {
         let posToSub = []
         for (let i = 0; i < digOneCount; i++) {
             lastPos = lastPos + digOneBetween
-            console.log(i, lastPos, (lastPos + digTwoStart))
             posToSub = [...posToSub, (lastPos + digTwoStart)]
         }
         for (let i = length; i > 0; i--) {
