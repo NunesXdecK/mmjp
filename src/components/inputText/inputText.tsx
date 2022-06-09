@@ -1,5 +1,5 @@
 import { useState } from "react"
-import { handleMaskCPF, handleMaskTelephone, handleMountCPFCurrency, handleMountMask, handleRemoveCEPMask } from "../../util/maskUtil"
+import { handleMaskCPF, handleMaskTelephone, handleMountCPFCurrency, handleMountMask, handleMountPerimeter, handleRemoveCEPMask } from "../../util/maskUtil"
 import { CEP_MARK, CPF_MARK, CPF_PATTERN, NOT_NULL_MARK, NUMBER_MARK, ONLY_CHARACTERS_PATTERN, ONLY_CHARACTERS_PATTERN_TWO, ONLY_SPECIAL_FOR_NUMBER_PATTERN, STYLE_FOR_INPUT_LOADING, TELEPHONE_MARK, TEXT_NOT_NULL_MARK } from "../../util/patternValidationUtil"
 import { handleValidationNotNull } from "../../util/validationUtil"
 
@@ -15,7 +15,7 @@ interface InputTextProps {
     isDisabled?: boolean,
     isRequired?: boolean,
     children?: any,
-    mask?: "cpf" | "rg" | "cnpj" | "currency" | "telephone" | "cep",
+    mask?: "cpf" | "rg" | "cnpj" | "currency" | "telephone" | "cep" | "perimeter" | "area",
     onChange?: (any) => void,
     onSetText?: (string) => void,
     onValidate?: (boolean) => void,
@@ -56,6 +56,13 @@ const handleMaskRG = (text) => {
     const dig2 = "."
     const unMaskedText = text.replaceAll(dig1, "").replaceAll(dig2, "")
     return handleMountRG(unMaskedText, dig1, dig2)
+}
+
+const handleMaskPerimeter = (text) => {
+    const dig1 = ","
+    const dig2 = "."
+    const unMaskedText = text.replaceAll(dig1, "").replaceAll(dig2, "")
+    return handleMountPerimeter(unMaskedText)
 }
 
 const handleMaskCurrency = (text) => {
@@ -99,6 +106,12 @@ export default function InputText(props: InputTextProps) {
                     value = handleMaskRG(value)
                     break
                 case "cnpj":
+                    break
+                case "perimeter":
+                    value = handleMaskPerimeter(value)
+                    break
+                case "area":
+                    value = handleMaskCurrency(value)
                     break
                 case "currency":
                     classNameInput = classNameInput + " text-right"
@@ -168,6 +181,11 @@ export default function InputText(props: InputTextProps) {
                 break
             case "cnpj":
                 break
+            case "perimeter":
+                value = handleMaskPerimeter(value)
+                break
+            case "area":
+                value = handleMaskCurrency(value)
             case "currency":
                 value = handleMaskCurrency(value)
                 break

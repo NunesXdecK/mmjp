@@ -50,6 +50,37 @@ export const handleMountMask = (text: string, mask: string) => {
     return maskedText
 }
 
+export const handleMountPerimeter = (text) => {
+    let maskedText = ""
+    const digOne = "."
+    const digTwo = ","
+    const digOneBetween = 3
+    const digTwoStart = 4
+    if (text) {
+        const length = text.length
+        const lengthBetween = length - digTwoStart
+        const digOneCount = Math.floor(lengthBetween / digOneBetween)
+        let posToSub = []
+        if (lengthBetween > 3) {
+            for (let i = 1; i <= digOneCount; i++) {
+                posToSub = [...posToSub,(digOneBetween * i)]
+            }
+        }
+        for (let i = 0; i < length; i++) {
+            const char = text.substring(i, i + 1)
+            const iz = (i - digTwoStart)
+            if (i === digTwoStart) {
+                maskedText = digTwo + maskedText
+            }
+            if (posToSub.includes(iz)) {
+                maskedText = digOne + maskedText
+            }
+            maskedText = char + maskedText
+        }
+    }
+    return maskedText
+}
+
 export const handleMountCPFCurrency = (text, dig1, dig2) => {
     let maskedText = ""
     if (text && dig1 && dig2) {

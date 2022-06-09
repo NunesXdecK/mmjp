@@ -173,6 +173,7 @@ export default function PropertyForm(props: PropertyFormProps) {
                         <FormRowColumn unit="3">
                             <InputText
                                 id="area"
+                                mask="area"
                                 title="Área"
                                 isLoading={isLoading}
                                 validation={NUMBER_MARK}
@@ -187,6 +188,7 @@ export default function PropertyForm(props: PropertyFormProps) {
                         <FormRowColumn unit="3">
                             <InputText
                                 id="perimeter"
+                                mask="perimeter"
                                 title="Perímetro"
                                 isLoading={isLoading}
                                 validation={NUMBER_MARK}
