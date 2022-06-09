@@ -3,6 +3,7 @@ import { Disclosure, Menu, Transition } from '@headlessui/react'
 import { BellIcon, MenuIcon, XIcon } from '@heroicons/react/outline'
 import LayoutMenu from './layoutMenu'
 import LayoutMenuMobile from './layoutMenuMobile'
+import Image from 'next/image'
 
 export interface LayoutMenuItem {
     name?: string,
@@ -85,7 +86,7 @@ export default function Layout(props) {
                                 <div className="flex items-center justify-between h-16">
                                     <div className="flex items-center">
                                         <div className="flex-shrink-0">
-                                            <img
+                                            <Image
                                                 className="h-8 w-8"
                                                 src="https://tailwindui.com/img/logos/workflow-mark-indigo-500.svg"
                                                 alt="Workflow"
