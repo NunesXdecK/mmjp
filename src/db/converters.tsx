@@ -61,10 +61,10 @@ export const PropertyConversor = {
         return {
             name: property.name,
             land: property.land,
-            area: property.area,
+            area: parseFloat(property.area),
             county: property.county,
             owners: property.owners,
-            perimeter: property.perimeter,
+            perimeter: parseFloat(property.perimeter),
             dateInsertUTC: property.dateInsertUTC,
         }
     },
@@ -73,11 +73,11 @@ export const PropertyConversor = {
         return {
             name: data.name,
             land: data.land,
-            area: data.area,
+            area: data.area + "",
             id: snapshot?.id,
             county: data.county,
             owners: data.owners,
-            perimeter: data.perimeter,
+            perimeter: data.perimeter + "",
             dateInsertUTC: data.dateInsertUTC,
         }
     }

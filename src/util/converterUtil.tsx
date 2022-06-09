@@ -64,18 +64,18 @@ export interface ElementFromBase {
 export const extrateProperty = (element: ElementFromBase) => {
     let property: Property = defaultProperty
 
-    let areaProperty = 0
+    let areaProperty = ""
     if (element["Área"]) {
         let areaPropertyString = element["Área"]?.trim() ?? ""
         areaPropertyString = areaPropertyString.replaceAll(".", "").replace(",", ".")
-        areaProperty = parseFloat(areaPropertyString)
+        areaProperty = areaPropertyString
     }
 
-    let perimeterProperty = 0
+    let perimeterProperty = ""
     if (element["Perímetro"]) {
         let perimeterPropertyString = element["Perímetro"]?.trim() ?? ""
         perimeterPropertyString = perimeterPropertyString.replaceAll(".", "").replace(",", ".")
-        areaProperty = parseFloat(perimeterPropertyString)
+        areaProperty = perimeterPropertyString
     }
 
     let name = ""
