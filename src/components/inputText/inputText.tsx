@@ -54,21 +54,21 @@ const handleMaskCEP = (text: string) => {
 const handleMaskRG = (text) => {
     const dig1 = "-"
     const dig2 = "."
-    const unMaskedText = text?.replaceAll(dig1, "").replaceAll(dig2, "")
+    const unMaskedText = text?.toString().replaceAll(dig1, "").replaceAll(dig2, "")
     return handleMountRG(unMaskedText, dig1, dig2)
 }
 
 const handleMaskPerimeter = (text) => {
     const dig1 = ","
     const dig2 = "."
-    const unMaskedText = text?.replaceAll(dig1, "").replaceAll(dig2, "")
+    const unMaskedText = text?.toString().replaceAll(dig1, "").replaceAll(dig2, "")
     return handleMountPerimeter(unMaskedText)
 }
 
 const handleMaskCurrency = (text) => {
     const dig1 = ","
     const dig2 = "."
-    const unMaskedText = text?.replaceAll(dig1, "").replaceAll(dig2, "")
+    const unMaskedText = text?.toString().replaceAll(dig1, "").replaceAll(dig2, "")
     return handleMountCPFCurrency(unMaskedText, dig1, dig2)
 }
 

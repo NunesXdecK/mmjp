@@ -1,9 +1,8 @@
 import { Fragment } from 'react'
-import { Disclosure, Menu, Transition } from '@headlessui/react'
-import { BellIcon, MenuIcon, XIcon } from '@heroicons/react/outline'
 import LayoutMenu from './layoutMenu'
 import LayoutMenuMobile from './layoutMenuMobile'
-import Image from 'next/image'
+import { Disclosure, Menu, Transition } from '@headlessui/react'
+import { BellIcon, MenuIcon, XIcon } from '@heroicons/react/outline'
 
 export interface LayoutMenuItem {
     name?: string,
@@ -86,11 +85,13 @@ export default function Layout(props) {
                                 <div className="flex items-center justify-between h-16">
                                     <div className="flex items-center">
                                         <div className="flex-shrink-0">
-                                            <Image
+                                            {/*
+                                            <img
                                                 className="h-8 w-8"
                                                 src="https://tailwindui.com/img/logos/workflow-mark-indigo-500.svg"
                                                 alt="Workflow"
                                             />
+                                             */}
                                         </div>
                                         <div className="hidden md:block">
                                             <div className="ml-10 flex items-baseline space-x-4">
