@@ -1,5 +1,4 @@
 import { useState } from "react"
-import projects from "../../data/projects.json"
 import Button from "../button/button"
 import ProjectForm from "../form/projectForm"
 import IOSModal from "../modal/iosModal"
@@ -18,9 +17,11 @@ export default function ProjectList(props) {
 
     function filterList(event) {
         event.preventDefault()
+        {/*
         listItemsFiltered = projects.filter((element, index) => {
             return element.name.toUpperCase().includes(inputSearch.toUpperCase())
         })
+    */}
         setListItems(listItemsFiltered)
     }
 
