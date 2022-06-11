@@ -40,7 +40,7 @@ export default function PersonOldBase() {
     }
 
     const handleAfterSavePerson = (feedbackMessage: FeedbackMessage, person: Person) => {
-        setProperty({ ...property, owners: [person] })
+        setProperty({ ...property, owners: [handlePreparePersonForShow(person)] })
         setIsForRegisterProperty(true)
         handleShowMessage(feedbackMessage)
     }
@@ -62,7 +62,7 @@ export default function PersonOldBase() {
                 const baseCpf = handleRemoveCPFMask(doc.data().cpf)
                 if (doc.id && localCpf === baseCpf) {
                     localPerson = doc.data()
-                    localPerson = {...localPerson, oldData: property.oldData }
+                    localPerson = { ...localPerson, oldData: property.oldData }
                 }
             })
         } catch (err) {

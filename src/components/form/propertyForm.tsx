@@ -210,10 +210,11 @@ export default function PropertyForm(props: PropertyFormProps) {
 
             <SelectPersonForm
                 title="Proprietários"
+                isLoading={isLoading}
                 persons={property.owners}
+                onShowMessage={props.onShowMessage}
                 subtitle="Selecione os proprietários"
                 onSetPersons={handleSetPropertyOwners}
-                onShowMessage={props.onShowMessage}
             />
 
             <form

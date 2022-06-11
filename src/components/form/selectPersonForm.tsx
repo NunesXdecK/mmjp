@@ -8,7 +8,7 @@ import { useState } from "react";
 import IOSModal from "../modal/iosModal";
 import PersonList from "../list/personList";
 import { FeedbackMessage } from "../modal/feedbackMessageModal";
-import { handleRemoveCPFMask } from "../../util/maskUtil";
+import { handleMaskCPF, handleRemoveCPFMask } from "../../util/maskUtil";
 
 interface SelectPersonFormProps {
     id?: string,
@@ -98,9 +98,9 @@ export default function SelectPersonForm(props: SelectPersonFormProps) {
                                     mask="cpf"
                                     title="CPF"
                                     isDisabled={true}
-                                    value={element.cpf}
                                     isLoading={props.isLoading}
                                     id={"person-cpf-" + element.cpf}
+                                    value={handleMaskCPF(element.cpf)}
                                 />
                             </FormRowColumn>
 

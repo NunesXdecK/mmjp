@@ -132,7 +132,7 @@ export default function PersonForm(props: PersonFormProps) {
             }
             
             if (props.onAfterSave) {
-                props.onAfterSave(feedbackMessage, personForDB)
+                props.onAfterSave(feedbackMessage, person)
             }
 
             handleListItemClick(defaultPerson)
