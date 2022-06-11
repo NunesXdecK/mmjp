@@ -1,35 +1,5 @@
 import { defaultPerson, defaultProperty, Person, PersonAddress, Property } from "../interfaces/objectInterfaces"
-import { handleRemoveCEPMask } from "./maskUtil"
-
-export const defaultElementFromBase: ElementFromBase = {
-    "Nome Prop.": "",
-    "CPF Prop.": "",
-    "RG Prop.": "",
-    "Nacionalidade Prop.": "",
-    "Naturalidade Prop.": "",
-    "Estado Civíl Prop.": "",
-    "Profissão Prop.": "",
-    "Telefone Prop.": "",
-    "Logradouro End.": "",
-    "Numero End.": "",
-    "Bairro End.": "",
-    "CEP End.": "",
-    "Município/UF End.": "",
-    "Lote": "",
-    "Data": "",
-    "Data Simples": "",
-    "Nome Prof.": "",
-    "CPF Prof.": "",
-    "RG Prof.": "",
-    "Título Prof.": "",
-    "CREA Prof.": "",
-    "Cod. Credenciado": "",
-    "Endereço Prof.": "",
-    "Bairro Prof.": "",
-    "Cidade/UF Prof.": "",
-    "CEP": "",
-    "Telefone Prof. ": "",
-}
+import { handleMaskCPF, handleMaskTelephone, handleMountMask, handleRemoveCEPMask, handleRemoveCPFMask, handleRemoveTelephoneMask } from "./maskUtil"
 
 export interface ElementFromBase {
     "Nome Prop."?: string,
@@ -61,48 +31,72 @@ export interface ElementFromBase {
     "Telefone Prof. "?: string
 }
 
-export const extrateProperty = (element: ElementFromBase) => {
-    let property: Property = defaultProperty
+export const defaultElementFromBase: ElementFromBase = {
+    "Nome Prop.": "",
+    "CPF Prop.": "",
+    "RG Prop.": "",
+    "Nacionalidade Prop.": "",
+    "Naturalidade Prop.": "",
+    "Estado Civíl Prop.": "",
+    "Profissão Prop.": "",
+    "Telefone Prop.": "",
+    "Logradouro End.": "",
+    "Numero End.": "",
+    "Bairro End.": "",
+    "CEP End.": "",
+    "Município/UF End.": "",
+    "Lote": "",
+    "Data": "",
+    "Data Simples": "",
+    "Nome Prof.": "",
+    "CPF Prof.": "",
+    "RG Prof.": "",
+    "Título Prof.": "",
+    "CREA Prof.": "",
+    "Cod. Credenciado": "",
+    "Endereço Prof.": "",
+    "Bairro Prof.": "",
+    "Cidade/UF Prof.": "",
+    "CEP": "",
+    "Telefone Prof. ": "",
+}
 
-    let areaProperty = ""
-    if (element["Área"]) {
-        let areaPropertyString = element["Área"]?.trim() ?? ""
-        areaPropertyString = areaPropertyString.replaceAll(".", "").replace(",", ".")
-        areaProperty = areaPropertyString
+const checkStringForNull = (string) => {
+    return string?.trim() ?? ""
+}
+
+export const handlePreparePersonForShow = (person: Person) => {
+    let telephonesWithNoMask = []
+    person.telephones.map((element, index) => {
+        telephonesWithNoMask = [...telephonesWithNoMask, handleMaskTelephone(element)]
+    })
+
+    person = {
+        ...person
+        , cpf: handleMaskCPF(person.cpf)
+        , address: { ...person.address, cep: handleMountMask(handleRemoveCEPMask(person.address.cep), "99999-999") }
+        , telephones: telephonesWithNoMask
+    }
+    return person
+}
+
+export const handlePreparePersonForDB = (person: Person) => {
+    let telephonesWithNoMask = []
+    person.telephones.map((element, index) => {
+        telephonesWithNoMask = [...telephonesWithNoMask, handleRemoveTelephoneMask(element)]
+    })
+
+    if (person.oldData) {
+        delete person.oldData
     }
 
-    let perimeterProperty = ""
-    if (element["Perímetro"]) {
-        let perimeterPropertyString = element["Perímetro"]?.trim() ?? ""
-        perimeterPropertyString = perimeterPropertyString.replaceAll(".", "").replace(",", ".")
-        areaProperty = perimeterPropertyString
+    person = {
+        ...person
+        , cpf: handleRemoveCPFMask(person.cpf)
+        , address: { ...person.address, cep: handleRemoveCEPMask(person.address.cep) }
+        , telephones: telephonesWithNoMask
     }
-
-    let name = ""
-    if (element["Lote"]) {
-        name = element["Lote"]?.trim() ?? ""
-    }
-
-    let land = ""
-    if (element["Gleba"]) {
-        land = element["Gleba"]?.trim() ?? ""
-    }
-
-    let county = ""
-    if (element["Município/UF"]) {
-        county = element["Município/UF"]?.trim() ?? ""
-    }
-
-    property = {
-        ...property,
-        name: name,
-        area: areaProperty,
-        perimeter: perimeterProperty,
-        land: land,
-        county: county,
-    }
-
-    return property
+    return person
 }
 
 export const extratePerson = (element: ElementFromBase) => {
@@ -191,11 +185,53 @@ export const extratePerson = (element: ElementFromBase) => {
         dateInsertUTC: dateCadUTC,
         telephones: personTelephones,
         address: personAddress,
+        oldData: element,
     }
 
     return person
 }
 
-const checkStringForNull = (string) => {
-    return string?.trim() ?? ""
+export const extrateProperty = (element: ElementFromBase) => {
+    let property: Property = defaultProperty
+
+    let areaProperty = ""
+    if (element["Área"]) {
+        let areaPropertyString = element["Área"]?.trim() ?? ""
+        areaPropertyString = areaPropertyString.replaceAll(".", "").replace(",", ".")
+        areaProperty = areaPropertyString
+    }
+
+    let perimeterProperty = ""
+    if (element["Perímetro"]) {
+        let perimeterPropertyString = element["Perímetro"]?.trim() ?? ""
+        perimeterPropertyString = perimeterPropertyString.replaceAll(".", "").replace(",", ".")
+        areaProperty = perimeterPropertyString
+    }
+
+    let name = ""
+    if (element["Lote"]) {
+        name = element["Lote"]?.trim() ?? ""
+    }
+
+    let land = ""
+    if (element["Gleba"]) {
+        land = element["Gleba"]?.trim() ?? ""
+    }
+
+    let county = ""
+    if (element["Município/UF"]) {
+        county = element["Município/UF"]?.trim() ?? ""
+    }
+
+    property = {
+        ...property,
+        name: name,
+        area: areaProperty,
+        perimeter: perimeterProperty,
+        land: land,
+        county: county,
+        owners: [extratePerson(element)],
+    }
+
+    return property
 }

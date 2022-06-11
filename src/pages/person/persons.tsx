@@ -3,6 +3,7 @@ import { useState } from "react"
 import Layout from "../../components/layout/layout"
 import PersonForm from "../../components/form/personForm"
 import PersonList from "../../components/list/personList"
+import { handlePreparePersonForShow } from "../../util/converterUtil"
 import { defaultPerson, Person } from "../../interfaces/objectInterfaces"
 import FeedbackMessageModal, { defaultFeedbackMessage, FeedbackMessage } from "../../components/modal/feedbackMessageModal"
 
@@ -22,7 +23,9 @@ export default function Persons() {
     }
 
     const handleListItemClick = (person) => {
-        setPerson(person)
+        let localPerson = structuredClone(person)
+        localPerson = handlePreparePersonForShow(localPerson)
+        setPerson(localPerson)
         setTitle("Editar pessoa")
     }
 

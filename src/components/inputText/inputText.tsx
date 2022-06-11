@@ -177,8 +177,8 @@ export default function InputText(props: InputTextProps) {
                 required={props.isRequired}
                 onChange={(event) => {
                     let text = event.target.value
-                    text = handleValidation(text)
                     text = handleMask(text)
+                    text = handleValidation(text)
                     props.onSetText(text)
                 }}
             />

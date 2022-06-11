@@ -7,7 +7,7 @@ import { handleRemoveCPFMask } from "../../util/maskUtil"
 import { FeedbackMessage } from "../modal/feedbackMessageModal"
 import { Person, Property } from "../../interfaces/objectInterfaces"
 import { PersonConversor, PropertyConversor } from "../../db/converters"
-import { ElementFromBase, extrateProperty } from "../../util/converterUtil"
+import { ElementFromBase, extratePerson, extrateProperty } from "../../util/converterUtil"
 import { db, PERSON_COLLECTION_NAME, PROPERTY_COLLECTION_NAME } from "../../db/firebaseDB"
 import { handleValidationNotNull, handleValidationOnlyNumbersNotNull } from "../../util/validationUtil"
 
@@ -134,7 +134,6 @@ export default function PropertyList(props: PropertyListProps) {
         } else {
             pagesArray = [...pagesArray, listItemsFiltered]
         }
-
         setPage(0)
         setListItems(pagesArray)
         setIsLoading(false)
@@ -205,11 +204,23 @@ export default function PropertyList(props: PropertyListProps) {
                             }
                         }}
                         className="bg-white p-4 rounded-sm shadow items-center text-left">
-                        <div className="flex">
-                            <div><span className={titleClassName}>{element.name}</span></div>
-                        </div>
-                        <div><span className={contentClassName}>{element.area}</span></div>
-                        <div><span className={contentClassName}>{element.perimeter}</span></div>
+                        <>
+                            <div className="flex">
+                                <div><span className={titleClassName}>{element.name}</span></div>
+                            </div>
+                            <div>
+                                <span className={contentClassName}>
+                                    {element.area && "Área: " + element.area} {element.perimeter && "Perimetro: " + element.perimeter}
+                                </span>
+                            </div>
+                            {element.owners?.map((elementOwners: Person, indexOwners) => (
+                                <div key={elementOwners.cpf + index + indexOwners}>
+                                    <span className={contentClassName}>
+                                        {elementOwners.name && elementOwners.name} {elementOwners.cpf && elementOwners.cpf}
+                                    </span>
+                                </div>
+                            ))}
+                        </>
                     </button>
                 ))}
             </div>

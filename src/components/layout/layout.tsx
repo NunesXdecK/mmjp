@@ -35,6 +35,7 @@ const menus: LayoutMenuItem[] = [
 
 {/*
     { name: 'Pessoas da base antiga', href: "/person/personoldbase", current: false, disabled: true },
+    { name: 'Propriedade da base antiga', href: "/property/propertyoldbase", current: false, disabled: true },
 */}
 
 const user = {

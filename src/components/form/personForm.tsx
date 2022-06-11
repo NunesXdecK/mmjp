@@ -14,7 +14,7 @@ import { db, PERSON_COLLECTION_NAME } from "../../db/firebaseDB"
 import { handlePersonValidationForDB } from "../../util/validationUtil"
 import { defaultPerson, Person } from "../../interfaces/objectInterfaces"
 import { addDoc, collection, doc, getDocs, updateDoc } from "firebase/firestore"
-import { defaultElementFromBase, ElementFromBase } from "../../util/converterUtil"
+import { defaultElementFromBase, ElementFromBase, handlePreparePersonForDB } from "../../util/converterUtil"
 import { CPF_MARK, TELEPHONE_MARK, TEXT_NOT_NULL_MARK } from "../../util/patternValidationUtil"
 import { handleRemoveCEPMask, handleRemoveCPFMask, handleRemoveTelephoneMask } from "../../util/maskUtil"
 import { handleNewDateToUTC } from "../../util/dateUtils"
@@ -27,7 +27,7 @@ interface PersonFormProps {
     isForOldRegister?: boolean,
     person?: Person,
     onBack?: (object) => void,
-    onAfterSave?: (object) => void,
+    onAfterSave?: (object, any?) => void,
     onSelectPerson?: (object) => void,
     onShowMessage?: (FeedbackMessage) => void,
 }
@@ -35,13 +35,13 @@ interface PersonFormProps {
 export default function PersonForm(props: PersonFormProps) {
     const personCollection = collection(db, PERSON_COLLECTION_NAME).withConverter(PersonConversor)
 
-    const [person, setPerson] = useState<Person>(props?.person ?? defaultPerson)
-    const [isLoading, setIsLoading] = useState(false)
-    const [isOpen, setIsOpen] = useState(false)
+    const [person, setPerson] = useState<Person>(props?.person ? structuredClone(props?.person) : defaultPerson)
     const [isFormValid, setIsFormValid] = useState(handlePersonValidationForDB(person).validation)
+    
+    const [isOpen, setIsOpen] = useState(false)
+    const [isLoading, setIsLoading] = useState(false)
 
-    const [oldData, setOldData] = useState<ElementFromBase>(props?.person?.oldData ?? defaultElementFromBase)
-
+    const handleSetPersonOldData = (value) => { setPerson({ ...person, oldData: value }) }
 
     const handleSetPersonName = (value) => { setPerson({ ...person, name: value }) }
     const handleSetPersonCPF = (value) => { setPerson({ ...person, cpf: value }) }
@@ -64,12 +64,10 @@ export default function PersonForm(props: PersonFormProps) {
         setIsFormValid(true)
         if (person.id !== "" || props.isForOldRegister) {
             try {
-                setOldData(person.oldData)
                 const querySnapshot = await getDocs(personCollection)
                 querySnapshot.forEach((doc) => {
-                    const name = doc.data().name
                     const cpf = doc.data().cpf
-                    if (doc.id && (person.cpf === cpf || person.name === name)) {
+                    if (doc.id && (person.cpf === cpf)) {
                         setPerson(doc.data())
                     }
                 })
@@ -106,26 +104,11 @@ export default function PersonForm(props: PersonFormProps) {
                 }
             })
 
-
             if (person.dateInsertUTC === 0) {
                 personForDB = { ...personForDB, dateInsertUTC: handleNewDateToUTC() }
             }
 
-            let telephonesWithNoMask = []
-            personForDB.telephones.map((element, index) => {
-                telephonesWithNoMask = [...telephonesWithNoMask, handleRemoveTelephoneMask(element)]
-            })
-
-            if (personForDB.oldData) {
-                delete personForDB.oldData
-            }
-
-            personForDB = {
-                ...personForDB
-                , cpf: handleRemoveCPFMask(personForDB.cpf)
-                , address: { ...personForDB.address, cep: handleRemoveCEPMask(personForDB.address.cep) }
-                , telephones: telephonesWithNoMask
-            }
+            personForDB = handlePreparePersonForDB(personForDB)
 
             const isSave = nowID === ""
             if (isSave) {
@@ -147,11 +130,12 @@ export default function PersonForm(props: PersonFormProps) {
                     console.error("Error upddating document: ", e)
                 }
             }
+            
+            if (props.onAfterSave) {
+                props.onAfterSave(feedbackMessage, personForDB)
+            }
 
             handleListItemClick(defaultPerson)
-            if (props.onAfterSave) {
-                props.onAfterSave(feedbackMessage)
-            }
         } else {
             feedbackMessage = { ...feedbackMessage, messages: isValid.messages, messageType: "ERROR" }
             if (props.onShowMessage) {
@@ -163,9 +147,9 @@ export default function PersonForm(props: PersonFormProps) {
 
     return (
         <>
-            {props.isForOldRegister && (oldData["Nome Prop."] || oldData["CPF Prop."]) && (
+            {props.isForOldRegister && (person.oldData["Nome Prop."] || person.oldData["CPF Prop."]) && (
                 <OldDataForm
-                    oldData={oldData}
+                    oldData={person.oldData}
                     title="Informações antigas"
                     subtitle="Dados da base antiga"
                 />

@@ -1,22 +1,26 @@
 import Head from "next/head"
 import { useState } from "react"
 import Layout from "../../components/layout/layout"
-import { PersonConversor } from "../../db/converters"
 import { collection, getDocs } from "firebase/firestore"
-import PersonList from "../../components/list/personList"
 import PersonForm from "../../components/form/personForm"
 import { handleRemoveCPFMask } from "../../util/maskUtil"
-import { db, PERSON_COLLECTION_NAME } from "../../db/firebaseDB"
-import { defaultPerson, Person } from "../../interfaces/objectInterfaces"
-import { handlePreparePersonForShow } from "../../util/converterUtil"
+import PropertyList from "../../components/list/propertyList"
+import PropertyForm from "../../components/form/propertyForm"
+import { PersonConversor, PropertyConversor } from "../../db/converters"
+import { extratePerson, handlePreparePersonForShow } from "../../util/converterUtil"
+import { db, PERSON_COLLECTION_NAME, PROPERTY_COLLECTION_NAME } from "../../db/firebaseDB"
+import { defaultPerson, defaultProperty, Person, Property } from "../../interfaces/objectInterfaces"
 import FeedbackMessageModal, { defaultFeedbackMessage, FeedbackMessage } from "../../components/modal/feedbackMessageModal"
 
 export default function PersonOldBase() {
     const personCollection = collection(db, PERSON_COLLECTION_NAME).withConverter(PersonConversor)
+    const propertyCollection = collection(db, PROPERTY_COLLECTION_NAME).withConverter(PropertyConversor)
 
-    const [title, setTitle] = useState("Lista de pessoas da base antiga")
+    const [title, setTitle] = useState("Lista de propriedades da base antiga")
     const [person, setPerson] = useState<Person>(defaultPerson)
+    const [property, setProperty] = useState<Property>(defaultProperty)
 
+    const [isForRegisterProperty, setIsForRegisterProperty] = useState(false)
     const [isFeedbackOpen, setIsFeedbackOpen] = useState(false)
     const [feedbackMessage, setFeedbackMessage] = useState<FeedbackMessage>(defaultFeedbackMessage)
 
@@ -25,11 +29,19 @@ export default function PersonOldBase() {
             event.preventDefault()
         }
         setPerson(defaultPerson)
-        setTitle("Lista de pessoas da base antiga")
+        setProperty(defaultProperty)
+        setIsForRegisterProperty(false)
+        setTitle("Lista de propriedades da base antiga")
     }
 
-    const handleAfterSave = (feedbackMessage: FeedbackMessage) => {
+    const handleAfterSaveProperty = (feedbackMessage: FeedbackMessage) => {
+        handleShowMessage(feedbackMessage)
         handleBackClick()
+    }
+
+    const handleAfterSavePerson = (feedbackMessage: FeedbackMessage, person: Person) => {
+        setProperty({ ...property, owners: [person] })
+        setIsForRegisterProperty(true)
         handleShowMessage(feedbackMessage)
     }
 
@@ -41,8 +53,8 @@ export default function PersonOldBase() {
         }
     }
 
-    const handleListItemClick = async (person: Person) => {
-        let localPerson = structuredClone(person)
+    const handleListItemClick = async (property: Property) => {
+        let localPerson = extratePerson(property.oldData)
         try {
             const querySnapshot = await getDocs(personCollection)
             querySnapshot.forEach((doc) => {
@@ -50,7 +62,7 @@ export default function PersonOldBase() {
                 const baseCpf = handleRemoveCPFMask(doc.data().cpf)
                 if (doc.id && localCpf === baseCpf) {
                     localPerson = doc.data()
-                    localPerson = {...localPerson, oldData: person.oldData }
+                    localPerson = {...localPerson, oldData: property.oldData }
                 }
             })
         } catch (err) {
@@ -59,6 +71,7 @@ export default function PersonOldBase() {
             handleShowMessage(feedbackMessage)
         }
         localPerson = handlePreparePersonForShow(localPerson)
+        setProperty(property)
         setPerson(localPerson)
         setTitle("Pessoa da base antiga")
     }
@@ -73,21 +86,36 @@ export default function PersonOldBase() {
             </Head>
 
             {person.cpf === "" ? (
-                <PersonList
+                <PropertyList
                     isOldBase={true}
                     onShowMessage={handleShowMessage}
                     onListItemClick={handleListItemClick}
                 />
             ) : (
-                <PersonForm
-                    isBack={true}
-                    person={person}
-                    isForOldRegister={true}
-                    onBack={handleBackClick}
-                    title="Informações pessoais"
-                    onAfterSave={handleAfterSave}
-                    onShowMessage={handleShowMessage}
-                    subtitle="Dados importantes sobre a pessoa" />
+                <>
+                    {isForRegisterProperty === false ? (
+                        <PersonForm
+                            isBack={true}
+                            person={person}
+                            isForOldRegister={true}
+                            onBack={handleBackClick}
+                            title="Informações pessoais"
+                            onAfterSave={handleAfterSavePerson}
+                            onShowMessage={handleShowMessage}
+                            subtitle="Dados importantes sobre a pessoa" />
+                    ) : (
+                        <PropertyForm
+                            isBack={true}
+                            property={property}
+                            isForOldRegister={true}
+                            onBack={handleBackClick}
+                            title="Informações básicas"
+                            onShowMessage={handleShowMessage}
+                            onAfterSave={handleAfterSaveProperty}
+                            subtitle="Dados importantes sobre a propriedade"
+                        />
+                    )}
+                </>
             )}
 
             <FeedbackMessageModal

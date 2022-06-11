@@ -31,9 +31,8 @@ interface PropertyFormProps {
 export default function PropertyForm(props: PropertyFormProps) {
     const personCollection = collection(db, PERSON_COLLECTION_NAME).withConverter(PersonConversor)
     const propertyCollection = collection(db, PROPERTY_COLLECTION_NAME).withConverter(PropertyConversor)
-    let test = props?.property ?? defaultProperty
 
-    const [property, setProperty] = useState<Property>(test)
+    const [property, setProperty] = useState<Property>(props?.property ? structuredClone(props?.property) : defaultProperty)
     const [isFormValid, setIsFormValid] = useState(handlePropertyValidationForDB(property).validation)
 
     const [isOpen, setIsOpen] = useState(false)

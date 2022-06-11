@@ -194,7 +194,7 @@ export const handleRemoveCEPMask = (text: string) => {
 
 export const handleRemoveTelephoneMask = (text: string) => {
     if (text) {
-        text = text.replaceAll(" ", "").replaceAll(".", "").replaceAll("-", "")
+        text = text.replaceAll(" ", "").replaceAll("(", "").replaceAll(")", "").replaceAll("-", "")
     }
     return text
 }
