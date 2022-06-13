@@ -33,6 +33,14 @@ export default function PersonList(props: PersonListProps) {
     const [listItems, setListItems] = useState([])
 
 
+    const handleListItemClick = (element: Person) => {
+        setIsLoading(true)
+        if (element.name !== "" && element.cpf !== "") {
+            props.onListItemClick && props.onListItemClick(element)
+        }
+        setIsLoading(false)
+    }
+
     const handlePaginationMinus = () => {
         setPage(page - 1)
     }
@@ -184,11 +192,7 @@ export default function PersonList(props: PersonListProps) {
                     <button
                         disabled={element.name === "" && element.cpf === ""}
                         key={index.toString()}
-                        onClick={() => {
-                            if (element.name !== "" && element.cpf !== "") {
-                                props.onListItemClick && props.onListItemClick(element)
-                            }
-                        }}
+                        onClick={() => handleListItemClick(element)}
                         className="bg-white p-4 rounded-sm shadow items-center text-left">
                         <div className="flex">
                             <div><span className={titleClassName}>{element.name}</span></div>

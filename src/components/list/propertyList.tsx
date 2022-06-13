@@ -33,6 +33,14 @@ export default function PropertyList(props: PropertyListProps) {
 
     const [listItems, setListItems] = useState([])
 
+    const handleListItemClick = (element: Property) => {
+        setIsLoading(true)
+        if (element.name !== "") {
+            props.onListItemClick && props.onListItemClick(element)
+        }
+        setIsLoading(false)
+    }
+
     const handlePaginationMinus = () => {
         setPage(page - 1)
     }
@@ -198,11 +206,7 @@ export default function PropertyList(props: PropertyListProps) {
                     <button
                         key={index.toString()}
                         disabled={element.name === ""}
-                        onClick={() => {
-                            if (element.name !== "") {
-                                props.onListItemClick && props.onListItemClick(element)
-                            }
-                        }}
+                        onClick={() => handleListItemClick(element)}
                         className="bg-white p-4 rounded-sm shadow items-center text-left">
                         <>
                             <div className="flex">
