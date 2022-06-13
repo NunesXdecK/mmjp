@@ -176,7 +176,7 @@ export default function PropertyForm(props: PropertyFormProps) {
                                 title="Área"
                                 isLoading={isLoading}
                                 validation={NUMBER_MARK}
-                                value={property.area + ""}
+                                value={property.area}
                                 isDisabled={props.isForDisable}
                                 onSetText={handleSetPropertyArea}
                                 onValidate={handleChangeFormValidation}
@@ -191,7 +191,7 @@ export default function PropertyForm(props: PropertyFormProps) {
                                 title="Perímetro"
                                 isLoading={isLoading}
                                 validation={NUMBER_MARK}
-                                value={property.perimeter + ""}
+                                value={property.perimeter}
                                 isDisabled={props.isForDisable}
                                 onSetText={handleSetPropertyPerimeter}
                                 onValidate={handleChangeFormValidation}

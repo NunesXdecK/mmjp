@@ -1,6 +1,6 @@
 import { useState } from "react"
-import { handleMaskCPF, handleMaskTelephone, handleMountMask, handleMountNumberCurrency, handleRemoveCEPMask } from "../../util/maskUtil"
-import { CEP_MARK, CPF_MARK, CPF_PATTERN, NOT_NULL_MARK, NUMBER_MARK, ONLY_CHARACTERS_PATTERN, ONLY_CHARACTERS_PATTERN_TWO, ONLY_SPECIAL_FOR_NUMBER_PATTERN, STYLE_FOR_INPUT_LOADING, TELEPHONE_MARK, TEXT_NOT_NULL_MARK } from "../../util/patternValidationUtil"
+import { handleMaskCPF, handleMaskTelephone, handleMountMask, handleMountNumberCurrency, handleRemoveCEPMask, handleRemoveCPFMask } from "../../util/maskUtil"
+import { CEP_MARK, CPF_MARK, CPF_PATTERN, NOT_NULL_MARK, NUMBER_MARK, ONLY_CHARACTERS_PATTERN, ONLY_CHARACTERS_PATTERN_TWO, ONLY_SPECIAL_FOR_NUMBER_PATTERN, ONLY_SPECIAL_PATTERN, STYLE_FOR_INPUT_LOADING, TELEPHONE_MARK, TEXT_NOT_NULL_MARK } from "../../util/patternValidationUtil"
 import { handleValidationNotNull } from "../../util/validationUtil"
 
 interface InputTextProps {
@@ -107,6 +107,8 @@ export default function InputText(props: InputTextProps) {
                 break
             case CPF_MARK:
                 text = text?.trim()
+                text = handleRemoveCPFMask(text)
+                text = text?.replace(new RegExp(ONLY_SPECIAL_FOR_NUMBER_PATTERN), "")
                 text = text?.replace(new RegExp(ONLY_CHARACTERS_PATTERN), "")
                 test = new RegExp(CPF_PATTERN).test(text)
                 setIsValid(test)
@@ -177,8 +179,11 @@ export default function InputText(props: InputTextProps) {
                 required={props.isRequired}
                 onChange={(event) => {
                     let text = event.target.value
-                    text = handleMask(text)
+                    console.log(text)
                     text = handleValidation(text)
+                    console.log(text)
+                    text = handleMask(text)
+                    console.log(text)
                     props.onSetText(text)
                 }}
             />
