@@ -55,18 +55,16 @@ export default function ProfessionalList(props: ProfessionalListProps) {
         let listItemsFiltered = []
         let arrayList: Professional[] = []
         if (props.isOldBase) {
-            {/*
             const startList = 0
             const endList = data.Plan1.length - 0
             const dataList = data.Plan1.slice(startList, endList)
             dataList.map((element: ElementFromBase, index) => {
                 let newElement: Professional = extrateProfessional(element)
-                if (handleValidationNotNull(newElement.name)) {
+                if (handleValidationNotNull(newElement.title)) {
                     newElement = { ...newElement, oldData: element }
                     arrayList = [...arrayList, newElement]
                 }
             })
-        */}
         } else {
             try {
                 const querySnapshotPerson = await getDocs(personCollection)
@@ -78,7 +76,7 @@ export default function ProfessionalList(props: ProfessionalListProps) {
                         const person = docPerson.data()
                         const personID = person.id
                         if (professionalPersonID === personID) {
-                            professional = {...professional, person: person}
+                            professional = { ...professional, person: person }
                             return
                         }
                     })
@@ -205,7 +203,7 @@ export default function ProfessionalList(props: ProfessionalListProps) {
                             </div>
                             <div>
                                 <span className={contentClassName}>
-                                    {element.person.name} {element.person.cpf}
+                                    {element.person?.name} {element.person?.cpf}
                                 </span>
                             </div>
                         </>

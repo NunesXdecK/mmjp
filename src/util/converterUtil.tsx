@@ -1,4 +1,4 @@
-import { defaultPerson, defaultProfessional, defaultProperty, Person, PersonAddress, Professional, Property } from "../interfaces/objectInterfaces"
+import { defaultPerson, defaultPersonAddress, defaultProfessional, defaultProperty, Person, PersonAddress, Professional, Property } from "../interfaces/objectInterfaces"
 import { handleMaskCPF, handleMaskTelephone, handleMountMask, handleRemoveCEPMask, handleRemoveCPFMask, handleRemoveTelephoneMask } from "./maskUtil"
 
 export interface ElementFromBase {
@@ -61,6 +61,20 @@ export const defaultElementFromBase: ElementFromBase = {
     "Telefone Prof. ": "",
 }
 
+const getUTCDate = (element: ElementFromBase) => {
+    let dateCadUTC = 0
+    let dateCad = checkStringForNull(element["Data Simples"])
+    if (dateCad) {
+        let dateCadArray = dateCad.split("/")
+        let day = parseInt(dateCadArray[0])
+        let month = parseInt(dateCadArray[1])
+        let year = parseInt(dateCadArray[2])
+        let dateEXT = year + "-" + month + "-" + day + " 10:00:00"
+        dateCadUTC = Date.parse(dateEXT)
+    }
+    return dateCadUTC
+}
+
 const checkStringForNull = (string) => {
     return string?.trim() ?? ""
 }
@@ -103,17 +117,6 @@ export const extratePerson = (element: ElementFromBase) => {
     let person: Person = defaultPerson
 
     let personAddress: PersonAddress = person.address
-
-    let dateCadUTC = 0
-    let dateCad = checkStringForNull(element["Data Simples"])
-    if (dateCad) {
-        let dateCadArray = dateCad.split("/")
-        let day = parseInt(dateCadArray[0])
-        let month = parseInt(dateCadArray[1])
-        let year = parseInt(dateCadArray[2])
-        let dateEXT = year + "-" + month + "-" + day + " 10:00:00"
-        dateCadUTC = Date.parse(dateEXT)
-    }
 
     let personCPF = checkStringForNull(element["CPF Prop."])
 
@@ -182,7 +185,7 @@ export const extratePerson = (element: ElementFromBase) => {
         naturalness: naturalness,
         maritalStatus: maritalStatus,
         profession: profession,
-        dateInsertUTC: dateCadUTC,
+        dateInsertUTC: getUTCDate(element),
         telephones: personTelephones,
         address: personAddress,
         oldData: element,
@@ -228,6 +231,7 @@ export const extrateProperty = (element: ElementFromBase) => {
         name: name,
         area: areaProperty,
         perimeter: perimeterProperty,
+        dateInsertUTC: getUTCDate(element),
         land: land,
         county: county,
         owners: [extratePerson(element)],
@@ -239,5 +243,87 @@ export const extrateProperty = (element: ElementFromBase) => {
 
 export const extrateProfessional = (element: ElementFromBase) => {
     let professional: Professional = defaultProfessional
+    let professionalPerson: Person = defaultPerson
+    let professionalAddress: PersonAddress = defaultPersonAddress
+
+    let professionalCPF = checkStringForNull(element["CPF Prof."])
+    if (professionalCPF) {
+        professionalCPF = professionalCPF.replaceAll("-", "").replaceAll(".", "")
+    }
+
+    let professionalRG = checkStringForNull(element["RG Prof."])
+    let professionalRGIssuer = ""
+    if (professionalRG) {
+        let professionalRGArray = professionalRG?.replaceAll("-", "").replaceAll(".", "")
+        if (professionalRG.indexOf(" ") > -1) {
+            professionalRGArray = professionalRG?.split(" ")
+            professionalRGIssuer = checkStringForNull(professionalRGArray[1])
+            professionalRG = checkStringForNull(professionalRGArray[0])
+        }
+    }
+
+    let professionalTelephones = []
+    let professionalTelephone = checkStringForNull(element["Telefone Prof."])
+    if (professionalTelephone) {
+        if (professionalTelephone.indexOf("/") > -1) {
+            professionalTelephones = professionalTelephone.replaceAll("(", "").replaceAll(")", "").replaceAll(" ", "").replaceAll("-", "").split("/")
+        } else {
+            professionalTelephones = [...professionalTelephones, professionalTelephone.replaceAll("(", "").replaceAll(")", "").replaceAll(" ", "").replaceAll("-", "")]
+        }
+    }
+
+    let profissionalPublicPlace = checkStringForNull(element["Endereço Prof."])
+    if (profissionalPublicPlace) {
+        let profissionalCEP = checkStringForNull(element["CEP"])
+
+        if (profissionalCEP) {
+            profissionalCEP = handleRemoveCEPMask(profissionalCEP)
+        }
+
+        let profissionalPublicPlaceArray = []
+        let profissionalNumber = ""
+        if (profissionalPublicPlace) {
+            if (profissionalPublicPlace?.indexOf(", nº") > -1) {
+                profissionalPublicPlaceArray = profissionalPublicPlace?.split(", nº")
+            } else if (profissionalPublicPlace?.indexOf(",nº") > -1) {
+                profissionalPublicPlaceArray = profissionalPublicPlace?.split(",nº")
+            }
+            if (profissionalPublicPlaceArray?.length > 0) {
+                profissionalPublicPlace = profissionalPublicPlaceArray[0]
+                profissionalNumber = profissionalPublicPlaceArray[1]
+            }
+        }
+
+        let profissionalDistrict = checkStringForNull(element["Bairro Prof."])
+        let profissionalCounty = checkStringForNull(element["Cidade/UF Prof."])
+
+        professionalAddress = {
+            ...professionalAddress,
+            publicPlace: profissionalPublicPlace,
+            number: profissionalNumber,
+            district: profissionalDistrict,
+            county: profissionalCounty,
+            cep: profissionalCEP,
+        }
+    }
+
+    professionalPerson = {
+        name: checkStringForNull(element["Nome Prof."]),
+        cpf: professionalCPF,
+        rg: professionalRG,
+        rgIssuer: professionalRGIssuer,
+        telephones: professionalTelephones,
+        address: professionalAddress,
+    }
+
+    professional = {
+        person: professionalPerson,
+        title: checkStringForNull(element["Título Prof."]),
+        creaNumber: checkStringForNull(element["CREA Prof."]),
+        credentialCode: checkStringForNull(element["Cod. Credenciado"]),
+        dateInsertUTC: getUTCDate(element),
+        oldData: element,
+    }
+
     return professional
 }
