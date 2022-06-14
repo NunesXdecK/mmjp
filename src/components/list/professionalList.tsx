@@ -4,26 +4,26 @@ import data from "../../data/data.json"
 import InputText from "../inputText/inputText"
 import { handleRemoveCPFMask } from "../../util/maskUtil"
 import { FeedbackMessage } from "../modal/feedbackMessageModal"
-import { Person, Property } from "../../interfaces/objectInterfaces"
+import { Person, Professional } from "../../interfaces/objectInterfaces"
 import { collection, doc, getDoc, getDocs } from "firebase/firestore"
-import { PersonConversor, PropertyConversor } from "../../db/converters"
-import { ElementFromBase, extratePerson, extrateProperty } from "../../util/converterUtil"
-import { db, PERSON_COLLECTION_NAME, PROPERTY_COLLECTION_NAME } from "../../db/firebaseDB"
+import { PersonConversor, ProfessionalConversor } from "../../db/converters"
+import { ElementFromBase, extratePerson, extrateProfessional } from "../../util/converterUtil"
+import { db, PERSON_COLLECTION_NAME, PROFESSIONAL_COLLECTION_NAME } from "../../db/firebaseDB"
 import { handleValidationNotNull, handleValidationOnlyNumbersNotNull } from "../../util/validationUtil"
 
 const subtitle = "mt-1 max-w-2xl text-sm text-gray-500"
 const contentClassName = "sm:px-4 sm:py-5 mt-1 text-sm text-gray-900"
 const titleClassName = "sm:px-4 sm:py-5 text-md leading-6 font-medium text-gray-900"
 
-interface PropertyListProps {
+interface ProfessionalListProps {
     isOldBase?: boolean,
     onListItemClick?: (any) => void,
     onShowMessage?: (FeedbackMessage) => void,
 }
 
-export default function PropertyList(props: PropertyListProps) {
+export default function ProfessionalList(props: ProfessionalListProps) {
     const personCollection = collection(db, PERSON_COLLECTION_NAME).withConverter(PersonConversor)
-    const propertyCollection = collection(db, PROPERTY_COLLECTION_NAME).withConverter(PropertyConversor)
+    const professionalCollection = collection(db, PROFESSIONAL_COLLECTION_NAME).withConverter(ProfessionalConversor)
 
     const [page, setPage] = useState(-1)
 
@@ -33,9 +33,9 @@ export default function PropertyList(props: PropertyListProps) {
 
     const [listItems, setListItems] = useState([])
 
-    const handleListItemClick = (element: Property) => {
+    const handleListItemClick = (element: Professional) => {
         setIsLoading(true)
-        if (element.name !== "") {
+        if (element.title !== "") {
             props.onListItemClick && props.onListItemClick(element)
         }
         setIsLoading(false)
@@ -53,40 +53,36 @@ export default function PropertyList(props: PropertyListProps) {
         event.preventDefault()
         setIsLoading(true)
         let listItemsFiltered = []
-        let arrayList: Property[] = []
-
+        let arrayList: Professional[] = []
         if (props.isOldBase) {
+            {/*
             const startList = 0
             const endList = data.Plan1.length - 0
             const dataList = data.Plan1.slice(startList, endList)
             dataList.map((element: ElementFromBase, index) => {
-                let newElement: Property = extrateProperty(element)
+                let newElement: Professional = extrateProfessional(element)
                 if (handleValidationNotNull(newElement.name)) {
                     newElement = { ...newElement, oldData: element }
                     arrayList = [...arrayList, newElement]
                 }
             })
+        */}
         } else {
             try {
                 const querySnapshotPerson = await getDocs(personCollection)
-                const querySnapshotProperty = await getDocs(propertyCollection)
-                querySnapshotProperty.forEach((docProperty) => {
-                    let property: Property = docProperty.data()
-                    let ownersIdList = []
-                    let ownersList = []
-                    property?.owners?.map((element, index) => {
-                        ownersIdList = [...ownersIdList, element.id]
-                    })
+                const querySnapshotProfessional = await getDocs(professionalCollection)
+                querySnapshotProfessional.forEach((docProfessional) => {
+                    let professional: Professional = docProfessional.data()
+                    const professionalPersonID = professional.person.id
                     querySnapshotPerson.forEach((docPerson) => {
-                        const personID = docPerson.data().id
-                        if (ownersIdList.includes(personID)) {
-                            if (!ownersList.includes(docPerson.data())) {
-                                ownersList = [...ownersList, docPerson.data()]
-                            }
+                        const person = docPerson.data()
+                        const personID = person.id
+                        if (professionalPersonID === personID) {
+                            professional = {...professional, person: person}
+                            return
                         }
                     })
-                    property = { ...property, owners: ownersList }
-                    arrayList = [...arrayList, property]
+                    arrayList = [...arrayList, professional]
                 })
             } catch (err) {
                 console.error(err)
@@ -97,16 +93,16 @@ export default function PropertyList(props: PropertyListProps) {
             }
         }
 
-        listItemsFiltered = arrayList.filter((element: Property, index) => {
+        listItemsFiltered = arrayList.filter((element: Professional, index) => {
             if (handleValidationNotNull(inputSearch)) {
-                let matchName = element.name.toLowerCase().includes(inputSearch.toLowerCase())
+                let matchName = element.title.toLowerCase().includes(inputSearch.toLowerCase())
                 return matchName
             }
             return true
         })
 
-        listItemsFiltered = listItemsFiltered.sort((elementOne: Property, elementTwo: Property) => {
-            return elementOne.name.localeCompare(elementTwo.name)
+        listItemsFiltered = listItemsFiltered.sort((elementOne: Professional, elementTwo: Professional) => {
+            return elementOne.title.localeCompare(elementTwo.title)
         })
 
         let pagesArray = []
@@ -158,14 +154,14 @@ export default function PropertyList(props: PropertyListProps) {
 
                 <div className="flex w-full">
                     <div className="w-full">
-                        <h3 className="text-lg leading-6 font-medium text-gray-900">Lista de propriedades</h3>
+                        <h3 className="text-lg leading-6 font-medium text-gray-900">Lista de profissionais</h3>
                         <p className={subtitle}>subtitulo lindo</p>
                     </div>
 
                     <div className="self-center">
                         <Button
                             isLink={true}
-                            href="/property">
+                            href="/professional">
                             Novo
                         </Button>
                     </div>
@@ -197,28 +193,21 @@ export default function PropertyList(props: PropertyListProps) {
             </div>
 
             <div className="grid grid-cols-1 gap-4 p-4 bg-white">
-                {listItems[page]?.map((element: Property, index) => (
+                {listItems[page]?.map((element: Professional, index) => (
                     <button
                         key={index.toString()}
-                        disabled={element.name === ""}
+                        disabled={element.title === ""}
                         onClick={() => handleListItemClick(element)}
                         className="bg-white p-4 rounded-sm shadow items-center text-left">
                         <>
                             <div className="flex">
-                                <div><span className={titleClassName}>{element.name}</span></div>
+                                <div><span className={titleClassName}>{element.title}</span></div>
                             </div>
                             <div>
                                 <span className={contentClassName}>
-                                    {element.area && "Área: " + element.area} {element.perimeter && "Perimetro: " + element.perimeter}
+                                    {element.person.name} {element.person.cpf}
                                 </span>
                             </div>
-                            {element.owners?.map((elementOwners: Person, indexOwners) => (
-                                <div key={elementOwners.cpf + index + indexOwners}>
-                                    <span className={contentClassName}>
-                                        {elementOwners.name && elementOwners.name} {elementOwners.cpf && elementOwners.cpf}
-                                    </span>
-                                </div>
-                            ))}
                         </>
                     </button>
                 ))}

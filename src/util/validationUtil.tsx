@@ -1,9 +1,23 @@
-import { Person, Property } from "../interfaces/objectInterfaces"
+import { Person, Professional, Property } from "../interfaces/objectInterfaces"
 import { CPF_PATTERN, ONLY_CHARACTERS_PATTERN, ONLY_CHARACTERS_PATTERN_TWO } from "./patternValidationUtil"
 
 interface ValidationReturn {
     messages: string[],
     validation: boolean,
+}
+
+export const handleProfessionalValidationForDB = (professional: Professional) => {
+    let validation: ValidationReturn = { validation: false, messages: [] }
+    let titleCheck = handleValidationNotNull(professional.title)
+    let personCheck = professional?.person?.id !== "" ?? false
+    if (!titleCheck) {
+        validation = { ...validation, messages: [...validation.messages, "O campo titúlo está em branco."] }
+    }
+    if (!personCheck) {
+        validation = { ...validation, messages: [...validation.messages, "O profissional precisa de dados básicos."] }
+    }
+    validation = { ...validation, validation: titleCheck && personCheck }
+    return validation
 }
 
 export const handlePropertyValidationForDB = (property: Property) => {

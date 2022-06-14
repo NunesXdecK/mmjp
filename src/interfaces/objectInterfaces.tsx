@@ -31,6 +31,7 @@ export interface Professional {
     credentialCode?: string,
     dateInsertUTC?: number,
     person?: any,
+    oldData?: object,
 }
 
 export interface Property {
@@ -50,9 +51,10 @@ export interface Process {
     number?: string,
     date?: number,
     dateInsertUTC?: number,
-    client?: Person,
     property?: Property,
     professional?: Professional,
+    client?: any,
+    oldData?: object,
 }
 
 export const defaultPersonAddress: PersonAddress = {
@@ -89,5 +91,15 @@ export const defaultProperty: Property = {
     perimeter: "",
     dateInsertUTC: 0,
     owners: [],
+    oldData: {},
+}
+
+export const defaultProfessional: Professional = {
+    id: "",
+    title: "",
+    creaNumber: "",
+    credentialCode: "",
+    dateInsertUTC: 0,
+    person: defaultPerson,
     oldData: {},
 }

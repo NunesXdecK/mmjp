@@ -9,15 +9,14 @@ import { OldDataForm } from "./oldDataForm"
 import InputText from "../inputText/inputText"
 import InputSelect from "../inputText/inputSelect"
 import { PersonConversor } from "../../db/converters"
+import { handleNewDateToUTC } from "../../util/dateUtils"
 import { FeedbackMessage } from "../modal/feedbackMessageModal"
 import { db, PERSON_COLLECTION_NAME } from "../../db/firebaseDB"
+import { handlePreparePersonForDB } from "../../util/converterUtil"
 import { handlePersonValidationForDB } from "../../util/validationUtil"
 import { defaultPerson, Person } from "../../interfaces/objectInterfaces"
 import { addDoc, collection, doc, getDocs, updateDoc } from "firebase/firestore"
-import { defaultElementFromBase, ElementFromBase, handlePreparePersonForDB } from "../../util/converterUtil"
 import { CPF_MARK, TELEPHONE_MARK, TEXT_NOT_NULL_MARK } from "../../util/patternValidationUtil"
-import { handleRemoveCEPMask, handleRemoveCPFMask, handleRemoveTelephoneMask } from "../../util/maskUtil"
-import { handleNewDateToUTC } from "../../util/dateUtils"
 
 interface PersonFormProps {
     title?: string,
@@ -104,7 +103,7 @@ export default function PersonForm(props: PersonFormProps) {
                 }
             })
 
-            if (person.dateInsertUTC === 0) {
+            if (personForDB.dateInsertUTC === 0) {
                 personForDB = { ...personForDB, dateInsertUTC: handleNewDateToUTC() }
             }
 
@@ -130,11 +129,9 @@ export default function PersonForm(props: PersonFormProps) {
                     console.error("Error upddating document: ", e)
                 }
             }
-            
             if (props.onAfterSave) {
                 props.onAfterSave(feedbackMessage, person)
             }
-
             handleListItemClick(defaultPerson)
         } else {
             feedbackMessage = { ...feedbackMessage, messages: isValid.messages, messageType: "ERROR" }

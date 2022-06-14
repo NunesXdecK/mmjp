@@ -1,8 +1,8 @@
-import { Fragment } from 'react'
-import LayoutMenu from './layoutMenu'
-import LayoutMenuMobile from './layoutMenuMobile'
-import { Disclosure, Menu, Transition } from '@headlessui/react'
-import { BellIcon, MenuIcon, XIcon } from '@heroicons/react/outline'
+import { Fragment } from "react"
+import LayoutMenu from "./layoutMenu"
+import LayoutMenuMobile from "./layoutMenuMobile"
+import { Disclosure, Menu, Transition } from "@headlessui/react"
+import { BellIcon, MenuIcon, XIcon } from "@heroicons/react/outline"
 
 export interface LayoutMenuItem {
     name?: string,
@@ -13,53 +13,55 @@ export interface LayoutMenuItem {
 }
 
 const menus: LayoutMenuItem[] = [
-    { name: 'Dashboard', href: "/", current: false, disabled: false },
+    { name: "Dashboard", href: "/", current: false, disabled: false },
     {
-        name: 'Pessoas', current: false, disabled: false,
+        name: "Pessoas", current: false, disabled: false,
         subMenus:
             [
-                { name: 'Nova pessoa', href: "/person", current: false, disabled: false },
-                { name: 'Lista de pessoas', href: "/person/persons", current: false, disabled: false },
+                { name: "Nova pessoa", href: "/person", current: false, disabled: false },
+                { name: "Lista de pessoas", href: "/person/persons", current: false, disabled: false },
+                { name: "Profissional", href: "/professional", current: false, disabled: false },
+                { name: "Lista de profissionais", href: "/professional/professionals", current: false, disabled: false },
             ]
     },
     {
-        name: 'Propriedades', current: false, disabled: false,
+        name: "Propriedades", current: false, disabled: false,
         subMenus:
             [
-                { name: 'Nova propriedade', href: "/property", current: false, disabled: false },
-                { name: 'Lista de propriedades', href: "/property/properties", current: false, disabled: false },
+                { name: "Nova propriedade", href: "/property", current: false, disabled: false },
+                { name: "Lista de propriedades", href: "/property/properties", current: false, disabled: false },
             ]
     },
-    { name: 'Projetos', href: "/project", current: false, disabled: false },
+    { name: "Projetos", href: "/project", current: false, disabled: false },
 ]
 
 {/*
-    { name: 'Pessoas da base antiga', href: "/person/personoldbase", current: false, disabled: true },
-    { name: 'Propriedade da base antiga', href: "/property/propertyoldbase", current: false, disabled: true },
+    { name: "Pessoas da base antiga", href: "/person/personoldbase", current: false, disabled: true },
+    { name: "Propriedade da base antiga", href: "/property/propertyoldbase", current: false, disabled: true },
 */}
 
 const user = {
-    name: 'Tom Cook',
-    email: 'tom@example.com',
+    name: "Tom Cook",
+    email: "tom@example.com",
     imageUrl:
-        'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80',
+        "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80",
 }
 
 const navigation = [
-    { name: 'Dashboard', href: "/", current: false },
-    { name: 'Pessoas', href: "/person", current: false },
-    { name: 'Propriedades', href: "/property", current: false },
-    { name: 'Projetos', href: "/project", current: false },
+    { name: "Dashboard", href: "/", current: false },
+    { name: "Pessoas", href: "/person", current: false },
+    { name: "Propriedades", href: "/property", current: false },
+    { name: "Projetos", href: "/project", current: false },
 ]
 
 const userNavigation = [
-    { name: 'Your Profile', href: '#' },
-    { name: 'Settings', href: '#' },
-    { name: 'Sign out', href: '#' },
+    { name: "Your Profile", href: "#" },
+    { name: "Settings", href: "#" },
+    { name: "Sign out", href: "#" },
 ]
 
 function classNames(...classes) {
-    return classes.filter(Boolean).join(' ')
+    return classes.filter(Boolean).join(" ")
 }
 
 interface LayoutMenuProps { }
@@ -105,11 +107,11 @@ export default function Layout(props) {
                                                         href={item.href}
                                                         className={classNames(
                                                             item.current
-                                                                ? 'bg-gray-900 text-white'
-                                                                : 'text-gray-300 hover:bg-gray-700 hover:text-white',
-                                                            'px-3 py-2 rounded-md text-sm font-medium'
+                                                                ? "bg-gray-900 text-white"
+                                                                : "text-gray-300 hover:bg-gray-700 hover:text-white",
+                                                            "px-3 py-2 rounded-md text-sm font-medium"
                                                         )}
-                                                        aria-current={item.current ? 'page' : undefined}
+                                                        aria-current={item.current ? "page" : undefined}
                                                     >
                                                         {item.name}
                                                     </a>
@@ -154,8 +156,8 @@ export default function Layout(props) {
                                                                     <a
                                                                         href={item.href}
                                                                         className={classNames(
-                                                                            active ? 'bg-gray-100' : '',
-                                                                            'block px-4 py-2 text-sm text-gray-700'
+                                                                            active ? "bg-gray-100" : "",
+                                                                            "block px-4 py-2 text-sm text-gray-700"
                                                                         )}
                                                                     >
                                                                         {item.name}
@@ -195,11 +197,11 @@ export default function Layout(props) {
                                             as="a"
                                             href={item.href}
                                             className={classNames(
-                                                item.current ? 'bg-gray-900 text-white' :
-                                                'text-gray-300 hover:bg-gray-700 hover:text-white',
-                                                'block px-3 py-2 rounded-md text-base font-medium'
+                                                item.current ? "bg-gray-900 text-white" :
+                                                "text-gray-300 hover:bg-gray-700 hover:text-white",
+                                                "block px-3 py-2 rounded-md text-base font-medium"
                                             )}
-                                            aria-current={item.current ? 'page' : undefined}
+                                            aria-current={item.current ? "page" : undefined}
                                         >
                                         {item.name}
                                         </Disclosure.Button>

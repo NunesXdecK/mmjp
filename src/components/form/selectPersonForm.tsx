@@ -1,12 +1,12 @@
 import Form from "./form";
 import FormRow from "./formRow";
+import { useState } from "react";
 import Button from "../button/button";
+import IOSModal from "../modal/iosModal";
 import FormRowColumn from "./formRowColumn";
+import PersonList from "../list/personList";
 import InputText from "../inputText/inputText";
 import { Person } from "../../interfaces/objectInterfaces";
-import { useState } from "react";
-import IOSModal from "../modal/iosModal";
-import PersonList from "../list/personList";
 import { FeedbackMessage } from "../modal/feedbackMessageModal";
 import { handleMaskCPF, handleRemoveCPFMask } from "../../util/maskUtil";
 
@@ -16,6 +16,7 @@ interface SelectPersonFormProps {
     subtitle?: string,
     inputTitle?: string,
     validation?: string,
+    buttonTitle?: string,
     validationMessage?: string,
     isLoading?: boolean,
     isMultipleSelect?: boolean,
@@ -30,19 +31,27 @@ export default function SelectPersonForm(props: SelectPersonFormProps) {
     const handleAddPerson = (person) => {
         let localPersons = props.persons
         let canAdd = true
-        localPersons?.map((element, index) => {
-            if (handleRemoveCPFMask(element.cpf) === handleRemoveCPFMask(person.cpf)) {
-                canAdd = false
-            }
-        })
+
+        if (props.isMultipleSelect) {
+            localPersons?.map((element, index) => {
+                if (handleRemoveCPFMask(element.cpf) === handleRemoveCPFMask(person.cpf)) {
+                    canAdd = false
+                }
+            })
+        }
+
         if (canAdd) {
-            localPersons = [...localPersons, person]
+            if (props.isMultipleSelect) {
+                localPersons = [...localPersons, person]
+            } else {
+                localPersons = [person]
+            }
             if (props.onSetPersons) {
                 props.onSetPersons(localPersons)
                 setIsOpen(false)
             }
         } else {
-            let feedbackMessage: FeedbackMessage = { messages: ["Esta pessoa já é um proprietário"], messageType: "ERROR" }
+            let feedbackMessage: FeedbackMessage = { messages: [props?.validationMessage], messageType: "ERROR" }
             if (props.onShowMessage) {
                 props.onShowMessage(feedbackMessage)
             }
@@ -51,12 +60,16 @@ export default function SelectPersonForm(props: SelectPersonFormProps) {
 
     const handleRemovePerson = (event, person) => {
         event.preventDefault()
-        let localPersons = props.persons
-        if (localPersons.length > -1) {
-            let index = localPersons.indexOf(person)
-            localPersons.splice(index, 1)
-            if (props.onSetPersons) {
-                props.onSetPersons(localPersons)
+        if (!props.isMultipleSelect) {
+            props.onSetPersons([])
+        } else {
+            let localPersons = props.persons
+            if (localPersons.length > -1) {
+                let index = localPersons.indexOf(person)
+                localPersons.splice(index, 1)
+                if (props.onSetPersons) {
+                    props.onSetPersons(localPersons)
+                }
             }
         }
     }
@@ -74,7 +87,7 @@ export default function SelectPersonForm(props: SelectPersonFormProps) {
                             isDisabled={props.isLoading}
                             onClick={() => setIsOpen(true)}
                         >
-                            Pesquisar proprietário
+                            {props.buttonTitle}
                         </Button>
                     </FormRowColumn>
                 </FormRow>

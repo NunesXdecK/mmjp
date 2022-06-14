@@ -1,4 +1,4 @@
-import { defaultPerson, defaultProperty, Person, PersonAddress, Property } from "../interfaces/objectInterfaces"
+import { defaultPerson, defaultProfessional, defaultProperty, Person, PersonAddress, Professional, Property } from "../interfaces/objectInterfaces"
 import { handleMaskCPF, handleMaskTelephone, handleMountMask, handleRemoveCEPMask, handleRemoveCPFMask, handleRemoveTelephoneMask } from "./maskUtil"
 
 export interface ElementFromBase {
@@ -234,4 +234,10 @@ export const extrateProperty = (element: ElementFromBase) => {
     }
 
     return property
+}
+
+
+export const extrateProfessional = (element: ElementFromBase) => {
+    let professional: Professional = defaultProfessional
+    return professional
 }

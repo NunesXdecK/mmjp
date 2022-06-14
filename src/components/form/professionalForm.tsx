@@ -7,53 +7,54 @@ import InputText from "../inputText/inputText";
 import SelectPersonForm from "./selectPersonForm";
 import { handleNewDateToUTC } from "../../util/dateUtils";
 import { FeedbackMessage } from "../modal/feedbackMessageModal";
-import { PersonConversor, PropertyConversor } from "../../db/converters";
-import { handlePropertyValidationForDB } from "../../util/validationUtil";
-import { defaultProperty, Property } from "../../interfaces/objectInterfaces";
-import { NOT_NULL_MARK, NUMBER_MARK } from "../../util/patternValidationUtil";
-import { addDoc, collection, doc, getDocs, updateDoc } from "firebase/firestore";
+import { NOT_NULL_MARK } from "../../util/patternValidationUtil";
+import { addDoc, collection, doc, updateDoc } from "firebase/firestore";
+import { PersonConversor, ProfessionalConversor } from "../../db/converters";
+import { handleProfessionalValidationForDB } from "../../util/validationUtil";
 import { defaultElementFromBase, ElementFromBase } from "../../util/converterUtil";
-import { db, PERSON_COLLECTION_NAME, PROPERTY_COLLECTION_NAME } from "../../db/firebaseDB";
+import { defaultProfessional, Professional } from "../../interfaces/objectInterfaces";
+import { db, PERSON_COLLECTION_NAME, PROFESSIONAL_COLLECTION_NAME } from "../../db/firebaseDB";
 
-interface PropertyFormProps {
+interface ProfessionalFormProps {
     title?: string,
     subtitle?: string,
     isBack?: boolean,
     isForSelect?: boolean,
     isForDisable?: boolean,
     isForOldRegister?: boolean,
-    property?: Property,
+    professional?: Professional,
     onBack?: (object) => void,
     onAfterSave?: (object) => void,
     onSelectPerson?: (object) => void,
     onShowMessage?: (FeedbackMessage) => void,
 }
 
-export default function PropertyForm(props: PropertyFormProps) {
+export default function ProfessionalForm(props: ProfessionalFormProps) {
     const personCollection = collection(db, PERSON_COLLECTION_NAME).withConverter(PersonConversor)
-    const propertyCollection = collection(db, PROPERTY_COLLECTION_NAME).withConverter(PropertyConversor)
+    const professionalCollection = collection(db, PROFESSIONAL_COLLECTION_NAME).withConverter(ProfessionalConversor)
 
-    const [property, setProperty] = useState<Property>(props?.property ? structuredClone(props?.property) : defaultProperty)
-    const [isFormValid, setIsFormValid] = useState(handlePropertyValidationForDB(property).validation)
+    const [professional, setProfessional] = useState<Professional>(props?.professional ? structuredClone(props?.professional) : defaultProfessional)
+    const [isFormValid, setIsFormValid] = useState(handleProfessionalValidationForDB(professional).validation)
 
     const [isOpen, setIsOpen] = useState(false)
     const [isLoading, setIsLoading] = useState(false)
 
-    const [oldData, setOldData] = useState<ElementFromBase>(props?.property?.oldData ?? defaultElementFromBase)
+    const [oldData, setOldData] = useState<ElementFromBase>(props?.professional?.oldData ?? defaultElementFromBase)
 
-    const handleSetPropertyName = (value) => { setProperty({ ...property, name: value }) }
-    const handleSetPropertyLand = (value) => { setProperty({ ...property, land: value }) }
-    const handleSetPropertyArea = (value) => { setProperty({ ...property, area: value }) }
-    const handleSetPropertyCounty = (value) => { setProperty({ ...property, county: value }) }
-    const handleSetPropertyOwners = (value) => { setProperty({ ...property, owners: value }) }
-    const handleSetPropertyPerimeter = (value) => { setProperty({ ...property, perimeter: value }) }
+    const [persons, setPersons] = useState(props?.professional?.person ? [props.professional.person] : [])
 
-    const handleListItemClick = async (property: Property) => {
+    const handleSetProfessionalTitle = (value) => { setProfessional({ ...professional, title: value }) }
+    const handleSetProfessionalCreaNumber = (value) => { setProfessional({ ...professional, creaNumber: value }) }
+    const handleSetProfessionalCredentialCode = (value) => { setProfessional({ ...professional, credentialCode: value }) }
+    const handleSetProfessionalPerson = (value) => { setProfessional({ ...professional, title: value }) }
+
+    const handleListItemClick = async (professional: Professional) => {
         setIsLoading(true)
         if (props.onSelectPerson) {
-            props.onSelectPerson(property)
+            props.onSelectPerson(professional)
         }
-        setProperty(property)
+        setPersons([])
+        setProfessional(professional)
         setIsOpen(false)
         setIsFormValid(true)
         setIsLoading(false)
@@ -64,31 +65,37 @@ export default function PropertyForm(props: PropertyFormProps) {
         setIsLoading(true)
         let feedbackMessage: FeedbackMessage = { messages: ["Algo estranho aconteceu"], messageType: "WARNING" }
 
-        let propertyForDB = structuredClone(property)
-        const isValid = handlePropertyValidationForDB(propertyForDB)
-        if (isValid.validation) {
-            let nowID = propertyForDB?.id ?? ""
-            let docRefsForDB = []
+        let professionalForDB = structuredClone(professional)
+        if (persons.length > 0) {
+            professionalForDB = { ...professionalForDB, person: persons[0] }
+        }
 
-            if (propertyForDB.owners?.length > 0) {
-                propertyForDB.owners?.map((element, index) => {
+        const isValid = handleProfessionalValidationForDB(professionalForDB)
+        if (isValid.validation) {
+            let nowID = professionalForDB?.id ?? ""
+            let personDocRef = {}
+
+            if (persons?.length > 0) {
+                persons?.map((element, index) => {
                     if (element.id) {
-                        const docRef = doc(personCollection, element.id)
-                        docRefsForDB = [...docRefsForDB, docRef]
+                        personDocRef = doc(personCollection, element.id)
                     }
                 })
-                propertyForDB = { ...propertyForDB, owners: docRefsForDB }
-            }
-            
-            if (propertyForDB.dateInsertUTC === 0) {
-                propertyForDB = { ...propertyForDB, dateInsertUTC: handleNewDateToUTC() }
+                professionalForDB = { ...professionalForDB, person: personDocRef }
             }
 
+            if (professionalForDB.dateInsertUTC === 0) {
+                professionalForDB = { ...professionalForDB, dateInsertUTC: handleNewDateToUTC() }
+            }
+
+            if (professionalForDB.oldData) {
+                delete professionalForDB.oldData
+            }
             const isSave = nowID === ""
             if (isSave) {
                 try {
-                    const docRef = await addDoc(propertyCollection, propertyForDB)
-                    setProperty({ ...property, id: docRef.id })
+                    const docRef = await addDoc(professionalCollection, professionalForDB)
+                    setProfessional({ ...professional, id: docRef.id })
                     feedbackMessage = { ...feedbackMessage, messages: ["Salvo com sucesso!"], messageType: "SUCCESS" }
                 } catch (e) {
                     feedbackMessage = { ...feedbackMessage, messages: ["Erro em salvar!"], messageType: "ERROR" }
@@ -96,18 +103,20 @@ export default function PropertyForm(props: PropertyFormProps) {
                 }
             } else {
                 try {
-                    const docRef = doc(propertyCollection, nowID)
-                    await updateDoc(docRef, propertyForDB)
+                    const docRef = doc(professionalCollection, nowID)
+                    await updateDoc(docRef, professionalForDB)
                     feedbackMessage = { ...feedbackMessage, messages: ["Atualizado com sucesso!"], messageType: "SUCCESS" }
                 } catch (e) {
                     feedbackMessage = { ...feedbackMessage, messages: ["Erro em atualizar!"], messageType: "ERROR" }
                     console.error("Error upddating document: ", e)
                 }
             }
+            {/*
+        */}
             if (props.onAfterSave) {
                 props.onAfterSave(feedbackMessage)
             }
-            handleListItemClick(defaultProperty)
+            handleListItemClick(defaultProfessional)
         } else {
             feedbackMessage = { ...feedbackMessage, messages: isValid.messages, messageType: "ERROR" }
             if (props.onShowMessage) {
@@ -132,15 +141,15 @@ export default function PropertyForm(props: PropertyFormProps) {
                     <FormRow>
                         <FormRowColumn unit="6">
                             <InputText
-                                id="propertyname"
-                                value={property.name}
+                                id="professionalTitle"
+                                value={professional.title}
                                 isLoading={isLoading}
                                 validation={NOT_NULL_MARK}
-                                title="Nome da propriedade"
+                                title="Titulo do profissional"
                                 isDisabled={props.isForDisable}
-                                onSetText={handleSetPropertyName}
+                                onSetText={handleSetProfessionalTitle}
                                 onValidate={handleChangeFormValidation}
-                                validationMessage="O nome da propriedade não pode ficar em branco."
+                                validationMessage="O titulo do profissional não pode ficar em branco."
                             />
                         </FormRowColumn>
                     </FormRow>
@@ -148,59 +157,27 @@ export default function PropertyForm(props: PropertyFormProps) {
                     <FormRow>
                         <FormRowColumn unit="3">
                             <InputText
-                                id="land"
-                                title="Gleba"
-                                value={property.land}
+                                id="creaNumber"
+                                title="Número do CREA"
+                                value={professional.creaNumber}
                                 isLoading={isLoading}
                                 isDisabled={props.isForDisable}
-                                onSetText={handleSetPropertyLand}
+                                onSetText={handleSetProfessionalCreaNumber}
                                 onValidate={handleChangeFormValidation}
-                                validationMessage="A gleba não pode ficar em branco."
+                                validationMessage="O numero do crea não pode ficar em branco."
                             />
                         </FormRowColumn>
 
                         <FormRowColumn unit="3">
                             <InputText
-                                id="county"
-                                title="Município/UF"
+                                id="credentialCode"
+                                title="Codigo credencial"
                                 isLoading={isLoading}
-                                value={property.county}
+                                value={professional.credentialCode}
                                 isDisabled={props.isForDisable}
-                                onSetText={handleSetPropertyCounty}
+                                onSetText={handleSetProfessionalCredentialCode}
                                 onValidate={handleChangeFormValidation}
-                                validationMessage="O município não pode ficar em branco."
-                            />
-                        </FormRowColumn>
-                    </FormRow>
-
-                    <FormRow>
-                        <FormRowColumn unit="3">
-                            <InputText
-                                id="area"
-                                mask="area"
-                                title="Área"
-                                isLoading={isLoading}
-                                validation={NUMBER_MARK}
-                                value={property.area}
-                                isDisabled={props.isForDisable}
-                                onSetText={handleSetPropertyArea}
-                                onValidate={handleChangeFormValidation}
-                                validationMessage="A área não pode ficar em branco."
-                            />
-                        </FormRowColumn>
-
-                        <FormRowColumn unit="3">
-                            <InputText
-                                id="perimeter"
-                                mask="perimeter"
-                                title="Perímetro"
-                                isLoading={isLoading}
-                                validation={NUMBER_MARK}
-                                value={property.perimeter}
-                                isDisabled={props.isForDisable}
-                                onSetText={handleSetPropertyPerimeter}
-                                onValidate={handleChangeFormValidation}
-                                validationMessage="O perímetro não pode ficar em branco."
+                                validationMessage="O codigo credencial não pode ficar em branco."
                             />
                         </FormRowColumn>
                     </FormRow>
@@ -214,14 +191,14 @@ export default function PropertyForm(props: PropertyFormProps) {
             </form>
 
             <SelectPersonForm
-                title="Proprietários"
+                persons={persons}
                 isLoading={isLoading}
-                isMultipleSelect={true}
-                persons={property.owners}
+                title="Dados pessoais"
+                isMultipleSelect={false}
+                onSetPersons={setPersons}
+                subtitle="Selecione a pessoa"
                 onShowMessage={props.onShowMessage}
-                buttonTitle="Pesquisar proprietário"
-                subtitle="Selecione os proprietários"
-                onSetPersons={handleSetPropertyOwners}
+                buttonTitle="Pesquisar profissional"
                 validationMessage="Esta pessoa já é um proprietário"
             />
 
