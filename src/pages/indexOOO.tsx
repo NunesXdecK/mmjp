@@ -6,7 +6,7 @@ import { useEffect, useState } from "react";
 import data from "../data/data.json";
 import Button from "../components/button/button";
 import { PersonConversor, PropertyConversor } from "../db/converters";
-import { Person, PersonAddress, Process, Professional, Property } from "../interfaces/objectInterfaces";
+import { Person, Address, Process, Professional, Property } from "../interfaces/objectInterfaces";
 
 async function hasProperty(collection, { county, name, perimeter, area }: Property) {
     let property = {}
@@ -118,7 +118,7 @@ const buttonFunction = async () => {
             }
 
             let personTelephone = element["Telefone Prop."]?.replaceAll("(", "").replaceAll(")", "").replaceAll(" ", "").replaceAll("-", "").split("/") ?? ""
-            let personAddress: PersonAddress = {}
+            let personAddress: Address = {}
 
             if (element["Logradouro End."]) {
                 let personCEP = element["CEP End."]?.replaceAll(".", "").replaceAll("-", "") ?? ""
@@ -204,7 +204,7 @@ const buttonFunction = async () => {
             let professionalPersonCEP = element["CEP"]?.replaceAll(".", "").replaceAll("-", "")
 
 
-            let professionalPersonAddress: PersonAddress = {}
+            let professionalAddress: Address = {}
             let professionalPersonPublicPlace = element["Endereço Prof."]
             if (professionalPersonPublicPlace) {
                 if (professionalPersonPublicPlace?.indexOf(", nº") > -1) {
@@ -213,7 +213,7 @@ const buttonFunction = async () => {
                     professionalPersonPublicPlace = professionalPersonPublicPlace?.split(",nº")
                 }
 
-                professionalPersonAddress = {
+                professionalAddress = {
                     publicPlace: professionalPersonPublicPlace?.length > 0 ? professionalPersonPublicPlace[0]?.trim() : professionalPersonPublicPlace?.trim(),
                     number: professionalPersonPublicPlace?.length > 0 ? professionalPersonPublicPlace[1]?.trim() : professionalPersonPublicPlace?.trim(),
                     district: element["Bairro Prof."]?.trim(),
@@ -228,7 +228,7 @@ const buttonFunction = async () => {
                 rg: professionalPersonRG?.length > 0 ? professionalPersonRG[0].trim() : professionalPersonRG.trim(),
                 rgIssuer: professionalPersonRG?.length > 0 ? professionalPersonRG[1].trim() : professionalPersonRG.trim(),
                 telephones: professionalPersonTelephone,
-                address: professionalPersonAddress,
+                address: professionalAddress,
             }
 
             let professional: Professional = {

@@ -1,6 +1,6 @@
 import Form from "./form"
 import InputText from "../inputText/inputText"
-import { PersonAddress } from "../../interfaces/objectInterfaces"
+import { Address } from "../../interfaces/objectInterfaces"
 import { useState } from "react"
 import { handleRemoveCEPMask } from "../../util/maskUtil"
 import FormRow from "./formRow"
@@ -25,7 +25,7 @@ interface AddressFormProps {
     isLoading?: boolean,
     isForSelect?: boolean,
     setAddress?: any,
-    address?: PersonAddress,
+    address?: Address,
 }
 
 export default function AddressForm(props: AddressFormProps) {

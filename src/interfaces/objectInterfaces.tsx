@@ -10,11 +10,11 @@ export interface Person {
     maritalStatus?: string,
     dateInsertUTC?: number,
     telephones?: string[],
-    address?: PersonAddress,
+    address?: Address,
     oldData?: object,
 }
 
-export interface PersonAddress {
+export interface Address {
     id?: string,
     cep?: string,
     number?: string,
@@ -57,7 +57,7 @@ export interface Process {
     oldData?: object,
 }
 
-export const defaultPersonAddress: PersonAddress = {
+export const defaultAddress: Address = {
     cep: "",
     number: "",
     county: "",
@@ -78,7 +78,7 @@ export const defaultPerson: Person = {
     maritalStatus: "",
     dateInsertUTC: 0,
     telephones: [],
-    address: defaultPersonAddress,
+    address: defaultAddress,
     oldData: {},
 }
 

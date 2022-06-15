@@ -1,4 +1,4 @@
-import { defaultPerson, defaultPersonAddress, defaultProfessional, defaultProperty, Person, PersonAddress, Professional, Property } from "../interfaces/objectInterfaces"
+import { defaultPerson, defaultAddress, defaultProfessional, defaultProperty, Person, Address, Professional, Property } from "../interfaces/objectInterfaces"
 import { handleMaskCPF, handleMaskTelephone, handleMountMask, handleRemoveCEPMask, handleRemoveCPFMask, handleRemoveTelephoneMask } from "./maskUtil"
 
 export interface ElementFromBase {
@@ -116,7 +116,7 @@ export const handlePreparePersonForDB = (person: Person) => {
 export const extratePerson = (element: ElementFromBase) => {
     let person: Person = defaultPerson
 
-    let personAddress: PersonAddress = person.address
+    let personAddress: Address = person.address
 
     let personCPF = checkStringForNull(element["CPF Prop."])
 
@@ -244,7 +244,7 @@ export const extrateProperty = (element: ElementFromBase) => {
 export const extrateProfessional = (element: ElementFromBase) => {
     let professional: Professional = defaultProfessional
     let professionalPerson: Person = defaultPerson
-    let professionalAddress: PersonAddress = defaultPersonAddress
+    let professionalAddress: Address = defaultAddress
 
     let professionalCPF = checkStringForNull(element["CPF Prof."])
     if (professionalCPF) {
