@@ -2,7 +2,7 @@ import { useState } from "react"
 import Button from "../button/button"
 import data from "../../data/data.json"
 import InputText from "../inputText/inputText"
-import { handleRemoveCPFMask } from "../../util/maskUtil"
+import { handleMaskCPF, handleRemoveCPFMask } from "../../util/maskUtil"
 import { FeedbackMessage } from "../modal/feedbackMessageModal"
 import { Person, Property } from "../../interfaces/objectInterfaces"
 import { collection, doc, getDoc, getDocs } from "firebase/firestore"
@@ -215,7 +215,7 @@ export default function PropertyList(props: PropertyListProps) {
                             {element.owners?.map((elementOwners: Person, indexOwners) => (
                                 <div key={elementOwners.cpf + index + indexOwners}>
                                     <span className={contentClassName}>
-                                        {elementOwners.name && elementOwners.name} {elementOwners.cpf && elementOwners.cpf}
+                                        {elementOwners.name && elementOwners.name} {elementOwners.cpf && "CPF: " + handleMaskCPF(elementOwners.cpf)}
                                     </span>
                                 </div>
                             ))}

@@ -62,7 +62,7 @@ export default function PersonList(props: PersonListProps) {
             const dataList = data.Plan1.slice(startList, endList)
             dataList.map((element: ElementFromBase, index) => {
                 let newElement: Person = extratePerson(element)
-                if (handleValidationOnlyTextNotNull(newElement.name)) {
+                if (handleValidationOnlyTextNotNull(newElement.name) && handleRemoveCPFMask(newElement.cpf)?.length === 11) {
                     newElement = { ...newElement, oldData: element }
                     arrayList = [...arrayList, newElement]
                 }

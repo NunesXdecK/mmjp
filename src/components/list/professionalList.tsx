@@ -2,7 +2,7 @@ import { useState } from "react"
 import Button from "../button/button"
 import data from "../../data/data.json"
 import InputText from "../inputText/inputText"
-import { handleRemoveCPFMask } from "../../util/maskUtil"
+import { handleMaskCPF, handleRemoveCPFMask } from "../../util/maskUtil"
 import { FeedbackMessage } from "../modal/feedbackMessageModal"
 import { Person, Professional } from "../../interfaces/objectInterfaces"
 import { collection, doc, getDoc, getDocs } from "firebase/firestore"
@@ -203,7 +203,12 @@ export default function ProfessionalList(props: ProfessionalListProps) {
                             </div>
                             <div>
                                 <span className={contentClassName}>
-                                    {element.person?.name} {element.person?.cpf}
+                                    {element.creaNumber && element.creaNumber} {element.credentialCode && "Codigo: " + element.credentialCode}
+                                </span>
+                            </div>
+                            <div>
+                                <span className={contentClassName}>
+                                    {element.person?.name} {element.person?.cpf && "CPF: " + handleMaskCPF(element.person?.cpf)}
                                 </span>
                             </div>
                         </>
