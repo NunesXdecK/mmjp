@@ -113,10 +113,34 @@ export const handlePreparePersonForDB = (person: Person) => {
     return person
 }
 
+export const extratePersonAddress = (element: ElementFromBase) => {
+    let address: Address = defaultAddress
+    if (element["Logradouro End."]) {
+        let cep = checkStringForNull(element["CEP End."])
+        if (cep) {
+            cep = handleRemoveCEPMask(cep)
+        }
+        let publicPlace = checkStringForNull(element["Logradouro End."])
+        let number = checkStringForNull(element["Numero End."])
+        let district = checkStringForNull(element["Bairro End."])
+        let county = checkStringForNull(element["Município/UF End."])
+
+        address = {
+            ...address,
+            publicPlace: publicPlace,
+            number: number,
+            district: district,
+            county: county,
+            cep: cep,
+        }
+    }
+    return address
+}
+
 export const extratePerson = (element: ElementFromBase) => {
     let person: Person = defaultPerson
 
-    let personAddress: Address = person.address
+    let personAddress: Address = extratePersonAddress(element)
 
     let personCPF = checkStringForNull(element["CPF Prop."])
 
@@ -147,28 +171,6 @@ export const extratePerson = (element: ElementFromBase) => {
         }
     }
 
-    if (element["Logradouro End."]) {
-        let personCEP = checkStringForNull(element["CEP End."])
-
-        if (personCEP) {
-            personCEP = handleRemoveCEPMask(personCEP)
-        }
-
-        let publicPlace = checkStringForNull(element["Logradouro End."])
-        let number = checkStringForNull(element["Numero End."])
-        let district = checkStringForNull(element["Bairro End."])
-        let county = checkStringForNull(element["Município/UF End."])
-
-        personAddress = {
-            ...personAddress,
-            publicPlace: publicPlace,
-            number: number,
-            district: district,
-            county: county,
-            cep: personCEP,
-        }
-    }
-
     let name = checkStringForNull(element["Nome Prop."])
     let nationality = checkStringForNull(element["Nacionalidade Prop."])
     let naturalness = checkStringForNull(element["Naturalidade Prop."])
@@ -196,6 +198,10 @@ export const extratePerson = (element: ElementFromBase) => {
 
 export const extrateProperty = (element: ElementFromBase) => {
     let property: Property = defaultProperty
+    let propertyAddress: Address = defaultAddress
+    {/*
+let propertyAddress: Address = extratePersonAddress(element)
+*/}
 
     let areaProperty = ""
     if (element["Área"]) {
@@ -229,12 +235,13 @@ export const extrateProperty = (element: ElementFromBase) => {
     property = {
         ...property,
         name: name,
-        area: areaProperty,
-        perimeter: perimeterProperty,
-        dateInsertUTC: getUTCDate(element),
         land: land,
         county: county,
+        area: areaProperty,
+        address: propertyAddress,
+        perimeter: perimeterProperty,
         owners: [extratePerson(element)],
+        dateInsertUTC: getUTCDate(element),
     }
 
     return property
@@ -299,29 +306,31 @@ export const extrateProfessional = (element: ElementFromBase) => {
 
         professionalAddress = {
             ...professionalAddress,
-            publicPlace: profissionalPublicPlace,
-            number: profissionalNumber,
-            district: profissionalDistrict,
-            county: profissionalCounty,
             cep: profissionalCEP,
+            number: profissionalNumber,
+            county: profissionalCounty,
+            district: profissionalDistrict,
+            publicPlace: profissionalPublicPlace,
         }
     }
 
     professionalPerson = {
-        name: checkStringForNull(element["Nome Prof."]),
-        cpf: professionalCPF,
+        ...professionalPerson,
         rg: professionalRG,
+        cpf: professionalCPF,
+        address: professionalAddress,
         rgIssuer: professionalRGIssuer,
         telephones: professionalTelephones,
-        address: professionalAddress,
+        name: checkStringForNull(element["Nome Prof."]),
     }
 
     professional = {
+        ...professional,
         person: professionalPerson,
+        dateInsertUTC: getUTCDate(element),
         title: checkStringForNull(element["Título Prof."]),
         creaNumber: checkStringForNull(element["CREA Prof."]),
         credentialCode: checkStringForNull(element["Cod. Credenciado"]),
-        dateInsertUTC: getUTCDate(element),
         oldData: element,
     }
 

@@ -103,6 +103,7 @@ export default function ProfessionalForm(props: ProfessionalFormProps) {
                 }
             } else {
                 try {
+                    professionalForDB = { ...professionalForDB, dateLastUpdateUTC: handleNewDateToUTC() }
                     const docRef = doc(professionalCollection, nowID)
                     await updateDoc(docRef, professionalForDB)
                     feedbackMessage = { ...feedbackMessage, messages: ["Atualizado com sucesso!"], messageType: "SUCCESS" }

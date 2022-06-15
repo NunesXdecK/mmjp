@@ -2,6 +2,7 @@ import Form from "./form";
 import FormRow from "./formRow";
 import { useState } from "react";
 import Button from "../button/button";
+import AddressForm from "./addressForm";
 import FormRowColumn from "./formRowColumn";
 import InputText from "../inputText/inputText";
 import SelectPersonForm from "./selectPersonForm";
@@ -47,6 +48,7 @@ export default function PropertyForm(props: PropertyFormProps) {
     const handleSetPropertyCounty = (value) => { setProperty({ ...property, county: value }) }
     const handleSetPropertyOwners = (value) => { setProperty({ ...property, owners: value }) }
     const handleSetPropertyPerimeter = (value) => { setProperty({ ...property, perimeter: value }) }
+    const handleSetPropertyAddress = (value) => { setProperty({ ...property, address: value }) }
 
     const handleListItemClick = async (property: Property) => {
         setIsLoading(true)
@@ -79,11 +81,10 @@ export default function PropertyForm(props: PropertyFormProps) {
                 })
                 propertyForDB = { ...propertyForDB, owners: docRefsForDB }
             }
-            
+
             if (propertyForDB.dateInsertUTC === 0) {
                 propertyForDB = { ...propertyForDB, dateInsertUTC: handleNewDateToUTC() }
             }
-
             const isSave = nowID === ""
             if (isSave) {
                 try {
@@ -96,6 +97,7 @@ export default function PropertyForm(props: PropertyFormProps) {
                 }
             } else {
                 try {
+                    propertyForDB = { ...propertyForDB, dateLastUpdateUTC: handleNewDateToUTC() }
                     const docRef = doc(propertyCollection, nowID)
                     await updateDoc(docRef, propertyForDB)
                     feedbackMessage = { ...feedbackMessage, messages: ["Atualizado com sucesso!"], messageType: "SUCCESS" }
@@ -227,6 +229,14 @@ export default function PropertyForm(props: PropertyFormProps) {
 
             <form
                 onSubmit={handleSave}>
+                <AddressForm
+                    title="Endereço"
+                    isLoading={isLoading}
+                    address={property.address}
+                    setAddress={handleSetPropertyAddress}
+                    subtitle="Informações sobre o endereço"
+                />
+
                 <FormRow>
                     {props.isBack && (
                         <FormRowColumn unit="3" className="justify-self-start">
@@ -242,9 +252,10 @@ export default function PropertyForm(props: PropertyFormProps) {
 
                     <FormRowColumn unit={props.isBack ? "3" : "6"} className="justify-self-end">
                         <Button
+                            type="submit"
                             isLoading={isLoading}
                             isDisabled={!isFormValid}
-                            type="submit">
+                        >
                             Salvar
                         </Button>
                     </FormRowColumn>

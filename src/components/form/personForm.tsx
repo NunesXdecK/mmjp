@@ -106,14 +106,15 @@ export default function PersonForm(props: PersonFormProps) {
             if (personForDB.dateInsertUTC === 0) {
                 personForDB = { ...personForDB, dateInsertUTC: handleNewDateToUTC() }
             }
-
+            
             personForDB = handlePreparePersonForDB(personForDB)
-
+            
             const isSave = nowID === ""
             if (isSave) {
                 try {
                     const docRef = await addDoc(personCollection, personForDB)
                     setPerson({ ...person, id: docRef.id })
+                    personForDB = { ...personForDB, id: docRef.id }
                     feedbackMessage = { ...feedbackMessage, messages: ["Salvo com sucesso!"], messageType: "SUCCESS" }
                 } catch (e) {
                     feedbackMessage = { ...feedbackMessage, messages: ["Erro em salvar!"], messageType: "ERROR" }
@@ -121,6 +122,7 @@ export default function PersonForm(props: PersonFormProps) {
                 }
             } else {
                 try {
+                    personForDB = { ...personForDB, dateLastUpdateUTC: handleNewDateToUTC() }
                     const docRef = doc(personCollection, nowID)
                     await updateDoc(docRef, personForDB)
                     feedbackMessage = { ...feedbackMessage, messages: ["Atualizado com sucesso!"], messageType: "SUCCESS" }
@@ -130,7 +132,7 @@ export default function PersonForm(props: PersonFormProps) {
                 }
             }
             if (props.onAfterSave) {
-                props.onAfterSave(feedbackMessage, person)
+                props.onAfterSave(feedbackMessage, personForDB)
             }
             handleListItemClick(defaultPerson)
         } else {

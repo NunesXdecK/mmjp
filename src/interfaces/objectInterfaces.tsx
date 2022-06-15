@@ -9,6 +9,7 @@ export interface Person {
     naturalness?: string,
     maritalStatus?: string,
     dateInsertUTC?: number,
+    dateLastUpdateUTC?: number,
     telephones?: string[],
     address?: Address,
     oldData?: object,
@@ -30,6 +31,7 @@ export interface Professional {
     creaNumber?: string,
     credentialCode?: string,
     dateInsertUTC?: number,
+    dateLastUpdateUTC?: number,
     person?: any,
     oldData?: object,
 }
@@ -42,7 +44,9 @@ export interface Property {
     county?: string,
     perimeter?: string,
     dateInsertUTC?: number,
+    dateLastUpdateUTC?: number,
     owners?: any[],
+    address?: Address,
     oldData?: object,
 }
 
@@ -51,6 +55,7 @@ export interface Process {
     number?: string,
     date?: number,
     dateInsertUTC?: number,
+    dateLastUpdateUTC?: number,
     property?: Property,
     professional?: Professional,
     client?: any,
@@ -77,6 +82,7 @@ export const defaultPerson: Person = {
     naturalness: "",
     maritalStatus: "",
     dateInsertUTC: 0,
+    dateLastUpdateUTC: 0,
     telephones: [],
     address: defaultAddress,
     oldData: {},
@@ -90,7 +96,9 @@ export const defaultProperty: Property = {
     area: "",
     perimeter: "",
     dateInsertUTC: 0,
+    dateLastUpdateUTC: 0,
     owners: [],
+    address: defaultAddress,
     oldData: {},
 }
 
@@ -100,6 +108,7 @@ export const defaultProfessional: Professional = {
     creaNumber: "",
     credentialCode: "",
     dateInsertUTC: 0,
+    dateLastUpdateUTC: 0,
     person: defaultPerson,
     oldData: {},
 }

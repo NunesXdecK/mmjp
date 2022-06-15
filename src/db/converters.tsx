@@ -12,6 +12,7 @@ export const PersonConversor = {
             naturalness: person.naturalness,
             maritalStatus: person.maritalStatus,
             dateInsertUTC: person.dateInsertUTC,
+            dateLastUpdateUTC: person.dateLastUpdateUTC,
         }
     },
     fromFirestore(snapshot, options) {
@@ -29,6 +30,7 @@ export const PersonConversor = {
             naturalness: data.naturalness,
             maritalStatus: data.maritalStatus,
             dateInsertUTC: data.dateInsertUTC,
+            dateLastUpdateUTC: data.dateLastUpdateUTC,
         }
     }
 }
@@ -41,6 +43,7 @@ export const ProfessionalConversor = {
             creaNumber: professional.creaNumber,
             dateInsertUTC: professional.dateInsertUTC,
             credentialCode: professional.credentialCode,
+            dateLastUpdateUTC: professional.dateLastUpdateUTC,
         }
     },
     fromFirestore(snapshot, options) {
@@ -52,6 +55,7 @@ export const ProfessionalConversor = {
             creaNumber: data.creaNumber,
             dateInsertUTC: data.dateInsertUTC,
             credentialCode: data.credentialCode,
+            dateLastUpdateUTC: data.dateLastUpdateUTC,
         }
     }
 }
@@ -64,8 +68,10 @@ export const PropertyConversor = {
             area: property.area,
             county: property.county,
             owners: property.owners,
+            address: property.address,
             perimeter: property.perimeter,
             dateInsertUTC: property.dateInsertUTC,
+            dateLastUpdateUTC: property.dateLastUpdateUTC,
         }
     },
     fromFirestore(snapshot, options) {
@@ -77,8 +83,10 @@ export const PropertyConversor = {
             id: snapshot?.id,
             county: data.county,
             owners: data.owners,
+            address: data.address,
             perimeter: data.perimeter,
             dateInsertUTC: data.dateInsertUTC,
+            dateLastUpdateUTC: data.dateLastUpdateUTC,
         }
     }
 }
