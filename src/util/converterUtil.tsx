@@ -1,5 +1,6 @@
-import { defaultPerson, defaultAddress, defaultProfessional, defaultProperty, Person, Address, Professional, Property } from "../interfaces/objectInterfaces"
-import { handleMaskCPF, handleMaskTelephone, handleMountMask, handleRemoveCEPMask, handleRemoveCPFMask, handleRemoveTelephoneMask } from "./maskUtil"
+import { handleNewDateToUTC } from "./dateUtils"
+import { defaultPerson, defaultAddress, defaultProfessional, defaultProperty, Person, Address, Professional, Property, Company, defaultCompany } from "../interfaces/objectInterfaces"
+import { handleMaskCNPJ, handleMaskCPF, handleMaskTelephone, handleMountMask, handleRemoveCEPMask, handleRemoveCNPJMask, handleRemoveCPFMask, handleRemoveTelephoneMask } from "./maskUtil"
 
 export interface ElementFromBase {
     "Nome Prop."?: string,
@@ -80,23 +81,34 @@ const checkStringForNull = (string) => {
 }
 
 export const handlePreparePersonForShow = (person: Person) => {
-    let telephonesWithNoMask = []
-    person.telephones.map((element, index) => {
-        telephonesWithNoMask = [...telephonesWithNoMask, handleMaskTelephone(element)]
+    if (person.address && person.address?.cep) {
+        person = { ...person, address: { ...person.address, cep: handleMountMask(handleRemoveCEPMask(person.address.cep), "99999-999") } }
+    }
+
+    let telephonesWithMask = []
+    person.telephones?.map((element, index) => {
+        telephonesWithMask = [...telephonesWithMask, handleMaskTelephone(element)]
     })
 
     person = {
         ...person
         , cpf: handleMaskCPF(person.cpf)
-        , address: { ...person.address, cep: handleMountMask(handleRemoveCEPMask(person.address.cep), "99999-999") }
-        , telephones: telephonesWithNoMask
+        , telephones: telephonesWithMask
     }
     return person
 }
 
 export const handlePreparePersonForDB = (person: Person) => {
+    if (person.address && person.address?.cep) {
+        person = { ...person, address: { ...person.address, cep: handleRemoveCEPMask(person.address.cep) } }
+    }
+
+    if (person.dateInsertUTC === 0) {
+        person = { ...person, dateInsertUTC: handleNewDateToUTC() }
+    }
+
     let telephonesWithNoMask = []
-    person.telephones.map((element, index) => {
+    person.telephones?.map((element, index) => {
         telephonesWithNoMask = [...telephonesWithNoMask, handleRemoveTelephoneMask(element)]
     })
 
@@ -107,10 +119,86 @@ export const handlePreparePersonForDB = (person: Person) => {
     person = {
         ...person
         , cpf: handleRemoveCPFMask(person.cpf)
-        , address: { ...person.address, cep: handleRemoveCEPMask(person.address.cep) }
         , telephones: telephonesWithNoMask
     }
     return person
+}
+
+export const handlePrepareCompanyForShow = (company: Company) => {
+    if (company.address && company.address?.cep) {
+        company = { ...company, address: { ...company.address, cep: handleMountMask(handleRemoveCEPMask(company.address.cep), "99999-999") } }
+    }
+
+    let telephonesWithMask = []
+    company.telephones?.map((element, index) => {
+        telephonesWithMask = [...telephonesWithMask, handleMaskTelephone(element)]
+    })
+
+    let personsWithMask = []
+    company.owners?.map((element, index) => {
+        personsWithMask = [...personsWithMask, handlePreparePersonForShow(element)]
+    })
+
+    company = {
+        ...company
+        , cnpj: handleMaskCNPJ(company.cnpj)
+        , telephones: telephonesWithMask
+        , owners: personsWithMask
+    }
+    return company
+}
+
+export const handlePrepareCompanyForDB = (company: Company) => {
+    if (company.address && company.address?.cep) {
+        company = { ...company, address: { ...company.address, cep: handleRemoveCEPMask(company.address.cep) } }
+    }
+
+    if (company.dateInsertUTC === 0) {
+        company = { ...company, dateInsertUTC: handleNewDateToUTC() }
+    }
+
+    let telephonesWithNoMask = []
+    company.telephones?.map((element, index) => {
+        telephonesWithNoMask = [...telephonesWithNoMask, handleRemoveTelephoneMask(element)]
+    })
+
+    if (company.oldData) {
+        delete company.oldData
+    }
+
+    company = {
+        ...company
+        , cnpj: handleRemoveCNPJMask(company.cnpj)
+        , telephones: telephonesWithNoMask
+    }
+    return company
+}
+
+export const handlePrepareProfessionalForDB = (professional: Professional) => {
+    if (professional.dateInsertUTC === 0) {
+        professional = { ...professional, dateInsertUTC: handleNewDateToUTC() }
+    }
+
+    if (professional.oldData) {
+        delete professional.oldData
+    }
+    return professional
+}
+
+export const handlePreparePropertyForDB = (property: Property) => {
+    if (property.dateInsertUTC === 0) {
+        property = { ...property, dateInsertUTC: handleNewDateToUTC() }
+    }
+
+    if (property.oldData) {
+        delete property.oldData
+    }
+
+    property = {
+        ...property
+        , address: { ...property.address, cep: handleRemoveCEPMask(property.address.cep) }
+    }
+    return property
 }
 
 export const extratePersonAddress = (element: ElementFromBase) => {
@@ -139,35 +227,33 @@ export const extratePersonAddress = (element: ElementFromBase) => {
 
 export const extratePerson = (element: ElementFromBase) => {
     let person: Person = defaultPerson
-
     let personAddress: Address = extratePersonAddress(element)
 
-    let personCPF = checkStringForNull(element["CPF Prop."])
+    let cpf = checkStringForNull(element["CPF Prop."])
 
-    if (personCPF) {
-        personCPF = personCPF.replaceAll("-", "").replaceAll(".", "")
+    if (cpf) {
+        cpf = handleRemoveCPFMask(cpf)
     }
 
-    let personRG = checkStringForNull(element["RG Prop."])
-    let personRGIssuer = ""
+    let rg = checkStringForNull(element["RG Prop."])
+    let rgIssuer = ""
 
-    if (personRG) {
-        let personRGArray = personRG?.replaceAll("-", "").replaceAll(".", "")
-        if (personRG.indexOf(" ") > -1) {
-            personRGArray = personRG?.split(" ")
-            personRGIssuer = checkStringForNull(personRGArray[1])
-            personRG = checkStringForNull(personRGArray[0])
+    if (rg) {
+        if (rg.indexOf(" ") > -1) {
+            let rgArray = rg?.split(" ")
+            rgIssuer = checkStringForNull(rgArray[1])
+            rg = checkStringForNull(rgArray[0])
         }
     }
 
-    let personTelephones = []
-    let personTelephone = checkStringForNull(element["Telefone Prop."])
+    let telephones = []
+    let telephone = checkStringForNull(element["Telefone Prop."])
 
-    if (personTelephone) {
-        if (personTelephone.indexOf("/") > -1) {
-            personTelephones = personTelephone.replaceAll("(", "").replaceAll(")", "").replaceAll(" ", "").replaceAll("-", "").split("/")
+    if (telephone) {
+        if (telephone.indexOf("/") > -1) {
+            telephones = telephone.replaceAll("(", "").replaceAll(")", "").replaceAll(" ", "").replaceAll("-", "").split("/")
         } else {
-            personTelephones = [...personTelephones, personTelephone.replaceAll("(", "").replaceAll(")", "").replaceAll(" ", "").replaceAll("-", "")]
+            telephones = [...telephones, telephone.replaceAll("(", "").replaceAll(")", "").replaceAll(" ", "").replaceAll("-", "")]
         }
     }
 
@@ -180,73 +266,21 @@ export const extratePerson = (element: ElementFromBase) => {
     person = {
         ...person,
         name: name,
-        cpf: personCPF,
-        rg: personRG,
-        rgIssuer: personRGIssuer,
+        cpf: cpf,
+        rg: rg,
+        rgIssuer: rgIssuer,
         nationality: nationality,
         naturalness: naturalness,
         maritalStatus: maritalStatus,
         profession: profession,
         dateInsertUTC: getUTCDate(element),
-        telephones: personTelephones,
+        telephones: telephones,
         address: personAddress,
         oldData: element,
     }
 
     return person
 }
-
-export const extrateProperty = (element: ElementFromBase) => {
-    let property: Property = defaultProperty
-    let propertyAddress: Address = defaultAddress
-    {/*
-let propertyAddress: Address = extratePersonAddress(element)
-*/}
-
-    let areaProperty = ""
-    if (element["Área"]) {
-        let areaPropertyString = element["Área"]?.trim() ?? ""
-        areaPropertyString = areaPropertyString.replaceAll(".", "").replace(",", ".")
-        areaProperty = areaPropertyString
-    }
-
-    let perimeterProperty = ""
-    if (element["Perímetro"]) {
-        let perimeterPropertyString = element["Perímetro"]?.trim() ?? ""
-        perimeterPropertyString = perimeterPropertyString.replaceAll(".", "").replace(",", ".")
-        areaProperty = perimeterPropertyString
-    }
-
-    let name = ""
-    if (element["Lote"]) {
-        name = element["Lote"]?.trim() ?? ""
-    }
-
-    let land = ""
-    if (element["Gleba"]) {
-        land = element["Gleba"]?.trim() ?? ""
-    }
-
-    let county = ""
-    if (element["Município/UF"]) {
-        county = element["Município/UF"]?.trim() ?? ""
-    }
-
-    property = {
-        ...property,
-        name: name,
-        land: land,
-        county: county,
-        area: areaProperty,
-        address: propertyAddress,
-        perimeter: perimeterProperty,
-        owners: [extratePerson(element)],
-        dateInsertUTC: getUTCDate(element),
-    }
-
-    return property
-}
-
 
 export const extrateProfessional = (element: ElementFromBase) => {
     let professional: Professional = defaultProfessional
@@ -335,4 +369,90 @@ export const extrateProfessional = (element: ElementFromBase) => {
     }
 
     return professional
+}
+
+export const extrateCompany = (element: ElementFromBase) => {
+    let company: Company = defaultCompany
+    let address: Address = extratePersonAddress(element)
+
+    let cnpj = checkStringForNull(element["CPF Prop."])
+
+    if (cnpj) {
+        cnpj = handleRemoveCNPJMask(cnpj)
+    }
+
+    let telephones = []
+    let telephone = checkStringForNull(element["Telefone Prop."])
+
+    if (telephone) {
+        if (telephone.indexOf("/") > -1) {
+            telephones = telephone.replaceAll("(", "").replaceAll(")", "").replaceAll(" ", "").replaceAll("-", "").split("/")
+        } else {
+            telephones = [...telephones, telephone.replaceAll("(", "").replaceAll(")", "").replaceAll(" ", "").replaceAll("-", "")]
+        }
+    }
+
+    let name = checkStringForNull(element["Nome Prop."])
+
+    company = {
+        ...company,
+        cnpj: cnpj,
+        name: name,
+        dateInsertUTC: getUTCDate(element),
+        telephones: telephones,
+        address: address,
+        oldData: element,
+    }
+
+    return company
+}
+export const extrateProperty = (element: ElementFromBase) => {
+    let property: Property = defaultProperty
+    let propertyAddress: Address = defaultAddress
+    {/*
+let propertyAddress: Address = extratePersonAddress(element)
+*/}
+
+    let areaProperty = ""
+    if (element["Área"]) {
+        let areaPropertyString = element["Área"]?.trim() ?? ""
+        areaPropertyString = areaPropertyString.replaceAll(".", "").replace(",", ".")
+        areaProperty = areaPropertyString
+    }
+
+    let perimeterProperty = ""
+    if (element["Perímetro"]) {
+        let perimeterPropertyString = element["Perímetro"]?.trim() ?? ""
+        perimeterPropertyString = perimeterPropertyString.replaceAll(".", "").replace(",", ".")
+        areaProperty = perimeterPropertyString
+    }
+
+    let name = ""
+    if (element["Lote"]) {
+        name = element["Lote"]?.trim() ?? ""
+    }
+
+    let land = ""
+    if (element["Gleba"]) {
+        land = element["Gleba"]?.trim() ?? ""
+    }
+
+    let county = ""
+    if (element["Município/UF"]) {
+        county = element["Município/UF"]?.trim() ?? ""
+    }
+
+    property = {
+        ...property,
+        name: name,
+        land: land,
+        county: county,
+        area: areaProperty,
+        address: propertyAddress,
+        perimeter: perimeterProperty,
+        owners: [extratePerson(element)],
+        dateInsertUTC: getUTCDate(element),
+    }
+
+    return property
 }

@@ -1,6 +1,6 @@
 import { useState } from "react"
-import { handleMaskCPF, handleMaskTelephone, handleMountMask, handleMountNumberCurrency, handleRemoveCEPMask, handleRemoveCPFMask } from "../../util/maskUtil"
-import { CEP_MARK, CPF_MARK, CPF_PATTERN, NOT_NULL_MARK, NUMBER_MARK, ONLY_CHARACTERS_PATTERN, ONLY_CHARACTERS_PATTERN_TWO, ONLY_SPECIAL_FOR_NUMBER_PATTERN, ONLY_SPECIAL_PATTERN, STYLE_FOR_INPUT_LOADING, TELEPHONE_MARK, TEXT_NOT_NULL_MARK } from "../../util/patternValidationUtil"
+import { handleMaskCPF, handleMaskTelephone, handleMountCNPJMask, handleMountMask, handleMountNumberCurrency, handleRemoveCEPMask, handleRemoveCNPJMask, handleRemoveCPFMask } from "../../util/maskUtil"
+import { CEP_MARK, CNPJ_MARK, CNPJ_PATTERN, CPF_MARK, CPF_PATTERN, NOT_NULL_MARK, NUMBER_MARK, ONLY_CHARACTERS_PATTERN, ONLY_CHARACTERS_PATTERN_TWO, ONLY_SPECIAL_FOR_NUMBER_PATTERN, ONLY_SPECIAL_PATTERN, STYLE_FOR_INPUT_LOADING, TELEPHONE_MARK, TEXT_NOT_NULL_MARK } from "../../util/patternValidationUtil"
 import { handleValidationNotNull } from "../../util/validationUtil"
 
 interface InputTextProps {
@@ -58,6 +58,10 @@ const handleMaskRG = (text) => {
     return handleMountRG(unMaskedText, dig1, dig2)
 }
 
+const handleMaskCNPJ = (text) => {
+    return handleMountCNPJMask(text)
+}
+
 const handleMaskPerimeter = (text) => {
     return handleMountNumberCurrency(text, ".", ",", 3, 4)
 }
@@ -113,6 +117,14 @@ export default function InputText(props: InputTextProps) {
                 test = new RegExp(CPF_PATTERN).test(text)
                 setIsValid(test)
                 break
+            case CNPJ_MARK:
+                text = text?.trim()
+                text = handleRemoveCNPJMask(text)
+                text = text?.replace(new RegExp(ONLY_SPECIAL_FOR_NUMBER_PATTERN), "")
+                text = text?.replace(new RegExp(ONLY_CHARACTERS_PATTERN), "")
+                test = new RegExp(CNPJ_PATTERN).test(text)
+                setIsValid(test)
+                break
             case NUMBER_MARK:
                 text = text?.trim()
                 text = text?.replace(new RegExp(ONLY_SPECIAL_FOR_NUMBER_PATTERN), "")
@@ -143,6 +155,7 @@ export default function InputText(props: InputTextProps) {
                 value = handleMaskRG(value)
                 break
             case "cnpj":
+                value = handleMaskCNPJ(value)
                 break
             case "perimeter":
                 value = handleMaskPerimeter(value)

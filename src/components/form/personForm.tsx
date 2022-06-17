@@ -102,10 +102,6 @@ export default function PersonForm(props: PersonFormProps) {
                     nowID = doc.id
                 }
             })
-
-            if (personForDB.dateInsertUTC === 0) {
-                personForDB = { ...personForDB, dateInsertUTC: handleNewDateToUTC() }
-            }
             
             personForDB = handlePreparePersonForDB(personForDB)
             

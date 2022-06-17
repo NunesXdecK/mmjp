@@ -159,6 +159,8 @@ export default function ProfessionalList(props: ProfessionalListProps) {
                     <div className="self-center">
                         <Button
                             isLink={true}
+                            isLoading={isLoading}
+                            isDisabled={isLoading}
                             href="/professional">
                             Novo
                         </Button>

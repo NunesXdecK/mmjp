@@ -10,6 +10,14 @@ export const handleMaskCPF = (text) => {
     return text
 }
 
+export const handleMaskCNPJ = (text) => {
+    if (text) {
+        const unMaskedText = handleRemoveCNPJMask(text)
+        text = handleMountCNPJMask(unMaskedText)
+    }
+    return text
+}
+
 export const handleMaskTelephone = (text: string) => {
     if (text) {
         text = text.trim().replaceAll("(", "").replaceAll(")", "").replaceAll(" ", "").replaceAll("-", "")
@@ -46,6 +54,39 @@ export const handleMountMask = (text: string, mask: string) => {
         } else {
             maskedText = text
         }
+    }
+    return maskedText
+}
+
+export const handleMountCNPJMask = (text) => {
+    let maskedText = ""
+    const specialDigits = [
+        "-",
+        "/",
+        ".",
+        ".",
+    ]
+
+    const specialDigitsIndex = [
+        2, 6, 9, 12,
+    ]
+    if (text) {
+        const localText = text.replaceAll(".", "").replaceAll("/", "").replaceAll("-", "")
+        const length = localText.length
+        let lastPos = 0
+        let posToSub = []
+        for (let i = length; i > 0; i--) {
+            const char = localText.substring(i, i - 1)
+            const iz = (length - i) + 1
+            if (specialDigitsIndex.includes(iz)) {
+                maskedText = specialDigits[specialDigitsIndex.indexOf(iz)] + char + maskedText
+            } else {
+                maskedText = char + maskedText
+            }
+        }
+    }
+    if (specialDigits.includes(maskedText.substring(0, 1))) {
+        maskedText = maskedText.substring(1, maskedText.length)
     }
     return maskedText
 }
@@ -180,6 +221,13 @@ export const handleMountCPFCurrency = (text, dig1, dig2) => {
 export const handleRemoveCPFMask = (text: string) => {
     if (text) {
         text = text.replaceAll("-", "").replaceAll(".", "")
+    }
+    return text
+}
+
+export const handleRemoveCNPJMask = (text: string) => {
+    if (text) {
+        text = text.replaceAll("/", "").replaceAll("-", "").replaceAll(".", "")
     }
     return text
 }

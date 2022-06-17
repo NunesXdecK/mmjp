@@ -26,5 +26,6 @@ const db = getFirestore()
 export { db }
 
 export const PERSON_COLLECTION_NAME = "person"
+export const COMPANY_COLLECTION_NAME = "company"
 export const PROPERTY_COLLECTION_NAME = "property"
 export const PROFESSIONAL_COLLECTION_NAME = "profissional"

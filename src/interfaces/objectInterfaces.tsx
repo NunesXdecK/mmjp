@@ -1,3 +1,13 @@
+export interface Address {
+    id?: string,
+    cep?: string,
+    number?: string,
+    county?: string,
+    district?: string,
+    complement?: string,
+    publicPlace?: string,
+}
+
 export interface Person {
     id?: string,
     rg?: string,
@@ -15,14 +25,16 @@ export interface Person {
     oldData?: object,
 }
 
-export interface Address {
+export interface Company {
     id?: string,
-    cep?: string,
-    number?: string,
-    county?: string,
-    district?: string,
-    complement?: string,
-    publicPlace?: string,
+    cnpj?: string,
+    name?: string,
+    dateInsertUTC?: number,
+    dateLastUpdateUTC?: number,
+    telephones?: string[],
+    owners?: any[],
+    address?: Address,
+    oldData?: object,
 }
 
 export interface Professional {
@@ -45,9 +57,9 @@ export interface Property {
     perimeter?: string,
     dateInsertUTC?: number,
     dateLastUpdateUTC?: number,
+    oldData?: object,
     owners?: any[],
     address?: Address,
-    oldData?: object,
 }
 
 export interface Process {
@@ -83,9 +95,33 @@ export const defaultPerson: Person = {
     maritalStatus: "",
     dateInsertUTC: 0,
     dateLastUpdateUTC: 0,
+    oldData: {},
     telephones: [],
     address: defaultAddress,
+}
+
+
+export const defaultCompany: Company = {
+    id: "",
+    cnpj: "",
+    name: "",
+    dateInsertUTC: 0,
+    dateLastUpdateUTC: 0,
     oldData: {},
+    owners: [],
+    telephones: [],
+    address: defaultAddress,
+}
+
+export const defaultProfessional: Professional = {
+    id: "",
+    title: "",
+    creaNumber: "",
+    credentialCode: "",
+    dateInsertUTC: 0,
+    dateLastUpdateUTC: 0,
+    oldData: {},
+    person: defaultPerson,
 }
 
 export const defaultProperty: Property = {
@@ -97,18 +133,7 @@ export const defaultProperty: Property = {
     perimeter: "",
     dateInsertUTC: 0,
     dateLastUpdateUTC: 0,
+    oldData: {},
     owners: [],
     address: defaultAddress,
-    oldData: {},
-}
-
-export const defaultProfessional: Professional = {
-    id: "",
-    title: "",
-    creaNumber: "",
-    credentialCode: "",
-    dateInsertUTC: 0,
-    dateLastUpdateUTC: 0,
-    person: defaultPerson,
-    oldData: {},
 }

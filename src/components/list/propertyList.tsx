@@ -165,6 +165,8 @@ export default function PropertyList(props: PropertyListProps) {
                     <div className="self-center">
                         <Button
                             isLink={true}
+                            isLoading={isLoading}
+                            isDisabled={isLoading}
                             href="/property">
                             Novo
                         </Button>

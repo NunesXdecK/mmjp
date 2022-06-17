@@ -1,3 +1,5 @@
+import { defaultAddress, defaultPerson } from "../interfaces/objectInterfaces"
+
 export const PersonConversor = {
     toFirestore(person) {
         return {
@@ -18,19 +20,19 @@ export const PersonConversor = {
     fromFirestore(snapshot, options) {
         const data = snapshot?.data(options)
         return {
-            rg: data.rg,
-            cpf: data.cpf,
-            name: data.name,
-            id: snapshot?.id,
-            address: data.address,
-            rgIssuer: data.rgIssuer,
-            profession: data.profession,
-            telephones: data.telephones,
-            nationality: data.nationality,
-            naturalness: data.naturalness,
-            maritalStatus: data.maritalStatus,
-            dateInsertUTC: data.dateInsertUTC,
-            dateLastUpdateUTC: data.dateLastUpdateUTC,
+            rg: data.rg ?? "",
+            cpf: data.cpf ?? "",
+            name: data.name ?? "",
+            id: snapshot?.id ?? "",
+            address: data.address ?? defaultAddress,
+            rgIssuer: data.rgIssuer ?? "",
+            profession: data.profession ?? "",
+            telephones: data.telephones ?? [],
+            nationality: data.nationality ?? "",
+            naturalness: data.naturalness ?? "",
+            maritalStatus: data.maritalStatus ?? "",
+            dateInsertUTC: data.dateInsertUTC ?? 0,
+            dateLastUpdateUTC: data.dateLastUpdateUTC ?? 0,
         }
     }
 }
@@ -49,13 +51,40 @@ export const ProfessionalConversor = {
     fromFirestore(snapshot, options) {
         const data = snapshot?.data(options)
         return {
-            id: snapshot?.id,
-            title: data.title,
-            person: data.person,
-            creaNumber: data.creaNumber,
-            dateInsertUTC: data.dateInsertUTC,
-            credentialCode: data.credentialCode,
-            dateLastUpdateUTC: data.dateLastUpdateUTC,
+            id: snapshot?.id ?? "",
+            title: data.title ?? "",
+            person: data.person ?? defaultPerson,
+            creaNumber: data.creaNumber ?? "",
+            dateInsertUTC: data.dateInsertUTC ?? 0,
+            credentialCode: data.credentialCode ?? "",
+            dateLastUpdateUTC: data.dateLastUpdateUTC ?? 0,
+        }
+    }
+}
+
+export const CompanyConversor = {
+    toFirestore(company) {
+        return {
+            name: company.name,
+            cnpj: company.cnpj,
+            owners: company.owners,
+            address: company.address,
+            telephones: company.telephones,
+            dateInsertUTC: company.dateInsertUTC,
+            dateLastUpdateUTC: company.dateLastUpdateUTC,
+        }
+    },
+    fromFirestore(snapshot, options) {
+        const data = snapshot?.data(options)
+        return {
+            name: data.name ?? "",
+            cnpj: data.cnpj ?? "",
+            id: snapshot?.id ?? "",
+            address: data.address ?? defaultAddress,
+            owners: data.owners ?? [],
+            telephones: data.telephones ?? [],
+            dateInsertUTC: data.dateInsertUTC ?? 0,
+            dateLastUpdateUTC: data.dateLastUpdateUTC ?? 0,
         }
     }
 }
@@ -77,16 +106,16 @@ export const PropertyConversor = {
     fromFirestore(snapshot, options) {
         const data = snapshot?.data(options)
         return {
-            name: data.name,
-            land: data.land,
-            area: data.area,
-            id: snapshot?.id,
-            county: data.county,
-            owners: data.owners,
-            address: data.address,
-            perimeter: data.perimeter,
-            dateInsertUTC: data.dateInsertUTC,
-            dateLastUpdateUTC: data.dateLastUpdateUTC,
+            name: data.name ?? "",
+            land: data.land ?? "",
+            area: data.area ?? "",
+            id: snapshot?.id ?? "",
+            county: data.county ?? "",
+            owners: data.owners ?? [],
+            address: data.address ?? defaultAddress,
+            perimeter: data.perimeter ?? "",
+            dateInsertUTC: data.dateInsertUTC ?? 0,
+            dateLastUpdateUTC: data.dateLastUpdateUTC ?? 0,
         }
     }
 }
@@ -104,8 +133,8 @@ export const ProcessConversor = {
     fromFirestore(snapshot, options) {
         const data = snapshot?.data(options)
         return {
-            id: snapshot?.id,
             date: data.date,
+            id: snapshot?.id,
             number: data.number,
             client: data.client,
             property: data.property,

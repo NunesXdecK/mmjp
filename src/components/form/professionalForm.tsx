@@ -11,9 +11,9 @@ import { NOT_NULL_MARK } from "../../util/patternValidationUtil";
 import { addDoc, collection, doc, updateDoc } from "firebase/firestore";
 import { PersonConversor, ProfessionalConversor } from "../../db/converters";
 import { handleProfessionalValidationForDB } from "../../util/validationUtil";
-import { defaultElementFromBase, ElementFromBase } from "../../util/converterUtil";
 import { defaultProfessional, Professional } from "../../interfaces/objectInterfaces";
 import { db, PERSON_COLLECTION_NAME, PROFESSIONAL_COLLECTION_NAME } from "../../db/firebaseDB";
+import { defaultElementFromBase, ElementFromBase, handlePrepareProfessionalForDB } from "../../util/converterUtil";
 
 interface ProfessionalFormProps {
     title?: string,
@@ -84,13 +84,8 @@ export default function ProfessionalForm(props: ProfessionalFormProps) {
                 professionalForDB = { ...professionalForDB, person: personDocRef }
             }
 
-            if (professionalForDB.dateInsertUTC === 0) {
-                professionalForDB = { ...professionalForDB, dateInsertUTC: handleNewDateToUTC() }
-            }
+            professionalForDB = handlePrepareProfessionalForDB(professionalForDB)
 
-            if (professionalForDB.oldData) {
-                delete professionalForDB.oldData
-            }
             const isSave = nowID === ""
             if (isSave) {
                 try {

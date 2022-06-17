@@ -2,27 +2,28 @@ import { useState } from "react"
 import Button from "../button/button"
 import data from "../../data/data.json"
 import InputText from "../inputText/inputText"
-import { PersonConversor } from "../../db/converters"
 import { collection, getDocs } from "firebase/firestore"
-import { Person } from "../../interfaces/objectInterfaces"
 import { FeedbackMessage } from "../modal/feedbackMessageModal"
-import { db, PERSON_COLLECTION_NAME } from "../../db/firebaseDB"
-import { handleMaskCPF, handleRemoveCPFMask } from "../../util/maskUtil"
-import { ElementFromBase, extratePerson } from "../../util/converterUtil"
+import { Company, Person } from "../../interfaces/objectInterfaces"
+import { CompanyConversor, PersonConversor } from "../../db/converters"
+import { ElementFromBase, extrateCompany } from "../../util/converterUtil"
+import { db, COMPANY_COLLECTION_NAME, PERSON_COLLECTION_NAME } from "../../db/firebaseDB"
 import { handleValidationOnlyNumbersNotNull, handleValidationOnlyTextNotNull } from "../../util/validationUtil"
+import { handleMaskCPF, handleMountCNPJMask, handleRemoveCNPJMask, handleRemoveCPFMask } from "../../util/maskUtil"
 
 const subtitle = "mt-1 max-w-2xl text-sm text-gray-500"
 const contentClassName = "sm:px-4 sm:py-5 mt-1 text-sm text-gray-900"
 const titleClassName = "sm:px-4 sm:py-5 text-md leading-6 font-medium text-gray-900"
 
-interface PersonListProps {
+interface CompanyListProps {
     isOldBase?: boolean,
     onListItemClick?: (any) => void,
     onShowMessage?: (FeedbackMessage) => void,
 }
 
-export default function PersonList(props: PersonListProps) {
+export default function CompanyList(props: CompanyListProps) {
     const personCollection = collection(db, PERSON_COLLECTION_NAME).withConverter(PersonConversor)
+    const companyCollection = collection(db, COMPANY_COLLECTION_NAME).withConverter(CompanyConversor)
 
     const [page, setPage] = useState(-1)
 
@@ -33,9 +34,9 @@ export default function PersonList(props: PersonListProps) {
     const [listItems, setListItems] = useState([])
 
 
-    const handleListItemClick = (element: Person) => {
+    const handleListItemClick = (element: Company) => {
         setIsLoading(true)
-        if (element.name !== "" && element.cpf !== "") {
+        if (element.name !== "") {
             props.onListItemClick && props.onListItemClick(element)
         }
         setIsLoading(false)
@@ -53,25 +54,42 @@ export default function PersonList(props: PersonListProps) {
         event.preventDefault()
 
         setIsLoading(true)
+
         let listItemsFiltered = []
-        let arrayList: Person[] = []
+        let arrayList: Company[] = []
 
         if (props.isOldBase) {
             const startList = 0
             const endList = data.Plan1.length - 0
             const dataList = data.Plan1.slice(startList, endList)
             dataList.map((element: ElementFromBase, index) => {
-                let newElement: Person = extratePerson(element)
-                if (handleValidationOnlyTextNotNull(newElement.name) && handleRemoveCPFMask(newElement.cpf)?.length === 11) {
+                let newElement: Company = extrateCompany(element)
+                if (handleValidationOnlyTextNotNull(newElement.name) && handleRemoveCNPJMask(newElement.cnpj)?.length === 14) {
                     newElement = { ...newElement, oldData: element }
                     arrayList = [...arrayList, newElement]
                 }
             })
         } else {
             try {
-                const querySnapshot = await getDocs(personCollection)
-                querySnapshot.forEach((doc) => {
-                    arrayList = [...arrayList, doc.data()]
+                const querySnapshotPerson = await getDocs(personCollection)
+                const querySnapshotCompany = await getDocs(companyCollection)
+                querySnapshotCompany.forEach((docCompany) => {
+                    let company: Company = docCompany.data()
+                    let ownersIdList = []
+                    let ownersList = []
+                    company?.owners?.map((element, index) => {
+                        ownersIdList = [...ownersIdList, element.id]
+                    })
+                    querySnapshotPerson.forEach((docPerson) => {
+                        const personID = docPerson.data().id
+                        if (ownersIdList.includes(personID)) {
+                            if (!ownersList.includes(docPerson.data())) {
+                                ownersList = [...ownersList, docPerson.data()]
+                            }
+                        }
+                    })
+                    company = { ...company, owners: ownersList }
+                    arrayList = [...arrayList, company]
                 })
             } catch (err) {
                 console.error(err)
@@ -82,9 +100,9 @@ export default function PersonList(props: PersonListProps) {
             }
         }
 
-        listItemsFiltered = arrayList.filter((element: Person, index) => {
+        listItemsFiltered = arrayList.filter((element: Company, index) => {
             if (handleValidationOnlyNumbersNotNull(handleRemoveCPFMask(inputSearch))) {
-                let matchCPF = handleRemoveCPFMask(element.cpf).includes(handleRemoveCPFMask(inputSearch))
+                let matchCPF = handleRemoveCPFMask(element.cnpj).includes(handleRemoveCPFMask(inputSearch))
                 return matchCPF
             }
 
@@ -95,7 +113,7 @@ export default function PersonList(props: PersonListProps) {
             return true
         })
 
-        listItemsFiltered = listItemsFiltered.sort((elementOne: Person, elementTwo: Person) => {
+        listItemsFiltered = listItemsFiltered.sort((elementOne: Company, elementTwo: Company) => {
             return elementOne.name.localeCompare(elementTwo.name)
         })
 
@@ -116,7 +134,7 @@ export default function PersonList(props: PersonListProps) {
                         {/*
                     let diference = perPage - lastPage.length
                     for (let ii = 0; ii < diference; ii++) {
-                        lastPage = [...lastPage, defaultPerson]
+                        lastPage = [...lastPage, defaultCompany]
                     }
                 */}
                         pagesArray = [...pagesArray, lastPage]
@@ -127,7 +145,6 @@ export default function PersonList(props: PersonListProps) {
         } else {
             pagesArray = [...pagesArray, listItemsFiltered]
         }
-
         setPage(0)
         setListItems(pagesArray)
         setIsLoading(false)
@@ -149,7 +166,7 @@ export default function PersonList(props: PersonListProps) {
 
                 <div className="flex w-full">
                     <div className="w-full">
-                        <h3 className="text-lg leading-6 font-medium text-gray-900">Lista de pessoas</h3>
+                        <h3 className="text-lg leading-6 font-medium text-gray-900">Lista de empresas</h3>
                         <p className={subtitle}>subtitulo lindo</p>
                     </div>
 
@@ -158,7 +175,7 @@ export default function PersonList(props: PersonListProps) {
                             isLink={true}
                             isLoading={isLoading}
                             isDisabled={isLoading}
-                            href="/person">
+                            href="/company">
                             Novo
                         </Button>
                     </div>
@@ -190,17 +207,23 @@ export default function PersonList(props: PersonListProps) {
             </div>
 
             <div className="grid grid-cols-1 gap-4 p-4 bg-white">
-                {listItems[page]?.map((element: Person, index) => (
+                {listItems[page]?.map((element: Company, index) => (
                     <button
-                        disabled={element.name === "" && element.cpf === ""}
+                        disabled={element.name === ""}
                         key={index.toString()}
                         onClick={() => handleListItemClick(element)}
                         className="bg-white p-4 rounded-sm shadow items-center text-left">
                         <div className="flex">
                             <div><span className={titleClassName}>{element.name}</span></div>
                         </div>
-                        <div><span className={contentClassName}>{handleMaskCPF(element.cpf)}</span></div>
-                        <div><span className={contentClassName}>{element.rg}</span></div>
+                        <div><span className={contentClassName}>{handleMountCNPJMask(element.cnpj)}</span></div>
+                        {element.owners?.map((elementOwners: Person, indexOwners) => (
+                            <div key={index + indexOwners}>
+                                <span className={contentClassName}>
+                                    {elementOwners.name && elementOwners.name} {elementOwners.cpf && "CPF: " + handleMaskCPF(elementOwners.cpf)}
+                                </span>
+                            </div>
+                        ))}
                     </button>
                 ))}
             </div>

@@ -4,58 +4,57 @@ import { useState } from "react";
 import Button from "../button/button";
 import AddressForm from "./addressForm";
 import FormRowColumn from "./formRowColumn";
+import ArrayTextForm from "./arrayTextForm";
 import InputText from "../inputText/inputText";
 import SelectPersonForm from "./selectPersonForm";
 import { handleNewDateToUTC } from "../../util/dateUtils";
 import { FeedbackMessage } from "../modal/feedbackMessageModal";
-import { PersonConversor, PropertyConversor } from "../../db/converters";
-import { handlePropertyValidationForDB } from "../../util/validationUtil";
-import { defaultProperty, Property } from "../../interfaces/objectInterfaces";
-import { NOT_NULL_MARK, NUMBER_MARK } from "../../util/patternValidationUtil";
-import { addDoc, collection, doc, getDocs, updateDoc } from "firebase/firestore";
-import { db, PERSON_COLLECTION_NAME, PROPERTY_COLLECTION_NAME } from "../../db/firebaseDB";
-import { defaultElementFromBase, ElementFromBase, handlePreparePropertyForDB } from "../../util/converterUtil";
+import { addDoc, collection, doc, updateDoc } from "firebase/firestore";
+import { PersonConversor, CompanyConversor } from "../../db/converters";
+import { handleCompanyValidationForDB } from "../../util/validationUtil";
+import { defaultCompany, Company } from "../../interfaces/objectInterfaces";
+import { COMPANY_COLLECTION_NAME, db, PERSON_COLLECTION_NAME } from "../../db/firebaseDB";
+import { CNPJ_MARK, NOT_NULL_MARK, TELEPHONE_MARK } from "../../util/patternValidationUtil";
+import { defaultElementFromBase, ElementFromBase, handlePrepareCompanyForDB } from "../../util/converterUtil";
 
-interface PropertyFormProps {
+interface CompanyFormProps {
     title?: string,
     subtitle?: string,
     isBack?: boolean,
     isForSelect?: boolean,
     isForDisable?: boolean,
     isForOldRegister?: boolean,
-    property?: Property,
+    company?: Company,
     onBack?: (object) => void,
     onAfterSave?: (object) => void,
     onSelectPerson?: (object) => void,
     onShowMessage?: (FeedbackMessage) => void,
 }
 
-export default function PropertyForm(props: PropertyFormProps) {
+export default function CompanyForm(props: CompanyFormProps) {
     const personCollection = collection(db, PERSON_COLLECTION_NAME).withConverter(PersonConversor)
-    const propertyCollection = collection(db, PROPERTY_COLLECTION_NAME).withConverter(PropertyConversor)
+    const companyCollection = collection(db, COMPANY_COLLECTION_NAME).withConverter(CompanyConversor)
 
-    const [property, setProperty] = useState<Property>(props?.property ? structuredClone(props?.property) : defaultProperty)
-    const [isFormValid, setIsFormValid] = useState(handlePropertyValidationForDB(property).validation)
+    const [company, setCompany] = useState<Company>(props?.company ? structuredClone(props?.company) : defaultCompany)
+    const [isFormValid, setIsFormValid] = useState(handleCompanyValidationForDB(company).validation)
 
     const [isOpen, setIsOpen] = useState(false)
     const [isLoading, setIsLoading] = useState(false)
 
-    const [oldData, setOldData] = useState<ElementFromBase>(props?.property?.oldData ?? defaultElementFromBase)
+    const [oldData, setOldData] = useState<ElementFromBase>(props?.company?.oldData ?? defaultElementFromBase)
 
-    const handleSetPropertyName = (value) => { setProperty({ ...property, name: value }) }
-    const handleSetPropertyLand = (value) => { setProperty({ ...property, land: value }) }
-    const handleSetPropertyArea = (value) => { setProperty({ ...property, area: value }) }
-    const handleSetPropertyCounty = (value) => { setProperty({ ...property, county: value }) }
-    const handleSetPropertyOwners = (value) => { setProperty({ ...property, owners: value }) }
-    const handleSetPropertyPerimeter = (value) => { setProperty({ ...property, perimeter: value }) }
-    const handleSetPropertyAddress = (value) => { setProperty({ ...property, address: value }) }
+    const handleSetCompanyName = (value) => { setCompany({ ...company, name: value }) }
+    const handleSetCompanyCnpj = (value) => { setCompany({ ...company, cnpj: value }) }
+    const handleSetCompanyTelephones = (value) => { setCompany({ ...company, telephones: value }) }
+    const handleSetCompanyOwners = (value) => { setCompany({ ...company, owners: value }) }
+    const handleSetCompanyAddress = (value) => { setCompany({ ...company, address: value }) }
 
-    const handleListItemClick = async (property: Property) => {
+    const handleListItemClick = async (company: Company) => {
         setIsLoading(true)
         if (props.onSelectPerson) {
-            props.onSelectPerson(property)
+            props.onSelectPerson(company)
         }
-        setProperty(property)
+        setCompany(company)
         setIsOpen(false)
         setIsFormValid(true)
         setIsLoading(false)
@@ -66,29 +65,30 @@ export default function PropertyForm(props: PropertyFormProps) {
         setIsLoading(true)
         let feedbackMessage: FeedbackMessage = { messages: ["Algo estranho aconteceu"], messageType: "WARNING" }
 
-        let propertyForDB = structuredClone(property)
-        const isValid = handlePropertyValidationForDB(propertyForDB)
+        let companyForDB = structuredClone(company)
+        const isValid = handleCompanyValidationForDB(companyForDB)
+        
         if (isValid.validation) {
-            let nowID = propertyForDB?.id ?? ""
+            let nowID = companyForDB?.id ?? ""
             let docRefsForDB = []
-
-            if (propertyForDB.owners?.length > 0) {
-                propertyForDB.owners?.map((element, index) => {
+            
+            if (companyForDB.owners?.length > 0) {
+                companyForDB.owners?.map((element, index) => {
                     if (element.id) {
                         const docRef = doc(personCollection, element.id)
                         docRefsForDB = [...docRefsForDB, docRef]
                     }
                 })
-                propertyForDB = { ...propertyForDB, owners: docRefsForDB }
+                companyForDB = { ...companyForDB, owners: docRefsForDB }
             }
-
-            propertyForDB = handlePreparePropertyForDB(propertyForDB)
+            
+            companyForDB = handlePrepareCompanyForDB(companyForDB)
 
             const isSave = nowID === ""
             if (isSave) {
                 try {
-                    const docRef = await addDoc(propertyCollection, propertyForDB)
-                    setProperty({ ...property, id: docRef.id })
+                    const docRef = await addDoc(companyCollection, companyForDB)
+                    setCompany({ ...company, id: docRef.id })
                     feedbackMessage = { ...feedbackMessage, messages: ["Salvo com sucesso!"], messageType: "SUCCESS" }
                 } catch (e) {
                     feedbackMessage = { ...feedbackMessage, messages: ["Erro em salvar!"], messageType: "ERROR" }
@@ -96,9 +96,9 @@ export default function PropertyForm(props: PropertyFormProps) {
                 }
             } else {
                 try {
-                    propertyForDB = { ...propertyForDB, dateLastUpdateUTC: handleNewDateToUTC() }
-                    const docRef = doc(propertyCollection, nowID)
-                    await updateDoc(docRef, propertyForDB)
+                    companyForDB = { ...companyForDB, dateLastUpdateUTC: handleNewDateToUTC() }
+                    const docRef = doc(companyCollection, nowID)
+                    await updateDoc(docRef, companyForDB)
                     feedbackMessage = { ...feedbackMessage, messages: ["Atualizado com sucesso!"], messageType: "SUCCESS" }
                 } catch (e) {
                     feedbackMessage = { ...feedbackMessage, messages: ["Erro em atualizar!"], messageType: "ERROR" }
@@ -108,7 +108,7 @@ export default function PropertyForm(props: PropertyFormProps) {
             if (props.onAfterSave) {
                 props.onAfterSave(feedbackMessage)
             }
-            handleListItemClick(defaultProperty)
+            handleListItemClick(defaultCompany)
         } else {
             feedbackMessage = { ...feedbackMessage, messages: isValid.messages, messageType: "ERROR" }
             if (props.onShowMessage) {
@@ -133,13 +133,13 @@ export default function PropertyForm(props: PropertyFormProps) {
                     <FormRow>
                         <FormRowColumn unit="6">
                             <InputText
-                                id="propertyname"
-                                value={property.name}
+                                id="companyname"
+                                value={company.name}
                                 isLoading={isLoading}
                                 validation={NOT_NULL_MARK}
                                 title="Nome da propriedade"
                                 isDisabled={props.isForDisable}
-                                onSetText={handleSetPropertyName}
+                                onSetText={handleSetCompanyName}
                                 onValidate={handleChangeFormValidation}
                                 validationMessage="O nome da propriedade não pode ficar em branco."
                             />
@@ -149,59 +149,17 @@ export default function PropertyForm(props: PropertyFormProps) {
                     <FormRow>
                         <FormRowColumn unit="3">
                             <InputText
-                                id="land"
-                                title="Gleba"
-                                value={property.land}
+                                id="cnpj"
+                                mask="cnpj"
+                                title="CNPJ"
+                                maxLength={18}
+                                value={company.cnpj}
                                 isLoading={isLoading}
+                                validation={CNPJ_MARK}
                                 isDisabled={props.isForDisable}
-                                onSetText={handleSetPropertyLand}
+                                onSetText={handleSetCompanyCnpj}
                                 onValidate={handleChangeFormValidation}
-                                validationMessage="A gleba não pode ficar em branco."
-                            />
-                        </FormRowColumn>
-
-                        <FormRowColumn unit="3">
-                            <InputText
-                                id="county"
-                                title="Município/UF"
-                                isLoading={isLoading}
-                                value={property.county}
-                                isDisabled={props.isForDisable}
-                                onSetText={handleSetPropertyCounty}
-                                onValidate={handleChangeFormValidation}
-                                validationMessage="O município não pode ficar em branco."
-                            />
-                        </FormRowColumn>
-                    </FormRow>
-
-                    <FormRow>
-                        <FormRowColumn unit="3">
-                            <InputText
-                                id="area"
-                                mask="area"
-                                title="Área"
-                                isLoading={isLoading}
-                                validation={NUMBER_MARK}
-                                value={property.area}
-                                isDisabled={props.isForDisable}
-                                onSetText={handleSetPropertyArea}
-                                onValidate={handleChangeFormValidation}
-                                validationMessage="A área não pode ficar em branco."
-                            />
-                        </FormRowColumn>
-
-                        <FormRowColumn unit="3">
-                            <InputText
-                                id="perimeter"
-                                mask="perimeter"
-                                title="Perímetro"
-                                isLoading={isLoading}
-                                validation={NUMBER_MARK}
-                                value={property.perimeter}
-                                isDisabled={props.isForDisable}
-                                onSetText={handleSetPropertyPerimeter}
-                                onValidate={handleChangeFormValidation}
-                                validationMessage="O perímetro não pode ficar em branco."
+                                validationMessage="O CPNPJ não pode ficar em branco."
                             />
                         </FormRowColumn>
                     </FormRow>
@@ -214,15 +172,28 @@ export default function PropertyForm(props: PropertyFormProps) {
                 </Form>
             </form>
 
+            <ArrayTextForm
+                id="telephone"
+                mask="telephone"
+                title="Telefones"
+                isLoading={isLoading}
+                inputTitle="Telephone"
+                texts={company.telephones}
+                validation={TELEPHONE_MARK}
+                onSetTexts={handleSetCompanyTelephones}
+                subtitle="Informações sobre os contatos"
+                validationMessage="Faltam números no telefone"
+            />
+
             <SelectPersonForm
                 title="Proprietários"
                 isLoading={isLoading}
                 isMultipleSelect={true}
-                persons={property.owners}
+                persons={company.owners}
                 onShowMessage={props.onShowMessage}
                 buttonTitle="Pesquisar proprietário"
                 subtitle="Selecione os proprietários"
-                onSetPersons={handleSetPropertyOwners}
+                onSetPersons={handleSetCompanyOwners}
                 validationMessage="Esta pessoa já é um proprietário"
             />
 
@@ -231,8 +202,8 @@ export default function PropertyForm(props: PropertyFormProps) {
                 <AddressForm
                     title="Endereço"
                     isLoading={isLoading}
-                    address={property.address}
-                    setAddress={handleSetPropertyAddress}
+                    address={company.address}
+                    setAddress={handleSetCompanyAddress}
                     subtitle="Informações sobre o endereço"
                 />
 
