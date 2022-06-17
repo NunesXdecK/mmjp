@@ -11,7 +11,7 @@ export default function Person() {
         <Layout
             title="Projeto">
             <Head>
-                <title>Propriedade</title>
+                <title>Projetos</title>
                 <meta name="description" content="Projeto" />
                 <link rel="icon" href="/favicon.ico" />
             </Head>
