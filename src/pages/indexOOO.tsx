@@ -6,7 +6,7 @@ import { useEffect, useState } from "react";
 import data from "../data/data.json";
 import Button from "../components/button/button";
 import { PersonConversor, PropertyConversor } from "../db/converters";
-import { Person, Address, Process, Professional, Property } from "../interfaces/objectInterfaces";
+import { Person, Address, Professional, Property, Project } from "../interfaces/objectInterfaces";
 
 async function hasProperty(collection, { county, name, perimeter, area }: Property) {
     let property = {}
@@ -238,7 +238,7 @@ const buttonFunction = async () => {
             }
         }
 
-        let process: Process = {
+        let process: Project = {
             number: element["Nº Processo"]?.trim(),
             date: dateCad,
         }
