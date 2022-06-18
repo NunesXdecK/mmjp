@@ -1,4 +1,4 @@
-import { Company, Person, Professional, Property } from "../interfaces/objectInterfaces"
+import { Company, Person, Professional, Project, Property } from "../interfaces/objectInterfaces"
 import { CPF_PATTERN, ONLY_CHARACTERS_PATTERN, ONLY_CHARACTERS_PATTERN_TWO } from "./patternValidationUtil"
 
 interface ValidationReturn {
@@ -108,5 +108,47 @@ export const handlePropertyValidationForDB = (property: Property) => {
         }
     })
     validation = { ...validation, validation: nameCheck && ownersCheck && ownersOnBaseCheck }
+    return validation
+}
+
+export const handleProjectValidationForDB = (project: Project) => {
+    let validation: ValidationReturn = { validation: false, messages: [] }
+    let nameCheck = handleValidationNotNull(project.number)
+    let clientsCheck = project?.clients?.length > 0 ?? false
+    let propertiesCheck = project?.properties?.length > 0 ?? false
+    let professionalCheck = project?.professional?.id?.length > 0 ?? false
+    let clientsOnBaseCheck = true
+    let propertiesOnBaseCheck = true
+
+    if (!nameCheck) {
+        validation = { ...validation, messages: [...validation.messages, "O campo nome está em branco."] }
+    }
+
+    if (!professionalCheck) {
+        validation = { ...validation, messages: [...validation.messages, "O projeto precisa de ao menos um profissional."] }
+    }
+
+    if (!clientsCheck) {
+        validation = { ...validation, messages: [...validation.messages, "O projeto precisa de ao menos um cliente."] }
+    }
+
+    if (!propertiesCheck) {
+        validation = { ...validation, messages: [...validation.messages, "O projeto precisa de ao menos uma propriedade."] }
+    }
+
+    project.clients.map((element, index) => {
+        if (!handleValidationNotNull(element.id)) {
+            clientsOnBaseCheck = false
+            validation = { ...validation, messages: [...validation.messages, "O cliente não está cadastrado na base."] }
+        }
+    })
+
+    project.properties.map((element, index) => {
+        if (!handleValidationNotNull(element.id)) {
+            propertiesOnBaseCheck = false
+            validation = { ...validation, messages: [...validation.messages, "A propriedade não está cadastrado na base."] }
+        }
+    })
+    validation = { ...validation, validation: nameCheck && clientsCheck && clientsOnBaseCheck }
     return validation
 }

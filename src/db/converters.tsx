@@ -120,7 +120,7 @@ export const PropertyConversor = {
     }
 }
 
-export const ProcessConversor = {
+export const ProjectConversor = {
     toFirestore(process) {
         return {
             date: process.date,

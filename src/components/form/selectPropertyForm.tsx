@@ -4,13 +4,12 @@ import { useState } from "react";
 import Button from "../button/button";
 import IOSModal from "../modal/iosModal";
 import FormRowColumn from "./formRowColumn";
-import PersonList from "../list/personList";
 import InputText from "../inputText/inputText";
-import { Person } from "../../interfaces/objectInterfaces";
+import PropertyList from "../list/propertyList";
+import { Property } from "../../interfaces/objectInterfaces";
 import { FeedbackMessage } from "../modal/feedbackMessageModal";
-import { handleMaskCPF, handleRemoveCPFMask } from "../../util/maskUtil";
 
-interface SelectPersonFormProps {
+interface SelectPropertyFormProps {
     id?: string,
     title?: string,
     subtitle?: string,
@@ -20,21 +19,21 @@ interface SelectPersonFormProps {
     validationMessage?: string,
     isLoading?: boolean,
     isMultipleSelect?: boolean,
-    persons?: Person[],
-    onSetPersons?: (array) => void,
+    properties?: Property[],
+    onSetProperties?: (array) => void,
     onShowMessage?: (FeedbackMessage) => void,
 }
 
-export default function SelectPersonForm(props: SelectPersonFormProps) {
+export default function SelectPropertyForm(props: SelectPropertyFormProps) {
     const [isOpen, setIsOpen] = useState(false)
 
-    const handleAddPerson = (person) => {
-        let localPersons = props.persons
+    const handleAddProperty = (property) => {
+        let localProperties = props.properties
         let canAdd = true
 
         if (props.isMultipleSelect) {
-            localPersons?.map((element, index) => {
-                if (handleRemoveCPFMask(element.cpf) === handleRemoveCPFMask(person.cpf)) {
+            localProperties?.map((element, index) => {
+                if (element.name === property.name) {
                     canAdd = false
                 }
             })
@@ -42,12 +41,12 @@ export default function SelectPersonForm(props: SelectPersonFormProps) {
 
         if (canAdd) {
             if (props.isMultipleSelect) {
-                localPersons = [...localPersons, person]
+                localProperties = [...localProperties, property]
             } else {
-                localPersons = [person]
+                localProperties = [property]
             }
-            if (props.onSetPersons) {
-                props.onSetPersons(localPersons)
+            if (props.onSetProperties) {
+                props.onSetProperties(localProperties)
                 setIsOpen(false)
             }
         } else {
@@ -58,17 +57,17 @@ export default function SelectPersonForm(props: SelectPersonFormProps) {
         }
     }
 
-    const handleRemovePerson = (event, person) => {
+    const handleRemoveProperty = (event, property) => {
         event.preventDefault()
         if (!props.isMultipleSelect) {
-            props.onSetPersons([])
+            props.onSetProperties([])
         } else {
-            let localPersons = props.persons
-            if (localPersons.length > -1) {
-                let index = localPersons.indexOf(person)
-                localPersons.splice(index, 1)
-                if (props.onSetPersons) {
-                    props.onSetPersons(localPersons)
+            let localProperties = props.properties
+            if (localProperties.length > -1) {
+                let index = localProperties.indexOf(property)
+                localProperties.splice(index, 1)
+                if (props.onSetProperties) {
+                    props.onSetProperties(localProperties)
                 }
             }
         }
@@ -92,32 +91,21 @@ export default function SelectPersonForm(props: SelectPersonFormProps) {
                     </FormRowColumn>
                 </FormRow>
 
-                {props.persons?.map((element, index) => (
-                    <form key={index + element.dateInsertUTC + element.cpf}
-                        onSubmit={(event) => handleRemovePerson(event, element)}>
+                {props.properties?.map((element, index) => (
+                    <form key={index + element.dateInsertUTC}
+                        onSubmit={(event) => handleRemoveProperty(event, element)}>
                         <FormRow>
-                            <FormRowColumn unit="3">
+                            <FormRowColumn unit="4">
                                 <InputText
                                     title="Nome"
                                     isDisabled={true}
                                     value={element.name}
                                     isLoading={props.isLoading}
-                                    id={"person-name-" + element.cpf}
+                                    id={"property-title-" + index}
                                 />
                             </FormRowColumn>
 
-                            <FormRowColumn unit="2">
-                                <InputText
-                                    mask="cpf"
-                                    title="CPF"
-                                    isDisabled={true}
-                                    isLoading={props.isLoading}
-                                    id={"person-cpf-" + element.cpf}
-                                    value={handleMaskCPF(element.cpf)}
-                                />
-                            </FormRowColumn>
-
-                            <FormRowColumn unit="1"
+                            <FormRowColumn unit="2"
                                 className="self-end justify-self-end">
                                 <Button
                                     type="submit"
@@ -136,8 +124,8 @@ export default function SelectPersonForm(props: SelectPersonFormProps) {
             <IOSModal
                 isOpen={isOpen}
                 setIsOpen={setIsOpen}>
-                <PersonList
-                    onListItemClick={handleAddPerson} />
+                <PropertyList
+                    onListItemClick={handleAddProperty} />
             </IOSModal>
         </>
     )

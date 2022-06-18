@@ -229,7 +229,7 @@ export default function PropertyForm(props: PropertyFormProps) {
                 buttonTitle="Pesquisar proprietário"
                 subtitle="Selecione os proprietários"
                 onSetPersons={handleSetPropertyOwners}
-                validationMessage="Esta pessoa já é um proprietário"
+                validationMessage="Esta pessoa, ou empresa já é um proprietário"
             />
 
             <form

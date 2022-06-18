@@ -20,9 +20,9 @@ export interface Person {
     maritalStatus?: string,
     dateInsertUTC?: number,
     dateLastUpdateUTC?: number,
-    telephones?: string[],
+    oldData?: any,
     address?: Address,
-    oldData?: object,
+    telephones?: string[],
 }
 
 export interface Company {
@@ -31,10 +31,10 @@ export interface Company {
     name?: string,
     dateInsertUTC?: number,
     dateLastUpdateUTC?: number,
-    telephones?: string[],
-    owners?: any[],
+    oldData?: any,
     address?: Address,
-    oldData?: object,
+    owners?: any[],
+    telephones?: string[],
 }
 
 export interface Professional {
@@ -45,7 +45,7 @@ export interface Professional {
     dateInsertUTC?: number,
     dateLastUpdateUTC?: number,
     person?: any,
-    oldData?: object,
+    oldData?: any,
 }
 
 export interface Property {
@@ -57,21 +57,22 @@ export interface Property {
     perimeter?: string,
     dateInsertUTC?: number,
     dateLastUpdateUTC?: number,
-    oldData?: object,
-    owners?: any[],
+    oldData?: any,
     address?: Address,
+    owners?: any[],
 }
 
-export interface Process {
+export interface Project {
     id?: string,
-    number?: string,
+    dateString?: string,
     date?: number,
+    number?: string,
     dateInsertUTC?: number,
     dateLastUpdateUTC?: number,
-    property?: Property,
     professional?: Professional,
-    client?: any,
-    oldData?: object,
+    oldData?: any,
+    clients?: any[],
+    properties?: any[],
 }
 
 export const defaultAddress: Address = {
@@ -136,4 +137,17 @@ export const defaultProperty: Property = {
     oldData: {},
     owners: [],
     address: defaultAddress,
+}
+
+export const defaultProject: Project = {
+    id: "",
+    number: "",
+    dateString: "",
+    date: 0,
+    dateInsertUTC: 0,
+    dateLastUpdateUTC: 0,
+    clients: [],
+    oldData: {},
+    properties: [],
+    professional: defaultProfessional,
 }
