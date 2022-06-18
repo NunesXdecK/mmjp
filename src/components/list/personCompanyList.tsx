@@ -2,29 +2,28 @@ import { useState } from "react"
 import Button from "../button/button"
 import data from "../../data/data.json"
 import InputText from "../inputText/inputText"
-import { handleMaskCNPJ, handleMaskCPF, handleRemoveCPFMask } from "../../util/maskUtil"
+import { collection, getDocs } from "firebase/firestore"
 import { FeedbackMessage } from "../modal/feedbackMessageModal"
-import { Company, Person, Property } from "../../interfaces/objectInterfaces"
-import { collection, doc, getDoc, getDocs } from "firebase/firestore"
-import { CompanyConversor, PersonConversor, PropertyConversor } from "../../db/converters"
-import { ElementFromBase, extratePerson, extrateProperty } from "../../util/converterUtil"
-import { COMPANY_COLLECTION_NAME, db, PERSON_COLLECTION_NAME, PROPERTY_COLLECTION_NAME } from "../../db/firebaseDB"
-import { handleValidationNotNull, handleValidationOnlyNumbersNotNull } from "../../util/validationUtil"
+import { Company, Person } from "../../interfaces/objectInterfaces"
+import { CompanyConversor, PersonConversor } from "../../db/converters"
+import { ElementFromBase, extrateCompany, extratePerson } from "../../util/converterUtil"
+import { db, COMPANY_COLLECTION_NAME, PERSON_COLLECTION_NAME } from "../../db/firebaseDB"
+import { handleValidationOnlyNumbersNotNull, handleValidationOnlyTextNotNull } from "../../util/validationUtil"
+import { handleMaskCPF, handleMountCNPJMask, handleRemoveCNPJMask, handleRemoveCPFMask } from "../../util/maskUtil"
 
 const subtitle = "mt-1 max-w-2xl text-sm text-gray-500"
 const contentClassName = "sm:px-4 sm:py-5 mt-1 text-sm text-gray-900"
 const titleClassName = "sm:px-4 sm:py-5 text-md leading-6 font-medium text-gray-900"
 
-interface PropertyListProps {
+interface PersonCompanyListProps {
     isOldBase?: boolean,
     onListItemClick?: (any) => void,
     onShowMessage?: (FeedbackMessage) => void,
 }
 
-export default function PropertyList(props: PropertyListProps) {
+export default function PersonCompanyList(props: PersonCompanyListProps) {
     const personCollection = collection(db, PERSON_COLLECTION_NAME).withConverter(PersonConversor)
     const companyCollection = collection(db, COMPANY_COLLECTION_NAME).withConverter(CompanyConversor)
-    const propertyCollection = collection(db, PROPERTY_COLLECTION_NAME).withConverter(PropertyConversor)
 
     const [page, setPage] = useState(-1)
 
@@ -34,7 +33,8 @@ export default function PropertyList(props: PropertyListProps) {
 
     const [listItems, setListItems] = useState([])
 
-    const handleListItemClick = (element: Property) => {
+
+    const handleListItemClick = (element: Company) => {
         setIsLoading(true)
         if (element.name !== "") {
             props.onListItemClick && props.onListItemClick(element)
@@ -52,56 +52,53 @@ export default function PropertyList(props: PropertyListProps) {
 
     const handleFilterList = async (event) => {
         event.preventDefault()
+
         setIsLoading(true)
+
         let listItemsFiltered = []
-        let arrayList: Property[] = []
+        let arrayList: (Person | Company)[] = []
 
         if (props.isOldBase) {
             const startList = 0
             const endList = data.Plan1.length - 0
             const dataList = data.Plan1.slice(startList, endList)
             dataList.map((element: ElementFromBase, index) => {
-                let newElement: Property = extrateProperty(element)
-                if (handleValidationNotNull(newElement.name)) {
-                    newElement = { ...newElement, oldData: element }
-                    arrayList = [...arrayList, newElement]
+                let newElementPerson: Person = extratePerson(element)
+                let newElementCompany: Company = extrateCompany(element)
+                if (handleValidationOnlyTextNotNull(newElementPerson.name) && handleRemoveCPFMask(newElementPerson.cpf)?.length === 11) {
+                    newElementPerson = { ...newElementPerson, oldData: element }
+                    arrayList = [...arrayList, newElementPerson]
+                } else if (handleValidationOnlyTextNotNull(newElementCompany.name) && handleRemoveCNPJMask(newElementCompany.cnpj)?.length === 14) {
+                    newElementCompany = { ...newElementCompany, oldData: element }
+                    arrayList = [...arrayList, newElementCompany]
                 }
             })
         } else {
             try {
                 const querySnapshotPerson = await getDocs(personCollection)
                 const querySnapshotCompany = await getDocs(companyCollection)
-                const querySnapshotProperty = await getDocs(propertyCollection)
-                querySnapshotProperty.forEach((docProperty) => {
-                    let property: Property = docProperty.data()
-                    let personOwnersIdList = []
-                    let companyOwnersIdList = []
+
+                querySnapshotPerson.forEach((doc) => {
+                    arrayList = [...arrayList, doc.data()]
+                })
+
+                querySnapshotCompany.forEach((docCompany) => {
+                    let company: Company = docCompany.data()
+                    let ownersIdList = []
                     let ownersList = []
-                    property?.owners?.map((element, index) => {
-                        if (element.parent.id === PERSON_COLLECTION_NAME) {
-                            personOwnersIdList = [...personOwnersIdList, element.id]
-                        } else if (element.parent.id === COMPANY_COLLECTION_NAME) {
-                            companyOwnersIdList = [...companyOwnersIdList, element.id]
-                        }
+                    company?.owners?.map((element, index) => {
+                        ownersIdList = [...ownersIdList, element.id]
                     })
                     querySnapshotPerson.forEach((docPerson) => {
                         const personID = docPerson.data().id
-                        if (personOwnersIdList.includes(personID)) {
+                        if (ownersIdList.includes(personID)) {
                             if (!ownersList.includes(docPerson.data())) {
                                 ownersList = [...ownersList, docPerson.data()]
                             }
                         }
                     })
-                    querySnapshotCompany.forEach((docCompany) => {
-                        const companyID = docCompany.data().id
-                        if (companyOwnersIdList.includes(companyID)) {
-                            if (!ownersList.includes(docCompany.data())) {
-                                ownersList = [...ownersList, docCompany.data()]
-                            }
-                        }
-                    })
-                    property = { ...property, owners: ownersList }
-                    arrayList = [...arrayList, property]
+                    company = { ...company, owners: ownersList }
+                    arrayList = [...arrayList, company]
                 })
             } catch (err) {
                 console.error(err)
@@ -112,15 +109,26 @@ export default function PropertyList(props: PropertyListProps) {
             }
         }
 
-        listItemsFiltered = arrayList.filter((element: Property, index) => {
-            if (handleValidationNotNull(inputSearch)) {
-                let matchName = element.name.toLowerCase().includes(inputSearch.toLowerCase())
-                return matchName
+        listItemsFiltered = arrayList.filter((element: Person | Company, index) => {
+            if ("cpf" in element) {
+                if (handleValidationOnlyNumbersNotNull(handleRemoveCPFMask(inputSearch))) {
+                    return handleRemoveCPFMask(element.cpf).includes(handleRemoveCPFMask(inputSearch))
+                }
+                if (handleValidationOnlyTextNotNull(inputSearch)) {
+                    return element.name.toLowerCase().includes(inputSearch.toLowerCase())
+                }
+            } else if ("cnpj" in element) {
+                if (handleValidationOnlyNumbersNotNull(handleRemoveCPFMask(inputSearch))) {
+                    return handleRemoveCPFMask(element.cnpj).includes(handleRemoveCPFMask(inputSearch))
+                }
+                if (handleValidationOnlyTextNotNull(inputSearch)) {
+                    return element.name.toLowerCase().includes(inputSearch.toLowerCase())
+                }
             }
             return true
         })
 
-        listItemsFiltered = listItemsFiltered.sort((elementOne: Property, elementTwo: Property) => {
+        listItemsFiltered = listItemsFiltered.sort((elementOne, elementTwo) => {
             return elementOne.name.localeCompare(elementTwo.name)
         })
 
@@ -141,7 +149,7 @@ export default function PropertyList(props: PropertyListProps) {
                         {/*
                     let diference = perPage - lastPage.length
                     for (let ii = 0; ii < diference; ii++) {
-                        lastPage = [...lastPage, defaultPerson]
+                        lastPage = [...lastPage, defaultCompany]
                     }
                 */}
                         pagesArray = [...pagesArray, lastPage]
@@ -173,7 +181,7 @@ export default function PropertyList(props: PropertyListProps) {
 
                 <div className="flex w-full">
                     <div className="w-full">
-                        <h3 className="text-lg leading-6 font-medium text-gray-900">Lista de propriedades</h3>
+                        <h3 className="text-lg leading-6 font-medium text-gray-900">Lista de pessoas e empresas</h3>
                         <p className={subtitle}>subtitulo lindo</p>
                     </div>
 
@@ -182,7 +190,7 @@ export default function PropertyList(props: PropertyListProps) {
                             isLink={true}
                             isLoading={isLoading}
                             isDisabled={isLoading}
-                            href="/property">
+                            href="/company">
                             Novo
                         </Button>
                     </div>
@@ -214,29 +222,33 @@ export default function PropertyList(props: PropertyListProps) {
             </div>
 
             <div className="grid grid-cols-1 gap-4 p-4 bg-white">
-                {listItems[page]?.map((element: Property, index) => (
+                {listItems[page]?.map((element: Person | Company, index) => (
                     <button
-                        key={index.toString()}
                         disabled={element.name === ""}
+                        key={index.toString()}
                         onClick={() => handleListItemClick(element)}
                         className="bg-white p-4 rounded-sm shadow items-center text-left">
-                        <>
-                            <div className="flex">
-                                <div><span className={titleClassName}>{element.name}</span></div>
-                            </div>
-                            <div>
-                                <span className={contentClassName}>
-                                    {element.area && "Área: " + element.area} {element.perimeter && "Perimetro: " + element.perimeter}
-                                </span>
-                            </div>
-                            {element.owners?.map((elementOwners: Person | Company, indexOwners) => (
-                                <div key={elementOwners.name + index + indexOwners}>
-                                    <span className={contentClassName}>
-                                        {elementOwners.name && elementOwners.name} {("cpf" in elementOwners && "CPF: " + handleMaskCPF(elementOwners.cpf)) || ("cnpj" in elementOwners && "CNPJ: " + handleMaskCNPJ(elementOwners.cnpj))}
-                                    </span>
-                                </div>
-                            ))}
-                        </>
+                        <div className="flex">
+                            <div><span className={titleClassName}>{element.name}</span></div>
+                        </div>
+                        {"cpf" in element && (
+                            <>
+                                <div><span className={contentClassName}>{handleMaskCPF(element.cpf)}</span></div>
+                                <div><span className={contentClassName}>{element.rg}</span></div>
+                            </>
+                        )}
+                        {"cnpj" in element && (
+                            <>
+                                <div><span className={contentClassName}>{handleMountCNPJMask(element.cnpj)}</span></div>
+                                {element.owners?.map((elementOwners: Person, indexOwners) => (
+                                    <div key={index + indexOwners}>
+                                        <span className={contentClassName}>
+                                            {elementOwners.name && elementOwners.name} {elementOwners.cpf && "CPF: " + handleMaskCPF(elementOwners.cpf)}
+                                        </span>
+                                    </div>
+                                ))}
+                            </>
+                        )}
                     </button>
                 ))}
             </div>

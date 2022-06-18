@@ -42,7 +42,7 @@ export default function PersonOldBase() {
     }
 
     const handleListItemClick = async (person: Person) => {
-        let localPerson = structuredClone(person)
+        let localPerson = {...person}
         try {
             const querySnapshot = await getDocs(personCollection)
             querySnapshot.forEach((doc) => {

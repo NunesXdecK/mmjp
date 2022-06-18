@@ -23,7 +23,7 @@ export default function Persons() {
     }
 
     const handleListItemClick = (person) => {
-        let localPerson = structuredClone(person)
+        let localPerson = {...person}
         localPerson = handlePreparePersonForShow(localPerson)
         setPerson(localPerson)
         setTitle("Editar pessoa")

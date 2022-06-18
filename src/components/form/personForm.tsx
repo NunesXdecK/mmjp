@@ -34,7 +34,7 @@ interface PersonFormProps {
 export default function PersonForm(props: PersonFormProps) {
     const personCollection = collection(db, PERSON_COLLECTION_NAME).withConverter(PersonConversor)
 
-    const [person, setPerson] = useState<Person>(props?.person ? structuredClone(props?.person) : defaultPerson)
+    const [person, setPerson] = useState<Person>(props?.person ?? defaultPerson)
     const [isFormValid, setIsFormValid] = useState(handlePersonValidationForDB(person).validation)
     
     const [isOpen, setIsOpen] = useState(false)
@@ -90,7 +90,7 @@ export default function PersonForm(props: PersonFormProps) {
         setIsLoading(true)
         let feedbackMessage: FeedbackMessage = { messages: ["Algo estranho aconteceu"], messageType: "WARNING" }
 
-        let personForDB: Person = structuredClone(person)
+        let personForDB: Person = {...person}
         const isValid = handlePersonValidationForDB(personForDB)
         if (isValid.validation) {
             let nowID = personForDB?.id ?? ""

@@ -23,7 +23,7 @@ export default function Companys() {
     }
 
     const handleListItemClick = (company) => {
-        let localCompany = structuredClone(company)
+        let localCompany = {...company}
         localCompany = handlePrepareCompanyForShow(localCompany)
         setCompany(localCompany)
         setTitle("Editar empresa")

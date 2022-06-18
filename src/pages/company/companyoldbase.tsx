@@ -43,7 +43,7 @@ export default function CompanyOldBase() {
     }
 
     const handleListItemClick = async (company: Company) => {
-        let localCompany = structuredClone(company)
+        let localCompany = {...company}
         try {
             const querySnapshot = await getDocs(companyCollection)
             querySnapshot.forEach((doc) => {
@@ -78,7 +78,6 @@ export default function CompanyOldBase() {
             handleShowMessage(feedbackMessage)
         }
         localCompany = handlePrepareCompanyForShow(localCompany)
-        console.log(localCompany)
         {/*
     */}
     setCompany(localCompany)

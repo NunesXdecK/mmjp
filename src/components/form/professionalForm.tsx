@@ -33,7 +33,7 @@ export default function ProfessionalForm(props: ProfessionalFormProps) {
     const personCollection = collection(db, PERSON_COLLECTION_NAME).withConverter(PersonConversor)
     const professionalCollection = collection(db, PROFESSIONAL_COLLECTION_NAME).withConverter(ProfessionalConversor)
 
-    const [professional, setProfessional] = useState<Professional>(props?.professional ? structuredClone(props?.professional) : defaultProfessional)
+    const [professional, setProfessional] = useState<Professional>(props?.professional ?? defaultProfessional)
     const [isFormValid, setIsFormValid] = useState(handleProfessionalValidationForDB(professional).validation)
 
     const [isOpen, setIsOpen] = useState(false)
@@ -65,7 +65,7 @@ export default function ProfessionalForm(props: ProfessionalFormProps) {
         setIsLoading(true)
         let feedbackMessage: FeedbackMessage = { messages: ["Algo estranho aconteceu"], messageType: "WARNING" }
 
-        let professionalForDB = structuredClone(professional)
+        let professionalForDB = {...professional}
         if (persons.length > 0) {
             professionalForDB = { ...professionalForDB, person: persons[0] }
         }

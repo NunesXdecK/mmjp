@@ -22,7 +22,7 @@ const menus: LayoutMenuItem[] = [
                 { name: "Lista de pessoas", href: "/person/persons", current: false, disabled: false },
                 { name: "Nova empresa", href: "/company", current: false, disabled: false },
                 { name: "Lista de empresas", href: "/company/companies", current: false, disabled: false },
-                { name: "Profissional", href: "/professional", current: false, disabled: false },
+                { name: "Novo profissional", href: "/professional", current: false, disabled: false },
                 { name: "Lista de profissionais", href: "/professional/professionals", current: false, disabled: false },
             ]
     },

@@ -5,15 +5,15 @@ import Button from "../button/button";
 import AddressForm from "./addressForm";
 import FormRowColumn from "./formRowColumn";
 import InputText from "../inputText/inputText";
-import SelectPersonForm from "./selectPersonForm";
 import { handleNewDateToUTC } from "../../util/dateUtils";
+import SelectPersonCompanyForm from "./selectPersonCompanyForm";
 import { FeedbackMessage } from "../modal/feedbackMessageModal";
-import { PersonConversor, PropertyConversor } from "../../db/converters";
+import { CompanyConversor, PersonConversor, PropertyConversor } from "../../db/converters";
 import { handlePropertyValidationForDB } from "../../util/validationUtil";
 import { defaultProperty, Property } from "../../interfaces/objectInterfaces";
 import { NOT_NULL_MARK, NUMBER_MARK } from "../../util/patternValidationUtil";
 import { addDoc, collection, doc, getDocs, updateDoc } from "firebase/firestore";
-import { db, PERSON_COLLECTION_NAME, PROPERTY_COLLECTION_NAME } from "../../db/firebaseDB";
+import { COMPANY_COLLECTION_NAME, db, PERSON_COLLECTION_NAME, PROPERTY_COLLECTION_NAME } from "../../db/firebaseDB";
 import { defaultElementFromBase, ElementFromBase, handlePreparePropertyForDB } from "../../util/converterUtil";
 
 interface PropertyFormProps {
@@ -32,9 +32,10 @@ interface PropertyFormProps {
 
 export default function PropertyForm(props: PropertyFormProps) {
     const personCollection = collection(db, PERSON_COLLECTION_NAME).withConverter(PersonConversor)
+    const companyCollection = collection(db, COMPANY_COLLECTION_NAME).withConverter(CompanyConversor)
     const propertyCollection = collection(db, PROPERTY_COLLECTION_NAME).withConverter(PropertyConversor)
 
-    const [property, setProperty] = useState<Property>(props?.property ? structuredClone(props?.property) : defaultProperty)
+    const [property, setProperty] = useState<Property>(props?.property ?? defaultProperty)
     const [isFormValid, setIsFormValid] = useState(handlePropertyValidationForDB(property).validation)
 
     const [isOpen, setIsOpen] = useState(false)
@@ -66,7 +67,7 @@ export default function PropertyForm(props: PropertyFormProps) {
         setIsLoading(true)
         let feedbackMessage: FeedbackMessage = { messages: ["Algo estranho aconteceu"], messageType: "WARNING" }
 
-        let propertyForDB = structuredClone(property)
+        let propertyForDB = {...property}
         const isValid = handlePropertyValidationForDB(propertyForDB)
         if (isValid.validation) {
             let nowID = propertyForDB?.id ?? ""
@@ -75,7 +76,12 @@ export default function PropertyForm(props: PropertyFormProps) {
             if (propertyForDB.owners?.length > 0) {
                 propertyForDB.owners?.map((element, index) => {
                     if (element.id) {
-                        const docRef = doc(personCollection, element.id)
+                        let docRef = {}
+                        if ("cpf" in element) {
+                            docRef = doc(personCollection, element.id)
+                        } else if ("cnpj" in element) {
+                            docRef = doc(companyCollection, element.id)
+                        }
                         docRefsForDB = [...docRefsForDB, docRef]
                     }
                 })
@@ -214,7 +220,7 @@ export default function PropertyForm(props: PropertyFormProps) {
                 </Form>
             </form>
 
-            <SelectPersonForm
+            <SelectPersonCompanyForm
                 title="Proprietários"
                 isLoading={isLoading}
                 isMultipleSelect={true}

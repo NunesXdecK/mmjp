@@ -35,7 +35,7 @@ export default function CompanyForm(props: CompanyFormProps) {
     const personCollection = collection(db, PERSON_COLLECTION_NAME).withConverter(PersonConversor)
     const companyCollection = collection(db, COMPANY_COLLECTION_NAME).withConverter(CompanyConversor)
 
-    const [company, setCompany] = useState<Company>(props?.company ? structuredClone(props?.company) : defaultCompany)
+    const [company, setCompany] = useState<Company>(props?.company ?? defaultCompany)
     const [isFormValid, setIsFormValid] = useState(handleCompanyValidationForDB(company).validation)
 
     const [isOpen, setIsOpen] = useState(false)
@@ -65,7 +65,7 @@ export default function CompanyForm(props: CompanyFormProps) {
         setIsLoading(true)
         let feedbackMessage: FeedbackMessage = { messages: ["Algo estranho aconteceu"], messageType: "WARNING" }
 
-        let companyForDB = structuredClone(company)
+        let companyForDB = {...company}
         const isValid = handleCompanyValidationForDB(companyForDB)
         
         if (isValid.validation) {

@@ -1,6 +1,6 @@
 import Form from "./form"
 import InputText from "../inputText/inputText"
-import { Address } from "../../interfaces/objectInterfaces"
+import { Address, defaultAddress } from "../../interfaces/objectInterfaces"
 import { useState } from "react"
 import { handleRemoveCEPMask } from "../../util/maskUtil"
 import FormRow from "./formRow"
@@ -32,18 +32,19 @@ export default function AddressForm(props: AddressFormProps) {
 
     const [isSearching, setIsSearching] = useState(false)
 
-    const handleOnChangeCep = (value: string) => {
+    const handleOnChangeCep = async (value: string) => {
         let cep = handleRemoveCEPMask(value)
+        let address = props.address
         if (value && value.length === 9) {
             const url = `https://viacep.com.br/ws/${cep}/json/`
             setIsSearching(true)
-
             try {
-                fetch(url).then(res => res.json()).then((data: AddressFromViaCEP) => {
-                    let county = props.address.county
-                    let district = props.address.district
-                    let complement = props.address.complement
-                    let publicPlace = props.address.publicPlace
+                await fetch(url).then(res => res.json()).then((data: AddressFromViaCEP) => {
+                    console.log(data)
+                    let county = address.county
+                    let district = address.district
+                    let complement = address.complement
+                    let publicPlace = address.publicPlace
 
                     if (data.complemento && data.complemento.length > 0) {
                         complement = data.complemento
@@ -61,24 +62,23 @@ export default function AddressForm(props: AddressFormProps) {
                         county = data.localidade + "/" + data.uf
                     }
 
-                    props.setAddress({
-                        ...props.address,
+                    address = {
+                        ...address,
                         cep: value,
                         county: county,
                         district: district,
                         complement: complement,
                         publicPlace: publicPlace,
-                    })
+                    }
 
-                    setIsSearching(false)
                 })
             } catch (error) {
                 console.error(error)
-                setIsSearching(false)
             }
+            setIsSearching(false)
 
         }
-        props.setAddress({ ...props.address, cep: value })
+        props.setAddress({...address, cep: value})
     }
 
     const handleOnChangePublicPlace = (value: string) => {
