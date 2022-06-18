@@ -40,7 +40,6 @@ export default function AddressForm(props: AddressFormProps) {
             setIsSearching(true)
             try {
                 await fetch(url).then(res => res.json()).then((data: AddressFromViaCEP) => {
-                    console.log(data)
                     let county = address.county
                     let district = address.district
                     let complement = address.complement
