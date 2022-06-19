@@ -58,6 +58,37 @@ export const handleMountMask = (text: string, mask: string) => {
     return maskedText
 }
 
+export const handleMountDateMask = (text) => {
+    let maskedText = ""
+    const specialDigits = [
+        "/",
+        "/",
+    ]
+
+    const specialDigitsIndex = [
+        4, 6,
+    ]
+    if (text) {
+        const localText = text.replaceAll(".", "").replaceAll("/", "").replaceAll("-", "")
+        const length = localText.length
+        let lastPos = 0
+        let posToSub = []
+        for (let i = length; i > 0; i--) {
+            const char = localText.substring(i, i - 1)
+            const iz = (length - i) + 1
+            if (specialDigitsIndex.includes(iz)) {
+                maskedText = specialDigits[specialDigitsIndex.indexOf(iz)] + char + maskedText
+            } else {
+                maskedText = char + maskedText
+            }
+        }
+    }
+    if (specialDigits.includes(maskedText.substring(0, 1))) {
+        maskedText = maskedText.substring(1, maskedText.length)
+    }
+    return maskedText
+}
+
 export const handleMountCNPJMask = (text) => {
     let maskedText = ""
     const specialDigits = [
@@ -228,6 +259,14 @@ export const handleRemoveCPFMask = (text: string) => {
 export const handleRemoveCNPJMask = (text: string) => {
     if (text) {
         text = text.replaceAll("/", "").replaceAll("-", "").replaceAll(".", "")
+    }
+    return text
+}
+
+export const handleRemoveDateMask = (text: string) => {
+    if (text) {
+        text = text.replaceAll("/", "")
+        text = text.replace(new RegExp(ONLY_NUMBERS_PATTERN_TWO), "")
     }
     return text
 }

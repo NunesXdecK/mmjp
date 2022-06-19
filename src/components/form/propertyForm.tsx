@@ -96,6 +96,7 @@ export default function PropertyForm(props: PropertyFormProps) {
                     const docRef = await addDoc(propertyCollection, propertyForDB)
                     setProperty({ ...property, id: docRef.id })
                     feedbackMessage = { ...feedbackMessage, messages: ["Salvo com sucesso!"], messageType: "SUCCESS" }
+                    handleListItemClick(defaultProperty)
                 } catch (e) {
                     feedbackMessage = { ...feedbackMessage, messages: ["Erro em salvar!"], messageType: "ERROR" }
                     console.error("Error adding document: ", e)
@@ -106,6 +107,7 @@ export default function PropertyForm(props: PropertyFormProps) {
                     const docRef = doc(propertyCollection, nowID)
                     await updateDoc(docRef, propertyForDB)
                     feedbackMessage = { ...feedbackMessage, messages: ["Atualizado com sucesso!"], messageType: "SUCCESS" }
+                    handleListItemClick(defaultProperty)
                 } catch (e) {
                     feedbackMessage = { ...feedbackMessage, messages: ["Erro em atualizar!"], messageType: "ERROR" }
                     console.error("Error upddating document: ", e)
@@ -114,7 +116,6 @@ export default function PropertyForm(props: PropertyFormProps) {
             if (props.onAfterSave) {
                 props.onAfterSave(feedbackMessage)
             }
-            handleListItemClick(defaultProperty)
         } else {
             feedbackMessage = { ...feedbackMessage, messages: isValid.messages, messageType: "ERROR" }
             if (props.onShowMessage) {

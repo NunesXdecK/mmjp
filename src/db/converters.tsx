@@ -1,4 +1,4 @@
-import { defaultAddress, defaultPerson } from "../interfaces/objectInterfaces"
+import { defaultAddress, defaultPerson, defaultProfessional } from "../interfaces/objectInterfaces"
 
 export const PersonConversor = {
     toFirestore(person) {
@@ -121,24 +121,28 @@ export const PropertyConversor = {
 }
 
 export const ProjectConversor = {
-    toFirestore(process) {
+    toFirestore(project) {
         return {
-            date: process.date,
-            number: process.number,
-            client: process.client,
-            property: process.property,
-            professional: process.professional,
+            date: project.date,
+            number: project.number,
+            clients: project.clients,
+            properties: project.properties,
+            professional: project.professional,
+            dateInsertUTC: project.dateInsertUTC,
+            dateLastUpdateUTC: project.dateLastUpdateUTC,
         }
     },
     fromFirestore(snapshot, options) {
         const data = snapshot?.data(options)
         return {
-            date: data.date,
-            id: snapshot?.id,
-            number: data.number,
-            client: data.client,
-            property: data.property,
-            professional: data.professional,
+            date: data.date ?? 0,
+            id: snapshot?.id ?? "",
+            number: data.number ?? "",
+            clients: data.clients ?? [],
+            properties: data.properties ?? [],
+            professional: data.professional ?? defaultProfessional,
+            dateInsertUTC: data.dateInsertUTC ?? 0,
+            dateLastUpdateUTC: data.dateLastUpdateUTC ?? 0,
         }
     }
 }

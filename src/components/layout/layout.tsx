@@ -33,12 +33,13 @@ const menus: LayoutMenuItem[] = [
                 { name: "Nova propriedade", href: "/property", current: false, disabled: false },
                 { name: "Lista de propriedades", href: "/property/properties", current: false, disabled: false },
             ]
-    },
-    {
-        name: "Projetos", current: false, disabled: false,
-        subMenus:
+        },
+        {
+            name: "Projetos", current: false, disabled: false,
+            subMenus:
             [
                 { name: "Novo projeto", href: "/project", current: false, disabled: false },
+                { name: "Lista de projetos", href: "/project/projects", current: false, disabled: false },
             ]
     },
 ]

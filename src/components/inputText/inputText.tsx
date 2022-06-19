@@ -1,6 +1,6 @@
 import { useState } from "react"
-import { handleMaskCPF, handleMaskTelephone, handleMountCNPJMask, handleMountMask, handleMountNumberCurrency, handleRemoveCEPMask, handleRemoveCNPJMask, handleRemoveCPFMask } from "../../util/maskUtil"
-import { CEP_MARK, CNPJ_MARK, CNPJ_PATTERN, CPF_MARK, CPF_PATTERN, NOT_NULL_MARK, NUMBER_MARK, ONLY_CHARACTERS_PATTERN, ONLY_CHARACTERS_PATTERN_TWO, ONLY_SPECIAL_FOR_NUMBER_PATTERN, ONLY_SPECIAL_PATTERN, STYLE_FOR_INPUT_LOADING, TELEPHONE_MARK, TEXT_NOT_NULL_MARK } from "../../util/patternValidationUtil"
+import { handleMaskCPF, handleMaskTelephone, handleMountCNPJMask, handleMountDateMask, handleMountMask, handleMountNumberCurrency, handleRemoveCEPMask, handleRemoveCNPJMask, handleRemoveCPFMask, handleRemoveDateMask } from "../../util/maskUtil"
+import { CEP_MARK, CNPJ_MARK, CNPJ_PATTERN, CPF_MARK, CPF_PATTERN, DATE_MARK, DATE_PATTERN, NOT_NULL_MARK, NUMBER_MARK, ONLY_CHARACTERS_PATTERN, ONLY_CHARACTERS_PATTERN_TWO, ONLY_SPECIAL_FOR_NUMBER_PATTERN, STYLE_FOR_INPUT_LOADING, TELEPHONE_MARK, TEXT_NOT_NULL_MARK } from "../../util/patternValidationUtil"
 import { handleValidationNotNull } from "../../util/validationUtil"
 
 interface InputTextProps {
@@ -15,7 +15,7 @@ interface InputTextProps {
     isDisabled?: boolean,
     isRequired?: boolean,
     children?: any,
-    mask?: "cpf" | "rg" | "cnpj" | "currency" | "telephone" | "cep" | "perimeter" | "area",
+    mask?: "cpf" | "rg" | "cnpj" | "currency" | "telephone" | "cep" | "perimeter" | "area" | "date",
     onChange?: (any) => void,
     onSetText?: (string) => void,
     onValidate?: (boolean) => void,
@@ -44,6 +44,11 @@ const handleMountRG = (text, dig1, dig2) => {
         }
     }
     return maskedText
+}
+
+const handleMaskDate = (text: string) => {
+    text = handleRemoveDateMask(text)
+    return handleMountDateMask(text)
 }
 
 const handleMaskCEP = (text: string) => {
@@ -104,6 +109,18 @@ export default function InputText(props: InputTextProps) {
                 test = handleValidationNotNull(text)
                 setIsValid(test)
                 break
+            case DATE_MARK:
+                text = handleRemoveDateMask(text)
+                if (text.length === 8) {
+                    const day = text.substring(0, 2)
+                    const month = text.substring(2, 4)
+                    const year = text.substring(4, text.length)
+                    test = new RegExp(DATE_PATTERN).test(day + "/" + month + "/" + year)
+                } else {
+                    test = false
+                }
+                setIsValid(test)
+                break
             case CEP_MARK:
                 text = handleRemoveCEPMask(text)
                 test = handleValidationNotNull(text)
@@ -156,6 +173,9 @@ export default function InputText(props: InputTextProps) {
                 break
             case "cnpj":
                 value = handleMaskCNPJ(value)
+                break
+            case "date":
+                value = handleMaskDate(value)
                 break
             case "perimeter":
                 value = handleMaskPerimeter(value)

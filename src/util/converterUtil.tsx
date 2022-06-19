@@ -1,6 +1,6 @@
 import { handleNewDateToUTC } from "./dateUtils"
 import { defaultPerson, defaultAddress, defaultProfessional, defaultProperty, Person, Address, Professional, Property, Company, defaultCompany, Project } from "../interfaces/objectInterfaces"
-import { handleMaskCNPJ, handleMaskCPF, handleMaskTelephone, handleMountMask, handleRemoveCEPMask, handleRemoveCNPJMask, handleRemoveCPFMask, handleRemoveTelephoneMask } from "./maskUtil"
+import { handleMaskCNPJ, handleMaskCPF, handleMaskTelephone, handleMountMask, handleRemoveCEPMask, handleRemoveCNPJMask, handleRemoveCPFMask, handleRemoveDateMask, handleRemoveTelephoneMask } from "./maskUtil"
 
 export interface ElementFromBase {
     "Nome Prop."?: string,
@@ -204,6 +204,17 @@ export const handlePreparePropertyForDB = (property: Property) => {
 export const handlePrepareProjectForDB = (project: Project) => {
     if (project.dateInsertUTC === 0) {
         project = { ...project, dateInsertUTC: handleNewDateToUTC() }
+    }
+
+    if (project.dateString.length === 10) {
+        const dateText = handleRemoveDateMask(project.dateString)
+        if (dateText.length === 8) {
+            const day = dateText.substring(0, 2)
+            const month = dateText.substring(2, 4)
+            const year = dateText.substring(4, dateText.length)
+            const utcString = new Date(month + " " + day + " " + year).toUTCString()
+            project = { ...project, date: Date.parse(utcString) }
+        }
     }
 
     if (project.oldData) {

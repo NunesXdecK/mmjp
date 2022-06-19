@@ -92,6 +92,7 @@ export default function ProfessionalForm(props: ProfessionalFormProps) {
                     const docRef = await addDoc(professionalCollection, professionalForDB)
                     setProfessional({ ...professional, id: docRef.id })
                     feedbackMessage = { ...feedbackMessage, messages: ["Salvo com sucesso!"], messageType: "SUCCESS" }
+                    handleListItemClick(defaultProfessional)
                 } catch (e) {
                     feedbackMessage = { ...feedbackMessage, messages: ["Erro em salvar!"], messageType: "ERROR" }
                     console.error("Error adding document: ", e)
@@ -102,6 +103,7 @@ export default function ProfessionalForm(props: ProfessionalFormProps) {
                     const docRef = doc(professionalCollection, nowID)
                     await updateDoc(docRef, professionalForDB)
                     feedbackMessage = { ...feedbackMessage, messages: ["Atualizado com sucesso!"], messageType: "SUCCESS" }
+                    handleListItemClick(defaultProfessional)
                 } catch (e) {
                     feedbackMessage = { ...feedbackMessage, messages: ["Erro em atualizar!"], messageType: "ERROR" }
                     console.error("Error upddating document: ", e)
@@ -112,7 +114,6 @@ export default function ProfessionalForm(props: ProfessionalFormProps) {
             if (props.onAfterSave) {
                 props.onAfterSave(feedbackMessage)
             }
-            handleListItemClick(defaultProfessional)
         } else {
             feedbackMessage = { ...feedbackMessage, messages: isValid.messages, messageType: "ERROR" }
             if (props.onShowMessage) {

@@ -8,12 +8,12 @@ import InputText from "../inputText/inputText";
 import { handleNewDateToUTC } from "../../util/dateUtils";
 import SelectPersonCompanyForm from "./selectPersonCompanyForm";
 import { FeedbackMessage } from "../modal/feedbackMessageModal";
-import { CompanyConversor, PersonConversor, ProjectConversor } from "../../db/converters";
+import { CompanyConversor, PersonConversor, ProfessionalConversor, ProjectConversor, PropertyConversor } from "../../db/converters";
 import { handleProjectValidationForDB } from "../../util/validationUtil";
 import { defaultProject, Project } from "../../interfaces/objectInterfaces";
-import { NOT_NULL_MARK, NUMBER_MARK } from "../../util/patternValidationUtil";
+import { DATE_MARK, NOT_NULL_MARK, NUMBER_MARK } from "../../util/patternValidationUtil";
 import { addDoc, collection, doc, getDocs, updateDoc } from "firebase/firestore";
-import { COMPANY_COLLECTION_NAME, db, PERSON_COLLECTION_NAME, PROJECT_COLLECTION_NAME } from "../../db/firebaseDB";
+import { COMPANY_COLLECTION_NAME, db, PERSON_COLLECTION_NAME, PROFESSIONAL_COLLECTION_NAME, PROJECT_COLLECTION_NAME, PROPERTY_COLLECTION_NAME } from "../../db/firebaseDB";
 import { defaultElementFromBase, ElementFromBase, handlePrepareProjectForDB } from "../../util/converterUtil";
 import SelectProfessionalForm from "./selectProfessionalForm";
 import SelectPropertyForm from "./selectPropertyForm";
@@ -36,6 +36,8 @@ export default function ProjectForm(props: ProjectFormProps) {
     const personCollection = collection(db, PERSON_COLLECTION_NAME).withConverter(PersonConversor)
     const companyCollection = collection(db, COMPANY_COLLECTION_NAME).withConverter(CompanyConversor)
     const projectCollection = collection(db, PROJECT_COLLECTION_NAME).withConverter(ProjectConversor)
+    const propertyCollection = collection(db, PROPERTY_COLLECTION_NAME).withConverter(PropertyConversor)
+    const professionalCollection = collection(db, PROFESSIONAL_COLLECTION_NAME).withConverter(ProfessionalConversor)
 
     const [project, setProject] = useState<Project>(props?.project ?? defaultProject)
     const [isFormValid, setIsFormValid] = useState(handleProjectValidationForDB(project).validation)
@@ -74,7 +76,6 @@ export default function ProjectForm(props: ProjectFormProps) {
             let nowID = projectForDB?.id ?? ""
             let clientsDocRefs = []
             let propertiesDocRefsForDB = []
-            let professionalDocRef = {}
 
             if (projectForDB.clients?.length > 0) {
                 projectForDB.clients?.map((element, index) => {
@@ -94,7 +95,7 @@ export default function ProjectForm(props: ProjectFormProps) {
             if (projectForDB.properties?.length > 0) {
                 projectForDB.properties?.map((element, index) => {
                     if (element.id) {
-                        let docRef = doc(personCollection, element.id)
+                        const docRef = doc(propertyCollection, element.id)
                         propertiesDocRefsForDB = [...propertiesDocRefsForDB, docRef]
                     }
                 })
@@ -102,26 +103,20 @@ export default function ProjectForm(props: ProjectFormProps) {
             }
 
             if (professionals?.length > 0) {
-                professionals?.map((element, index) => {
-                    if (element.id) {
-                        professionalDocRef = doc(personCollection, element.id)
-                    }
-                })
-                projectForDB = { ...projectForDB, professional: professionalDocRef }
+                const docRef = doc(professionalCollection, professionals[0]?.id)
+                projectForDB = { ...projectForDB, professional: docRef }
             }
 
             projectForDB = handlePrepareProjectForDB(projectForDB)
 
-            console.log(projectForDB)
-
-            {/*
-            
             const isSave = nowID === ""
+
             if (isSave) {
                 try {
                     const docRef = await addDoc(projectCollection, projectForDB)
                     setProject({ ...project, id: docRef.id })
                     feedbackMessage = { ...feedbackMessage, messages: ["Salvo com sucesso!"], messageType: "SUCCESS" }
+                    handleListItemClick(defaultProject)
                 } catch (e) {
                     feedbackMessage = { ...feedbackMessage, messages: ["Erro em salvar!"], messageType: "ERROR" }
                     console.error("Error adding document: ", e)
@@ -132,16 +127,17 @@ export default function ProjectForm(props: ProjectFormProps) {
                     const docRef = doc(projectCollection, nowID)
                     await updateDoc(docRef, projectForDB)
                     feedbackMessage = { ...feedbackMessage, messages: ["Atualizado com sucesso!"], messageType: "SUCCESS" }
+                    handleListItemClick(defaultProject)
                 } catch (e) {
                     feedbackMessage = { ...feedbackMessage, messages: ["Erro em atualizar!"], messageType: "ERROR" }
                     console.error("Error upddating document: ", e)
                 }
             }
+            {/*
+        */}
             if (props.onAfterSave) {
                 props.onAfterSave(feedbackMessage)
             }
-            handleListItemClick(defaultProject)
-        */}
         } else {
             feedbackMessage = { ...feedbackMessage, messages: isValid.messages, messageType: "ERROR" }
             if (props.onShowMessage) {
@@ -180,11 +176,13 @@ export default function ProjectForm(props: ProjectFormProps) {
 
                         <FormRowColumn unit="2">
                             <InputText
+                                mask="date"
+                                maxLength={10}
                                 id="project-date"
                                 isLoading={isLoading}
-                                value={project.dateString}
-                                validation={NUMBER_MARK}
+                                validation={DATE_MARK}
                                 title="Data do projeto"
+                                value={project.dateString}
                                 isDisabled={props.isForDisable}
                                 onSetText={handleSetProjectDate}
                                 onValidate={handleChangeFormValidation}

@@ -33,7 +33,6 @@ export default function Table() {
     const pagesLines = () => {
         let p = []
         for (let i = 0; pages > i; i++) {
-            console.log(i)
             p.push(<a key={i} href="#" aria-current="page" className={pagesLineClassName}>{i + 1}</a>)
         }
         return p

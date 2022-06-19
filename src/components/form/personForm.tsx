@@ -112,6 +112,7 @@ export default function PersonForm(props: PersonFormProps) {
                     setPerson({ ...person, id: docRef.id })
                     personForDB = { ...personForDB, id: docRef.id }
                     feedbackMessage = { ...feedbackMessage, messages: ["Salvo com sucesso!"], messageType: "SUCCESS" }
+                    handleListItemClick(defaultPerson)
                 } catch (e) {
                     feedbackMessage = { ...feedbackMessage, messages: ["Erro em salvar!"], messageType: "ERROR" }
                     console.error("Error adding document: ", e)
@@ -122,6 +123,7 @@ export default function PersonForm(props: PersonFormProps) {
                     const docRef = doc(personCollection, nowID)
                     await updateDoc(docRef, personForDB)
                     feedbackMessage = { ...feedbackMessage, messages: ["Atualizado com sucesso!"], messageType: "SUCCESS" }
+                    handleListItemClick(defaultPerson)
                 } catch (e) {
                     feedbackMessage = { ...feedbackMessage, messages: ["Erro em atualizar!"], messageType: "ERROR" }
                     console.error("Error upddating document: ", e)
@@ -130,7 +132,6 @@ export default function PersonForm(props: PersonFormProps) {
             if (props.onAfterSave) {
                 props.onAfterSave(feedbackMessage, personForDB)
             }
-            handleListItemClick(defaultPerson)
         } else {
             feedbackMessage = { ...feedbackMessage, messages: isValid.messages, messageType: "ERROR" }
             if (props.onShowMessage) {
