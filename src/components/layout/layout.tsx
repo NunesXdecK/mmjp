@@ -256,16 +256,16 @@ export default function Layout(props) {
                     )}
                 </Disclosure>
 
-                <header className="bg-white shadow">
-                    <div className="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
-                        <h1 className="text-3xl font-bold text-gray-900">{props.title}</h1>
+                <header className="bg-gray-800 shadow">
+                    <div className="max-w-7xl mx-auto py-6 px-4 pb-40 sm:px-6 lg:px-8">
+                        <h1 className="text-3xl font-bold text-white">{props.title}</h1>
                     </div>
                 </header>
 
                 <main>
-                    <div className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
+                    <div className="max-w-7xl -mt-36 mx-auto py-6 px-6 lg:px-8">
                         {/* Replace with your content */}
-                        <div className="px-4 sm:px-0 bg-white">
+                        <div id="kakakekeke" className="rounded-lg sm:px-0 bg-white">
                             {props.children}
                             {/*
                             <div className="border-4 border-dashed border-gray-200 rounded-lg h-96">
