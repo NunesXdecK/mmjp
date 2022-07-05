@@ -4,7 +4,7 @@ import data from "../../data/data.json"
 import InputText from "../inputText/inputText"
 import { collection, getDocs } from "firebase/firestore"
 import { FeedbackMessage } from "../modal/feedbackMessageModal"
-import { Company, Person } from "../../interfaces/objectInterfaces"
+import { Company, defaultCompany, Person } from "../../interfaces/objectInterfaces"
 import { CompanyConversor, PersonConversor } from "../../db/converters"
 import { ElementFromBase, extrateCompany } from "../../util/converterUtil"
 import { db, COMPANY_COLLECTION_NAME, PERSON_COLLECTION_NAME } from "../../db/firebaseDB"
@@ -30,11 +30,10 @@ export default function CompanyList(props: CompanyListProps) {
     const [page, setPage] = useState(-1)
 
     const [isOpen, setIsOpen] = useState(false)
-    const [isLoading, setIsLoading] = useState(false)
+    const [isLoading, setIsLoading] = useState(true)
     const [inputSearch, setInputSearch] = useState("")
 
     const [listItems, setListItems] = useState([])
-
 
     const handleListItemClick = (element: Company) => {
         setIsLoading(true)
@@ -176,7 +175,7 @@ export default function CompanyList(props: CompanyListProps) {
     }
 
     useEffect(() => {
-        if (listItems?.length === 0) {
+        if (listItems.length === 0) {
             handleFilterList(null, true)
         }
     })
@@ -231,8 +230,8 @@ export default function CompanyList(props: CompanyListProps) {
             <div className="grid grid-cols-1 gap-4 p-4 bg-white">
                 {listItems[page]?.map((element: Company, index) => (
                     <button
-                        disabled={element.name === ""}
                         key={index.toString()}
+                        disabled={element.name === ""}
                         onClick={() => handleListItemClick(element)}
                         className="bg-white p-4 rounded-sm shadow items-center text-left">
                         <div className="flex">
@@ -269,6 +268,6 @@ export default function CompanyList(props: CompanyListProps) {
                     </Button>
                 </div>
             </div>
-        </div>
+        </div >
     )
 }

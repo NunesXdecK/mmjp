@@ -4,7 +4,7 @@ import data from "../../data/data.json"
 import InputText from "../inputText/inputText"
 import { PersonConversor } from "../../db/converters"
 import { collection, getDocs } from "firebase/firestore"
-import { Person } from "../../interfaces/objectInterfaces"
+import { defaultCompany, defaultPerson, Person } from "../../interfaces/objectInterfaces"
 import { FeedbackMessage } from "../modal/feedbackMessageModal"
 import { db, PERSON_COLLECTION_NAME } from "../../db/firebaseDB"
 import { handleMaskCPF, handleRemoveCPFMask } from "../../util/maskUtil"
@@ -29,11 +29,10 @@ export default function PersonList(props: PersonListProps) {
     const [page, setPage] = useState(-1)
 
     const [isOpen, setIsOpen] = useState(false)
-    const [isLoading, setIsLoading] = useState(false)
+    const [isLoading, setIsLoading] = useState(true)
     const [inputSearch, setInputSearch] = useState("")
 
     const [listItems, setListItems] = useState([])
-
 
     const handleListItemClick = (element: Person) => {
         setIsLoading(true)
@@ -108,7 +107,7 @@ export default function PersonList(props: PersonListProps) {
                 if (elementTwo.dateLastUpdateUTC > 0 && elementTwo.dateLastUpdateUTC > dateTwo) {
                     dateTwo = elementTwo.dateLastUpdateUTC
                 }
-                return dateTwo - dateOne 
+                return dateTwo - dateOne
             } else {
                 return elementOne.name.localeCompare(elementTwo.name)
             }
@@ -159,7 +158,7 @@ export default function PersonList(props: PersonListProps) {
     }
 
     useEffect(() => {
-        if (listItems?.length === 0) {
+        if (listItems.length === 0) {
             handleFilterList(null, true)
         }
     })
@@ -218,6 +217,13 @@ export default function PersonList(props: PersonListProps) {
                         key={index.toString()}
                         onClick={() => handleListItemClick(element)}
                         className="bg-white p-4 rounded-sm shadow items-center text-left">
+                        {/*
+                            <div className="grid grid-cols-6">
+                            <div className="animate-pulse p-2 col-span-4 bg-gray-300"></div>
+                            <div className="mt-2 animate-pulse p-2 col-span-3 bg-gray-300"></div>
+                            <div className="mt-2 animate-pulse p-2 col-span-6 bg-gray-300"></div>
+                            </div>
+                        */}
                         <div className="flex">
                             <div><span className={titleClassName}>{element.name}</span></div>
                         </div>
@@ -246,6 +252,6 @@ export default function PersonList(props: PersonListProps) {
                     </Button>
                 </div>
             </div>
-        </div>
+        </div >
     )
 }

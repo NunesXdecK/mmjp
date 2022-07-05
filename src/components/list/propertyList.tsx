@@ -31,7 +31,7 @@ export default function PropertyList(props: PropertyListProps) {
     const [page, setPage] = useState(-1)
 
     const [isOpen, setIsOpen] = useState(false)
-    const [isLoading, setIsLoading] = useState(false)
+    const [isLoading, setIsLoading] = useState(true)
     const [inputSearch, setInputSearch] = useState("")
 
     const [listItems, setListItems] = useState([])
