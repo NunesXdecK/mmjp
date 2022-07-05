@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import Button from "../button/button"
 import data from "../../data/data.json"
 import InputText from "../inputText/inputText"
@@ -50,8 +50,8 @@ export default function PersonCompanyList(props: PersonCompanyListProps) {
         setPage(page + 1)
     }
 
-    const handleFilterList = async (event) => {
-        event.preventDefault()
+    const handleFilterList = async (event?, first?) => {
+        event?.preventDefault()
 
         setIsLoading(true)
 
@@ -129,7 +129,20 @@ export default function PersonCompanyList(props: PersonCompanyListProps) {
         })
 
         listItemsFiltered = listItemsFiltered.sort((elementOne, elementTwo) => {
-            return elementOne.name.localeCompare(elementTwo.name)
+            if (first) {
+                let dateOne = elementOne.dateInsertUTC
+                let dateTwo = elementTwo.dateInsertUTC
+
+                if (elementOne.dateLastUpdateUTC > 0 && elementOne.dateLastUpdateUTC > dateOne) {
+                    dateOne = elementOne.dateLastUpdateUTC
+                }
+                if (elementTwo.dateLastUpdateUTC > 0 && elementTwo.dateLastUpdateUTC > dateTwo) {
+                    dateTwo = elementTwo.dateLastUpdateUTC
+                }
+                return dateTwo - dateOne 
+            } else {
+                return elementOne.name.localeCompare(elementTwo.name)
+            }
         })
 
         let pagesArray = []
@@ -175,6 +188,12 @@ export default function PersonCompanyList(props: PersonCompanyListProps) {
         classNavigationBar = classNavigationBar + " hidden"
     }
 
+    useEffect(() => {
+        if (listItems?.length === 0) {
+            handleFilterList(null, true)
+        }
+    })
+    
     return (
         <div className="bg-white shadow overflow-hidden rounded-lg">
             <div className="bg-gray-100 border-gray-200 px-4 py-5 sm:px-6">
@@ -183,16 +202,6 @@ export default function PersonCompanyList(props: PersonCompanyListProps) {
                     <div className="w-full">
                         <h3 className="text-lg leading-6 font-medium text-gray-900">Lista de pessoas e empresas</h3>
                         <p className={subtitle}>subtitulo lindo</p>
-                    </div>
-
-                    <div className="self-center">
-                        <Button
-                            isLink={true}
-                            isLoading={isLoading}
-                            isDisabled={isLoading}
-                            href="/company">
-                            Novo
-                        </Button>
                     </div>
                 </div>
 

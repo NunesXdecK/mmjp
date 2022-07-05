@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import Button from "../button/button"
 import InputText from "../inputText/inputText"
 import { collection, getDocs } from "firebase/firestore"
@@ -14,7 +14,9 @@ const contentClassName = "sm:px-4 sm:py-5 mt-1 text-sm text-gray-900"
 const titleClassName = "sm:px-4 sm:py-5 text-md leading-6 font-medium text-gray-900"
 
 interface ProjectListProps {
+    haveNew?: boolean,
     isOldBase?: boolean,
+    onNewClick?: () => void,
     onListItemClick?: (any) => void,
     onShowMessage?: (FeedbackMessage) => void,
 }
@@ -50,8 +52,8 @@ export default function ProjectList(props: ProjectListProps) {
         setPage(page + 1)
     }
 
-    const handleFilterList = async (event) => {
-        event.preventDefault()
+    const handleFilterList = async (event?, first?) => {
+        event?.preventDefault()
         setIsLoading(true)
         let listItemsFiltered = []
         let arrayList: Project[] = []
@@ -143,7 +145,20 @@ export default function ProjectList(props: ProjectListProps) {
         })
 
         listItemsFiltered = listItemsFiltered.sort((elementOne: Project, elementTwo: Project) => {
-            return elementOne.number.localeCompare(elementTwo.number)
+            if (first) {
+                let dateOne = elementOne.dateInsertUTC
+                let dateTwo = elementTwo.dateInsertUTC
+
+                if (elementOne.dateLastUpdateUTC > 0 && elementOne.dateLastUpdateUTC > dateOne) {
+                    dateOne = elementOne.dateLastUpdateUTC
+                }
+                if (elementTwo.dateLastUpdateUTC > 0 && elementTwo.dateLastUpdateUTC > dateTwo) {
+                    dateTwo = elementTwo.dateLastUpdateUTC
+                }
+                return dateTwo - dateOne 
+            } else {
+                return elementOne.number.localeCompare(elementTwo.number)
+            }
         })
 
         let pagesArray = []
@@ -189,25 +204,32 @@ export default function ProjectList(props: ProjectListProps) {
         classNavigationBar = classNavigationBar + " hidden"
     }
 
+    useEffect(() => {
+        if (listItems?.length === 0) {
+            handleFilterList(null, true)
+        }
+    })
+
     return (
         <div className="bg-white shadow overflow-hidden rounded-lg">
             <div className="bg-gray-100 border-gray-200 px-4 py-5 sm:px-6">
 
                 <div className="flex w-full">
                     <div className="w-full">
-                        <h3 className="text-lg leading-6 font-medium text-gray-900">Lista de propriedades</h3>
+                        <h3 className="text-lg leading-6 font-medium text-gray-900">Lista de projetos</h3>
                         <p className={subtitle}>subtitulo lindo</p>
                     </div>
 
-                    <div className="self-center">
-                        <Button
-                            isLink={true}
-                            isLoading={isLoading}
-                            isDisabled={isLoading}
-                            href="/project">
-                            Novo
-                        </Button>
-                    </div>
+                    {props.haveNew && (
+                        <div className="self-center">
+                            <Button
+                                isLoading={isLoading}
+                                isDisabled={isLoading} 
+                                onClick={props.onNewClick}>
+                                Novo
+                            </Button>
+                        </div>
+                    )}
                 </div>
 
                 <form className="mt-5 flex" onSubmit={handleFilterList}>

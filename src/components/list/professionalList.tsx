@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import Button from "../button/button"
 import data from "../../data/data.json"
 import InputText from "../inputText/inputText"
@@ -16,7 +16,9 @@ const contentClassName = "sm:px-4 sm:py-5 mt-1 text-sm text-gray-900"
 const titleClassName = "sm:px-4 sm:py-5 text-md leading-6 font-medium text-gray-900"
 
 interface ProfessionalListProps {
+    haveNew?: boolean,
     isOldBase?: boolean,
+    onNewClick?: () => void,
     onListItemClick?: (any) => void,
     onShowMessage?: (FeedbackMessage) => void,
 }
@@ -49,8 +51,9 @@ export default function ProfessionalList(props: ProfessionalListProps) {
         setPage(page + 1)
     }
 
-    const handleFilterList = async (event) => {
-        event.preventDefault()
+    const handleFilterList = async (event?, first?) => {
+        event?.preventDefault()
+        
         setIsLoading(true)
         let listItemsFiltered = []
         let arrayList: Professional[] = []
@@ -100,7 +103,20 @@ export default function ProfessionalList(props: ProfessionalListProps) {
         })
 
         listItemsFiltered = listItemsFiltered.sort((elementOne: Professional, elementTwo: Professional) => {
-            return elementOne.title.localeCompare(elementTwo.title)
+            if (first) {
+                let dateOne = elementOne.dateInsertUTC
+                let dateTwo = elementTwo.dateInsertUTC
+
+                if (elementOne.dateLastUpdateUTC > 0 && elementOne.dateLastUpdateUTC > dateOne) {
+                    dateOne = elementOne.dateLastUpdateUTC
+                }
+                if (elementTwo.dateLastUpdateUTC > 0 && elementTwo.dateLastUpdateUTC > dateTwo) {
+                    dateTwo = elementTwo.dateLastUpdateUTC
+                }
+                return dateTwo - dateOne 
+            } else {
+                return elementOne.title.localeCompare(elementTwo.title)
+            }
         })
 
         let pagesArray = []
@@ -146,6 +162,12 @@ export default function ProfessionalList(props: ProfessionalListProps) {
         classNavigationBar = classNavigationBar + " hidden"
     }
 
+    useEffect(() => {
+        if (listItems?.length === 0) {
+            handleFilterList(null, true)
+        }
+    })
+
     return (
         <div className="bg-white shadow overflow-hidden rounded-lg">
             <div className="bg-gray-100 border-gray-200 px-4 py-5 sm:px-6">
@@ -156,15 +178,16 @@ export default function ProfessionalList(props: ProfessionalListProps) {
                         <p className={subtitle}>subtitulo lindo</p>
                     </div>
 
-                    <div className="self-center">
-                        <Button
-                            isLink={true}
-                            isLoading={isLoading}
-                            isDisabled={isLoading}
-                            href="/professional">
-                            Novo
-                        </Button>
-                    </div>
+                    {props.haveNew && (
+                        <div className="self-center">
+                            <Button
+                                isLoading={isLoading}
+                                isDisabled={isLoading} 
+                                onClick={props.onNewClick}>
+                                Novo
+                            </Button>
+                        </div>
+                    )}
                 </div>
 
                 <form className="mt-5 flex" onSubmit={handleFilterList}>

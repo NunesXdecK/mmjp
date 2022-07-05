@@ -18,29 +18,16 @@ const menus: LayoutMenuItem[] = [
         name: "Pessoas", current: false, disabled: false,
         subMenus:
             [
-                { name: "Nova pessoa", href: "/person", current: false, disabled: false },
-                { name: "Lista de pessoas", href: "/person/persons", current: false, disabled: false },
-                { name: "Nova empresa", href: "/company", current: false, disabled: false },
-                { name: "Lista de empresas", href: "/company/companies", current: false, disabled: false },
-                { name: "Novo profissional", href: "/professional", current: false, disabled: false },
-                { name: "Lista de profissionais", href: "/professional/professionals", current: false, disabled: false },
+                { name: "Pessoas", href: "/person", current: false, disabled: false },
+                { name: "Empresas", href: "/company", current: false, disabled: false },
+                { name: "Profissionais", href: "/professional", current: false, disabled: false },
             ]
     },
     {
-        name: "Propriedades", current: false, disabled: false,
-        subMenus:
-            [
-                { name: "Nova propriedade", href: "/property", current: false, disabled: false },
-                { name: "Lista de propriedades", href: "/property/properties", current: false, disabled: false },
-            ]
-        },
-        {
-            name: "Projetos", current: false, disabled: false,
-            subMenus:
-            [
-                { name: "Novo projeto", href: "/project", current: false, disabled: false },
-                { name: "Lista de projetos", href: "/project/projects", current: false, disabled: false },
-            ]
+        name: "Propriedades", current: false, disabled: false, href: "/property",
+    },
+    {
+        name: "Projetos", current: false, disabled: false, href: "/project",
     },
 ]
 
@@ -256,7 +243,7 @@ export default function Layout(props) {
                     )}
                 </Disclosure>
 
-                <header className="bg-gray-800 shadow">
+                <header className="bg-gray-800">
                     <div className="max-w-7xl mx-auto py-6 px-4 pb-40 sm:px-6 lg:px-8">
                         <h1 className="text-3xl font-bold text-white">{props.title}</h1>
                     </div>
@@ -265,7 +252,7 @@ export default function Layout(props) {
                 <main>
                     <div className="max-w-7xl -mt-36 mx-auto py-6 px-6 lg:px-8">
                         {/* Replace with your content */}
-                        <div id="kakakekeke" className="rounded-lg sm:px-0 bg-white">
+                        <div className="bg-white shadow-md rounded-lg sm:px-0">
                             {props.children}
                             {/*
                             <div className="border-4 border-dashed border-gray-200 rounded-lg h-96">
@@ -275,6 +262,14 @@ export default function Layout(props) {
                         {/* /End replace */}
                     </div>
                 </main>
+
+                {/* 
+                <footer className="bg-gray-800">
+                    <div className="max-w-7xl mx-auto py-6 px-4 pt-40 sm:px-6 lg:px-8">
+                        <h1 className="text-3xl font-bold text-white">Footer bonito</h1>
+                    </div>
+                </footer>
+                    */}
             </div>
         </>
     )
