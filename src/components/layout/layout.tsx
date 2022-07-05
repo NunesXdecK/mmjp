@@ -83,6 +83,8 @@ export default function Layout(props) {
                             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                                 <div className="flex items-center justify-between h-16">
                                     <div className="flex items-center">
+                                        <h1 className="text-xl font-bold text-white block sm:hidden">{props.title}</h1>
+
                                         <div className="flex-shrink-0">
                                             {/*
                                             <img
@@ -244,15 +246,15 @@ export default function Layout(props) {
                 </Disclosure>
 
                 <header className="bg-gray-800">
-                    <div className="max-w-7xl mx-auto py-6 px-4 pb-40 sm:px-6 lg:px-8">
-                        <h1 className="text-3xl font-bold text-white">{props.title}</h1>
+                    <div className="max-w-7xl mx-auto py-6 px-4 pb-32 sm:pb-40 sm:px-6 lg:px-8">
+                        <h1 className="text-3xl font-bold text-white hidden sm:block">{props.title}</h1>
                     </div>
                 </header>
 
                 <main>
                     <div className="max-w-7xl -mt-36 mx-auto py-6 px-6 lg:px-8">
                         {/* Replace with your content */}
-                        <div className="bg-white shadow-md rounded-lg sm:px-0">
+                        <div className="bg-white shadow-md rounded-lg sm:px-0 z-50">
                             {props.children}
                             {/*
                             <div className="border-4 border-dashed border-gray-200 rounded-lg h-96">

@@ -65,7 +65,7 @@ export default function ProfessionalForm(props: ProfessionalFormProps) {
         setIsLoading(true)
         let feedbackMessage: FeedbackMessage = { messages: ["Algo estranho aconteceu"], messageType: "WARNING" }
 
-        let professionalForDB = {...professional}
+        let professionalForDB = { ...professional }
         if (persons.length > 0) {
             professionalForDB = { ...professionalForDB, person: persons[0] }
         }
@@ -201,9 +201,9 @@ export default function ProfessionalForm(props: ProfessionalFormProps) {
 
             <form
                 onSubmit={handleSave}>
-                <FormRow>
-                    {props.isBack && (
-                        <FormRowColumn unit="3" className="justify-self-start">
+                <FormRow className="p-2">
+                    <FormRowColumn unit="6" className="flex justify-between">
+                        {props.isBack && (
                             <Button
                                 onClick={props.onBack}
                                 isLoading={isLoading}
@@ -211,14 +211,13 @@ export default function ProfessionalForm(props: ProfessionalFormProps) {
                             >
                                 Voltar
                             </Button>
-                        </FormRowColumn>
-                    )}
+                        )}
 
-                    <FormRowColumn unit={props.isBack ? "3" : "6"} className="justify-self-end">
                         <Button
+                            type="submit"
                             isLoading={isLoading}
                             isDisabled={!isFormValid}
-                            type="submit">
+                        >
                             Salvar
                         </Button>
                     </FormRowColumn>

@@ -1,4 +1,4 @@
-import { STYLE_FOR_INPUT_LOADING } from "../../util/patternValidationUtil"
+import { STYLE_FOR_INPUT_LOADING, STYLE_FOR_INPUT_LOADING_TRANSPARENT } from "../../util/patternValidationUtil"
 
 interface InputSelectProps {
     id?: string,
@@ -29,7 +29,7 @@ export default function InputSelect(props: InputSelectProps) {
     let classNameLabel = "block text-sm font-medium text-gray-700"
     if (props.isLoading) {
         classNameInput = classNameInput + STYLE_FOR_INPUT_LOADING
-        classNameLabel = classNameLabel + STYLE_FOR_INPUT_LOADING
+        classNameLabel = classNameLabel + STYLE_FOR_INPUT_LOADING_TRANSPARENT
     }
     return (
         <>

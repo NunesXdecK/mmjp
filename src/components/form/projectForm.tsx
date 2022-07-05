@@ -1,22 +1,23 @@
 import Form from "./form";
 import FormRow from "./formRow";
-import { useState } from "react";
 import Button from "../button/button";
-import AddressForm from "./addressForm";
+import { useEffect, useState } from "react";
 import FormRowColumn from "./formRowColumn";
 import InputText from "../inputText/inputText";
+import SelectPropertyForm from "./selectPropertyForm";
+import InputCheckbox from "../inputText/inputCheckbox";
 import { handleNewDateToUTC } from "../../util/dateUtils";
+import SelectProfessionalForm from "./selectProfessionalForm";
 import SelectPersonCompanyForm from "./selectPersonCompanyForm";
 import { FeedbackMessage } from "../modal/feedbackMessageModal";
-import { CompanyConversor, PersonConversor, ProfessionalConversor, ProjectConversor, PropertyConversor } from "../../db/converters";
 import { handleProjectValidationForDB } from "../../util/validationUtil";
-import { defaultProject, Project } from "../../interfaces/objectInterfaces";
-import { DATE_MARK, NOT_NULL_MARK, NUMBER_MARK } from "../../util/patternValidationUtil";
-import { addDoc, collection, doc, getDocs, updateDoc } from "firebase/firestore";
-import { COMPANY_COLLECTION_NAME, db, PERSON_COLLECTION_NAME, PROFESSIONAL_COLLECTION_NAME, PROJECT_COLLECTION_NAME, PROPERTY_COLLECTION_NAME } from "../../db/firebaseDB";
+import { DATE_MARK, NOT_NULL_MARK, TEXT_NOT_NULL_MARK } from "../../util/patternValidationUtil";
+import { defaultProject, Professional, Project } from "../../interfaces/objectInterfaces";
+import { addDoc, collection, doc, getDocs, limit, orderBy, query, updateDoc } from "firebase/firestore";
 import { defaultElementFromBase, ElementFromBase, handlePrepareProjectForDB } from "../../util/converterUtil";
-import SelectProfessionalForm from "./selectProfessionalForm";
-import SelectPropertyForm from "./selectPropertyForm";
+import { CompanyConversor, PersonConversor, ProfessionalConversor, ProjectConversor, PropertyConversor } from "../../db/converters";
+import { COMPANY_COLLECTION_NAME, db, PERSON_COLLECTION_NAME, PROFESSIONAL_COLLECTION_NAME, PROJECT_COLLECTION_NAME, PROPERTY_COLLECTION_NAME } from "../../db/firebaseDB";
+import InputTextAutoComplete from "../inputText/inputTextAutocomplete";
 
 interface ProjectFormProps {
     title?: string,
@@ -47,12 +48,23 @@ export default function ProjectForm(props: ProjectFormProps) {
 
     const [oldData, setOldData] = useState<ElementFromBase>(props?.project?.oldData ?? defaultElementFromBase)
 
-    const [professionals, setProfessionals] = useState(props?.project?.professional ? [props.project.professional] : [])
+    const [professionals, setProfessionals] = useState(props?.project?.professional?.id ? [props.project.professional] : [])
 
+    const handleSetProjectTitle = (value) => { setProject({ ...project, title: value }) }
+    const handleSetProjectBudget = (value) => { setProject({ ...project, budget: value }) }
     const handleSetProjectNumber = (value) => { setProject({ ...project, number: value }) }
     const handleSetProjectDate = (value) => { setProject({ ...project, dateString: value }) }
-    const handleSetProjectClients = (value) => { setProject({ ...project, clients: value }) }
     const handleSetProjectProperties = (value) => { setProject({ ...project, properties: value }) }
+    const handleSetProjectClients = (value) => {
+        let number = ""
+        value.map((element, index) => {
+            if ("clientCode" in element && element.clientCode !== "") {
+                number = number + element.clientCode + "-"
+            }
+        })
+        number = number + new Date().getFullYear() + "-"
+        setProject({ ...project, clients: value, number: number })
+    }
 
     const handleListItemClick = async (project: Project) => {
         setIsLoading(true)
@@ -63,6 +75,29 @@ export default function ProjectForm(props: ProjectFormProps) {
         setIsOpen(false)
         setIsFormValid(true)
         setIsLoading(false)
+    }
+
+    useEffect(() => {
+        if (project.id === "" && professionals.length === 0) {
+            handlePutLastProfessional()
+        }
+    })
+
+    const handlePutLastProfessional = async () => {
+        const querySnapshotProfessional = await getDocs(professionalCollection)
+        const queryProject = await query(projectCollection,
+            orderBy("dateInsertUTC", "desc"),
+            limit(1))
+        const querySnapshotProject = await getDocs(queryProject)
+        querySnapshotProject.forEach((doc) => {
+            let project: Project = doc.data()
+            querySnapshotProfessional.forEach((docProfessional) => {
+                let professional: Professional = docProfessional.data()
+                if (project.professional.id === professional.id) {
+                    setProfessionals(prof => [professional])
+                }
+            })
+        })
     }
 
     const handleSave = async (event) => {
@@ -153,52 +188,6 @@ export default function ProjectForm(props: ProjectFormProps) {
 
     return (
         <>
-            <form
-                onSubmit={handleSave}>
-                <Form
-                    title={props.title}
-                    subtitle={props.subtitle}>
-
-                    <FormRow>
-                        <FormRowColumn unit="4">
-                            <InputText
-                                id="project-number"
-                                isLoading={isLoading}
-                                value={project.number}
-                                validation={NUMBER_MARK}
-                                title="Numero do projeto"
-                                isDisabled={props.isForDisable}
-                                onSetText={handleSetProjectNumber}
-                                onValidate={handleChangeFormValidation}
-                                validationMessage="O do projeto não pode ficar em branco."
-                            />
-                        </FormRowColumn>
-
-                        <FormRowColumn unit="2">
-                            <InputText
-                                mask="date"
-                                maxLength={10}
-                                id="project-date"
-                                isLoading={isLoading}
-                                validation={DATE_MARK}
-                                title="Data do projeto"
-                                value={project.dateString}
-                                isDisabled={props.isForDisable}
-                                onSetText={handleSetProjectDate}
-                                onValidate={handleChangeFormValidation}
-                                validationMessage="O do projeto não pode ficar sem data."
-                            />
-                        </FormRowColumn>
-                    </FormRow>
-
-                    <div className="hidden">
-                        <Button
-                            type="submit">
-                        </Button>
-                    </div>
-                </Form>
-            </form>
-
             <SelectPersonCompanyForm
                 title="Clientes"
                 isLoading={isLoading}
@@ -237,9 +226,77 @@ export default function ProjectForm(props: ProjectFormProps) {
 
             <form
                 onSubmit={handleSave}>
-                <FormRow>
-                    {props.isBack && (
-                        <FormRowColumn unit="3" className="justify-self-start">
+                <Form
+                    title={props.title}
+                    subtitle={props.subtitle}>
+
+                    <FormRow>
+                        <FormRowColumn unit="4">
+                            <InputTextAutoComplete
+                                id="title"
+                                isLoading={isLoading}
+                                value={project.title}
+                                title="Titulo do projeto"
+                                validation={NOT_NULL_MARK}
+                                isDisabled={props.isForDisable}
+                                onSetText={handleSetProjectTitle}
+                                onValidate={handleChangeFormValidation}
+                                validationMessage="O titulo do projeto não pode ficar em branco."
+                            />
+                        </FormRowColumn>
+
+                        <FormRowColumn unit="2" className="sm:place-self-center">
+                            <InputCheckbox
+                                id="budget"
+                                title="É orçamento?"
+                                isLoading={isLoading}
+                                value={project.budget}
+                                isDisabled={props.isForDisable}
+                                onSetText={handleSetProjectBudget}
+                            />
+                        </FormRowColumn>
+                    </FormRow>
+
+                    <FormRow>
+                        <FormRowColumn unit="4">
+                            <InputText
+                                id="number"
+                                isLoading={isLoading}
+                                value={project.number}
+                                title="Numero do projeto"
+                                isDisabled={props.isForDisable}
+                                onSetText={handleSetProjectNumber}
+                                onValidate={handleChangeFormValidation}
+                            />
+                        </FormRowColumn>
+
+                        <FormRowColumn unit="2">
+                            <InputText
+                                mask="date"
+                                maxLength={10}
+                                id="project-date"
+                                isLoading={isLoading}
+                                validation={DATE_MARK}
+                                title="Data do projeto"
+                                value={project.dateString}
+                                isDisabled={props.isForDisable}
+                                onSetText={handleSetProjectDate}
+                                onValidate={handleChangeFormValidation}
+                                validationMessage="O projeto não pode ficar sem data."
+                            />
+                        </FormRowColumn>
+                    </FormRow>
+
+                    <div className="hidden">
+                        <Button
+                            type="submit">
+                        </Button>
+                    </div>
+                </Form>
+
+                <FormRow className="p-2">
+                    <FormRowColumn unit="6" className="flex justify-between">
+                        {props.isBack && (
                             <Button
                                 onClick={props.onBack}
                                 isLoading={isLoading}
@@ -247,10 +304,8 @@ export default function ProjectForm(props: ProjectFormProps) {
                             >
                                 Voltar
                             </Button>
-                        </FormRowColumn>
-                    )}
+                        )}
 
-                    <FormRowColumn unit={props.isBack ? "3" : "6"} className="justify-self-end">
                         <Button
                             type="submit"
                             isLoading={isLoading}

@@ -45,6 +45,7 @@ export default function CompanyForm(props: CompanyFormProps) {
 
     const handleSetCompanyName = (value) => { setCompany({ ...company, name: value }) }
     const handleSetCompanyCnpj = (value) => { setCompany({ ...company, cnpj: value }) }
+    const handleSetCompanyClientCode = (value) => { setCompany({ ...company, clientCode: value }) }
     const handleSetCompanyTelephones = (value) => { setCompany({ ...company, telephones: value }) }
     const handleSetCompanyOwners = (value) => { setCompany({ ...company, owners: value }) }
     const handleSetCompanyAddress = (value) => { setCompany({ ...company, address: value }) }
@@ -65,13 +66,13 @@ export default function CompanyForm(props: CompanyFormProps) {
         setIsLoading(true)
         let feedbackMessage: FeedbackMessage = { messages: ["Algo estranho aconteceu"], messageType: "WARNING" }
 
-        let companyForDB = {...company}
+        let companyForDB = { ...company }
         const isValid = handleCompanyValidationForDB(companyForDB)
-        
+
         if (isValid.validation) {
             let nowID = companyForDB?.id ?? ""
             let docRefsForDB = []
-            
+
             if (companyForDB.owners?.length > 0) {
                 companyForDB.owners?.map((element, index) => {
                     if (element.id) {
@@ -81,7 +82,7 @@ export default function CompanyForm(props: CompanyFormProps) {
                 })
                 companyForDB = { ...companyForDB, owners: docRefsForDB }
             }
-            
+
             companyForDB = handlePrepareCompanyForDB(companyForDB)
 
             const isSave = nowID === ""
@@ -131,7 +132,7 @@ export default function CompanyForm(props: CompanyFormProps) {
                     subtitle={props.subtitle}>
 
                     <FormRow>
-                        <FormRowColumn unit="6">
+                        <FormRowColumn unit="4">
                             <InputText
                                 id="companyname"
                                 value={company.name}
@@ -142,6 +143,17 @@ export default function CompanyForm(props: CompanyFormProps) {
                                 onSetText={handleSetCompanyName}
                                 onValidate={handleChangeFormValidation}
                                 validationMessage="O nome da propriedade não pode ficar em branco."
+                            />
+                        </FormRowColumn>
+                        
+                        <FormRowColumn unit="2">
+                            <InputText
+                                id="code"
+                                title="Codigo do cliente"
+                                value={company.clientCode}
+                                isLoading={isLoading}
+                                onSetText={handleSetCompanyClientCode}
+                                isDisabled={props.isForDisable}
                             />
                         </FormRowColumn>
                     </FormRow>
@@ -207,9 +219,9 @@ export default function CompanyForm(props: CompanyFormProps) {
                     subtitle="Informações sobre o endereço"
                 />
 
-                <FormRow>
-                    {props.isBack && (
-                        <FormRowColumn unit="3" className="justify-self-start">
+                <FormRow className="p-2">
+                    <FormRowColumn unit="6" className="flex justify-between">
+                        {props.isBack && (
                             <Button
                                 onClick={props.onBack}
                                 isLoading={isLoading}
@@ -217,10 +229,8 @@ export default function CompanyForm(props: CompanyFormProps) {
                             >
                                 Voltar
                             </Button>
-                        </FormRowColumn>
-                    )}
+                        )}
 
-                    <FormRowColumn unit={props.isBack ? "3" : "6"} className="justify-self-end">
                         <Button
                             type="submit"
                             isLoading={isLoading}

@@ -113,7 +113,7 @@ export const handlePropertyValidationForDB = (property: Property) => {
 
 export const handleProjectValidationForDB = (project: Project) => {
     let validation: ValidationReturn = { validation: false, messages: [] }
-    let nameCheck = handleValidationNotNull(project.number)
+    let nameCheck = handleValidationNotNull(project.title)
     let clientsCheck = project?.clients?.length > 0 ?? false
     let propertiesCheck = project?.properties?.length > 0 ?? false
     let professionalCheck = project?.professional?.id?.length > 0 ?? false
@@ -121,7 +121,7 @@ export const handleProjectValidationForDB = (project: Project) => {
     let propertiesOnBaseCheck = true
 
     if (!nameCheck) {
-        validation = { ...validation, messages: [...validation.messages, "O campo nome está em branco."] }
+        validation = { ...validation, messages: [...validation.messages, "O campo titulo está em branco."] }
     }
 
     if (!professionalCheck) {

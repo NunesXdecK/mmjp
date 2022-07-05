@@ -14,6 +14,7 @@ interface InputTextProps {
     isLoading?: boolean,
     isDisabled?: boolean,
     isRequired?: boolean,
+    isAutoFocus?: boolean,
     children?: any,
     mask?: "cpf" | "rg" | "cnpj" | "currency" | "telephone" | "cep" | "perimeter" | "area" | "date",
     onChange?: (any) => void,
@@ -208,6 +209,7 @@ export default function InputText(props: InputTextProps) {
                 className={classNameInput}
                 type={props.type ?? "text"}
                 maxLength={props.maxLength}
+                autoFocus={props.isAutoFocus}
                 disabled={props.isDisabled || props.isLoading}
                 required={props.isRequired}
                 onChange={(event) => {

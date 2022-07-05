@@ -217,6 +217,10 @@ export const handlePrepareProjectForDB = (project: Project) => {
         }
     }
 
+    if (project.dateString) {
+        delete project.dateString
+    }
+
     if (project.oldData) {
         delete project.oldData
     }

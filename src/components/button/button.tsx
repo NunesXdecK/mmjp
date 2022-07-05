@@ -25,7 +25,7 @@ export default function Button(props: ButtonProps) {
                         py-2 px-4 
                         shadow-sm 
                         justify-center 
-                        disabled:opacity-95
+                        disabled:opacity-40
                         border border-transparent 
                         text-sm font-medium rounded-md text-white 
                         focus:outline-none focus:ring-2 focus:ring-offset-2 

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { STYLE_FOR_INPUT_LOADING } from "../../util/patternValidationUtil";
+import { STYLE_FOR_INPUT_LOADING, STYLE_FOR_INPUT_LOADING_TRANSPARENT } from "../../util/patternValidationUtil";
 import FormRow from "../form/formRow";
 import FormRowColumn from "../form/formRowColumn";
 
@@ -31,7 +31,7 @@ export default function InputTextWithButton(props: InputTextWithButtonProps) {
                         `
     if (props.isLoading) {
         classNameInput = classNameInput + STYLE_FOR_INPUT_LOADING
-        classNameButton = classNameButton + STYLE_FOR_INPUT_LOADING
+        classNameButton = classNameButton + STYLE_FOR_INPUT_LOADING_TRANSPARENT
     }
 
     return (

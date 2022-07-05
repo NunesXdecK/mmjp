@@ -67,7 +67,7 @@ export default function PropertyForm(props: PropertyFormProps) {
         setIsLoading(true)
         let feedbackMessage: FeedbackMessage = { messages: ["Algo estranho aconteceu"], messageType: "WARNING" }
 
-        let propertyForDB = {...property}
+        let propertyForDB = { ...property }
         const isValid = handlePropertyValidationForDB(propertyForDB)
         if (isValid.validation) {
             let nowID = propertyForDB?.id ?? ""
@@ -243,9 +243,9 @@ export default function PropertyForm(props: PropertyFormProps) {
                     subtitle="Informações sobre o endereço"
                 />
 
-                <FormRow>
-                    {props.isBack && (
-                        <FormRowColumn unit="3" className="justify-self-start">
+                <FormRow className="p-2">
+                    <FormRowColumn unit="6" className="flex justify-between">
+                        {props.isBack && (
                             <Button
                                 onClick={props.onBack}
                                 isLoading={isLoading}
@@ -253,10 +253,8 @@ export default function PropertyForm(props: PropertyFormProps) {
                             >
                                 Voltar
                             </Button>
-                        </FormRowColumn>
-                    )}
+                        )}
 
-                    <FormRowColumn unit={props.isBack ? "3" : "6"} className="justify-self-end">
                         <Button
                             type="submit"
                             isLoading={isLoading}

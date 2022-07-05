@@ -36,13 +36,14 @@ export default function PersonForm(props: PersonFormProps) {
 
     const [person, setPerson] = useState<Person>(props?.person ?? defaultPerson)
     const [isFormValid, setIsFormValid] = useState(handlePersonValidationForDB(person).validation)
-    
+
     const [isOpen, setIsOpen] = useState(false)
     const [isLoading, setIsLoading] = useState(false)
 
     const handleSetPersonOldData = (value) => { setPerson({ ...person, oldData: value }) }
 
     const handleSetPersonName = (value) => { setPerson({ ...person, name: value }) }
+    const handleSetPersonClientCode = (value) => { setPerson({ ...person, clientCode: value }) }
     const handleSetPersonCPF = (value) => { setPerson({ ...person, cpf: value }) }
     const handleSetPersonRG = (value) => { setPerson({ ...person, rg: value }) }
     const handleSetPersonRgIssuer = (value) => { setPerson({ ...person, rgIssuer: value }) }
@@ -90,7 +91,7 @@ export default function PersonForm(props: PersonFormProps) {
         setIsLoading(true)
         let feedbackMessage: FeedbackMessage = { messages: ["Algo estranho aconteceu"], messageType: "WARNING" }
 
-        let personForDB: Person = {...person}
+        let personForDB: Person = { ...person }
         const isValid = handlePersonValidationForDB(personForDB)
         if (isValid.validation) {
             let nowID = personForDB?.id ?? ""
@@ -102,9 +103,9 @@ export default function PersonForm(props: PersonFormProps) {
                     nowID = doc.id
                 }
             })
-            
+
             personForDB = handlePreparePersonForDB(personForDB)
-            
+
             const isSave = nowID === ""
             if (isSave) {
                 try {
@@ -158,7 +159,7 @@ export default function PersonForm(props: PersonFormProps) {
                     subtitle={props.subtitle}>
 
                     <FormRow>
-                        <FormRowColumn unit="6">
+                        <FormRowColumn unit="4">
                             <InputText
                                 id="fullname"
                                 value={person.name}
@@ -169,6 +170,17 @@ export default function PersonForm(props: PersonFormProps) {
                                 isDisabled={props.isForDisable}
                                 onValidate={handleChangeFormValidation}
                                 validationMessage="O nome não pode ficar em branco."
+                            />
+                        </FormRowColumn>
+                        
+                        <FormRowColumn unit="2">
+                            <InputText
+                                id="code"
+                                title="Codigo do cliente"
+                                value={person.clientCode}
+                                isLoading={isLoading}
+                                onSetText={handleSetPersonClientCode}
+                                isDisabled={props.isForDisable}
                             />
                         </FormRowColumn>
                     </FormRow>
@@ -296,9 +308,9 @@ export default function PersonForm(props: PersonFormProps) {
                     subtitle="Informações sobre o endereço"
                 />
 
-                <FormRow>
-                    {props.isBack && (
-                        <FormRowColumn unit="3" className="justify-self-start">
+                <FormRow className="p-2">
+                    <FormRowColumn unit="6" className="flex justify-between">
+                        {props.isBack && (
                             <Button
                                 onClick={props.onBack}
                                 isLoading={isLoading}
@@ -306,10 +318,8 @@ export default function PersonForm(props: PersonFormProps) {
                             >
                                 Voltar
                             </Button>
-                        </FormRowColumn>
-                    )}
+                        )}
 
-                    <FormRowColumn unit={props.isBack ? "3" : "6"} className="justify-self-end">
                         <Button
                             type="submit"
                             isLoading={isLoading}
