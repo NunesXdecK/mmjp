@@ -1,5 +1,4 @@
-import Link from "next/link"
-import { STYLE_FOR_INPUT_LOADING } from "../../util/patternValidationUtil"
+import { STYLE_FOR_INPUT_LOADING_TRANSPARENT } from "../../util/patternValidationUtil"
 
 interface ButtonProps {
     href?: string,
@@ -32,7 +31,7 @@ export default function Button(props: ButtonProps) {
                         focus:outline-none focus:ring-2 focus:ring-offset-2 
                     `
     if (props.isLoading) {
-        className = className + " " + STYLE_FOR_INPUT_LOADING
+        className = className + " " + STYLE_FOR_INPUT_LOADING_TRANSPARENT
     }
 
     if (props.isHidden) {
