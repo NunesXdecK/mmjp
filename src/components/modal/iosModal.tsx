@@ -55,7 +55,7 @@ export default function IOSModal(props: IOSModalProps) {
                                 leaveTo="opacity-0">
                                 <HeaderModal
                                     onClose={() => props.setIsOpen(false)} />
-                                <div className="p-4">
+                                <div ref={cancelButtonRef} className="p-4">
                                     {props.children}
                                 </div>
                             </Transition.Child>

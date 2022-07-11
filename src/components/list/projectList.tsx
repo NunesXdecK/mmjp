@@ -9,9 +9,10 @@ import { Company, Person, Project, Property } from "../../interfaces/objectInter
 import { CompanyConversor, PersonConversor, ProfessionalConversor, ProjectConversor, PropertyConversor } from "../../db/converters"
 import { COMPANY_COLLECTION_NAME, db, PERSON_COLLECTION_NAME, PROFESSIONAL_COLLECTION_NAME, PROJECT_COLLECTION_NAME, PROPERTY_COLLECTION_NAME } from "../../db/firebaseDB"
 
+const contentClassName = "text-sm text-gray-900"
 const subtitle = "mt-1 max-w-2xl text-sm text-gray-500"
-const contentClassName = "sm:px-4 sm:py-5 mt-1 text-sm text-gray-900"
-const titleClassName = "sm:px-4 sm:py-5 text-md leading-6 font-medium text-gray-900"
+const titleClassName = "text-md leading-6 font-medium text-gray-900"
+const titleRedClassName = "mb-2 py-1 px-3 rounded-xl text-md leading-6 font-medium text-white bg-red-600"
 
 interface ProjectListProps {
     haveNew?: boolean,
@@ -117,7 +118,8 @@ export default function ProjectList(props: ProjectListProps) {
 
                 const date = new Date(project.date)
                 const month = (date.getMonth() + 1).toString().length > 1 ? (date.getMonth() + 1) : "0" + (date.getMonth() + 1)
-                const dateString = date.getUTCDate() + "/" + month + "/" + date.getFullYear()
+                const day = date.getUTCDate().toString().length === 1 ? "0" + date.getUTCDate() : date.getUTCDate()
+                const dateString = day + "/" + month + "/" + date.getFullYear()
 
                 project = {
                     ...project,
@@ -155,7 +157,7 @@ export default function ProjectList(props: ProjectListProps) {
                 if (elementTwo.dateLastUpdateUTC > 0 && elementTwo.dateLastUpdateUTC > dateTwo) {
                     dateTwo = elementTwo.dateLastUpdateUTC
                 }
-                return dateTwo - dateOne 
+                return dateTwo - dateOne
             } else {
                 return elementOne.number.localeCompare(elementTwo.number)
             }
@@ -224,7 +226,7 @@ export default function ProjectList(props: ProjectListProps) {
                         <div className="self-center">
                             <Button
                                 isLoading={isLoading}
-                                isDisabled={isLoading} 
+                                isDisabled={isLoading}
                                 onClick={props.onNewClick}>
                                 Novo
                             </Button>
@@ -265,29 +267,28 @@ export default function ProjectList(props: ProjectListProps) {
                         onClick={() => handleListItemClick(element)}
                         className="bg-white p-4 rounded-sm shadow items-center text-left">
                         <>
-                            <div className="flex">
-                                <div><span className={titleClassName}>{element.number} - {element.dateString}</span></div>
-                            </div>
+                            {element.budget && (
+                                <div className="mb-2"><span className={titleRedClassName}>Orçamento</span></div>
+                            )}
+                            <p className={titleClassName}>{element.number} - {element.dateString}</p>
                             {element.clients?.map((elementClient: Person | Company, indexOwners) => (
                                 <div key={elementClient.name + index + indexOwners}>
-                                    <span className={contentClassName}>
+                                    <p className={contentClassName}>
                                         {elementClient.name && elementClient.name} {("cpf" in elementClient && "CPF: " + handleMaskCPF(elementClient.cpf)) || ("cnpj" in elementClient && "CNPJ: " + handleMaskCNPJ(elementClient.cnpj))}
-                                    </span>
+                                    </p>
                                 </div>
                             ))}
                             {element.properties?.map((elementProperty: Property, indexOwners) => (
                                 <div key={elementProperty.name + index + indexOwners}>
-                                    <span className={contentClassName}>
+                                    <p className={contentClassName}>
                                         {elementProperty.name && elementProperty.name} {elementProperty.area && "Área: " + elementProperty.area} {elementProperty.perimeter && "Perimetro: " + elementProperty.perimeter}
-                                    </span>
+                                    </p>
                                 </div>
                             ))}
                             {element?.professional && (
-                                <div>
-                                    <span className={contentClassName}>
-                                        {element.professional.title && element.professional.title} {element.professional.creaNumber && "CREA: " + element.professional.creaNumber}
-                                    </span>
-                                </div>
+                                <p className={contentClassName}>
+                                    {element.professional.title && element.professional.title} {element.professional.creaNumber && "CREA: " + element.professional.creaNumber}
+                                </p>
                             )}
                         </>
                     </button>

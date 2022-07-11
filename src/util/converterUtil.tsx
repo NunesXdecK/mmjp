@@ -205,7 +205,7 @@ export const handlePrepareProjectForDB = (project: Project) => {
     if (project.dateInsertUTC === 0) {
         project = { ...project, dateInsertUTC: handleNewDateToUTC() }
     }
-
+    
     if (project.dateString.length === 10) {
         const dateText = handleRemoveDateMask(project.dateString)
         if (dateText.length === 8) {
@@ -215,6 +215,10 @@ export const handlePrepareProjectForDB = (project: Project) => {
             const utcString = new Date(month + " " + day + " " + year).toUTCString()
             project = { ...project, date: Date.parse(utcString) }
         }
+    }
+    
+    if (project.date === 0) {
+        project = { ...project, date: handleNewDateToUTC() }
     }
 
     if (project.dateString) {

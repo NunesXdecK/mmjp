@@ -149,6 +149,7 @@ export const handleProjectValidationForDB = (project: Project) => {
             validation = { ...validation, messages: [...validation.messages, "A propriedade não está cadastrado na base."] }
         }
     })
-    validation = { ...validation, validation: nameCheck && clientsCheck && clientsOnBaseCheck }
+
+    validation = { ...validation, validation: nameCheck && clientsCheck && clientsOnBaseCheck && propertiesOnBaseCheck }
     return validation
 }

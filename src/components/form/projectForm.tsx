@@ -276,13 +276,11 @@ export default function ProjectForm(props: ProjectFormProps) {
                                 maxLength={10}
                                 id="project-date"
                                 isLoading={isLoading}
-                                validation={DATE_MARK}
                                 title="Data do projeto"
                                 value={project.dateString}
                                 isDisabled={props.isForDisable}
                                 onSetText={handleSetProjectDate}
                                 onValidate={handleChangeFormValidation}
-                                validationMessage="O projeto não pode ficar sem data."
                             />
                         </FormRowColumn>
                     </FormRow>

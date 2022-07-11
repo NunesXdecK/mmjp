@@ -139,7 +139,7 @@ export default function PersonCompanyList(props: PersonCompanyListProps) {
                 if (elementTwo.dateLastUpdateUTC > 0 && elementTwo.dateLastUpdateUTC > dateTwo) {
                     dateTwo = elementTwo.dateLastUpdateUTC
                 }
-                return dateTwo - dateOne 
+                return dateTwo - dateOne
             } else {
                 return elementOne.name.localeCompare(elementTwo.name)
             }
@@ -193,7 +193,7 @@ export default function PersonCompanyList(props: PersonCompanyListProps) {
             handleFilterList(null, true)
         }
     })
-    
+
     return (
         <div className="bg-white shadow overflow-hidden rounded-lg">
             <div className="bg-gray-100 border-gray-200 px-4 py-5 sm:px-6">
