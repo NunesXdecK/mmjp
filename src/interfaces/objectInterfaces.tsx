@@ -100,8 +100,9 @@ export interface ProjectStageUpdate {
 
 export interface ProjectPayment {
     id?: string,
+    value?: string,
+    description?: string,
     payed?: boolean,
-    value?: number,
     dateInsertUTC?: number,
     dateLastUpdateUTC?: number,
     project?: Project,
@@ -202,7 +203,8 @@ export const defaultProjectStage: ProjectStage = {
 
 export const defaultProjectPayment: ProjectPayment = {
     id: "",
-    value: 0,
+    value: "",
+    description: "",
     dateInsertUTC: 0,
     dateLastUpdateUTC: 0,
     payed: false,

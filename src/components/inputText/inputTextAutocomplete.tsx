@@ -14,6 +14,7 @@ interface InputTextAutoCompleteProps {
     isDisabled?: boolean,
     isRequired?: boolean,
     children?: any,
+    sugestions?: any[],
     onChange?: (any) => void,
     onSetText?: (string) => void,
     onValidate?: (boolean) => void,
@@ -45,10 +46,9 @@ export default function InputTextAutoComplete(props: InputTextAutoCompleteProps)
     }
 
     const handleCheckSugestion = (text) => {
-        const sugestions = ["Georeferenciamento", "Ambiental", "Licenciamento"]
         let finalSugestions = []
         if (text.length > 0) {
-            sugestions.map((element, index) => {
+            props.sugestions?.map((element, index) => {
                 if (element.toString().toLowerCase().includes(text.toString().toLowerCase())) {
                     finalSugestions = [...finalSugestions, element]
                 }

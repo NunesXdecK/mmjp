@@ -1,31 +1,32 @@
 import Button from "../button/button"
 import { useEffect, useState } from "react"
 import InputText from "../inputText/inputText"
-import { collection, getDocs } from "firebase/firestore"
 import PlaceholderItemList from "./placeholderItemList"
-import { ProfessionalConversor, ProjectConversor, ProjectStageConversor } from "../../db/converters"
+import { collection, getDocs, query, where } from "firebase/firestore"
 import { FeedbackMessage } from "../modal/feedbackMessageModal"
-import { ProjectStage } from "../../interfaces/objectInterfaces"
+import { handleMountNumberCurrency } from "../../util/maskUtil"
+import { ProjectPayment } from "../../interfaces/objectInterfaces"
 import { handleValidationNotNull } from "../../util/validationUtil"
-import { db, PROFESSIONAL_COLLECTION_NAME, PROJECT_COLLECTION_NAME, PROJECT_STAGE_COLLECTION_NAME } from "../../db/firebaseDB"
+import { ProjectConversor, ProjectPaymentConversor } from "../../db/converters"
+import { db, PROJECT_COLLECTION_NAME, PROJECT_PAYMENT_COLLECTION_NAME } from "../../db/firebaseDB"
 
 const subtitle = "mt-1 max-w-2xl text-sm text-gray-500"
 const contentClassName = "text-sm text-gray-900 whitespace-pre"
-const descriptionClassName = " mt-4"
 const titleClassName = "text-md leading-6 font-medium text-gray-900"
+const titleGreenClassName = "mb-2 py-1 px-3 rounded-xl text-md leading-6 font-medium text-white bg-green-600"
 
-interface ProjectStageListProps {
+interface ProjectPaymentListProps {
     haveNew?: boolean,
     isOldBase?: boolean,
+    isPayedAllowed?: boolean,
     onNewClick?: () => void,
     onListItemClick?: (any) => void,
     onShowMessage?: (FeedbackMessage) => void,
 }
 
-export default function ProjectStageList(props: ProjectStageListProps) {
+export default function ProjectPaymentList(props: ProjectPaymentListProps) {
     const projectCollection = collection(db, PROJECT_COLLECTION_NAME).withConverter(ProjectConversor)
-    const professionalCollection = collection(db, PROFESSIONAL_COLLECTION_NAME).withConverter(ProfessionalConversor)
-    const projectStageCollection = collection(db, PROJECT_STAGE_COLLECTION_NAME).withConverter(ProjectStageConversor)
+    const projectPaymentCollection = collection(db, PROJECT_PAYMENT_COLLECTION_NAME).withConverter(ProjectPaymentConversor)
 
     const [page, setPage] = useState(-1)
 
@@ -35,9 +36,9 @@ export default function ProjectStageList(props: ProjectStageListProps) {
 
     const [listItems, setListItems] = useState([])
 
-    const handleListItemClick = (element: ProjectStage) => {
+    const handleListItemClick = (element: ProjectPayment) => {
         setIsLoading(true)
-        if (element.title !== "") {
+        if (element.value !== "") {
             props.onListItemClick && props.onListItemClick(element)
         }
         setIsLoading(false)
@@ -55,27 +56,26 @@ export default function ProjectStageList(props: ProjectStageListProps) {
         event?.preventDefault()
         setIsLoading(true)
         let listItemsFiltered = []
-        let arrayList: ProjectStage[] = []
+        let arrayList: ProjectPayment[] = []
 
         try {
             const querySnapshotProject = await getDocs(projectCollection)
-            const querySnapshotProfessional = await getDocs(professionalCollection)
-            const querySnapshotProjectStage = await getDocs(projectStageCollection)
-            querySnapshotProjectStage.forEach((docProjectStage) => {
-                let projectStage: ProjectStage = docProjectStage.data()
-                
-                querySnapshotProfessional.forEach((doc) => {
-                    if (projectStage?.responsible?.id === doc?.id) {
-                        projectStage = { ...projectStage, responsible: doc.data() }
-                    }
-                })
-                
+            let querySnapshotProjectPayment
+            if (props.isPayedAllowed) {
+                querySnapshotProjectPayment = await getDocs(projectPaymentCollection)
+            } else {
+                const queryProject = query(projectPaymentCollection, where("payed", "==", false));
+                querySnapshotProjectPayment = await getDocs(queryProject)
+            }
+            querySnapshotProjectPayment.forEach((docProjectPayment) => {
+                let projectPayment: ProjectPayment = docProjectPayment.data()
+
                 querySnapshotProject.forEach((doc) => {
-                    if (projectStage?.project?.id === doc?.id) {
-                        projectStage = { ...projectStage, project: doc.data() }
+                    if (projectPayment?.project?.id === doc?.id) {
+                        projectPayment = { ...projectPayment, project: doc.data() }
                     }
                 })
-                arrayList = [...arrayList, projectStage]
+                arrayList = [...arrayList, projectPayment]
             })
         } catch (err) {
             console.error(err)
@@ -85,15 +85,15 @@ export default function ProjectStageList(props: ProjectStageListProps) {
             }
         }
 
-        listItemsFiltered = arrayList.filter((element: ProjectStage, index) => {
+        listItemsFiltered = arrayList.filter((element: ProjectPayment, index) => {
             if (handleValidationNotNull(inputSearch)) {
-                let matchName = element.title.toLowerCase().includes(inputSearch.toLowerCase())
+                let matchName = element.project.number.toLowerCase().includes(inputSearch.toLowerCase()) || element.project.title.toLowerCase().includes(inputSearch.toLowerCase())
                 return matchName
             }
             return true
         })
 
-        listItemsFiltered = listItemsFiltered.sort((elementOne: ProjectStage, elementTwo: ProjectStage) => {
+        listItemsFiltered = listItemsFiltered.sort((elementOne: ProjectPayment, elementTwo: ProjectPayment) => {
             if (first) {
                 let dateOne = elementOne.dateInsertUTC
                 let dateTwo = elementTwo.dateInsertUTC
@@ -106,7 +106,7 @@ export default function ProjectStageList(props: ProjectStageListProps) {
                 }
                 return dateTwo - dateOne
             } else {
-                return elementOne.title.localeCompare(elementTwo.title)
+                return elementOne.project.title.localeCompare(elementTwo.project.title)
             }
         })
 
@@ -165,7 +165,7 @@ export default function ProjectStageList(props: ProjectStageListProps) {
 
                 <div className="flex w-full">
                     <div className="w-full">
-                        <h3 className="text-lg leading-6 font-medium text-gray-900">Lista de etapas</h3>
+                        <h3 className="text-lg leading-6 font-medium text-gray-900">Lista de pagamentos</h3>
                         <p className={subtitle}>subtitulo lindo</p>
                     </div>
 
@@ -217,25 +217,22 @@ export default function ProjectStageList(props: ProjectStageListProps) {
                     </>
                 )}
 
-                {listItems[page]?.map((element: ProjectStage, index) => (
+                {listItems[page]?.map((element: ProjectPayment, index) => (
                     <button
                         key={index.toString()}
-                        disabled={element.title === ""}
+                        disabled={element.value !== ""}
                         onClick={() => handleListItemClick(element)}
                         className="bg-white p-4 rounded-sm shadow items-center text-left">
                         <>
-                            <p className={titleClassName}>{element.title}</p>
-                            {element?.project?.id && (
+                            {element.payed && (
+                                <div className="mb-2"><span className={titleGreenClassName}>Pago</span></div>
+                            )}
+                            <p className={titleClassName}>{element.description + " - Valor: R$ " + handleMountNumberCurrency(element.value, ".", ",", 3, 2)}</p>
+                            {element?.project && (
                                 <p className={contentClassName}>
                                     {element.project.number && "Projeto:\n" + element.project.number}
                                 </p>
                             )}
-                            {element?.responsible?.id && (
-                                <p className={contentClassName}>
-                                    {element.responsible.title && "Responsavel:\n" + element.responsible.title} {element.responsible.creaNumber && "CREA: " + element.responsible.creaNumber}
-                                </p>
-                            )}
-                            <p className={contentClassName + descriptionClassName}>{"Descrição:\n" + element.description}</p>
                         </>
                     </button>
                 ))}

@@ -1,4 +1,4 @@
-import { Company, Person, Professional, Project, Property } from "../interfaces/objectInterfaces"
+import { Company, Person, Professional, Project, ProjectPayment, ProjectStage, Property } from "../interfaces/objectInterfaces"
 import { CPF_PATTERN, ONLY_CHARACTERS_PATTERN, ONLY_CHARACTERS_PATTERN_TWO } from "./patternValidationUtil"
 
 interface ValidationReturn {
@@ -64,7 +64,7 @@ export const handlePersonValidationForDB = (person: Person) => {
 export const handleProfessionalValidationForDB = (professional: Professional) => {
     let validation: ValidationReturn = { validation: false, messages: [] }
     let titleCheck = handleValidationNotNull(professional.title)
-    let personCheck = professional?.person?.id !== "" ?? false
+    let personCheck = professional?.person?.id?.length > 0 ?? false
     if (!titleCheck) {
         validation = { ...validation, messages: [...validation.messages, "O campo titúlo está em branco."] }
     }
@@ -116,7 +116,7 @@ export const handleProjectValidationForDB = (project: Project) => {
     let nameCheck = handleValidationNotNull(project.title)
     let clientsCheck = project?.clients?.length > 0 ?? false
     let propertiesCheck = project?.properties?.length > 0 ?? false
-    let professionalCheck = project?.professional?.id?.length > 0 ?? false
+    let professionalCheck = project?.professional?.id?.length > 0?? false
     let clientsOnBaseCheck = true
     let propertiesOnBaseCheck = true
 
@@ -154,14 +154,36 @@ export const handleProjectValidationForDB = (project: Project) => {
     return validation
 }
 
-export const handleProjectStageValidationForDB = (project: Project) => {
+export const handleProjectStageValidationForDB = (projectStage: ProjectStage) => {
     let validation: ValidationReturn = { validation: false, messages: [] }
-    let titleCheck = handleValidationNotNull(project.title)
+    let titleCheck = handleValidationNotNull(projectStage.title)
 
     if (!titleCheck) {
         validation = { ...validation, messages: [...validation.messages, "O campo titulo está em branco."] }
     }
 
     validation = { ...validation, validation: titleCheck }
+    return validation
+}
+
+export const handleProjectPaymentValidationForDB = (projectPayment: ProjectPayment) => {
+    let validation: ValidationReturn = { validation: false, messages: [] }
+    let valueCheck = handleValidationNotNull(projectPayment.value)
+    let descriptionCheck = handleValidationNotNull(projectPayment.description)
+    let projectCheck = projectPayment?.project?.id?.length > 0 ?? false
+
+    if (!valueCheck) {
+        validation = { ...validation, messages: [...validation.messages, "O valor está em branco."] }
+    }
+
+    if (!descriptionCheck) {
+        validation = { ...validation, messages: [...validation.messages, "O campo descrição está em branco."] }
+    }
+    
+    if (!projectCheck) {
+        validation = { ...validation, messages: [...validation.messages, "O pagamento precisa de um projeto referente."] }
+    }
+
+    validation = { ...validation, validation: descriptionCheck && valueCheck && projectCheck }
     return validation
 }

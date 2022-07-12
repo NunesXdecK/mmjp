@@ -106,6 +106,12 @@ export default function ProjectForm(props: ProjectFormProps) {
         let feedbackMessage: FeedbackMessage = { messages: ["Algo estranho aconteceu"], messageType: "WARNING" }
 
         let projectForDB = { ...project }
+
+        if (professionals?.length > 0) {
+            const docRef = doc(professionalCollection, professionals[0]?.id)
+            projectForDB = { ...projectForDB, professional: docRef }
+        }
+        
         const isValid = handleProjectValidationForDB(projectForDB)
         if (isValid.validation) {
             let nowID = projectForDB?.id ?? ""
@@ -135,11 +141,6 @@ export default function ProjectForm(props: ProjectFormProps) {
                     }
                 })
                 projectForDB = { ...projectForDB, properties: propertiesDocRefsForDB }
-            }
-
-            if (professionals?.length > 0) {
-                const docRef = doc(professionalCollection, professionals[0]?.id)
-                projectForDB = { ...projectForDB, professional: docRef }
             }
 
             projectForDB = handlePrepareProjectForDB(projectForDB)
@@ -241,6 +242,7 @@ export default function ProjectForm(props: ProjectFormProps) {
                                 isDisabled={props.isForDisable}
                                 onSetText={handleSetProjectTitle}
                                 onValidate={handleChangeFormValidation}
+                                sugestions={["Georeferenciamento", "Ambiental", "Licenciamento"]}
                                 validationMessage="O titulo do projeto não pode ficar em branco."
                             />
                         </FormRowColumn>

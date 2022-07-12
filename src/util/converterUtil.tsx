@@ -1,5 +1,5 @@
 import { handleNewDateToUTC } from "./dateUtils"
-import { defaultPerson, defaultAddress, defaultProfessional, defaultProperty, Person, Address, Professional, Property, Company, defaultCompany, Project, ProjectStage } from "../interfaces/objectInterfaces"
+import { defaultPerson, defaultAddress, defaultProfessional, defaultProperty, Person, Address, Professional, Property, Company, defaultCompany, Project, ProjectStage, ProjectPayment } from "../interfaces/objectInterfaces"
 import { handleMaskCNPJ, handleMaskCPF, handleMaskTelephone, handleMountMask, handleRemoveCEPMask, handleRemoveCNPJMask, handleRemoveCPFMask, handleRemoveDateMask, handleRemoveTelephoneMask } from "./maskUtil"
 
 export interface ElementFromBase {
@@ -244,6 +244,17 @@ export const handlePrepareProjectStageForDB = (projectStage: ProjectStage) => {
         ...projectStage
     }
     return projectStage
+}
+
+export const handlePrepareProjectPaymentForDB = (projectPayment: ProjectPayment) => {
+    if (projectPayment.dateInsertUTC === 0) {
+        projectPayment = { ...projectPayment, dateInsertUTC: handleNewDateToUTC() }
+    }
+
+    projectPayment = {
+        ...projectPayment
+    }
+    return projectPayment
 }
 
 export const extratePersonAddress = (element: ElementFromBase) => {

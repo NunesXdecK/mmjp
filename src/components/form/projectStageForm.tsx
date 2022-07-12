@@ -65,26 +65,25 @@ export default function ProjectStageForm(props: ProjectStageFormProps) {
         let feedbackMessage: FeedbackMessage = { messages: ["Algo estranho aconteceu"], messageType: "WARNING" }
 
         let projectStageForDB = { ...projectStage }
+
+        if (projects?.length > 0) {
+            const docRef = doc(projectCollection, projects[0]?.id)
+            projectStageForDB = { ...projectStageForDB, project: docRef }
+        }
+
+        if (responsibles?.length > 0) {
+            const docRef = doc(professionalCollection, responsibles[0]?.id)
+            projectStageForDB = { ...projectStageForDB, responsible: docRef }
+        }
+
         const isValid = handleProjectStageValidationForDB(projectStageForDB)
         if (isValid.validation) {
             let nowID = projectStageForDB?.id ?? ""
 
-            if (projects?.length > 0) {
-                const docRef = doc(projectCollection, projects[0]?.id)
-                projectStageForDB = { ...projectStageForDB, project: docRef }
-            }
-
-            if (responsibles?.length > 0) {
-                const docRef = doc(professionalCollection, responsibles[0]?.id)
-                projectStageForDB = { ...projectStageForDB, responsible: docRef }
-            }
-
             projectStageForDB = handlePrepareProjectStageForDB(projectStageForDB)
 
-            console.log(projectStageForDB)
-
             const isSave = nowID === ""
-            
+
             if (isSave) {
                 try {
                     const docRef = await addDoc(projectStageCollection, projectStageForDB)
