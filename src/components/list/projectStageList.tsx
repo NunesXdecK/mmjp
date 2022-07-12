@@ -65,8 +65,8 @@ export default function ProjectStageList(props: ProjectStageListProps) {
                 let projectStage: ProjectStage = docProjectStage.data()
                 
                 querySnapshotProfessional.forEach((doc) => {
-                    if (projectStage?.professional?.id === doc?.id) {
-                        projectStage = { ...projectStage, professional: doc.data() }
+                    if (projectStage?.responsible?.id === doc?.id) {
+                        projectStage = { ...projectStage, responsible: doc.data() }
                     }
                 })
                 
@@ -230,9 +230,9 @@ export default function ProjectStageList(props: ProjectStageListProps) {
                                     {element.project.number && "Projeto:\n" + element.project.number}
                                 </p>
                             )}
-                            {element?.professional && (
+                            {element?.responsible && (
                                 <p className={contentClassName}>
-                                    {element.professional.title && "Responsavel:\n" + element.professional.title} {element.professional.creaNumber && "CREA: " + element.professional.creaNumber}
+                                    {element.responsible.title && "Responsavel:\n" + element.responsible.title} {element.responsible.creaNumber && "CREA: " + element.responsible.creaNumber}
                                 </p>
                             )}
                             <p className={contentClassName + descriptionClassName}>{"Descrição:\n" + element.description}</p>

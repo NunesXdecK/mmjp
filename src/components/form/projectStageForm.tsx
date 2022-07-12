@@ -40,7 +40,7 @@ export default function ProjectStageForm(props: ProjectStageFormProps) {
     const [isFormValid, setIsFormValid] = useState(handleProjectStageValidationForDB(projectStage).validation)
 
     const [projects, setProjects] = useState(props?.projectStage?.project?.id ? [props.projectStage.project] : [])
-    const [professionals, setProfessionals] = useState(props?.projectStage?.professional?.id ? [props.projectStage.professional] : [])
+    const [responsibles, setResponsibles] = useState(props?.projectStage?.responsible?.id ? [props.projectStage.responsible] : [])
 
     const [isOpen, setIsOpen] = useState(false)
     const [isLoading, setIsLoading] = useState(false)
@@ -74,9 +74,9 @@ export default function ProjectStageForm(props: ProjectStageFormProps) {
                 projectStageForDB = { ...projectStageForDB, project: docRef }
             }
 
-            if (professionals?.length > 0) {
-                const docRef = doc(professionalCollection, professionals[0]?.id)
-                projectStageForDB = { ...projectStageForDB, professional: docRef }
+            if (responsibles?.length > 0) {
+                const docRef = doc(professionalCollection, responsibles[0]?.id)
+                projectStageForDB = { ...projectStageForDB, responsible: docRef }
             }
 
             projectStageForDB = handlePrepareProjectStageForDB(projectStageForDB)
@@ -143,12 +143,12 @@ export default function ProjectStageForm(props: ProjectStageFormProps) {
             <SelectProfessionalForm
                 isLoading={isLoading}
                 isMultipleSelect={false}
+                professionals={responsibles}
                 title="Profissional responsavel"
-                professionals={professionals}
                 subtitle="Selecione o responsavel"
                 onShowMessage={props.onShowMessage}
                 buttonTitle="Pesquisar profissional"
-                onSetProfessionals={setProfessionals}
+                onSetProfessionals={setResponsibles}
                 validationMessage="Esta pessoa já é um profissional"
             />
 

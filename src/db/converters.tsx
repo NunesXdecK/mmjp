@@ -162,8 +162,8 @@ export const ProjectStageConversor = {
             project: data.project,
             updates: data.updates,
             finished: data.finished,
+            responsible: data.responsible,
             description: data.description,
-            professional: data.professional,
             dateInsertUTC: data.dateInsertUTC,
             dateLastUpdateUTC: data.dateLastUpdateUTC,
         }
@@ -178,7 +178,7 @@ export const ProjectStageConversor = {
             dateLastUpdateUTC: data.dateLastUpdateUTC ?? 0,
             finished: data.finished ?? false,
             project: data.project ?? defaultProject,
-            professional: data.professional ?? defaultProfessional,
+            responsible: data.responsible ?? defaultProfessional,
             updates: data.updates ?? [],
         }
     }

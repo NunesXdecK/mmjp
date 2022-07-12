@@ -96,7 +96,7 @@ export default function SelectProjectForm(props: SelectProjectFormProps) {
                     <form key={index + element.dateInsertUTC}
                         onSubmit={(event) => handleRemoveProject(event, element)}>
                         <FormRow>
-                            <FormRowColumn unit="5">
+                            <FormRowColumn unit="4">
                                 <InputText
                                     title="Número"
                                     isDisabled={true}
@@ -106,7 +106,7 @@ export default function SelectProjectForm(props: SelectProjectFormProps) {
                                 />
                             </FormRowColumn>
 
-                            <FormRowColumn unit="1"
+                            <FormRowColumn unit="2"
                                 className="self-end justify-self-end">
                                 <Button
                                     type="submit"

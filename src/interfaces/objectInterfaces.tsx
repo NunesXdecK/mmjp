@@ -87,7 +87,7 @@ export interface ProjectStage {
     dateInsertUTC?: number,
     dateLastUpdateUTC?: number,
     project?: Project,
-    professional?: Professional,
+    responsible?: Professional,
     updates?: [],
 }
 
@@ -196,7 +196,7 @@ export const defaultProjectStage: ProjectStage = {
     dateLastUpdateUTC: 0,
     finished: false,
     project: defaultProject,
-    professional: defaultProfessional,
+    responsible: defaultProfessional,
     updates: [],
 }
 
