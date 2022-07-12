@@ -1,14 +1,14 @@
 import Head from "next/head"
 import { useState } from "react"
 import Layout from "../../components/layout/layout"
-import ProjectForm from "../../components/form/projectForm"
-import ProjectList from "../../components/list/projectList"
-import { defaultProject, Project } from "../../interfaces/objectInterfaces"
+import ProjectStageForm from "../../components/form/projectStageForm"
+import ProjectStageList from "../../components/list/projectStageList"
+import { defaultProjectStage, ProjectStage } from "../../interfaces/objectInterfaces"
 import FeedbackMessageModal, { defaultFeedbackMessage, FeedbackMessage } from "../../components/modal/feedbackMessageModal"
 
 export default function Properties() {
-    const [title, setTitle] = useState("Lista de projetos")
-    const [project, setProject] = useState<Project>(defaultProject)
+    const [title, setTitle] = useState("Lista de etapas")
+    const [projectStage, setProjectStage] = useState<ProjectStage>(defaultProjectStage)
     const [isRegister, setIsRegister] = useState(false)
 
     const [isFeedbackOpen, setIsFeedbackOpen] = useState(false)
@@ -19,20 +19,20 @@ export default function Properties() {
             event.preventDefault()
         }
         setIsRegister(false)
-        setProject(defaultProject)
-        setTitle("Lista de projetos")
+        setProjectStage(defaultProjectStage)
+        setTitle("Lista de etapas")
     }
-
+    
     const handleNewClick = () => {
         setIsRegister(true)
-        setProject(defaultProject)
-        setTitle("Novo projeto")
+        setProjectStage(defaultProjectStage)
+        setTitle("Nova etapa")
     }
-
-    const handleListItemClick = (project) => {
+    
+    const handleListItemClick = (projectStage) => {
         setIsRegister(true)
-        setProject(project)
-        setTitle("Editar projeto")
+        setProjectStage(projectStage)
+        setTitle("Editar etapa")
     }
 
     const handleAfterSave = (feedbackMessage: FeedbackMessage) => {
@@ -58,22 +58,21 @@ export default function Properties() {
             </Head>
 
             {!isRegister ? (
-                <ProjectList
+                <ProjectStageList
                     haveNew={true}
-                    isBudgetAllowed
                     onNewClick={handleNewClick}
                     onShowMessage={handleShowMessage}
                     onListItemClick={handleListItemClick}
                 />
             ) : (
-                <ProjectForm
+                <ProjectStageForm
                     isBack={true}
-                    project={project}
+                    projectStage={projectStage}
                     onBack={handleBackClick}
-                    title="Informações do projeto"
+                    title="Informações do etapa"
                     onAfterSave={handleAfterSave}
                     onShowMessage={handleShowMessage}
-                    subtitle="Dados importantes sobre o projeto" />
+                    subtitle="Dados importantes sobre a etapa" />
             )}
 
             <FeedbackMessageModal

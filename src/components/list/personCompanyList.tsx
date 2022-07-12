@@ -10,6 +10,7 @@ import { ElementFromBase, extrateCompany, extratePerson } from "../../util/conve
 import { db, COMPANY_COLLECTION_NAME, PERSON_COLLECTION_NAME } from "../../db/firebaseDB"
 import { handleValidationOnlyNumbersNotNull, handleValidationOnlyTextNotNull } from "../../util/validationUtil"
 import { handleMaskCPF, handleMountCNPJMask, handleRemoveCNPJMask, handleRemoveCPFMask } from "../../util/maskUtil"
+import PlaceholderItemList from "./placeholderItemList"
 
 const subtitle = "mt-1 max-w-2xl text-sm text-gray-500"
 const contentClassName = "sm:px-4 sm:py-5 mt-1 text-sm text-gray-900"
@@ -231,6 +232,17 @@ export default function PersonCompanyList(props: PersonCompanyListProps) {
             </div>
 
             <div className="grid grid-cols-1 gap-4 p-4 bg-white">
+
+                {listItems?.length === 0 && (
+                    <>
+                        <PlaceholderItemList />
+                        <PlaceholderItemList />
+                        <PlaceholderItemList />
+                        <PlaceholderItemList />
+                        <PlaceholderItemList />
+                    </>
+                )}
+
                 {listItems[page]?.map((element: Person | Company, index) => (
                     <button
                         disabled={element.name === ""}

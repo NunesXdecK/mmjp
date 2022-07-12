@@ -1,4 +1,4 @@
-import { defaultAddress, defaultPerson, defaultProfessional } from "../interfaces/objectInterfaces"
+import { defaultAddress, defaultPerson, defaultProfessional, defaultProject } from "../interfaces/objectInterfaces"
 
 export const PersonConversor = {
     toFirestore(data) {
@@ -151,6 +151,58 @@ export const ProjectConversor = {
             clients: data.clients ?? [],
             properties: data.properties ?? [],
             professional: data.professional ?? defaultProfessional,
+        }
+    }
+}
+
+export const ProjectStageConversor = {
+    toFirestore(data) {
+        return {
+            title: data.title,
+            project: data.project,
+            updates: data.updates,
+            finished: data.finished,
+            description: data.description,
+            professional: data.professional,
+            dateInsertUTC: data.dateInsertUTC,
+            dateLastUpdateUTC: data.dateLastUpdateUTC,
+        }
+    },
+    fromFirestore(snapshot, options) {
+        const data = snapshot?.data(options)
+        return {
+            id: snapshot?.id ?? "",
+            title: data.title ?? "",
+            description: data.description ?? "",
+            dateInsertUTC: data.dateInsertUTC ?? 0,
+            dateLastUpdateUTC: data.dateLastUpdateUTC ?? 0,
+            finished: data.finished ?? false,
+            project: data.project ?? defaultProject,
+            professional: data.professional ?? defaultProfessional,
+            updates: data.updates ?? [],
+        }
+    }
+}
+
+export const ProjectPaymentConversor = {
+    toFirestore(data) {
+        return {
+            value: data.value,
+            payed: data.payed,
+            project: data.project,
+            dateInsertUTC: data.dateInsertUTC,
+            dateLastUpdateUTC: data.dateLastUpdateUTC,
+        }
+    },
+    fromFirestore(snapshot, options) {
+        const data = snapshot?.data(options)
+        return {
+            id: snapshot?.id ?? "",
+            value: data.value ?? 0,
+            dateInsertUTC: data.dateInsertUTC ?? 0,
+            dateLastUpdateUTC: data.dateLastUpdateUTC ?? 0,
+            payed: data.payed ?? false,
+            project: data.project ?? defaultProject,
         }
     }
 }

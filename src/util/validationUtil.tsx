@@ -153,3 +153,15 @@ export const handleProjectValidationForDB = (project: Project) => {
     validation = { ...validation, validation: nameCheck && clientsCheck && clientsOnBaseCheck && propertiesOnBaseCheck }
     return validation
 }
+
+export const handleProjectStageValidationForDB = (project: Project) => {
+    let validation: ValidationReturn = { validation: false, messages: [] }
+    let titleCheck = handleValidationNotNull(project.title)
+
+    if (!titleCheck) {
+        validation = { ...validation, messages: [...validation.messages, "O campo titulo está em branco."] }
+    }
+
+    validation = { ...validation, validation: titleCheck }
+    return validation
+}

@@ -10,6 +10,7 @@ import { db, PERSON_COLLECTION_NAME } from "../../db/firebaseDB"
 import { handleMaskCPF, handleRemoveCPFMask } from "../../util/maskUtil"
 import { ElementFromBase, extratePerson } from "../../util/converterUtil"
 import { handleValidationOnlyNumbersNotNull, handleValidationOnlyTextNotNull } from "../../util/validationUtil"
+import PlaceholderItemList from "./placeholderItemList"
 
 const subtitle = "mt-1 max-w-2xl text-sm text-gray-500"
 const contentClassName = "sm:px-4 sm:py-5 mt-1 text-sm text-gray-900"
@@ -211,19 +212,23 @@ export default function PersonList(props: PersonListProps) {
             </div>
 
             <div className="grid grid-cols-1 gap-4 p-4 bg-white">
+
+                {listItems?.length === 0 && (
+                    <>
+                        <PlaceholderItemList />
+                        <PlaceholderItemList />
+                        <PlaceholderItemList />
+                        <PlaceholderItemList />
+                        <PlaceholderItemList />
+                    </>
+                )}
+
                 {listItems[page]?.map((element: Person, index) => (
                     <button
                         disabled={element.name === "" && element.cpf === ""}
                         key={index.toString()}
                         onClick={() => handleListItemClick(element)}
                         className="bg-white p-4 rounded-sm shadow items-center text-left">
-                        {/*
-                            <div className="grid grid-cols-6">
-                            <div className="animate-pulse p-2 col-span-4 bg-gray-300"></div>
-                            <div className="mt-2 animate-pulse p-2 col-span-3 bg-gray-300"></div>
-                            <div className="mt-2 animate-pulse p-2 col-span-6 bg-gray-300"></div>
-                            </div>
-                        */}
                         <div className="flex">
                             <div><span className={titleClassName}>{element.name}</span></div>
                         </div>

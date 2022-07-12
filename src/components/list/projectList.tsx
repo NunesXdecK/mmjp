@@ -1,10 +1,11 @@
-import { useEffect, useState } from "react"
 import Button from "../button/button"
+import { useEffect, useState } from "react"
 import InputText from "../inputText/inputText"
-import { collection, getDocs } from "firebase/firestore"
+import PlaceholderItemList from "./placeholderItemList"
 import { FeedbackMessage } from "../modal/feedbackMessageModal"
 import { handleValidationNotNull } from "../../util/validationUtil"
 import { handleMaskCNPJ, handleMaskCPF } from "../../util/maskUtil"
+import { collection, getDocs, query, where } from "firebase/firestore"
 import { Company, Person, Project, Property } from "../../interfaces/objectInterfaces"
 import { CompanyConversor, PersonConversor, ProfessionalConversor, ProjectConversor, PropertyConversor } from "../../db/converters"
 import { COMPANY_COLLECTION_NAME, db, PERSON_COLLECTION_NAME, PROFESSIONAL_COLLECTION_NAME, PROJECT_COLLECTION_NAME, PROPERTY_COLLECTION_NAME } from "../../db/firebaseDB"
@@ -17,6 +18,7 @@ const titleRedClassName = "mb-2 py-1 px-3 rounded-xl text-md leading-6 font-medi
 interface ProjectListProps {
     haveNew?: boolean,
     isOldBase?: boolean,
+    isBudgetAllowed?: boolean,
     onNewClick?: () => void,
     onListItemClick?: (any) => void,
     onShowMessage?: (FeedbackMessage) => void,
@@ -64,7 +66,13 @@ export default function ProjectList(props: ProjectListProps) {
             const querySnapshotCompany = await getDocs(companyCollection)
             const querySnapshotProperties = await getDocs(propertyCollection)
             const querySnapshotProfessional = await getDocs(professionalCollection)
-            const querySnapshotProject = await getDocs(projectCollection)
+            let querySnapshotProject
+            if (props.isBudgetAllowed) {
+                querySnapshotProject = await getDocs(projectCollection)
+            } else {
+                const queryProject = query(projectCollection, where("budget", "==", false));
+                querySnapshotProject = await getDocs(queryProject)
+            }
             querySnapshotProject.forEach((docProject) => {
                 let project: Project = docProject.data()
                 let propertiesIdList = []
@@ -260,6 +268,16 @@ export default function ProjectList(props: ProjectListProps) {
             </div>
 
             <div className="grid grid-cols-1 gap-4 p-4 bg-white">
+                {listItems?.length === 0 && (
+                    <>
+                        <PlaceholderItemList />
+                        <PlaceholderItemList />
+                        <PlaceholderItemList />
+                        <PlaceholderItemList />
+                        <PlaceholderItemList />
+                    </>
+                )}
+
                 {listItems[page]?.map((element: Project, index) => (
                     <button
                         key={index.toString()}

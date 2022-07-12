@@ -10,6 +10,7 @@ import { PersonConversor, ProfessionalConversor } from "../../db/converters"
 import { ElementFromBase, extratePerson, extrateProfessional } from "../../util/converterUtil"
 import { db, PERSON_COLLECTION_NAME, PROFESSIONAL_COLLECTION_NAME } from "../../db/firebaseDB"
 import { handleValidationNotNull, handleValidationOnlyNumbersNotNull } from "../../util/validationUtil"
+import PlaceholderItemList from "./placeholderItemList"
 
 const subtitle = "mt-1 max-w-2xl text-sm text-gray-500"
 const contentClassName = "sm:px-4 sm:py-5 mt-1 text-sm text-gray-900"
@@ -53,7 +54,7 @@ export default function ProfessionalList(props: ProfessionalListProps) {
 
     const handleFilterList = async (event?, first?) => {
         event?.preventDefault()
-        
+
         setIsLoading(true)
         let listItemsFiltered = []
         let arrayList: Professional[] = []
@@ -113,7 +114,7 @@ export default function ProfessionalList(props: ProfessionalListProps) {
                 if (elementTwo.dateLastUpdateUTC > 0 && elementTwo.dateLastUpdateUTC > dateTwo) {
                     dateTwo = elementTwo.dateLastUpdateUTC
                 }
-                return dateTwo - dateOne 
+                return dateTwo - dateOne
             } else {
                 return elementOne.title.localeCompare(elementTwo.title)
             }
@@ -182,7 +183,7 @@ export default function ProfessionalList(props: ProfessionalListProps) {
                         <div className="self-center">
                             <Button
                                 isLoading={isLoading}
-                                isDisabled={isLoading} 
+                                isDisabled={isLoading}
                                 onClick={props.onNewClick}>
                                 Novo
                             </Button>
@@ -216,6 +217,17 @@ export default function ProfessionalList(props: ProfessionalListProps) {
             </div>
 
             <div className="grid grid-cols-1 gap-4 p-4 bg-white">
+
+                {listItems?.length === 0 && (
+                    <>
+                        <PlaceholderItemList />
+                        <PlaceholderItemList />
+                        <PlaceholderItemList />
+                        <PlaceholderItemList />
+                        <PlaceholderItemList />
+                    </>
+                )}
+
                 {listItems[page]?.map((element: Professional, index) => (
                     <button
                         key={index.toString()}

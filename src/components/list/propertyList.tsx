@@ -10,6 +10,7 @@ import { ElementFromBase, extrateProperty } from "../../util/converterUtil"
 import { Company, Person, Property } from "../../interfaces/objectInterfaces"
 import { CompanyConversor, PersonConversor, PropertyConversor } from "../../db/converters"
 import { COMPANY_COLLECTION_NAME, db, PERSON_COLLECTION_NAME, PROPERTY_COLLECTION_NAME } from "../../db/firebaseDB"
+import PlaceholderItemList from "./placeholderItemList"
 
 const subtitle = "mt-1 max-w-2xl text-sm text-gray-500"
 const contentClassName = "sm:px-4 sm:py-5 mt-1 text-sm text-gray-900"
@@ -133,7 +134,7 @@ export default function PropertyList(props: PropertyListProps) {
                 if (elementTwo.dateLastUpdateUTC > 0 && elementTwo.dateLastUpdateUTC > dateTwo) {
                     dateTwo = elementTwo.dateLastUpdateUTC
                 }
-                return dateTwo - dateOne 
+                return dateTwo - dateOne
             } else {
                 return elementOne.name.localeCompare(elementTwo.name)
             }
@@ -186,7 +187,7 @@ export default function PropertyList(props: PropertyListProps) {
         if (listItems?.length === 0) {
             handleFilterList(null, true)
         }
-    }) 
+    })
 
     return (
         <div className="bg-white shadow overflow-hidden rounded-lg">
@@ -202,7 +203,7 @@ export default function PropertyList(props: PropertyListProps) {
                         <div className="self-center">
                             <Button
                                 isLoading={isLoading}
-                                isDisabled={isLoading} 
+                                isDisabled={isLoading}
                                 onClick={props.onNewClick}>
                                 Novo
                             </Button>
@@ -236,6 +237,17 @@ export default function PropertyList(props: PropertyListProps) {
             </div>
 
             <div className="grid grid-cols-1 gap-4 p-4 bg-white">
+
+                {listItems?.length === 0 && (
+                    <>
+                        <PlaceholderItemList />
+                        <PlaceholderItemList />
+                        <PlaceholderItemList />
+                        <PlaceholderItemList />
+                        <PlaceholderItemList />
+                    </>
+                )}
+
                 {listItems[page]?.map((element: Property, index) => (
                     <button
                         key={index.toString()}

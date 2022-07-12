@@ -79,6 +79,34 @@ export interface Project {
     properties?: any[],
 }
 
+export interface ProjectStage {
+    id?: string,
+    title?: string,
+    description?: string,
+    finished?: boolean,
+    dateInsertUTC?: number,
+    dateLastUpdateUTC?: number,
+    project?: Project,
+    professional?: Professional,
+    updates?: [],
+}
+
+export interface ProjectStageUpdate {
+    dateString?: string,
+    description?: string,
+    dateInsertUTC?: number,
+    user?: any,
+}
+
+export interface ProjectPayment {
+    id?: string,
+    payed?: boolean,
+    value?: number,
+    dateInsertUTC?: number,
+    dateLastUpdateUTC?: number,
+    project?: Project,
+}
+
 export const defaultAddress: Address = {
     cep: "",
     number: "",
@@ -158,4 +186,25 @@ export const defaultProject: Project = {
     oldData: {},
     properties: [],
     professional: defaultProfessional,
+}
+
+export const defaultProjectStage: ProjectStage = {
+    id: "",
+    title: "",
+    description: "",
+    dateInsertUTC: 0,
+    dateLastUpdateUTC: 0,
+    finished: false,
+    project: defaultProject,
+    professional: defaultProfessional,
+    updates: [],
+}
+
+export const defaultProjectPayment: ProjectPayment = {
+    id: "",
+    value: 0,
+    dateInsertUTC: 0,
+    dateLastUpdateUTC: 0,
+    payed: false,
+    project: defaultProject,
 }
