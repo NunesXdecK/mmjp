@@ -220,7 +220,7 @@ export default function ProjectPaymentList(props: ProjectPaymentListProps) {
                 {listItems[page]?.map((element: ProjectPayment, index) => (
                     <button
                         key={index.toString()}
-                        disabled={element.value !== ""}
+                        disabled={element.value === ""}
                         onClick={() => handleListItemClick(element)}
                         className="bg-white p-4 rounded-sm shadow items-center text-left">
                         <>

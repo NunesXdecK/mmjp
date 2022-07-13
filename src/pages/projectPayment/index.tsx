@@ -1,14 +1,22 @@
 import Head from "next/head"
 import { useState } from "react"
 import Layout from "../../components/layout/layout"
+import ProjectList from "../../components/list/projectList"
 import ProjectPaymentForm from "../../components/form/projectPaymentForm"
-import ProjectPaymentList from "../../components/list/projectPaymentList"
-import { defaultProjectPayment, ProjectPayment } from "../../interfaces/objectInterfaces"
+import { defaultProject, Project, ProjectPayment } from "../../interfaces/objectInterfaces"
 import FeedbackMessageModal, { defaultFeedbackMessage, FeedbackMessage } from "../../components/modal/feedbackMessageModal"
+import { collection, doc, getDocs, query, where } from "firebase/firestore"
+import { db, PROJECT_COLLECTION_NAME, PROJECT_PAYMENT_COLLECTION_NAME } from "../../db/firebaseDB"
+import { ProjectConversor, ProjectPaymentConversor } from "../../db/converters"
 
 export default function Properties() {
-    const [title, setTitle] = useState("Lista de pagamentos")
-    const [projectPayment, setProjectPayment] = useState<ProjectPayment>(defaultProjectPayment)
+    const projectCollection = collection(db, PROJECT_COLLECTION_NAME).withConverter(ProjectConversor)
+    const projectPaymentCollection = collection(db, PROJECT_PAYMENT_COLLECTION_NAME).withConverter(ProjectPaymentConversor)
+
+    const [isLoading, setIsLoading] = useState(true)
+    const [title, setTitle] = useState("Lista de projetos")
+    const [project, setProject] = useState<Project>(defaultProject)
+    const [projectPayments, setProjectPayments] = useState<ProjectPayment[]>([])
     const [isRegister, setIsRegister] = useState(false)
 
     const [isFeedbackOpen, setIsFeedbackOpen] = useState(false)
@@ -19,20 +27,25 @@ export default function Properties() {
             event.preventDefault()
         }
         setIsRegister(false)
-        setProjectPayment(defaultProjectPayment)
-        setTitle("Lista de pagamentos")
+        setProjectPayments([])
+        setTitle("Lista de projetos")
     }
-    
-    const handleNewClick = () => {
-        setIsRegister(true)
-        setProjectPayment(defaultProjectPayment)
-        setTitle("Novo pagamento")
-    }
-    
-    const handleListItemClick = (projectPayment) => {
-        setIsRegister(true)
-        setProjectPayment(projectPayment)
+
+    const handleListItemClick = async (project) => {
+        setIsLoading(true)
+        let projectPaymentsLocal = []
+        const queryProjectPayment = query(projectPaymentCollection, where("project", "==", doc(projectCollection, project.id)));
+        const querySnapshotProjectPayment = await getDocs(queryProjectPayment)
+        querySnapshotProjectPayment.forEach((doc) => {
+            projectPaymentsLocal = [...projectPaymentsLocal, doc.data()]
+        })
+        setProject(project)
+        setProjectPayments(projectPaymentsLocal)
         setTitle("Editar pagamento")
+        setIsLoading(false)
+        setIsRegister(true)
+        {/*
+    */}
     }
 
     const handleAfterSave = (feedbackMessage: FeedbackMessage) => {
@@ -58,20 +71,20 @@ export default function Properties() {
             </Head>
 
             {!isRegister ? (
-                <ProjectPaymentList
+                <ProjectList
                     haveNew={true}
-                    isPayedAllowed
-                    onNewClick={handleNewClick}
+                    isLoading={isLoading}
                     onShowMessage={handleShowMessage}
                     onListItemClick={handleListItemClick}
                 />
             ) : (
                 <ProjectPaymentForm
                     isBack={true}
-                    projectPayment={projectPayment}
+                    project={project}
                     onBack={handleBackClick}
                     title="Informações do etapa"
                     onAfterSave={handleAfterSave}
+                    projectPayments={projectPayments}
                     onShowMessage={handleShowMessage}
                     subtitle="Dados importantes sobre a etapa" />
             )}

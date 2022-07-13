@@ -1,7 +1,6 @@
-import { useEffect, useRef, useState } from "react"
+import { useRef, useState } from "react"
 import { handleValidationNotNull } from "../../util/validationUtil"
-import { handleMaskCPF, handleMaskTelephone, handleMountCNPJMask, handleMountDateMask, handleMountMask, handleMountNumberCurrency, handleRemoveCEPMask, handleRemoveCNPJMask, handleRemoveCPFMask, handleRemoveDateMask } from "../../util/maskUtil"
-import { CEP_MARK, CNPJ_MARK, CNPJ_PATTERN, CPF_MARK, CPF_PATTERN, DATE_MARK, DATE_PATTERN, NOT_NULL_MARK, NUMBER_MARK, ONLY_CHARACTERS_PATTERN, ONLY_CHARACTERS_PATTERN_TWO, ONLY_SPECIAL_FOR_NUMBER_PATTERN, STYLE_FOR_INPUT_LOADING, STYLE_FOR_INPUT_LOADING_TRANSPARENT, TELEPHONE_MARK, TEXT_NOT_NULL_MARK } from "../../util/patternValidationUtil"
+import { NOT_NULL_MARK, STYLE_FOR_INPUT_LOADING, STYLE_FOR_INPUT_LOADING_TRANSPARENT } from "../../util/patternValidationUtil"
 
 interface InputTextAutoCompleteProps {
     id?: string,
@@ -13,6 +12,7 @@ interface InputTextAutoCompleteProps {
     isLoading?: boolean,
     isDisabled?: boolean,
     isRequired?: boolean,
+    ref?: any,
     children?: any,
     sugestions?: any[],
     onChange?: (any) => void,
@@ -23,7 +23,7 @@ interface InputTextAutoCompleteProps {
 export default function InputTextAutoComplete(props: InputTextAutoCompleteProps) {
     const [isValid, setIsValid] = useState(true)
     const [sugestions, setSugestions] = useState([])
-    const inputRef = useRef(null);
+    const inputRef = useRef(props.ref ?? null);
     const divRef = useRef(null);
 
     let classNameInput = `
@@ -74,7 +74,8 @@ export default function InputTextAutoComplete(props: InputTextAutoCompleteProps)
 
     return (
         <>
-            <label htmlFor={props.id}
+            <label
+                htmlFor={props.id}
                 className={classNameLabel}>
                 {props.title}
             </label>

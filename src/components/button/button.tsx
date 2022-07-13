@@ -2,6 +2,7 @@ import { STYLE_FOR_INPUT_LOADING_TRANSPARENT } from "../../util/patternValidatio
 
 interface ButtonProps {
     href?: string,
+    className?: string,
     color?: "red",
     children?: any,
     isLink?: boolean,
@@ -36,6 +37,10 @@ export default function Button(props: ButtonProps) {
 
     if (props.isHidden) {
         className = className + " hidden"
+    }
+
+    if (props.className) {
+        className = className + " " + props.className
     }
 
     className = colorClassName + " " + className

@@ -17,6 +17,7 @@ const titleRedClassName = "mb-2 py-1 px-3 rounded-xl text-md leading-6 font-medi
 
 interface ProjectListProps {
     haveNew?: boolean,
+    isLoading?: boolean,
     isOldBase?: boolean,
     isBudgetAllowed?: boolean,
     onNewClick?: () => void,
@@ -34,7 +35,7 @@ export default function ProjectList(props: ProjectListProps) {
     const [page, setPage] = useState(-1)
 
     const [isOpen, setIsOpen] = useState(false)
-    const [isLoading, setIsLoading] = useState(true)
+    const [isLoading, setIsLoading] = useState(props.isLoading ?? true)
     const [inputSearch, setInputSearch] = useState("")
 
     const [listItems, setListItems] = useState([])
@@ -232,12 +233,24 @@ export default function ProjectList(props: ProjectListProps) {
 
                     {props.haveNew && (
                         <div className="self-center">
-                            <Button
-                                isLoading={isLoading}
-                                isDisabled={isLoading}
-                                onClick={props.onNewClick}>
-                                Novo
-                            </Button>
+                            {props.onNewClick ? (
+                                <Button
+                                    isLoading={isLoading}
+                                    isDisabled={isLoading}
+                                    onClick={props.onNewClick}
+                                >
+                                    Novo
+                                </Button>
+                            ) : (
+                                <Button
+                                    isLink
+                                    href="/project"
+                                    isLoading={isLoading}
+                                    isDisabled={isLoading}
+                                >
+                                    Novo
+                                </Button>
+                            )}
                         </div>
                     )}
                 </div>

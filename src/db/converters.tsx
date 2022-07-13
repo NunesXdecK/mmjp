@@ -189,6 +189,7 @@ export const ProjectPaymentConversor = {
         return {
             value: data.value,
             payed: data.payed,
+            index: data.index,
             project: data.project,
             description: data.description,
             dateInsertUTC: data.dateInsertUTC,
@@ -201,6 +202,7 @@ export const ProjectPaymentConversor = {
             id: snapshot?.id ?? "",
             value: data.value ?? "",
             description: data.description ?? "",
+            index: data.index ?? 0,
             dateInsertUTC: data.dateInsertUTC ?? 0,
             dateLastUpdateUTC: data.dateLastUpdateUTC ?? 0,
             payed: data.payed ?? false,

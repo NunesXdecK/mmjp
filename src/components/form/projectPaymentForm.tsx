@@ -5,17 +5,18 @@ import Button from "../button/button";
 import FormRowColumn from "./formRowColumn";
 import InputText from "../inputText/inputText";
 import SelectProjectForm from "./selectProjectForm";
-import { handleNewDateToUTC } from "../../util/dateUtils";
+import InputCheckbox from "../inputText/inputCheckbox";
 import { FeedbackMessage } from "../modal/feedbackMessageModal";
+import { PencilAltIcon, TrashIcon } from "@heroicons/react/outline";
 import InputTextAutoComplete from "../inputText/inputTextAutocomplete";
 import { NOT_NULL_MARK, NUMBER_MARK } from "../../util/patternValidationUtil";
-import { addDoc, collection, doc, updateDoc } from "firebase/firestore";
-import { handlePrepareProjectPaymentForDB } from "../../util/converterUtil";
 import { handleProjectPaymentValidationForDB } from "../../util/validationUtil";
-import { defaultProjectPayment, ProjectPayment } from "../../interfaces/objectInterfaces";
-import { ProfessionalConversor, ProjectConversor, ProjectPaymentConversor } from "../../db/converters";
-import { db, PROFESSIONAL_COLLECTION_NAME, PROJECT_COLLECTION_NAME, PROJECT_PAYMENT_COLLECTION_NAME, PROJECT_STAGE_COLLECTION_NAME } from "../../db/firebaseDB";
-import InputCheckbox from "../inputText/inputCheckbox";
+import { ProjectConversor, ProjectPaymentConversor } from "../../db/converters";
+import { addDoc, collection, deleteDoc, doc, updateDoc } from "firebase/firestore";
+import { defaultProjectPayment, Project, ProjectPayment } from "../../interfaces/objectInterfaces";
+import { db, PROJECT_COLLECTION_NAME, PROJECT_PAYMENT_COLLECTION_NAME } from "../../db/firebaseDB";
+import WindowModal from "../modal/windowModal";
+import { handleNewDateToUTC } from "../../util/dateUtils";
 
 interface ProjectPaymentFormProps {
     title?: string,
@@ -24,7 +25,8 @@ interface ProjectPaymentFormProps {
     isForSelect?: boolean,
     isForDisable?: boolean,
     isForOldRegister?: boolean,
-    projectPayment?: ProjectPayment,
+    project?: Project,
+    projectPayments?: ProjectPayment[],
     onBack?: (object) => void,
     onAfterSave?: (object) => void,
     onSelectPerson?: (object) => void,
@@ -35,10 +37,11 @@ export default function ProjectPaymentForm(props: ProjectPaymentFormProps) {
     const projectPaymentCollection = collection(db, PROJECT_PAYMENT_COLLECTION_NAME).withConverter(ProjectPaymentConversor)
     const projectCollection = collection(db, PROJECT_COLLECTION_NAME).withConverter(ProjectConversor)
 
-    const [projectPayment, setProjectPayment] = useState<ProjectPayment>(props?.projectPayment ?? defaultProjectPayment)
+    const [projectPayment, setProjectPayment] = useState<ProjectPayment>(defaultProjectPayment)
     const [isFormValid, setIsFormValid] = useState(handleProjectPaymentValidationForDB(projectPayment).validation)
 
-    const [projects, setProjects] = useState(props?.projectPayment?.project?.id ? [props.projectPayment.project] : [])
+    const [projectPayments, setProjectPayments] = useState<ProjectPayment[]>(props.projectPayments ?? [])
+    const [projects, setProjects] = useState(props?.project?.id ? [props.project] : [])
 
     const [isOpen, setIsOpen] = useState(false)
     const [isLoading, setIsLoading] = useState(false)
@@ -58,51 +61,61 @@ export default function ProjectPaymentForm(props: ProjectPaymentFormProps) {
         setIsLoading(false)
     }
 
-    const handleSave = async (event) => {
+    const handleEdit = (element, index) => {
+        element = { ...element, index: index }
+        setProjectPayment(oldProjectPayment => element)
+    }
+
+    const handleRemove = async () => {
+        let localProjectPayments = projectPayments
+
+        if (localProjectPayments.length > -1) {
+            let index = localProjectPayments.indexOf(projectPayment)
+            localProjectPayments.splice(index, 1)
+            setProjectPayments(oldProjectPayments => localProjectPayments)
+        }
+
+        if (projectPayment.id !== "") {
+            const docRef = doc(projectPaymentCollection, projectPayment.id)
+            await deleteDoc(docRef)
+        }
+
+        const feedbackMessage = { messages: ["Removido com sucesso!"], messageType: "SUCCESS" }
+        setProjectPayment({ ...defaultProjectPayment, project: projects[0] })
+        if (props.onShowMessage) {
+            props.onShowMessage(feedbackMessage)
+        }
+    }
+
+    const handleAdd = () => {
         event.preventDefault()
         setIsLoading(true)
         let feedbackMessage: FeedbackMessage = { messages: ["Algo estranho aconteceu"], messageType: "WARNING" }
 
         let projectPaymentForDB = { ...projectPayment }
+        let localProjectPayments = [...projectPayments]
         if (projects?.length > 0) {
             const docRef = doc(projectCollection, projects[0]?.id)
             projectPaymentForDB = { ...projectPaymentForDB, project: docRef }
         }
+
         const isValid = handleProjectPaymentValidationForDB(projectPaymentForDB)
         if (isValid.validation) {
-            let nowID = projectPaymentForDB?.id ?? ""
-
-            projectPaymentForDB = handlePrepareProjectPaymentForDB(projectPaymentForDB)
-
-            const isSave = nowID === ""
-
-            if (isSave) {
-                try {
-                    const docRef = await addDoc(projectPaymentCollection, projectPaymentForDB)
-                    setProjectPayment({ ...projectPayment, id: docRef.id })
-                    feedbackMessage = { ...feedbackMessage, messages: ["Salvo com sucesso!"], messageType: "SUCCESS" }
-                    handleListItemClick(defaultProjectPayment)
-                } catch (e) {
-                    feedbackMessage = { ...feedbackMessage, messages: ["Erro em salvar!"], messageType: "ERROR" }
-                    console.error("Error adding document: ", e)
-                }
+            if (projectPaymentForDB.index > -1) {
+                projectPaymentForDB = { ...projectPaymentForDB, project: projects[0] }
+                const updatedProjectPaymentForDB = [
+                    ...localProjectPayments.slice(0, projectPaymentForDB.index),
+                    projectPaymentForDB,
+                    ...localProjectPayments.slice(projectPaymentForDB.index + 1, localProjectPayments.length),
+                ]
+                setProjectPayments(oldProjectPayments => updatedProjectPaymentForDB)
             } else {
-                try {
-                    projectPaymentForDB = { ...projectPaymentForDB, dateLastUpdateUTC: handleNewDateToUTC() }
-                    const docRef = doc(projectPaymentCollection, nowID)
-                    await updateDoc(docRef, projectPaymentForDB)
-                    feedbackMessage = { ...feedbackMessage, messages: ["Atualizado com sucesso!"], messageType: "SUCCESS" }
-                    handleListItemClick(defaultProjectPayment)
-                } catch (e) {
-                    feedbackMessage = { ...feedbackMessage, messages: ["Erro em atualizar!"], messageType: "ERROR" }
-                    console.error("Error upddating document: ", e)
-                }
+                projectPaymentForDB = { ...projectPaymentForDB, project: projects[0] }
+                setProjectPayments(oldProjectPayments => [...oldProjectPayments, projectPaymentForDB])
             }
-            if (props.onAfterSave) {
-                props.onAfterSave(feedbackMessage)
-            }
-            {/*
-        */}
+            setProjectPayment({ ...defaultProjectPayment, project: projects[0] })
+            feedbackMessage = { ...feedbackMessage, messages: ["Adicionado com sucesso!"], messageType: "SUCCESS" }
+            document.getElementById("description")?.focus()
         } else {
             feedbackMessage = { ...feedbackMessage, messages: isValid.messages, messageType: "ERROR" }
             if (props.onShowMessage) {
@@ -110,6 +123,64 @@ export default function ProjectPaymentForm(props: ProjectPaymentFormProps) {
             }
         }
         setIsLoading(false)
+    }
+
+    const handleSave = async (event) => {
+        event.preventDefault()
+        setIsLoading(true)
+        let feedbackMessage: FeedbackMessage = { messages: ["Não há pagamentos informados"], messageType: "WARNING" }
+        let projectPaymentsForDB: ProjectPayment[] = [...projectPayments]
+        let project = {}
+
+        if (projects?.length > 0) {
+            project = doc(projectCollection, projects[0]?.id)
+        }
+
+        if (projectPaymentsForDB.length > 0) {
+            try {
+                let messages = []
+                projectPaymentsForDB.map(async (element: ProjectPayment, index) => {
+                    if (element.id === "") {
+                        element = { ...element, project: project, index: index, dateInsertUTC: handleNewDateToUTC() }
+                        const docRef = await addDoc(projectPaymentCollection, element)
+                        projectPaymentsForDB[index] = { ...element, id: docRef.id, project: projects[0] }
+                        messages = [...messages, element.description + " foi salvo com sucesso!"]
+                    } else {
+                        if (element.dateInsertUTC === 0) {
+                            element = { ...element, project: project, index: index, dateInsertUTC: handleNewDateToUTC(), dateLastUpdateUTC: handleNewDateToUTC() }
+                        } else {
+                            element = { ...element, project: project, index: index, dateLastUpdateUTC: handleNewDateToUTC() }
+                        }
+                        const docRef = doc(projectPaymentCollection, element.id)
+                        await updateDoc(docRef, element)
+                        projectPaymentsForDB[index] = { ...element, project: projects[0] }
+                        messages = [...messages, element.description + " foi atualizado com sucesso!"]
+                    }
+
+                    if ((index + 1) === projectPaymentsForDB.length) {
+                        setIsLoading(false)
+                        feedbackMessage = { ...feedbackMessage, messages: messages, messageType: "SUCCESS" }
+                        if (props.onShowMessage) {
+                            props.onShowMessage(feedbackMessage)
+                        }
+                        if (props.onAfterSave) {
+                            props.onAfterSave(feedbackMessage)
+                        }
+                    }
+                })
+            } catch (e) {
+                feedbackMessage = { ...feedbackMessage, messages: ["Erro em salvar!"], messageType: "ERROR" }
+                console.error("Error adding document: ", e)
+                setIsLoading(false)
+            }
+            {/*
+        */}
+        } else {
+            feedbackMessage = { ...feedbackMessage, messageType: "ERROR" }
+            if (props.onShowMessage) {
+                props.onShowMessage(feedbackMessage)
+            }
+        }
     }
 
     const handleChangeFormValidation = (isValid) => {
@@ -132,7 +203,7 @@ export default function ProjectPaymentForm(props: ProjectPaymentFormProps) {
             />
 
             <form
-                onSubmit={handleSave}>
+                onSubmit={handleAdd}>
                 <Form
                     title={props.title}
                     subtitle={props.subtitle}>
@@ -169,7 +240,7 @@ export default function ProjectPaymentForm(props: ProjectPaymentFormProps) {
                         </FormRowColumn>
                     </FormRow>
                     <FormRow>
-                        <FormRowColumn unit="1" className="sm:place-self-center">
+                        <FormRowColumn unit="6" className="">
                             <InputCheckbox
                                 id="payed"
                                 title="Pago?"
@@ -180,14 +251,60 @@ export default function ProjectPaymentForm(props: ProjectPaymentFormProps) {
                             />
                         </FormRowColumn>
                     </FormRow>
-
-                    <div className="hidden">
-                        <Button
-                            type="submit">
-                        </Button>
-                    </div>
+                    <FormRow>
+                        <FormRowColumn unit="6" className="flex content-end justify-end">
+                            <Button
+                                type="submit"
+                                isLoading={isLoading}
+                                isDisabled={!isFormValid}
+                            >
+                                {projectPayment.index + 1 > 0 ? "Editar" : "Adicionar"}
+                            </Button>
+                        </FormRowColumn>
+                    </FormRow>
                 </Form>
+            </form>
 
+            <Form
+                title="Lista de pagamentos"
+                subtitle="">
+                {projectPayments.map((element: ProjectPayment, index) => (
+                    <FormRow className="shadow-md" key={index + element.value}>
+                        <FormRowColumn unit="6" className="flex justify-between content-center">
+                            <span className="self-center">{index + 1}</span>
+                            {element.payed ?
+                                (<p className="px-2 py-1 rounded-md bg-green-600 text-white self-center">Pago</p>)
+                                :
+                                (<p className="px-2 py-1 invisible">Pago</p>)
+                            }
+                            <p className="self-center">{element.description}</p>
+                            <p className="self-center">{element.value}</p>
+                            <div className="self-center">
+                                <Button
+                                    className="ml-2"
+                                    onClick={() => handleEdit(element, index)}
+                                    isLoading={isLoading}
+                                    isDisabled={isLoading}
+                                >
+                                    <PencilAltIcon className="text-white block h-4 w-4" aria-hidden="true" />
+                                </Button>
+                                <Button
+                                    color="red"
+                                    className="ml-1"
+                                    onClick={() => setProjectPayment(element)}
+                                    isLoading={isLoading}
+                                    isDisabled={isLoading}
+                                >
+                                    <TrashIcon className="text-white block h-4 w-4" aria-hidden="true" />
+                                </Button>
+                            </div>
+                        </FormRowColumn>
+                    </FormRow>
+                ))}
+            </Form>
+
+            <form
+                onSubmit={handleSave}>
                 <FormRow className="p-2">
                     <FormRowColumn unit="6" className="flex justify-between">
                         {props.isBack && (
@@ -203,13 +320,34 @@ export default function ProjectPaymentForm(props: ProjectPaymentFormProps) {
                         <Button
                             type="submit"
                             isLoading={isLoading}
-                            isDisabled={!isFormValid}
+                            isDisabled={projectPayments.length === 0}
                         >
                             Salvar
                         </Button>
                     </FormRowColumn>
                 </FormRow>
             </form>
+
+            <WindowModal
+                isOpen={isOpen}
+                setIsOpen={setIsOpen}>
+                <p>Deseja realmente deletar este Pagamento {projectPayment.description}?</p>
+                <div className="flex content-between">
+                    <Button
+                        color="red"
+                        onClick={() => setIsOpen(false)}
+                    >
+                        Voltar
+                    </Button>
+                    <Button
+                        color="red"
+                        onClick={() => handleRemove()}
+                    >
+                        Excluir
+                    </Button>
+                </div>
+
+            </WindowModal>
         </>
     )
 }
