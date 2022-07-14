@@ -2,14 +2,14 @@ import Form from "./form";
 import FormRow from "./formRow";
 import { useState } from "react";
 import Button from "../button/button";
+import PersonForm from "./personForm";
 import IOSModal from "../modal/iosModal";
 import FormRowColumn from "./formRowColumn";
 import PersonList from "../list/personList";
 import InputText from "../inputText/inputText";
-import { defaultPerson, Person } from "../../interfaces/objectInterfaces";
 import { FeedbackMessage } from "../modal/feedbackMessageModal";
+import { defaultPerson, Person } from "../../interfaces/objectInterfaces";
 import { handleMaskCPF, handleRemoveCPFMask } from "../../util/maskUtil";
-import PersonForm from "./personForm";
 
 interface SelectPersonFormProps {
     id?: string,
@@ -46,14 +46,14 @@ export default function SelectPersonForm(props: SelectPersonFormProps) {
     }
 
     const handleAfterSave = (feedbackMessage: FeedbackMessage, person) => {
-        handleAddPerson(person)
+        handleAdd(person)
         handleBackClick()
         if (props.onShowMessage) {
             props.onShowMessage(feedbackMessage)
         }
     }
 
-    const handleAddPerson = (person) => {
+    const handleAdd = (person) => {
         let localPersons = props.persons
         let canAdd = true
         if (props.isMultipleSelect) {
@@ -165,8 +165,9 @@ export default function SelectPersonForm(props: SelectPersonFormProps) {
                         <PersonList
                             haveNew={true}
                             onNewClick={handleNewClick}
+                            onListItemClick={handleAdd}
                             onShowMessage={props.onShowMessage}
-                            onListItemClick={handleAddPerson} />
+                             />
                     ) : (
                         <PersonForm
                             isBack={true}

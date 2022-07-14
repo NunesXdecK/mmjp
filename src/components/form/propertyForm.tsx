@@ -21,12 +21,13 @@ interface PropertyFormProps {
     title?: string,
     subtitle?: string,
     isBack?: boolean,
+    canMultiple?: boolean,
     isForSelect?: boolean,
     isForDisable?: boolean,
     isForOldRegister?: boolean,
     property?: Property,
     onBack?: (object) => void,
-    onAfterSave?: (object) => void,
+    onAfterSave?: (object, any?) => void,
     onSelectPerson?: (object) => void,
     onShowMessage?: (FeedbackMessage) => void,
 }
@@ -123,7 +124,7 @@ export default function PropertyForm(props: PropertyFormProps) {
             }
 
             if (!isMultiple && props.onAfterSave) {
-                props.onAfterSave(feedbackMessage)
+                props.onAfterSave(feedbackMessage, propertyForDB)
             }
         } else {
             feedbackMessage = { ...feedbackMessage, messages: isValid.messages, messageType: "ERROR" }
@@ -145,19 +146,21 @@ export default function PropertyForm(props: PropertyFormProps) {
                 <Form
                     title={props.title}
                     subtitle={props.subtitle}>
-
-                    <FormRow>
-                        <FormRowColumn unit="6">
-                            <InputCheckbox
-                                id="multiple"
-                                value={isMultiple}
-                                isLoading={isLoading}
-                                onSetText={setIsMultiple}
-                                title="Cadastro multiplo?"
-                                isDisabled={props.isForDisable}
-                            />
-                        </FormRowColumn>
-                    </FormRow>
+                        
+                    {props.canMultiple && (
+                        <FormRow>
+                            <FormRowColumn unit="6">
+                                <InputCheckbox
+                                    id="multiple"
+                                    value={isMultiple}
+                                    isLoading={isLoading}
+                                    onSetText={setIsMultiple}
+                                    title="Cadastro multiplo?"
+                                    isDisabled={props.isForDisable}
+                                />
+                            </FormRowColumn>
+                        </FormRow>
+                    )}
 
                     <FormRow>
                         <FormRowColumn unit="6">

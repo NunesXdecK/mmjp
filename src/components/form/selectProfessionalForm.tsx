@@ -5,9 +5,10 @@ import Button from "../button/button";
 import IOSModal from "../modal/iosModal";
 import FormRowColumn from "./formRowColumn";
 import InputText from "../inputText/inputText";
+import ProfessionalForm from "./professionalForm";
 import ProfessionalList from "../list/professionalList";
-import { Professional } from "../../interfaces/objectInterfaces";
 import { FeedbackMessage } from "../modal/feedbackMessageModal";
+import { defaultProfessional, Professional } from "../../interfaces/objectInterfaces";
 
 interface SelectProfessionalFormProps {
     id?: string,
@@ -26,8 +27,32 @@ interface SelectProfessionalFormProps {
 
 export default function SelectProfessionalForm(props: SelectProfessionalFormProps) {
     const [isOpen, setIsOpen] = useState(false)
+    const [isRegister, setIsRegister] = useState(false)
 
-    const handleAddProfessional = (professional) => {
+    const [professional, setProfessional] = useState<Professional>(defaultProfessional)
+
+    const handleNewClick = () => {
+        setIsRegister(true)
+        setProfessional(defaultProfessional)
+    }
+
+    const handleBackClick = (event?) => {
+        if (event) {
+            event.preventDefault()
+        }
+        setProfessional(defaultProfessional)
+        setIsRegister(false)
+    }
+
+    const handleAfterSave = (feedbackMessage: FeedbackMessage, professional) => {
+        handleAdd(professional)
+        handleBackClick()
+        if (props.onShowMessage) {
+            props.onShowMessage(feedbackMessage)
+        }
+    }
+
+    const handleAdd = (professional) => {
         let localProfessionals = props.professionals
         let canAdd = true
 
@@ -134,8 +159,25 @@ export default function SelectProfessionalForm(props: SelectProfessionalFormProp
             <IOSModal
                 isOpen={isOpen}
                 setIsOpen={setIsOpen}>
-                <ProfessionalList
-                    onListItemClick={handleAddProfessional} />
+                <>
+                    {!isRegister ? (
+                        <ProfessionalList
+                            haveNew={true}
+                            onNewClick={handleNewClick}
+                            onListItemClick={handleAdd}
+                            onShowMessage={props.onShowMessage}
+                        />) : (
+                        <ProfessionalForm
+                            isBack={true}
+                            canMultiple={false}
+                            onBack={handleBackClick}
+                            professional={professional}
+                            onAfterSave={handleAfterSave}
+                            title="Informações do profisisonal"
+                            onShowMessage={props.onShowMessage}
+                            subtitle="Dados importantes sobre o profissional" />
+                    )}
+                </>
             </IOSModal>
         </>
     )

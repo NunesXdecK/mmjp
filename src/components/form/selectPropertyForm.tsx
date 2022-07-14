@@ -6,8 +6,9 @@ import IOSModal from "../modal/iosModal";
 import FormRowColumn from "./formRowColumn";
 import InputText from "../inputText/inputText";
 import PropertyList from "../list/propertyList";
-import { Property } from "../../interfaces/objectInterfaces";
+import { defaultProperty, Property } from "../../interfaces/objectInterfaces";
 import { FeedbackMessage } from "../modal/feedbackMessageModal";
+import PropertyForm from "./propertyForm";
 
 interface SelectPropertyFormProps {
     id?: string,
@@ -26,8 +27,32 @@ interface SelectPropertyFormProps {
 
 export default function SelectPropertyForm(props: SelectPropertyFormProps) {
     const [isOpen, setIsOpen] = useState(false)
+    const [isRegister, setIsRegister] = useState(false)
 
-    const handleAddProperty = (property) => {
+    const [property, setProperty] = useState<Property>(defaultProperty)
+
+    const handleNewClick = () => {
+        setIsRegister(true)
+        setProperty(defaultProperty)
+    }
+
+    const handleBackClick = (event?) => {
+        if (event) {
+            event.preventDefault()
+        }
+        setProperty(defaultProperty)
+        setIsRegister(false)
+    }
+
+    const handleAfterSave = (feedbackMessage: FeedbackMessage, property) => {
+        handleAdd(property)
+        handleBackClick()
+        if (props.onShowMessage) {
+            props.onShowMessage(feedbackMessage)
+        }
+    }
+
+    const handleAdd = (property) => {
         let localProperties = props.properties
         let canAdd = true
 
@@ -124,8 +149,26 @@ export default function SelectPropertyForm(props: SelectPropertyFormProps) {
             <IOSModal
                 isOpen={isOpen}
                 setIsOpen={setIsOpen}>
-                <PropertyList
-                    onListItemClick={handleAddProperty} />
+                <>
+                    {!isRegister ? (
+                        <PropertyList
+                            haveNew={true}
+                            onNewClick={handleNewClick}
+                            onListItemClick={handleAdd}
+                            onShowMessage={props.onShowMessage}
+                             />
+                    ) : (
+                        <PropertyForm
+                            isBack={true}
+                            property={property}
+                            canMultiple={false}
+                            onBack={handleBackClick}
+                            title="Informações da propriedade"
+                            onAfterSave={handleAfterSave}
+                            onShowMessage={props.onShowMessage}
+                            subtitle="Dados importantes sobre a propriedade" />
+                    )}
+                </>
             </IOSModal>
         </>
     )

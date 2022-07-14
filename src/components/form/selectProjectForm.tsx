@@ -6,8 +6,9 @@ import IOSModal from "../modal/iosModal";
 import FormRowColumn from "./formRowColumn";
 import InputText from "../inputText/inputText";
 import ProjectList from "../list/projectList";
-import { Project } from "../../interfaces/objectInterfaces";
+import { defaultProject, Project } from "../../interfaces/objectInterfaces";
 import { FeedbackMessage } from "../modal/feedbackMessageModal";
+import ProjectForm from "./projectForm";
 
 interface SelectProjectFormProps {
     id?: string,
@@ -27,8 +28,32 @@ interface SelectProjectFormProps {
 
 export default function SelectProjectForm(props: SelectProjectFormProps) {
     const [isOpen, setIsOpen] = useState(false)
+    const [isRegister, setIsRegister] = useState(false)
 
-    const handleAddProject = (project) => {
+    const [project, setProject] = useState<Project>(defaultProject)
+
+    const handleNewClick = () => {
+        setIsRegister(true)
+        setProject(defaultProject)
+    }
+
+    const handleBackClick = (event?) => {
+        if (event) {
+            event.preventDefault()
+        }
+        setProject(defaultProject)
+        setIsRegister(false)
+    }
+
+    const handleAfterSave = (feedbackMessage: FeedbackMessage, project) => {
+        handleAdd(project)
+        handleBackClick()
+        if (props.onShowMessage) {
+            props.onShowMessage(feedbackMessage)
+        }
+    }
+
+    const handleAdd = (project) => {
         let localProjects = props.projects
         let canAdd = true
 
@@ -125,9 +150,27 @@ export default function SelectProjectForm(props: SelectProjectFormProps) {
             <IOSModal
                 isOpen={isOpen}
                 setIsOpen={setIsOpen}>
-                <ProjectList
-                    isBudgetAllowed={props.isBudgetAllowed}
-                    onListItemClick={handleAddProject} />
+                <>
+                    {!isRegister ? (
+                        <ProjectList
+                            haveNew={true}
+                            onNewClick={handleNewClick}
+                            onListItemClick={handleAdd}
+                            onShowMessage={props.onShowMessage}
+                            isBudgetAllowed={props.isBudgetAllowed}
+                        />
+                    ) : (
+                        <ProjectForm
+                            isBack={true}
+                            project={project}
+                            canMultiple={false}
+                            onBack={handleBackClick}
+                            title="Informações pessoais"
+                            onAfterSave={handleAfterSave}
+                            onShowMessage={props.onShowMessage}
+                            subtitle="Dados importantes sobre a pessoa" />
+                    )}
+                </>
             </IOSModal>
         </>
     )

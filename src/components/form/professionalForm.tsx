@@ -20,12 +20,13 @@ interface ProfessionalFormProps {
     title?: string,
     subtitle?: string,
     isBack?: boolean,
+    canMultiple?: boolean,
     isForSelect?: boolean,
     isForDisable?: boolean,
     isForOldRegister?: boolean,
     professional?: Professional,
     onBack?: (object) => void,
-    onAfterSave?: (object) => void,
+    onAfterSave?: (object, any?) => void,
     onSelectPerson?: (object) => void,
     onShowMessage?: (FeedbackMessage) => void,
 }
@@ -121,7 +122,7 @@ export default function ProfessionalForm(props: ProfessionalFormProps) {
             }
 
             if (!isMultiple && props.onAfterSave) {
-                props.onAfterSave(feedbackMessage)
+                props.onAfterSave(feedbackMessage, professionalForDB)
             }
         } else {
             feedbackMessage = { ...feedbackMessage, messages: isValid.messages, messageType: "ERROR" }
@@ -144,18 +145,20 @@ export default function ProfessionalForm(props: ProfessionalFormProps) {
                     title={props.title}
                     subtitle={props.subtitle}>
 
-                    <FormRow>
-                        <FormRowColumn unit="6">
-                            <InputCheckbox
-                                id="multiple"
-                                value={isMultiple}
-                                isLoading={isLoading}
-                                onSetText={setIsMultiple}
-                                title="Cadastro multiplo?"
-                                isDisabled={props.isForDisable}
-                            />
-                        </FormRowColumn>
-                    </FormRow>
+                    {props.canMultiple && (
+                        <FormRow>
+                            <FormRowColumn unit="6">
+                                <InputCheckbox
+                                    id="multiple"
+                                    value={isMultiple}
+                                    isLoading={isLoading}
+                                    onSetText={setIsMultiple}
+                                    title="Cadastro multiplo?"
+                                    isDisabled={props.isForDisable}
+                                />
+                            </FormRowColumn>
+                        </FormRow>
+                    )}
 
                     <FormRow>
                         <FormRowColumn unit="6">
@@ -217,7 +220,7 @@ export default function ProfessionalForm(props: ProfessionalFormProps) {
                 onSetPersons={setPersons}
                 subtitle="Selecione a pessoa"
                 onShowMessage={props.onShowMessage}
-                buttonTitle="Adicionar profissional"
+                buttonTitle="Adicionar pessoa"
                 validationMessage="Esta pessoa já é um proprietário"
             />
 
