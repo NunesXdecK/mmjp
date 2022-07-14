@@ -3,7 +3,7 @@ import Button from "../button/button"
 import data from "../../data/data.json"
 import InputText from "../inputText/inputText"
 import { PersonConversor } from "../../db/converters"
-import { collection, getDocs } from "firebase/firestore"
+import { collection, deleteDoc, doc, getDocs } from "firebase/firestore"
 import { defaultCompany, defaultPerson, Person } from "../../interfaces/objectInterfaces"
 import { FeedbackMessage } from "../modal/feedbackMessageModal"
 import { db, PERSON_COLLECTION_NAME } from "../../db/firebaseDB"
@@ -11,6 +11,8 @@ import { handleMaskCPF, handleRemoveCPFMask } from "../../util/maskUtil"
 import { ElementFromBase, extratePerson } from "../../util/converterUtil"
 import { handleValidationOnlyNumbersNotNull, handleValidationOnlyTextNotNull } from "../../util/validationUtil"
 import PlaceholderItemList from "./placeholderItemList"
+import { TrashIcon } from "@heroicons/react/outline"
+import WindowModal from "../modal/windowModal"
 
 const subtitle = "mt-1 max-w-2xl text-sm text-gray-500"
 const contentClassName = "sm:px-4 sm:py-5 mt-1 text-sm text-gray-900"
@@ -18,6 +20,7 @@ const titleClassName = "sm:px-4 sm:py-5 text-md leading-6 font-medium text-gray-
 
 interface PersonListProps {
     haveNew?: boolean,
+    canDelete?: boolean,
     isOldBase?: boolean,
     onNewClick?: () => void,
     onListItemClick?: (any) => void,
@@ -27,6 +30,8 @@ interface PersonListProps {
 export default function PersonList(props: PersonListProps) {
     const personCollection = collection(db, PERSON_COLLECTION_NAME).withConverter(PersonConversor)
 
+    const [person, setPerson] = useState(defaultPerson)
+
     const [page, setPage] = useState(-1)
 
     const [isOpen, setIsOpen] = useState(false)
@@ -34,6 +39,20 @@ export default function PersonList(props: PersonListProps) {
     const [inputSearch, setInputSearch] = useState("")
 
     const [listItems, setListItems] = useState([])
+
+    const handleRemove = async () => {
+        if (person.id !== "") {
+            const docRef = doc(personCollection, person.id)
+            await deleteDoc(docRef)
+        }
+        const feedbackMessage = { messages: ["Removido com sucesso!"], messageType: "SUCCESS" }
+        if (props.onShowMessage) {
+            props.onShowMessage(feedbackMessage)
+        }
+        setPerson(defaultPerson)
+        handleFilterList(null, true)
+        setIsOpen(false)
+    }
 
     const handleListItemClick = (element: Person) => {
         setIsLoading(true)
@@ -53,8 +72,8 @@ export default function PersonList(props: PersonListProps) {
 
     const handleFilterList = async (event?, first?) => {
         event?.preventDefault()
-
         setIsLoading(true)
+        setListItems([])
         let listItemsFiltered = []
         let arrayList: Person[] = []
 
@@ -233,6 +252,19 @@ export default function PersonList(props: PersonListProps) {
                         <div><span className={contentClassName}>{handleMaskCPF(element.cpf)}</span></div>
                         {element.rg && (<div><span className={contentClassName}>{element.rg}</span></div>)}
                         <div className="mt-2 w-full flex justify-end">
+                            {props.canDelete && (
+                                <Button
+                                    color="red"
+                                    className="mr-2"
+                                    isHidden={element.name === ""}
+                                    onClick={() => {
+                                        setPerson(element)
+                                        setIsOpen(true)
+                                    }}
+                                >
+                                    <TrashIcon className="text-white block h-5 w-5" aria-hidden="true" />
+                                </Button>
+                            )}
                             <Button
                                 isHidden={element.name === ""}
                                 onClick={() => handleListItemClick(element)}
@@ -263,6 +295,25 @@ export default function PersonList(props: PersonListProps) {
                     </Button>
                 </div>
             </div>
-        </div >
+            <WindowModal
+                isOpen={isOpen}
+                setIsOpen={setIsOpen}>
+                <p>Deseja realmente deletar esta Pessoa {person.name}?</p>
+                <div className="flex mt-10 justify-between content-between">
+                    <Button
+                        onClick={() => setIsOpen(false)}
+                    >
+                        Voltar
+                    </Button>
+                    <Button
+                        color="red"
+                        onClick={() => handleRemove()}
+                    >
+                        Excluir
+                    </Button>
+                </div>
+
+            </WindowModal>
+        </div>
     )
 }

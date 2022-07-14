@@ -62,6 +62,7 @@ export default function Persons() {
 
             {!isRegister ? (
                 <PersonList
+                    canDelete
                     haveNew={true}
                     onNewClick={handleNewClick}
                     onShowMessage={handleShowMessage}
