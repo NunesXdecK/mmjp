@@ -16,6 +16,7 @@ import { defaultCompany, Company } from "../../interfaces/objectInterfaces";
 import { COMPANY_COLLECTION_NAME, db, PERSON_COLLECTION_NAME } from "../../db/firebaseDB";
 import { CNPJ_MARK, NOT_NULL_MARK, TELEPHONE_MARK } from "../../util/patternValidationUtil";
 import { defaultElementFromBase, ElementFromBase, handlePrepareCompanyForDB } from "../../util/converterUtil";
+import InputCheckbox from "../inputText/inputCheckbox";
 
 interface CompanyFormProps {
     title?: string,
@@ -40,6 +41,7 @@ export default function CompanyForm(props: CompanyFormProps) {
 
     const [isOpen, setIsOpen] = useState(false)
     const [isLoading, setIsLoading] = useState(false)
+    const [isMultiple, setIsMultiple] = useState(false)
 
     const [oldData, setOldData] = useState<ElementFromBase>(props?.company?.oldData ?? defaultElementFromBase)
 
@@ -106,10 +108,20 @@ export default function CompanyForm(props: CompanyFormProps) {
                     console.error("Error upddating document: ", e)
                 }
             }
-            if (props.onAfterSave) {
+
+            if (isMultiple) {
+                setCompany(defaultCompany)
+                if (props.onShowMessage) {
+                    props.onShowMessage(feedbackMessage)
+                }
+            }
+
+            if (!isMultiple && props.onAfterSave) {
                 props.onAfterSave(feedbackMessage)
             }
+            {/*
             handleListItemClick(defaultCompany)
+        */}
         } else {
             feedbackMessage = { ...feedbackMessage, messages: isValid.messages, messageType: "ERROR" }
             if (props.onShowMessage) {
@@ -132,20 +144,33 @@ export default function CompanyForm(props: CompanyFormProps) {
                     subtitle={props.subtitle}>
 
                     <FormRow>
+                        <FormRowColumn unit="6">
+                            <InputCheckbox
+                                id="multiple"
+                                value={isMultiple}
+                                isLoading={isLoading}
+                                onSetText={setIsMultiple}
+                                title="Cadastro multiplo?"
+                                isDisabled={props.isForDisable}
+                            />
+                        </FormRowColumn>
+                    </FormRow>
+
+                    <FormRow>
                         <FormRowColumn unit="4">
                             <InputText
                                 id="companyname"
                                 value={company.name}
                                 isLoading={isLoading}
                                 validation={NOT_NULL_MARK}
-                                title="Nome da propriedade"
+                                title="Nome da empresa"
                                 isDisabled={props.isForDisable}
                                 onSetText={handleSetCompanyName}
                                 onValidate={handleChangeFormValidation}
-                                validationMessage="O nome da propriedade não pode ficar em branco."
+                                validationMessage="O nome da empresa não pode ficar em branco."
                             />
                         </FormRowColumn>
-                        
+
                         <FormRowColumn unit="2">
                             <InputText
                                 id="code"

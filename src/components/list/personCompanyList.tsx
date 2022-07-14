@@ -244,10 +244,8 @@ export default function PersonCompanyList(props: PersonCompanyListProps) {
                 )}
 
                 {listItems[page]?.map((element: Person | Company, index) => (
-                    <button
-                        disabled={element.name === ""}
+                    <div
                         key={index.toString()}
-                        onClick={() => handleListItemClick(element)}
                         className="bg-white p-4 rounded-sm shadow items-center text-left">
                         <div className="flex">
                             <div><span className={titleClassName}>{element.name}</span></div>
@@ -270,7 +268,15 @@ export default function PersonCompanyList(props: PersonCompanyListProps) {
                                 ))}
                             </>
                         )}
-                    </button>
+                        <div className="mt-2 w-full flex justify-end">
+                            <Button
+                                isHidden={element.name === ""}
+                                onClick={() => handleListItemClick(element)}
+                            >
+                                Selecionar
+                            </Button>
+                        </div>
+                    </div>
                 ))}
             </div>
 

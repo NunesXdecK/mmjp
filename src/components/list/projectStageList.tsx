@@ -63,13 +63,13 @@ export default function ProjectStageList(props: ProjectStageListProps) {
             const querySnapshotProjectStage = await getDocs(projectStageCollection)
             querySnapshotProjectStage.forEach((docProjectStage) => {
                 let projectStage: ProjectStage = docProjectStage.data()
-                
+
                 querySnapshotProfessional.forEach((doc) => {
                     if (projectStage?.responsible?.id === doc?.id) {
                         projectStage = { ...projectStage, responsible: doc.data() }
                     }
                 })
-                
+
                 querySnapshotProject.forEach((doc) => {
                     if (projectStage?.project?.id === doc?.id) {
                         projectStage = { ...projectStage, project: doc.data() }
@@ -218,10 +218,8 @@ export default function ProjectStageList(props: ProjectStageListProps) {
                 )}
 
                 {listItems[page]?.map((element: ProjectStage, index) => (
-                    <button
+                    <div
                         key={index.toString()}
-                        disabled={element.title === ""}
-                        onClick={() => handleListItemClick(element)}
                         className="bg-white p-4 rounded-sm shadow items-center text-left">
                         <>
                             <p className={titleClassName}>{element.title}</p>
@@ -236,8 +234,16 @@ export default function ProjectStageList(props: ProjectStageListProps) {
                                 </p>
                             )}
                             <p className={contentClassName + descriptionClassName}>{"Descrição:\n" + element.description}</p>
+                            <div className="mt-2 w-full flex justify-end">
+                                <Button
+                                    isHidden={element.title === ""}
+                                    onClick={() => handleListItemClick(element)}
+                                >
+                                    Selecionar
+                                </Button>
+                            </div>
                         </>
-                    </button>
+                    </div>
                 ))}
             </div>
 

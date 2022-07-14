@@ -17,6 +17,7 @@ import { handlePersonValidationForDB } from "../../util/validationUtil"
 import { defaultPerson, Person } from "../../interfaces/objectInterfaces"
 import { addDoc, collection, doc, getDocs, updateDoc } from "firebase/firestore"
 import { CPF_MARK, TELEPHONE_MARK, TEXT_NOT_NULL_MARK } from "../../util/patternValidationUtil"
+import InputCheckbox from "../inputText/inputCheckbox"
 
 interface PersonFormProps {
     title?: string,
@@ -39,6 +40,7 @@ export default function PersonForm(props: PersonFormProps) {
 
     const [isOpen, setIsOpen] = useState(false)
     const [isLoading, setIsLoading] = useState(false)
+    const [isMultiple, setIsMultiple] = useState(false)
 
     const handleSetPersonOldData = (value) => { setPerson({ ...person, oldData: value }) }
 
@@ -130,7 +132,15 @@ export default function PersonForm(props: PersonFormProps) {
                     console.error("Error upddating document: ", e)
                 }
             }
-            if (props.onAfterSave) {
+
+            if (isMultiple) {
+                setPerson(defaultPerson)
+                if (props.onShowMessage) {
+                    props.onShowMessage(feedbackMessage)
+                }
+            }
+            
+            if (!isMultiple && props.onAfterSave) {
                 props.onAfterSave(feedbackMessage, personForDB)
             }
         } else {
@@ -159,6 +169,19 @@ export default function PersonForm(props: PersonFormProps) {
                     subtitle={props.subtitle}>
 
                     <FormRow>
+                        <FormRowColumn unit="6">
+                            <InputCheckbox
+                                id="multiple"
+                                value={isMultiple}
+                                isLoading={isLoading}
+                                onSetText={setIsMultiple}
+                                title="Cadastro multiplo?"
+                                isDisabled={props.isForDisable}
+                            />
+                        </FormRowColumn>
+                    </FormRow>
+
+                    <FormRow>
                         <FormRowColumn unit="4">
                             <InputText
                                 id="fullname"
@@ -172,7 +195,7 @@ export default function PersonForm(props: PersonFormProps) {
                                 validationMessage="O nome não pode ficar em branco."
                             />
                         </FormRowColumn>
-                        
+
                         <FormRowColumn unit="2">
                             <InputText
                                 id="code"

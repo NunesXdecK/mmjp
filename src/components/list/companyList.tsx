@@ -239,12 +239,10 @@ export default function CompanyList(props: CompanyListProps) {
                         <PlaceholderItemList />
                     </>
                 )}
-                
+
                 {listItems[page]?.map((element: Company, index) => (
-                    <button
+                    <div
                         key={index.toString()}
-                        disabled={element.name === ""}
-                        onClick={() => handleListItemClick(element)}
                         className="bg-white p-4 rounded-sm shadow items-center text-left">
                         <div className="flex">
                             <div><span className={titleClassName}>{element.name}</span></div>
@@ -257,7 +255,15 @@ export default function CompanyList(props: CompanyListProps) {
                                 </span>
                             </div>
                         ))}
-                    </button>
+                        <div className="mt-2 w-full flex justify-end">
+                            <Button
+                                isHidden={element.name === ""}
+                                onClick={() => handleListItemClick(element)}
+                            >
+                                Selecionar
+                            </Button>
+                        </div>
+                    </div>
                 ))}
             </div>
 

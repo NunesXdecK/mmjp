@@ -224,17 +224,23 @@ export default function PersonList(props: PersonListProps) {
                 )}
 
                 {listItems[page]?.map((element: Person, index) => (
-                    <button
-                        disabled={element.name === "" && element.cpf === ""}
+                    <div
                         key={index.toString()}
-                        onClick={() => handleListItemClick(element)}
                         className="bg-white p-4 rounded-sm shadow items-center text-left">
                         <div className="flex">
                             <div><span className={titleClassName}>{element.name}</span></div>
                         </div>
                         <div><span className={contentClassName}>{handleMaskCPF(element.cpf)}</span></div>
                         <div><span className={contentClassName}>{element.rg}</span></div>
-                    </button>
+                        <div className="mt-2 w-full flex justify-end">
+                            <Button
+                                isHidden={element.name === ""}
+                                onClick={() => handleListItemClick(element)}
+                            >
+                                Selecionar
+                            </Button>
+                        </div>
+                    </div>
                 ))}
             </div>
 

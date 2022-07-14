@@ -229,27 +229,37 @@ export default function ProfessionalList(props: ProfessionalListProps) {
                 )}
 
                 {listItems[page]?.map((element: Professional, index) => (
-                    <button
+                    <div
                         key={index.toString()}
-                        disabled={element.title === ""}
-                        onClick={() => handleListItemClick(element)}
                         className="bg-white p-4 rounded-sm shadow items-center text-left">
                         <>
                             <div className="flex">
                                 <div><span className={titleClassName}>{element.title}</span></div>
                             </div>
-                            <div>
-                                <span className={contentClassName}>
-                                    {element.creaNumber && element.creaNumber} {element.credentialCode && "Codigo: " + element.credentialCode}
-                                </span>
-                            </div>
-                            <div>
-                                <span className={contentClassName}>
-                                    {element.person?.name} {element.person?.cpf && "CPF: " + handleMaskCPF(element.person?.cpf)}
-                                </span>
+                            {(element.creaNumber || element.credentialCode) && (
+                                <div>
+                                    <span className={contentClassName}>
+                                        {element.creaNumber && element.creaNumber} {element.credentialCode && "Codigo: " + element.credentialCode}
+                                    </span>
+                                </div>
+                            )}
+                            {element.person && (
+                                <div>
+                                    <span className={contentClassName}>
+                                        {element.person?.name} {element.person?.cpf && "CPF: " + handleMaskCPF(element.person?.cpf)}
+                                    </span>
+                                </div>
+                            )}
+                            <div className="mt-2 w-full flex justify-end">
+                                <Button
+                                    isHidden={element.title === ""}
+                                    onClick={() => handleListItemClick(element)}
+                                >
+                                    Selecionar
+                                </Button>
                             </div>
                         </>
-                    </button>
+                    </div>
                 ))}
             </div>
 

@@ -249,20 +249,20 @@ export default function PropertyList(props: PropertyListProps) {
                 )}
 
                 {listItems[page]?.map((element: Property, index) => (
-                    <button
+                    <div
                         key={index.toString()}
-                        disabled={element.name === ""}
-                        onClick={() => handleListItemClick(element)}
                         className="bg-white p-4 rounded-sm shadow items-center text-left">
                         <>
                             <div className="flex">
                                 <div><span className={titleClassName}>{element.name}</span></div>
                             </div>
-                            <div>
-                                <span className={contentClassName}>
-                                    {element.area && "Área: " + element.area} {element.perimeter && "Perimetro: " + element.perimeter}
-                                </span>
-                            </div>
+                            {(element.area || element.perimeter) && (
+                                <div>
+                                    <span className={contentClassName}>
+                                        {element.area && "Área: " + element.area + " "}{element.perimeter && "Perimetro: " + element.perimeter}
+                                    </span>
+                                </div>
+                            )}
                             {element.owners?.map((elementOwners: Person | Company, indexOwners) => (
                                 <div key={elementOwners.name + index + indexOwners}>
                                     <span className={contentClassName}>
@@ -270,8 +270,16 @@ export default function PropertyList(props: PropertyListProps) {
                                     </span>
                                 </div>
                             ))}
+                            <div className="mt-2 w-full flex justify-end">
+                                <Button
+                                    isHidden={element.name === ""}
+                                    onClick={() => handleListItemClick(element)}
+                                >
+                                    Selecionar
+                                </Button>
+                            </div>
                         </>
-                    </button>
+                    </div>
                 ))}
             </div>
 

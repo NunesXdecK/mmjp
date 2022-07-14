@@ -15,6 +15,7 @@ import { NOT_NULL_MARK, NUMBER_MARK } from "../../util/patternValidationUtil";
 import { addDoc, collection, doc, getDocs, updateDoc } from "firebase/firestore";
 import { COMPANY_COLLECTION_NAME, db, PERSON_COLLECTION_NAME, PROPERTY_COLLECTION_NAME } from "../../db/firebaseDB";
 import { defaultElementFromBase, ElementFromBase, handlePreparePropertyForDB } from "../../util/converterUtil";
+import InputCheckbox from "../inputText/inputCheckbox";
 
 interface PropertyFormProps {
     title?: string,
@@ -40,6 +41,7 @@ export default function PropertyForm(props: PropertyFormProps) {
 
     const [isOpen, setIsOpen] = useState(false)
     const [isLoading, setIsLoading] = useState(false)
+    const [isMultiple, setIsMultiple] = useState(false)
 
     const [oldData, setOldData] = useState<ElementFromBase>(props?.property?.oldData ?? defaultElementFromBase)
 
@@ -113,7 +115,14 @@ export default function PropertyForm(props: PropertyFormProps) {
                     console.error("Error upddating document: ", e)
                 }
             }
-            if (props.onAfterSave) {
+            if (isMultiple) {
+                setProperty(defaultProperty)
+                if (props.onShowMessage) {
+                    props.onShowMessage(feedbackMessage)
+                }
+            }
+
+            if (!isMultiple && props.onAfterSave) {
                 props.onAfterSave(feedbackMessage)
             }
         } else {
@@ -136,6 +145,19 @@ export default function PropertyForm(props: PropertyFormProps) {
                 <Form
                     title={props.title}
                     subtitle={props.subtitle}>
+
+                    <FormRow>
+                        <FormRowColumn unit="6">
+                            <InputCheckbox
+                                id="multiple"
+                                value={isMultiple}
+                                isLoading={isLoading}
+                                onSetText={setIsMultiple}
+                                title="Cadastro multiplo?"
+                                isDisabled={props.isForDisable}
+                            />
+                        </FormRowColumn>
+                    </FormRow>
 
                     <FormRow>
                         <FormRowColumn unit="6">

@@ -45,6 +45,7 @@ export default function ProjectForm(props: ProjectFormProps) {
 
     const [isOpen, setIsOpen] = useState(false)
     const [isLoading, setIsLoading] = useState(false)
+    const [isMultiple, setIsMultiple] = useState(false)
 
     const [oldData, setOldData] = useState<ElementFromBase>(props?.project?.oldData ?? defaultElementFromBase)
 
@@ -111,7 +112,7 @@ export default function ProjectForm(props: ProjectFormProps) {
             const docRef = doc(professionalCollection, professionals[0]?.id)
             projectForDB = { ...projectForDB, professional: docRef }
         }
-        
+
         const isValid = handleProjectValidationForDB(projectForDB)
         if (isValid.validation) {
             let nowID = projectForDB?.id ?? ""
@@ -171,7 +172,14 @@ export default function ProjectForm(props: ProjectFormProps) {
             }
             {/*
         */}
-            if (props.onAfterSave) {
+            if (isMultiple) {
+                setProject(defaultProject)
+                if (props.onShowMessage) {
+                    props.onShowMessage(feedbackMessage)
+                }
+            }
+
+            if (!isMultiple && props.onAfterSave) {
                 props.onAfterSave(feedbackMessage)
             }
         } else {
@@ -189,6 +197,21 @@ export default function ProjectForm(props: ProjectFormProps) {
 
     return (
         <>
+            <Form>
+                <FormRow>
+                    <FormRowColumn unit="6">
+                        <InputCheckbox
+                            id="multiple"
+                            value={isMultiple}
+                            isLoading={isLoading}
+                            onSetText={setIsMultiple}
+                            title="Cadastro multiplo?"
+                            isDisabled={props.isForDisable}
+                        />
+                    </FormRowColumn>
+                </FormRow>
+            </Form>
+
             <SelectPersonCompanyForm
                 title="Clientes"
                 isLoading={isLoading}

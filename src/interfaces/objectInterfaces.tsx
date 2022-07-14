@@ -158,7 +158,7 @@ export const defaultProfessional: Professional = {
     dateInsertUTC: 0,
     dateLastUpdateUTC: 0,
     oldData: {},
-    person: defaultPerson,
+    person: null,
 }
 
 export const defaultProperty: Property = {

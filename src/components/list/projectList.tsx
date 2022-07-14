@@ -292,10 +292,8 @@ export default function ProjectList(props: ProjectListProps) {
                 )}
 
                 {listItems[page]?.map((element: Project, index) => (
-                    <button
+                    <div
                         key={index.toString()}
-                        disabled={element.number === ""}
-                        onClick={() => handleListItemClick(element)}
                         className="bg-white p-4 rounded-sm shadow items-center text-left">
                         <>
                             {element.budget && (
@@ -309,7 +307,7 @@ export default function ProjectList(props: ProjectListProps) {
                                     </p>
                                 </div>
                             ))}
-                            {element.properties?.map((elementProperty: Property, indexOwners) => (
+                            {element?.properties?.map((elementProperty: Property, indexOwners) => (
                                 <div key={elementProperty.name + index + indexOwners}>
                                     <p className={contentClassName}>
                                         {elementProperty.name && elementProperty.name} {elementProperty.area && "Área: " + elementProperty.area} {elementProperty.perimeter && "Perimetro: " + elementProperty.perimeter}
@@ -321,8 +319,18 @@ export default function ProjectList(props: ProjectListProps) {
                                     {element.professional.title && element.professional.title} {element.professional.creaNumber && "CREA: " + element.professional.creaNumber}
                                 </p>
                             )}
+                            <div className="mt-2 w-full flex justify-end">
+                                <Button
+                                    isLoading={isLoading}
+                                    isDisabled={isLoading}
+                                    isHidden={element.number === ""}
+                                    onClick={() => handleListItemClick(element)}
+                                >
+                                    Selecionar
+                                </Button>
+                            </div>
                         </>
-                    </button>
+                    </div>
                 ))}
             </div>
 

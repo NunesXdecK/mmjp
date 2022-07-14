@@ -218,10 +218,8 @@ export default function ProjectPaymentList(props: ProjectPaymentListProps) {
                 )}
 
                 {listItems[page]?.map((element: ProjectPayment, index) => (
-                    <button
+                    <div
                         key={index.toString()}
-                        disabled={element.value === ""}
-                        onClick={() => handleListItemClick(element)}
                         className="bg-white p-4 rounded-sm shadow items-center text-left">
                         <>
                             {element.payed && (
@@ -233,8 +231,16 @@ export default function ProjectPaymentList(props: ProjectPaymentListProps) {
                                     {element.project.number && "Projeto:\n" + element.project.number}
                                 </p>
                             )}
+                            <div className="mt-2 w-full flex justify-end">
+                                <Button
+                                    isHidden={element.value === ""}
+                                    onClick={() => handleListItemClick(element)}
+                                >
+                                    Selecionar
+                                </Button>
+                            </div>
                         </>
-                    </button>
+                    </div>
                 ))}
             </div>
 
