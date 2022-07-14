@@ -134,7 +134,7 @@ export default function ProjectStageForm(props: ProjectStageFormProps) {
                 isMultipleSelect={false}
                 onSetProjects={setProjects}
                 subtitle="Selecione o projeto"
-                buttonTitle="Pesquisar projeto"
+                buttonTitle="Adicionar projeto"
                 onShowMessage={props.onShowMessage}
                 validationMessage="Esta projeto já foi selecionado"
             />
@@ -146,7 +146,7 @@ export default function ProjectStageForm(props: ProjectStageFormProps) {
                 title="Profissional responsavel"
                 subtitle="Selecione o responsavel"
                 onShowMessage={props.onShowMessage}
-                buttonTitle="Pesquisar profissional"
+                buttonTitle="Adicionar profissional"
                 onSetProfessionals={setResponsibles}
                 validationMessage="Esta pessoa já é um profissional"
             />

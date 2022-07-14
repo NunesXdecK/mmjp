@@ -227,7 +227,7 @@ export default function PropertyForm(props: PropertyFormProps) {
                 isMultipleSelect={true}
                 persons={property.owners}
                 onShowMessage={props.onShowMessage}
-                buttonTitle="Pesquisar proprietário"
+                buttonTitle="Adicionar proprietário"
                 subtitle="Selecione os proprietários"
                 onSetPersons={handleSetPropertyOwners}
                 validationMessage="Esta pessoa, ou empresa já é um proprietário"

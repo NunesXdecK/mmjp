@@ -39,6 +39,11 @@ export default function Properties() {
         querySnapshotProjectPayment.forEach((doc) => {
             projectPaymentsLocal = [...projectPaymentsLocal, doc.data()]
         })
+
+        projectPaymentsLocal = projectPaymentsLocal.sort((elementOne: ProjectPayment, elementTwo: ProjectPayment) => {
+            return elementOne.index - elementTwo.index
+        })
+
         setProject(project)
         setProjectPayments(projectPaymentsLocal)
         setTitle("Editar pagamento")

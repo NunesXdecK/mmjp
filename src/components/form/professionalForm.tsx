@@ -195,7 +195,7 @@ export default function ProfessionalForm(props: ProfessionalFormProps) {
                 onSetPersons={setPersons}
                 subtitle="Selecione a pessoa"
                 onShowMessage={props.onShowMessage}
-                buttonTitle="Pesquisar profissional"
+                buttonTitle="Adicionar profissional"
                 validationMessage="Esta pessoa já é um proprietário"
             />
 

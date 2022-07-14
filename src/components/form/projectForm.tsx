@@ -192,11 +192,11 @@ export default function ProjectForm(props: ProjectFormProps) {
             <SelectPersonCompanyForm
                 title="Clientes"
                 isLoading={isLoading}
-                isMultipleSelect={true}
+                isMultipleSelect={false}
                 persons={project.clients}
                 onShowMessage={props.onShowMessage}
-                buttonTitle="Pesquisar clientes"
-                subtitle="Selecione os clientes"
+                buttonTitle="Adicionar cliente"
+                subtitle="Selecione o cliente"
                 onSetPersons={handleSetProjectClients}
                 validationMessage="Esta pessoa, ou empresa já é um cliente"
             />
@@ -206,9 +206,9 @@ export default function ProjectForm(props: ProjectFormProps) {
                 isMultipleSelect={true}
                 title="Propriedades"
                 properties={project.properties}
-                subtitle="Selecione a propriedade"
+                subtitle="Selecione as propriedades"
                 onShowMessage={props.onShowMessage}
-                buttonTitle="Pesquisar propriedade"
+                buttonTitle="Adicionar propriedades"
                 onSetProperties={handleSetProjectProperties}
                 validationMessage="Esta propriedade já está selecionada"
             />
@@ -220,7 +220,7 @@ export default function ProjectForm(props: ProjectFormProps) {
                 professionals={professionals}
                 subtitle="Selecione o profissional"
                 onShowMessage={props.onShowMessage}
-                buttonTitle="Pesquisar profissional"
+                buttonTitle="Adicionar profissional"
                 onSetProfessionals={setProfessionals}
                 validationMessage="Esta pessoa já é um profissional"
             />

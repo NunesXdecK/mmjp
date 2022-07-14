@@ -203,7 +203,7 @@ export default function CompanyForm(props: CompanyFormProps) {
                 isMultipleSelect={true}
                 persons={company.owners}
                 onShowMessage={props.onShowMessage}
-                buttonTitle="Pesquisar proprietário"
+                buttonTitle="Adicionar proprietário"
                 subtitle="Selecione os proprietários"
                 onSetPersons={handleSetCompanyOwners}
                 validationMessage="Esta pessoa já é um proprietário"

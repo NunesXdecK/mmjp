@@ -4,9 +4,12 @@ import { useState } from "react";
 import Button from "../button/button";
 import FormRowColumn from "./formRowColumn";
 import InputText from "../inputText/inputText";
+import WindowModal from "../modal/windowModal";
 import SelectProjectForm from "./selectProjectForm";
 import InputCheckbox from "../inputText/inputCheckbox";
+import { handleNewDateToUTC } from "../../util/dateUtils";
 import { FeedbackMessage } from "../modal/feedbackMessageModal";
+import { handleMountNumberCurrency } from "../../util/maskUtil";
 import { PencilAltIcon, TrashIcon } from "@heroicons/react/outline";
 import InputTextAutoComplete from "../inputText/inputTextAutocomplete";
 import { NOT_NULL_MARK, NUMBER_MARK } from "../../util/patternValidationUtil";
@@ -15,8 +18,6 @@ import { ProjectConversor, ProjectPaymentConversor } from "../../db/converters";
 import { addDoc, collection, deleteDoc, doc, updateDoc } from "firebase/firestore";
 import { defaultProjectPayment, Project, ProjectPayment } from "../../interfaces/objectInterfaces";
 import { db, PROJECT_COLLECTION_NAME, PROJECT_PAYMENT_COLLECTION_NAME } from "../../db/firebaseDB";
-import WindowModal from "../modal/windowModal";
-import { handleNewDateToUTC } from "../../util/dateUtils";
 
 interface ProjectPaymentFormProps {
     title?: string,
@@ -62,6 +63,7 @@ export default function ProjectPaymentForm(props: ProjectPaymentFormProps) {
     }
 
     const handleEdit = (element, index) => {
+        setIsFormValid(true)
         element = { ...element, index: index }
         setProjectPayment(oldProjectPayment => element)
     }
@@ -82,6 +84,7 @@ export default function ProjectPaymentForm(props: ProjectPaymentFormProps) {
 
         const feedbackMessage = { messages: ["Removido com sucesso!"], messageType: "SUCCESS" }
         setProjectPayment({ ...defaultProjectPayment, project: projects[0] })
+        setIsOpen(false)
         if (props.onShowMessage) {
             props.onShowMessage(feedbackMessage)
         }
@@ -102,7 +105,7 @@ export default function ProjectPaymentForm(props: ProjectPaymentFormProps) {
         const isValid = handleProjectPaymentValidationForDB(projectPaymentForDB)
         if (isValid.validation) {
             if (projectPaymentForDB.index > -1) {
-                projectPaymentForDB = { ...projectPaymentForDB, project: projects[0] }
+                projectPaymentForDB = { ...projectPaymentForDB, project: projects[0], description: projectPaymentForDB.description.trim() }
                 const updatedProjectPaymentForDB = [
                     ...localProjectPayments.slice(0, projectPaymentForDB.index),
                     projectPaymentForDB,
@@ -110,7 +113,7 @@ export default function ProjectPaymentForm(props: ProjectPaymentFormProps) {
                 ]
                 setProjectPayments(oldProjectPayments => updatedProjectPaymentForDB)
             } else {
-                projectPaymentForDB = { ...projectPaymentForDB, project: projects[0] }
+                projectPaymentForDB = { ...projectPaymentForDB, project: projects[0], description: projectPaymentForDB.description.trim() }
                 setProjectPayments(oldProjectPayments => [...oldProjectPayments, projectPaymentForDB])
             }
             setProjectPayment({ ...defaultProjectPayment, project: projects[0] })
@@ -197,7 +200,7 @@ export default function ProjectPaymentForm(props: ProjectPaymentFormProps) {
                 isMultipleSelect={false}
                 onSetProjects={setProjects}
                 subtitle="Selecione o projeto"
-                buttonTitle="Pesquisar projeto"
+                buttonTitle="Adicionar projeto"
                 onShowMessage={props.onShowMessage}
                 validationMessage="Esta projeto já foi selecionado"
             />
@@ -270,34 +273,40 @@ export default function ProjectPaymentForm(props: ProjectPaymentFormProps) {
                 subtitle="">
                 {projectPayments.map((element: ProjectPayment, index) => (
                     <FormRow className="shadow-md" key={index + element.value}>
-                        <FormRowColumn unit="6" className="flex justify-between content-center">
-                            <span className="self-center">{index + 1}</span>
-                            {element.payed ?
-                                (<p className="px-2 py-1 rounded-md bg-green-600 text-white self-center">Pago</p>)
-                                :
-                                (<p className="px-2 py-1 invisible">Pago</p>)
-                            }
-                            <p className="self-center">{element.description}</p>
-                            <p className="self-center">{element.value}</p>
-                            <div className="self-center">
-                                <Button
-                                    className="ml-2"
-                                    onClick={() => handleEdit(element, index)}
-                                    isLoading={isLoading}
-                                    isDisabled={isLoading}
-                                >
-                                    <PencilAltIcon className="text-white block h-4 w-4" aria-hidden="true" />
-                                </Button>
-                                <Button
-                                    color="red"
-                                    className="ml-1"
-                                    onClick={() => setProjectPayment(element)}
-                                    isLoading={isLoading}
-                                    isDisabled={isLoading}
-                                >
-                                    <TrashIcon className="text-white block h-4 w-4" aria-hidden="true" />
-                                </Button>
+                        <FormRowColumn unit="6" className="flex flex-col sm:flex-row justify-between content-center">
+                            <div className="self-center flex sm:flex-row">
+                                <span className="mr-2 self-center">{index + 1}</span>
+                                {element.payed ?
+                                    (<p className="px-2 py-1 ml-2 rounded-md bg-green-600 text-white self-center">Pago</p>)
+                                    :
+                                    (<p className="px-2 py-1 ml-2 invisible">Pago</p>)
+                                }
+                                {element.description && <span className="ml-2">{element.description}</span>}
+                                {element.value && <span className="ml-2"> R$ {handleMountNumberCurrency(element.value, ".", ",", 3, 2)}</span>}
                             </div>
+                            {!element.payed && (
+                                <div className="w-full sm:w-auto self-center mt-2 sm:mt-0 flex justify-between">
+                                    <Button
+                                        onClick={() => handleEdit(element, index)}
+                                        isLoading={isLoading}
+                                        isDisabled={isLoading}
+                                    >
+                                        <PencilAltIcon className="text-white block h-5 w-5" aria-hidden="true" />
+                                    </Button>
+                                    <Button
+                                        color="red"
+                                        className="ml-2"
+                                        onClick={() => {
+                                            setProjectPayment(element)
+                                            setIsOpen(true)
+                                        }}
+                                        isLoading={isLoading}
+                                        isDisabled={isLoading}
+                                    >
+                                        <TrashIcon className="text-white block h-5 w-5" aria-hidden="true" />
+                                    </Button>
+                                </div>
+                            )}
                         </FormRowColumn>
                     </FormRow>
                 ))}
@@ -332,9 +341,8 @@ export default function ProjectPaymentForm(props: ProjectPaymentFormProps) {
                 isOpen={isOpen}
                 setIsOpen={setIsOpen}>
                 <p>Deseja realmente deletar este Pagamento {projectPayment.description}?</p>
-                <div className="flex content-between">
+                <div className="flex mt-10 justify-between content-between">
                     <Button
-                        color="red"
                         onClick={() => setIsOpen(false)}
                     >
                         Voltar
