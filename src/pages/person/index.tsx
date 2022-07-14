@@ -69,6 +69,7 @@ export default function Persons() {
                 />
             ) : (
                 <PersonForm
+                    canMultiple
                     isBack={true}
                     person={person}
                     onBack={handleBackClick}

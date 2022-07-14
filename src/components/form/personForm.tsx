@@ -9,6 +9,7 @@ import { OldDataForm } from "./oldDataForm"
 import InputText from "../inputText/inputText"
 import InputSelect from "../inputText/inputSelect"
 import { PersonConversor } from "../../db/converters"
+import InputCheckbox from "../inputText/inputCheckbox"
 import { handleNewDateToUTC } from "../../util/dateUtils"
 import { FeedbackMessage } from "../modal/feedbackMessageModal"
 import { db, PERSON_COLLECTION_NAME } from "../../db/firebaseDB"
@@ -17,12 +18,12 @@ import { handlePersonValidationForDB } from "../../util/validationUtil"
 import { defaultPerson, Person } from "../../interfaces/objectInterfaces"
 import { addDoc, collection, doc, getDocs, updateDoc } from "firebase/firestore"
 import { CPF_MARK, TELEPHONE_MARK, TEXT_NOT_NULL_MARK } from "../../util/patternValidationUtil"
-import InputCheckbox from "../inputText/inputCheckbox"
 
 interface PersonFormProps {
     title?: string,
     subtitle?: string,
     isBack?: boolean,
+    canMultiple?: boolean,
     isForDisable?: boolean,
     isForOldRegister?: boolean,
     person?: Person,
@@ -139,7 +140,7 @@ export default function PersonForm(props: PersonFormProps) {
                     props.onShowMessage(feedbackMessage)
                 }
             }
-            
+
             if (!isMultiple && props.onAfterSave) {
                 props.onAfterSave(feedbackMessage, personForDB)
             }
@@ -167,19 +168,21 @@ export default function PersonForm(props: PersonFormProps) {
                 <Form
                     title={props.title}
                     subtitle={props.subtitle}>
-
-                    <FormRow>
-                        <FormRowColumn unit="6">
-                            <InputCheckbox
-                                id="multiple"
-                                value={isMultiple}
-                                isLoading={isLoading}
-                                onSetText={setIsMultiple}
-                                title="Cadastro multiplo?"
-                                isDisabled={props.isForDisable}
-                            />
-                        </FormRowColumn>
-                    </FormRow>
+                        
+                    {props.canMultiple && (
+                        <FormRow>
+                            <FormRowColumn unit="6">
+                                <InputCheckbox
+                                    id="multiple"
+                                    value={isMultiple}
+                                    isLoading={isLoading}
+                                    onSetText={setIsMultiple}
+                                    title="Cadastro multiplo?"
+                                    isDisabled={props.isForDisable}
+                                />
+                            </FormRowColumn>
+                        </FormRow>
+                    )}
 
                     <FormRow>
                         <FormRowColumn unit="4">

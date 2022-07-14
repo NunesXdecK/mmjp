@@ -6,9 +6,10 @@ import IOSModal from "../modal/iosModal";
 import FormRowColumn from "./formRowColumn";
 import PersonList from "../list/personList";
 import InputText from "../inputText/inputText";
-import { Person } from "../../interfaces/objectInterfaces";
+import { defaultPerson, Person } from "../../interfaces/objectInterfaces";
 import { FeedbackMessage } from "../modal/feedbackMessageModal";
 import { handleMaskCPF, handleRemoveCPFMask } from "../../util/maskUtil";
+import PersonForm from "./personForm";
 
 interface SelectPersonFormProps {
     id?: string,
@@ -27,11 +28,34 @@ interface SelectPersonFormProps {
 
 export default function SelectPersonForm(props: SelectPersonFormProps) {
     const [isOpen, setIsOpen] = useState(false)
+    const [isRegister, setIsRegister] = useState(false)
+
+    const [person, setPerson] = useState<Person>(defaultPerson)
+
+    const handleNewClick = () => {
+        setIsRegister(true)
+        setPerson(defaultPerson)
+    }
+
+    const handleBackClick = (event?) => {
+        if (event) {
+            event.preventDefault()
+        }
+        setPerson(defaultPerson)
+        setIsRegister(false)
+    }
+
+    const handleAfterSave = (feedbackMessage: FeedbackMessage, person) => {
+        handleAddPerson(person)
+        handleBackClick()
+        if (props.onShowMessage) {
+            props.onShowMessage(feedbackMessage)
+        }
+    }
 
     const handleAddPerson = (person) => {
         let localPersons = props.persons
         let canAdd = true
-
         if (props.isMultipleSelect) {
             localPersons?.map((element, index) => {
                 if (handleRemoveCPFMask(element.cpf) === handleRemoveCPFMask(person.cpf)) {
@@ -136,8 +160,25 @@ export default function SelectPersonForm(props: SelectPersonFormProps) {
             <IOSModal
                 isOpen={isOpen}
                 setIsOpen={setIsOpen}>
-                <PersonList
-                    onListItemClick={handleAddPerson} />
+                <>
+                    {!isRegister ? (
+                        <PersonList
+                            haveNew={true}
+                            onNewClick={handleNewClick}
+                            onShowMessage={props.onShowMessage}
+                            onListItemClick={handleAddPerson} />
+                    ) : (
+                        <PersonForm
+                            isBack={true}
+                            person={person}
+                            canMultiple={false}
+                            onBack={handleBackClick}
+                            title="Informações pessoais"
+                            onAfterSave={handleAfterSave}
+                            onShowMessage={props.onShowMessage}
+                            subtitle="Dados importantes sobre a pessoa" />
+                    )}
+                </>
             </IOSModal>
         </>
     )
