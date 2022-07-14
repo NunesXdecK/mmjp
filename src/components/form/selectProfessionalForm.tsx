@@ -18,6 +18,7 @@ interface SelectProfessionalFormProps {
     validation?: string,
     buttonTitle?: string,
     validationMessage?: string,
+    isLocked?: boolean,
     isLoading?: boolean,
     isMultipleSelect?: boolean,
     professionals?: Professional[],
@@ -103,18 +104,20 @@ export default function SelectProfessionalForm(props: SelectProfessionalFormProp
             <Form
                 title={props.title}
                 subtitle={props.subtitle}>
-                <FormRow>
-                    <FormRowColumn unit="6" className="justify-self-end">
-                        <Button
-                            type="submit"
-                            isLoading={props.isLoading}
-                            isDisabled={props.isLoading}
-                            onClick={() => setIsOpen(true)}
-                        >
-                            {props.buttonTitle}
-                        </Button>
-                    </FormRowColumn>
-                </FormRow>
+                {!props.isLocked && (
+                    <FormRow>
+                        <FormRowColumn unit="6" className="justify-self-end">
+                            <Button
+                                type="submit"
+                                isLoading={props.isLoading}
+                                isDisabled={props.isLoading}
+                                onClick={() => setIsOpen(true)}
+                            >
+                                {props.buttonTitle}
+                            </Button>
+                        </FormRowColumn>
+                    </FormRow>
+                )}
 
                 {props.professionals?.map((element, index) => (
                     <form key={index + element.dateInsertUTC}
@@ -140,17 +143,19 @@ export default function SelectProfessionalForm(props: SelectProfessionalFormProp
                                 />
                             </FormRowColumn>
 
-                            <FormRowColumn unit="1"
-                                className="self-end justify-self-end">
-                                <Button
-                                    type="submit"
-                                    color="red"
-                                    isLoading={props.isLoading}
-                                    isDisabled={props.isLoading}
-                                >
-                                    X
-                                </Button>
-                            </FormRowColumn>
+                            {!props.isLocked && (
+                                <FormRowColumn unit="1"
+                                    className="self-end justify-self-end">
+                                    <Button
+                                        type="submit"
+                                        color="red"
+                                        isLoading={props.isLoading}
+                                        isDisabled={props.isLoading}
+                                    >
+                                        X
+                                    </Button>
+                                </FormRowColumn>
+                            )}
                         </FormRow>
                     </form>
                 ))}

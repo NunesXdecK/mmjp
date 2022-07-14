@@ -22,12 +22,13 @@ interface CompanyFormProps {
     title?: string,
     subtitle?: string,
     isBack?: boolean,
+    canMultiple?: boolean,
     isForSelect?: boolean,
     isForDisable?: boolean,
     isForOldRegister?: boolean,
     company?: Company,
     onBack?: (object) => void,
-    onAfterSave?: (object) => void,
+    onAfterSave?: (object, any?) => void,
     onSelectPerson?: (object) => void,
     onShowMessage?: (FeedbackMessage) => void,
 }
@@ -86,12 +87,12 @@ export default function CompanyForm(props: CompanyFormProps) {
             }
 
             companyForDB = handlePrepareCompanyForDB(companyForDB)
-
             const isSave = nowID === ""
             if (isSave) {
                 try {
                     const docRef = await addDoc(companyCollection, companyForDB)
                     setCompany({ ...company, id: docRef.id })
+                    companyForDB = { ...companyForDB, id: docRef.id }
                     feedbackMessage = { ...feedbackMessage, messages: ["Salvo com sucesso!"], messageType: "SUCCESS" }
                 } catch (e) {
                     feedbackMessage = { ...feedbackMessage, messages: ["Erro em salvar!"], messageType: "ERROR" }
@@ -117,7 +118,7 @@ export default function CompanyForm(props: CompanyFormProps) {
             }
 
             if (!isMultiple && props.onAfterSave) {
-                props.onAfterSave(feedbackMessage)
+                props.onAfterSave(feedbackMessage, companyForDB)
             }
             {/*
             handleListItemClick(defaultCompany)
@@ -143,18 +144,20 @@ export default function CompanyForm(props: CompanyFormProps) {
                     title={props.title}
                     subtitle={props.subtitle}>
 
-                    <FormRow>
-                        <FormRowColumn unit="6">
-                            <InputCheckbox
-                                id="multiple"
-                                value={isMultiple}
-                                isLoading={isLoading}
-                                onSetText={setIsMultiple}
-                                title="Cadastro multiplo?"
-                                isDisabled={props.isForDisable}
-                            />
-                        </FormRowColumn>
-                    </FormRow>
+                    {props.canMultiple && (
+                        <FormRow>
+                            <FormRowColumn unit="6">
+                                <InputCheckbox
+                                    id="multiple"
+                                    value={isMultiple}
+                                    isLoading={isLoading}
+                                    onSetText={setIsMultiple}
+                                    title="Cadastro multiplo?"
+                                    isDisabled={props.isForDisable}
+                                />
+                            </FormRowColumn>
+                        </FormRow>
+                    )}
 
                     <FormRow>
                         <FormRowColumn unit="4">

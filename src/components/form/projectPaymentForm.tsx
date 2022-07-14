@@ -193,6 +193,7 @@ export default function ProjectPaymentForm(props: ProjectPaymentFormProps) {
     return (
         <>
             <SelectProjectForm
+                isLocked
                 title="Projeto"
                 projects={projects}
                 isLoading={isLoading}

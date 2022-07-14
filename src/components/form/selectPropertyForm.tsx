@@ -18,6 +18,7 @@ interface SelectPropertyFormProps {
     validation?: string,
     buttonTitle?: string,
     validationMessage?: string,
+    isLocked?: boolean,
     isLoading?: boolean,
     isMultipleSelect?: boolean,
     properties?: Property[],
@@ -103,18 +104,21 @@ export default function SelectPropertyForm(props: SelectPropertyFormProps) {
             <Form
                 title={props.title}
                 subtitle={props.subtitle}>
-                <FormRow>
-                    <FormRowColumn unit="6" className="justify-self-end">
-                        <Button
-                            type="submit"
-                            isLoading={props.isLoading}
-                            isDisabled={props.isLoading}
-                            onClick={() => setIsOpen(true)}
-                        >
-                            {props.buttonTitle}
-                        </Button>
-                    </FormRowColumn>
-                </FormRow>
+
+                {!props.isLocked && (
+                    <FormRow>
+                        <FormRowColumn unit="6" className="justify-self-end">
+                            <Button
+                                type="submit"
+                                isLoading={props.isLoading}
+                                isDisabled={props.isLoading}
+                                onClick={() => setIsOpen(true)}
+                            >
+                                {props.buttonTitle}
+                            </Button>
+                        </FormRowColumn>
+                    </FormRow>
+                )}
 
                 {props.properties?.map((element, index) => (
                     <form key={index + element.dateInsertUTC}
@@ -130,17 +134,19 @@ export default function SelectPropertyForm(props: SelectPropertyFormProps) {
                                 />
                             </FormRowColumn>
 
-                            <FormRowColumn unit="2"
-                                className="self-end justify-self-end">
-                                <Button
-                                    type="submit"
-                                    color="red"
-                                    isLoading={props.isLoading}
-                                    isDisabled={props.isLoading}
-                                >
-                                    X
-                                </Button>
-                            </FormRowColumn>
+                            {!props.isLocked && (
+                                <FormRowColumn unit="2"
+                                    className="self-end justify-self-end">
+                                    <Button
+                                        type="submit"
+                                        color="red"
+                                        isLoading={props.isLoading}
+                                        isDisabled={props.isLoading}
+                                    >
+                                        X
+                                    </Button>
+                                </FormRowColumn>
+                            )}
                         </FormRow>
                     </form>
                 ))}
@@ -156,7 +162,7 @@ export default function SelectPropertyForm(props: SelectPropertyFormProps) {
                             onNewClick={handleNewClick}
                             onListItemClick={handleAdd}
                             onShowMessage={props.onShowMessage}
-                             />
+                        />
                     ) : (
                         <PropertyForm
                             isBack={true}

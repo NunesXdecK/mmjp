@@ -17,7 +17,10 @@ const contentClassName = "sm:px-4 sm:py-5 mt-1 text-sm text-gray-900"
 const titleClassName = "sm:px-4 sm:py-5 text-md leading-6 font-medium text-gray-900"
 
 interface PersonCompanyListProps {
+    haveNew?: boolean,
     isOldBase?: boolean,
+    onNewClickPerson?: () => void,
+    onNewClickCompany?: () => void,
     onListItemClick?: (any) => void,
     onShowMessage?: (FeedbackMessage) => void,
 }
@@ -204,6 +207,26 @@ export default function PersonCompanyList(props: PersonCompanyListProps) {
                         <h3 className="text-lg leading-6 font-medium text-gray-900">Lista de pessoas e empresas</h3>
                         <p className={subtitle}>subtitulo lindo</p>
                     </div>
+
+                    
+                    {props.haveNew && (
+                        <div className="self-center text-right">
+                            <Button
+                                isLoading={isLoading}
+                                isDisabled={isLoading}
+                                onClick={props.onNewClickPerson}>
+                                Nova pessoa
+                            </Button>
+
+                            <Button
+                            className="mt-2"
+                                isLoading={isLoading}
+                                isDisabled={isLoading}
+                                onClick={props.onNewClickCompany}>
+                                Nova empresa
+                            </Button>
+                        </div>
+                    )}
                 </div>
 
                 <form className="mt-5 flex" onSubmit={handleFilterList}>
@@ -253,7 +276,7 @@ export default function PersonCompanyList(props: PersonCompanyListProps) {
                         {"cpf" in element && (
                             <>
                                 <div><span className={contentClassName}>{handleMaskCPF(element.cpf)}</span></div>
-                                <div><span className={contentClassName}>{element.rg}</span></div>
+                                {element.rg && (<div><span className={contentClassName}>{element.rg}</span></div>)}
                             </>
                         )}
                         {"cnpj" in element && (

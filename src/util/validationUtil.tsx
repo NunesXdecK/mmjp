@@ -1,9 +1,22 @@
 import { Company, Person, Professional, Project, ProjectPayment, ProjectStage, Property } from "../interfaces/objectInterfaces"
-import { CPF_PATTERN, ONLY_CHARACTERS_PATTERN, ONLY_CHARACTERS_PATTERN_TWO } from "./patternValidationUtil"
+import { handleRemoveCNPJMask } from "./maskUtil"
+import { CNPJ_PATTERN, CPF_PATTERN, ONLY_CHARACTERS_PATTERN, ONLY_CHARACTERS_PATTERN_TWO, ONLY_SPECIAL_FOR_NUMBER_PATTERN } from "./patternValidationUtil"
 
 interface ValidationReturn {
     messages: string[],
     validation: boolean,
+}
+
+export const handleValidationCNPJ = (text) => {
+    let test = false
+    if (text) {
+        text = text?.trim()
+        text = handleRemoveCNPJMask(text)
+        text = text?.replace(new RegExp(ONLY_SPECIAL_FOR_NUMBER_PATTERN), "")
+        text = text?.replace(new RegExp(ONLY_CHARACTERS_PATTERN), "")
+        test = new RegExp(CNPJ_PATTERN).test(text)
+    }
+    return test
 }
 
 export const handleValidationCPF = (text) => {
@@ -78,12 +91,19 @@ export const handleProfessionalValidationForDB = (professional: Professional) =>
 export const handleCompanyValidationForDB = (company: Company) => {
     let validation: ValidationReturn = { validation: false, messages: [] }
     let nameCheck = handleValidationNotNull(company.name)
+    let cnpjCheck = true
 
     if (!nameCheck) {
         validation = { ...validation, messages: [...validation.messages, "O campo nome está em branco."] }
     }
 
-    validation = { ...validation, validation: nameCheck }
+    
+    if (!handleValidationCPF(company?.cnpj)) {
+        validation = { ...validation, messages: [...validation.messages, "O campo CNPJ está invalido."] }
+        cnpjCheck = false
+    }
+
+    validation = { ...validation, validation: nameCheck && cnpjCheck }
     return validation
 }
 

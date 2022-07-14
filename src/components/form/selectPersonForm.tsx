@@ -19,6 +19,7 @@ interface SelectPersonFormProps {
     validation?: string,
     buttonTitle?: string,
     validationMessage?: string,
+    isLocked?: boolean,
     isLoading?: boolean,
     isMultipleSelect?: boolean,
     persons?: Person[],
@@ -103,18 +104,20 @@ export default function SelectPersonForm(props: SelectPersonFormProps) {
             <Form
                 title={props.title}
                 subtitle={props.subtitle}>
-                <FormRow>
-                    <FormRowColumn unit="6" className="justify-self-end">
-                        <Button
-                            type="submit"
-                            isLoading={props.isLoading}
-                            isDisabled={props.isLoading}
-                            onClick={() => setIsOpen(true)}
-                        >
-                            {props.buttonTitle}
-                        </Button>
-                    </FormRowColumn>
-                </FormRow>
+                {!props.isLocked && (
+                    <FormRow>
+                        <FormRowColumn unit="6" className="justify-self-end">
+                            <Button
+                                type="submit"
+                                isLoading={props.isLoading}
+                                isDisabled={props.isLoading}
+                                onClick={() => setIsOpen(true)}
+                            >
+                                {props.buttonTitle}
+                            </Button>
+                        </FormRowColumn>
+                    </FormRow>
+                )}
 
                 {props.persons?.map((element, index) => (
                     <form key={index + element.dateInsertUTC + element.cpf}
@@ -141,17 +144,19 @@ export default function SelectPersonForm(props: SelectPersonFormProps) {
                                 />
                             </FormRowColumn>
 
-                            <FormRowColumn unit="1"
-                                className="self-end justify-self-end">
-                                <Button
-                                    type="submit"
-                                    color="red"
-                                    isLoading={props.isLoading}
-                                    isDisabled={props.isLoading}
-                                >
-                                    X
-                                </Button>
-                            </FormRowColumn>
+                            {!props.isLocked && (
+                                <FormRowColumn unit="1"
+                                    className="self-end justify-self-end">
+                                    <Button
+                                        type="submit"
+                                        color="red"
+                                        isLoading={props.isLoading}
+                                        isDisabled={props.isLoading}
+                                    >
+                                        X
+                                    </Button>
+                                </FormRowColumn>
+                            )}
                         </FormRow>
                     </form>
                 ))}
@@ -167,7 +172,7 @@ export default function SelectPersonForm(props: SelectPersonFormProps) {
                             onNewClick={handleNewClick}
                             onListItemClick={handleAdd}
                             onShowMessage={props.onShowMessage}
-                             />
+                        />
                     ) : (
                         <PersonForm
                             isBack={true}

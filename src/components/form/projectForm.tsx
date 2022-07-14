@@ -153,6 +153,7 @@ export default function ProjectForm(props: ProjectFormProps) {
                 try {
                     const docRef = await addDoc(projectCollection, projectForDB)
                     setProject({ ...project, id: docRef.id })
+                    projectForDB = { ...projectForDB, id: docRef.id }
                     feedbackMessage = { ...feedbackMessage, messages: ["Salvo com sucesso!"], messageType: "SUCCESS" }
                     handleListItemClick(defaultProject)
                 } catch (e) {

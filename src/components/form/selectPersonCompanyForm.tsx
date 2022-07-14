@@ -2,13 +2,15 @@ import Form from "./form";
 import FormRow from "./formRow";
 import { useState } from "react";
 import Button from "../button/button";
+import PersonForm from "./personForm";
+import CompanyForm from "./companyForm";
 import IOSModal from "../modal/iosModal";
 import FormRowColumn from "./formRowColumn";
 import InputText from "../inputText/inputText";
-import { Company, Person } from "../../interfaces/objectInterfaces";
+import PersonCompanyList from "../list/personCompanyList";
 import { FeedbackMessage } from "../modal/feedbackMessageModal";
 import { handleMaskCNPJ, handleMaskCPF, handleRemoveCPFMask } from "../../util/maskUtil";
-import PersonCompanyList from "../list/personCompanyList";
+import { Company, defaultCompany, defaultPerson, Person } from "../../interfaces/objectInterfaces";
 
 interface SelectPersonCompanyFormProps {
     id?: string,
@@ -18,6 +20,7 @@ interface SelectPersonCompanyFormProps {
     validation?: string,
     buttonTitle?: string,
     validationMessage?: string,
+    isLocked?: boolean,
     isLoading?: boolean,
     isMultipleSelect?: boolean,
     persons?: Person[],
@@ -27,8 +30,43 @@ interface SelectPersonCompanyFormProps {
 
 export default function SelectPersonCompanyForm(props: SelectPersonCompanyFormProps) {
     const [isOpen, setIsOpen] = useState(false)
+    const [isRegisterPerson, setIsRegisterPerson] = useState(false)
+    const [isRegisterCompany, setIsRegisterCompany] = useState(false)
 
-    const handleAddPerson = (person) => {
+    const [person, setPerson] = useState<Person>(defaultPerson)
+    const [company, setCompany] = useState<Person>(defaultCompany)
+
+    const handleNewClickPerson = () => {
+        setIsRegisterCompany(false)
+        setIsRegisterPerson(true)
+        setPerson(defaultPerson)
+    }
+
+    const handleNewClickCompany = () => {
+        setIsRegisterCompany(true)
+        setIsRegisterPerson(false)
+        setCompany(defaultCompany)
+    }
+
+    const handleBackClick = (event?) => {
+        if (event) {
+            event.preventDefault()
+        }
+        setPerson(defaultPerson)
+        setCompany(defaultCompany)
+        setIsRegisterCompany(false)
+        setIsRegisterPerson(false)
+    }
+
+    const handleAfterSave = (feedbackMessage: FeedbackMessage, element) => {
+        handleAdd(element)
+        handleBackClick()
+        if (props.onShowMessage) {
+            props.onShowMessage(feedbackMessage)
+        }
+    }
+
+    const handleAdd = (person) => {
         let localPersons = props.persons
         let canAdd = true
 
@@ -79,18 +117,21 @@ export default function SelectPersonCompanyForm(props: SelectPersonCompanyFormPr
             <Form
                 title={props.title}
                 subtitle={props.subtitle}>
-                <FormRow>
-                    <FormRowColumn unit="6" className="justify-self-end">
-                        <Button
-                            type="submit"
-                            isLoading={props.isLoading}
-                            isDisabled={props.isLoading}
-                            onClick={() => setIsOpen(true)}
-                        >
-                            {props.buttonTitle}
-                        </Button>
-                    </FormRowColumn>
-                </FormRow>
+
+                {!props.isLocked && (
+                    <FormRow>
+                        <FormRowColumn unit="6" className="justify-self-end">
+                            <Button
+                                type="submit"
+                                isLoading={props.isLoading}
+                                isDisabled={props.isLoading}
+                                onClick={() => setIsOpen(true)}
+                            >
+                                {props.buttonTitle}
+                            </Button>
+                        </FormRowColumn>
+                    </FormRow>
+                )}
 
                 {props.persons?.map((element: Person | Company, index) => (
                     <form key={index + element.dateInsertUTC}
@@ -133,17 +174,19 @@ export default function SelectPersonCompanyForm(props: SelectPersonCompanyFormPr
                                 </FormRowColumn>
                             )}
 
-                            <FormRowColumn unit="1"
-                                className="self-end justify-self-end">
-                                <Button
-                                    type="submit"
-                                    color="red"
-                                    isLoading={props.isLoading}
-                                    isDisabled={props.isLoading}
-                                >
-                                    X
-                                </Button>
-                            </FormRowColumn>
+                            {!props.isLocked && (
+                                <FormRowColumn unit="1"
+                                    className="self-end justify-self-end">
+                                    <Button
+                                        type="submit"
+                                        color="red"
+                                        isLoading={props.isLoading}
+                                        isDisabled={props.isLoading}
+                                    >
+                                        X
+                                    </Button>
+                                </FormRowColumn>
+                            )}
 
                         </FormRow>
                     </form>
@@ -153,8 +196,40 @@ export default function SelectPersonCompanyForm(props: SelectPersonCompanyFormPr
             <IOSModal
                 isOpen={isOpen}
                 setIsOpen={setIsOpen}>
-                <PersonCompanyList
-                    onListItemClick={handleAddPerson} />
+
+                {!isRegisterPerson && !isRegisterCompany && (
+                    <PersonCompanyList
+                        haveNew={true}
+                        onNewClickPerson={handleNewClickPerson}
+                        onNewClickCompany={handleNewClickCompany}
+                        onListItemClick={handleAdd}
+                        onShowMessage={props.onShowMessage}
+                    />
+                )}
+
+                {isRegisterPerson && (
+                    <PersonForm
+                        isBack={true}
+                        person={person}
+                        canMultiple={false}
+                        onBack={handleBackClick}
+                        title="Informações pessoais"
+                        onAfterSave={handleAfterSave}
+                        onShowMessage={props.onShowMessage}
+                        subtitle="Dados importantes sobre a pessoa" />
+                )}
+
+                {isRegisterCompany && (
+                    <CompanyForm
+                        isBack={true}
+                        company={company}
+                        canMultiple={false}
+                        onBack={handleBackClick}
+                        title="Informações pessoais"
+                        onAfterSave={handleAfterSave}
+                        onShowMessage={props.onShowMessage}
+                        subtitle="Dados importantes sobre a pessoa" />
+                )}
             </IOSModal>
         </>
     )

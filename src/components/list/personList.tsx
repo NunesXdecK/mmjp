@@ -231,7 +231,7 @@ export default function PersonList(props: PersonListProps) {
                             <div><span className={titleClassName}>{element.name}</span></div>
                         </div>
                         <div><span className={contentClassName}>{handleMaskCPF(element.cpf)}</span></div>
-                        <div><span className={contentClassName}>{element.rg}</span></div>
+                        {element.rg && (<div><span className={contentClassName}>{element.rg}</span></div>)}
                         <div className="mt-2 w-full flex justify-end">
                             <Button
                                 isHidden={element.name === ""}

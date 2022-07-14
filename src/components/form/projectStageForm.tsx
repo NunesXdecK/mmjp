@@ -88,6 +88,7 @@ export default function ProjectStageForm(props: ProjectStageFormProps) {
                 try {
                     const docRef = await addDoc(projectStageCollection, projectStageForDB)
                     setProjectStage({ ...projectStage, id: docRef.id })
+                    projectStageForDB = { ...projectStageForDB, id: docRef.id }
                     feedbackMessage = { ...feedbackMessage, messages: ["Salvo com sucesso!"], messageType: "SUCCESS" }
                     handleListItemClick(defaultProjectStage)
                 } catch (e) {
@@ -127,6 +128,7 @@ export default function ProjectStageForm(props: ProjectStageFormProps) {
     return (
         <>
             <SelectProjectForm
+                isLocked
                 title="Projeto"
                 projects={projects}
                 isLoading={isLoading}

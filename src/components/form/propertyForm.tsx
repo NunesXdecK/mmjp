@@ -98,6 +98,7 @@ export default function PropertyForm(props: PropertyFormProps) {
                 try {
                     const docRef = await addDoc(propertyCollection, propertyForDB)
                     setProperty({ ...property, id: docRef.id })
+                    propertyForDB = { ...propertyForDB, id: docRef.id }
                     feedbackMessage = { ...feedbackMessage, messages: ["Salvo com sucesso!"], messageType: "SUCCESS" }
                     handleListItemClick(defaultProperty)
                 } catch (e) {

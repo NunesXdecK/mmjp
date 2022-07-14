@@ -94,6 +94,7 @@ export default function ProfessionalForm(props: ProfessionalFormProps) {
                 try {
                     const docRef = await addDoc(professionalCollection, professionalForDB)
                     setProfessional({ ...professional, id: docRef.id })
+                    professionalForDB = { ...professionalForDB, id: docRef.id }
                     feedbackMessage = { ...feedbackMessage, messages: ["Salvo com sucesso!"], messageType: "SUCCESS" }
                     handleListItemClick(defaultProfessional)
                 } catch (e) {
