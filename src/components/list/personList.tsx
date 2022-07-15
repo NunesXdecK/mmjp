@@ -34,6 +34,7 @@ export default function PersonList(props: PersonListProps) {
     const [page, setPage] = useState(-1)
 
     const [isOpenShow, setIsOpenShow] = useState(false)
+    const [isOpenEdit, setIsOpenEdit] = useState(false)
     const [isOpenDelete, setIsOpenDelete] = useState(false)
     const [isLoading, setIsLoading] = useState(true)
     const [inputSearch, setInputSearch] = useState("")
@@ -54,10 +55,10 @@ export default function PersonList(props: PersonListProps) {
         setIsOpenDelete(false)
     }
 
-    const handleListItemClick = (element: Person) => {
+    const handleListItemClick = () => {
         setIsLoading(true)
-        if (element.name !== "" && element.cpf !== "") {
-            props.onListItemClick && props.onListItemClick(element)
+        if (person.name !== "" && person.cpf !== "") {
+            props.onListItemClick && props.onListItemClick(person)
         }
         setIsLoading(false)
     }
@@ -73,7 +74,6 @@ export default function PersonList(props: PersonListProps) {
     const handleFilterList = async (event?, first?) => {
         event?.preventDefault()
         setIsLoading(true)
-        setListItems([])
         let listItemsFiltered = []
         let arrayList: Person[] = []
 
@@ -245,6 +245,7 @@ export default function PersonList(props: PersonListProps) {
                 {listItems[page]?.map((element: Person, index) => (
                     <PersonItemList
                         person={element}
+                        isLoading={isLoading}
                         key={index.toString()}
                         canDelete={props.canDelete}
                         onDeleteClick={() => {
@@ -255,7 +256,10 @@ export default function PersonList(props: PersonListProps) {
                             setIsOpenShow(true)
                             setPerson((oldPerson) => element)
                         }}
-                        onEditClick={handleListItemClick}
+                        onEditClick={() => {
+                            setIsOpenEdit(true)
+                            setPerson((oldPerson) => element)
+                        }}
                     />
                 ))}
             </div>
@@ -283,7 +287,7 @@ export default function PersonList(props: PersonListProps) {
             <WindowModal
                 isOpen={isOpenDelete}
                 setIsOpen={setIsOpenDelete}>
-                <p>Deseja realmente deletar esta Pessoa {person.name}?</p>
+                <p className="text-center">Deseja realmente deletar esta Pessoa {person.name}?</p>
                 <div className="flex mt-10 justify-between content-between">
                     <Button
                         onClick={() => setIsOpenDelete(false)}
@@ -295,6 +299,24 @@ export default function PersonList(props: PersonListProps) {
                         onClick={() => handleRemove()}
                     >
                         Excluir
+                    </Button>
+                </div>
+            </WindowModal>
+
+            <WindowModal
+                isOpen={isOpenEdit}
+                setIsOpen={setIsOpenEdit}>
+                <p className="text-center">Deseja realmente editar esta Pessoa {person.name}?</p>
+                <div className="flex mt-10 justify-between content-between">
+                    <Button
+                        onClick={() => setIsOpenEdit(false)}
+                    >
+                        Voltar
+                    </Button>
+                    <Button
+                        onClick={() => handleListItemClick()}
+                    >
+                        Editar
                     </Button>
                 </div>
             </WindowModal>
