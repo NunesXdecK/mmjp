@@ -66,7 +66,7 @@ export default function PersonList(props: PersonListProps) {
     const handlePaginationMinus = () => {
         setPage(page - 1)
     }
-
+    
     const handlePaginationPlus = () => {
         setPage(page + 1)
     }
@@ -246,7 +246,7 @@ export default function PersonList(props: PersonListProps) {
                     <PersonItemList
                         person={element}
                         isLoading={isLoading}
-                        key={index.toString()}
+                        key={index.toString() + element.id + element.name}
                         canDelete={props.canDelete}
                         onDeleteClick={() => {
                             setIsOpenDelete(true)

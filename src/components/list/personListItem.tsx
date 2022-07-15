@@ -10,8 +10,8 @@ interface PersonItemListProps {
     person?: Person,
     isLoading?: boolean,
     canDelete?: boolean,
-    onEditClick?: (any) => void,
-    onSelectClick?: (any) => void,
+    onEditClick?: () => void,
+    onSelectClick?: () => void,
     onDeleteClick?: () => void,
 }
 
@@ -53,10 +53,10 @@ export default function PersonItemList(props: PersonItemListProps) {
                     <Transition.Root
                         show={isShowing}>
                         <Transition.Child
-                            enter="transform transition duration-[500ms]"
+                            enter="transform transition duration-500"
                             enterFrom="h-0"
                             enterTo="h-auto"
-                            leave="transform transition duration-[500ms]"
+                            leave="transform transition duration-500"
                             leaveFrom="h-auto"
                             leaveTo="h-0"
                         >
@@ -94,7 +94,7 @@ export default function PersonItemList(props: PersonItemListProps) {
                                                 className="mr-2 group"
                                                 onClick={(event) => {
                                                     if (props.onEditClick) {
-                                                        props.onEditClick(props.person)
+                                                        props.onEditClick()
                                                     }
                                                     event.stopPropagation()
                                                 }}
@@ -112,7 +112,7 @@ export default function PersonItemList(props: PersonItemListProps) {
                                                 className="group"
                                                 onClick={(event) => {
                                                     if (props.onSelectClick) {
-                                                        props.onSelectClick(props.person)
+                                                        props.onSelectClick()
                                                     }
                                                     event.stopPropagation()
                                                 }}
