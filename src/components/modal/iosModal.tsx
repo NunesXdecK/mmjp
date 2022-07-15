@@ -45,7 +45,6 @@ export default function IOSModal(props: IOSModalProps) {
                                 z-0 flex flex-col h-full
                                 bg-white rounded-t-lg shadow-xl
                                 `}>
-
                             <Transition.Child
                                 enter="ease-out duration-300"
                                 enterFrom="opacity-0"

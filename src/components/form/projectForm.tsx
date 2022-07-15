@@ -199,64 +199,26 @@ export default function ProjectForm(props: ProjectFormProps) {
 
     return (
         <>
-            {props.canMultiple && (
-                <Form>
-                    <FormRow>
-                        <FormRowColumn unit="6">
-                            <InputCheckbox
-                                id="multiple"
-                                value={isMultiple}
-                                isLoading={isLoading}
-                                onSetText={setIsMultiple}
-                                title="Cadastro multiplo?"
-                                isDisabled={props.isForDisable}
-                            />
-                        </FormRowColumn>
-                    </FormRow>
-                </Form>
-            )}
-
-            <SelectPersonCompanyForm
-                title="Clientes"
-                isLoading={isLoading}
-                isMultipleSelect={false}
-                persons={project.clients}
-                onShowMessage={props.onShowMessage}
-                buttonTitle="Adicionar cliente"
-                subtitle="Selecione o cliente"
-                onSetPersons={handleSetProjectClients}
-                validationMessage="Esta pessoa, ou empresa já é um cliente"
-            />
-
-            <SelectPropertyForm
-                isLoading={isLoading}
-                isMultipleSelect={true}
-                title="Propriedades"
-                properties={project.properties}
-                subtitle="Selecione as propriedades"
-                onShowMessage={props.onShowMessage}
-                buttonTitle="Adicionar propriedades"
-                onSetProperties={handleSetProjectProperties}
-                validationMessage="Esta propriedade já está selecionada"
-            />
-
-            <SelectProfessionalForm
-                isLoading={isLoading}
-                isMultipleSelect={false}
-                title="Profissional"
-                professionals={professionals}
-                subtitle="Selecione o profissional"
-                onShowMessage={props.onShowMessage}
-                buttonTitle="Adicionar profissional"
-                onSetProfessionals={setProfessionals}
-                validationMessage="Esta pessoa já é um profissional"
-            />
-
             <form
                 onSubmit={handleSave}>
                 <Form
                     title={props.title}
                     subtitle={props.subtitle}>
+
+                    {props.canMultiple && (
+                        <FormRow>
+                            <FormRowColumn unit="6">
+                                <InputCheckbox
+                                    id="multiple"
+                                    value={isMultiple}
+                                    isLoading={isLoading}
+                                    onSetText={setIsMultiple}
+                                    title="Cadastro multiplo?"
+                                    isDisabled={props.isForDisable}
+                                />
+                            </FormRowColumn>
+                        </FormRow>
+                    )}
 
                     <FormRow>
                         <FormRowColumn unit="4">
@@ -320,7 +282,48 @@ export default function ProjectForm(props: ProjectFormProps) {
                         </Button>
                     </div>
                 </Form>
+            </form>
 
+            <SelectPersonCompanyForm
+                title="Clientes"
+                isLoading={isLoading}
+                isMultipleSelect={false}
+                persons={project.clients}
+                onShowMessage={props.onShowMessage}
+                buttonTitle="Adicionar cliente"
+                subtitle="Selecione o cliente"
+                onSetPersons={handleSetProjectClients}
+                validationMessage="Esta pessoa, ou empresa já é um cliente"
+            />
+
+            <SelectPropertyForm
+                isLoading={isLoading}
+                isMultipleSelect={true}
+                title="Propriedades"
+                properties={project.properties}
+                subtitle="Selecione as propriedades"
+                onShowMessage={props.onShowMessage}
+                buttonTitle="Adicionar propriedades"
+                onSetProperties={handleSetProjectProperties}
+                validationMessage="Esta propriedade já está selecionada"
+            />
+
+            <SelectProfessionalForm
+                isLoading={isLoading}
+                isMultipleSelect={false}
+                title="Profissional"
+                professionals={professionals}
+                subtitle="Selecione o profissional"
+                onShowMessage={props.onShowMessage}
+                buttonTitle="Adicionar profissional"
+                onSetProfessionals={setProfessionals}
+                validationMessage="Esta pessoa já é um profissional"
+            />
+
+
+
+            <form
+                onSubmit={handleSave}>
                 <FormRow className="p-2">
                     <FormRowColumn unit="6" className="flex justify-between">
                         {props.isBack && (

@@ -285,29 +285,27 @@ export default function ProjectPaymentForm(props: ProjectPaymentFormProps) {
                                 {element.description && <span className="ml-2">{element.description}</span>}
                                 {element.value && <span className="ml-2"> R$ {handleMountNumberCurrency(element.value, ".", ",", 3, 2)}</span>}
                             </div>
-                            {!element.payed && (
-                                <div className="w-full sm:w-auto self-center mt-2 sm:mt-0 flex justify-between">
-                                    <Button
-                                        onClick={() => handleEdit(element, index)}
-                                        isLoading={isLoading}
-                                        isDisabled={isLoading}
-                                    >
-                                        <PencilAltIcon className="text-white block h-5 w-5" aria-hidden="true" />
-                                    </Button>
-                                    <Button
-                                        color="red"
-                                        className="ml-2"
-                                        onClick={() => {
-                                            setProjectPayment(element)
-                                            setIsOpen(true)
-                                        }}
-                                        isLoading={isLoading}
-                                        isDisabled={isLoading}
-                                    >
-                                        <TrashIcon className="text-white block h-5 w-5" aria-hidden="true" />
-                                    </Button>
-                                </div>
-                            )}
+                            <div className="w-full sm:w-auto self-center mt-2 sm:mt-0 flex justify-between">
+                                <Button
+                                    onClick={() => handleEdit(element, index)}
+                                    isLoading={isLoading}
+                                    isDisabled={isLoading}
+                                >
+                                    <PencilAltIcon className="text-white block h-5 w-5" aria-hidden="true" />
+                                </Button>
+                                <Button
+                                    color="red"
+                                    className="ml-2"
+                                    onClick={() => {
+                                        setProjectPayment(element)
+                                        setIsOpen(true)
+                                    }}
+                                    isLoading={isLoading}
+                                    isDisabled={isLoading}
+                                >
+                                    <TrashIcon className="text-white block h-5 w-5" aria-hidden="true" />
+                                </Button>
+                            </div>
                         </FormRowColumn>
                     </FormRow>
                 ))}
