@@ -23,7 +23,7 @@ export default function PersonItemList(props: PersonItemListProps) {
     return (
         <div
             onClick={() => setIsShowing((isShowing) => !isShowing)}
-            className="bg-white p-4 rounded-sm shadow items-center text-left">
+            className="bg-white p-4 rounded-sm shadow items-center text-left transition duration-200 hover:shadow-md hover:shadow-indigo-500">
             <div className="flex">
                 <div><span className={titleClassName}>{props.person.name}</span></div>
             </div>
@@ -38,7 +38,7 @@ export default function PersonItemList(props: PersonItemListProps) {
                 leave="transition-opacity duration-300"
                 leaveFrom="opacity-100"
                 leaveTo="opacity-0">
-                <div className="mt-2 w-full flex justify-end">
+                <div className="mt-2 w-full flex justify-end" onClick={null}>
                     {props.canDelete && props.onDeleteClick && (
                         <Button
                             color="red"
