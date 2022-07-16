@@ -1,5 +1,5 @@
 import Head from "next/head"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import Form from "../components/form/form"
 import Button from "../components/button/button"
 import FormRow from "../components/form/formRow"
@@ -20,6 +20,19 @@ export default function Index() {
         localProjectPayments.splice(index, 1)
         setProjectPayments((old) => localProjectPayments)
     }
+
+    {/*
+    useEffect(() => {
+        const handleBackButton = (event) => {
+            event.preventDefault()
+            event.stopPropagation()
+            console.log("retornei")
+        }
+        
+        window.onpopstate = () => {}
+        window.addEventListener("popstate", handleBackButton);
+    })
+*/}
 
     return (
         <Layout

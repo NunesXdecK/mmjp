@@ -13,14 +13,14 @@ import { collection, deleteDoc, doc, getDocs } from "firebase/firestore"
 import { defaultPerson, Person } from "../../interfaces/objectInterfaces"
 import { ElementFromBase, extratePerson } from "../../util/converterUtil"
 import { handleValidationOnlyNumbersNotNull, handleValidationOnlyTextNotNull } from "../../util/validationUtil"
-import IOSModal from "../modal/iosModal"
 
 const subtitle = "mt-1 max-w-2xl text-sm text-gray-500"
 
 interface PersonListProps {
     haveNew?: boolean,
-    canDelete?: boolean,
     isOldBase?: boolean,
+    canDelete?: boolean,
+    canSeeInfo?: boolean,
     onNewClick?: () => void,
     onListItemClick?: (any) => void,
     onShowMessage?: (FeedbackMessage) => void,
@@ -33,8 +33,6 @@ export default function PersonList(props: PersonListProps) {
 
     const [page, setPage] = useState(-1)
 
-    const [isOpenShow, setIsOpenShow] = useState(false)
-    const [isOpenEdit, setIsOpenEdit] = useState(false)
     const [isOpenDelete, setIsOpenDelete] = useState(false)
     const [isLoading, setIsLoading] = useState(true)
     const [inputSearch, setInputSearch] = useState("")
@@ -55,10 +53,10 @@ export default function PersonList(props: PersonListProps) {
         setIsOpenDelete(false)
     }
 
-    const handleListItemClick = () => {
+    const handleListItemClick = (element: Person) => {
         setIsLoading(true)
-        if (person.name !== "" && person.cpf !== "") {
-            props.onListItemClick && props.onListItemClick(person)
+        if (element.name !== "" && element.cpf !== "") {
+            props.onListItemClick && props.onListItemClick(element)
         }
         setIsLoading(false)
     }
@@ -66,7 +64,7 @@ export default function PersonList(props: PersonListProps) {
     const handlePaginationMinus = () => {
         setPage(page - 1)
     }
-    
+
     const handlePaginationPlus = () => {
         setPage(page + 1)
     }
@@ -178,6 +176,9 @@ export default function PersonList(props: PersonListProps) {
     }
 
     useEffect(() => {
+        window.removeEventListener("popstate", () => {})
+        window.onbeforeunload = () => {}
+
         if (listItems.length === 0) {
             handleFilterList(null, true)
         }
@@ -248,17 +249,13 @@ export default function PersonList(props: PersonListProps) {
                         isLoading={isLoading}
                         key={index.toString() + element.id + element.name}
                         canDelete={props.canDelete}
+                        canSeeInfo={props.canSeeInfo}
                         onDeleteClick={() => {
                             setIsOpenDelete(true)
                             setPerson((oldPerson) => element)
                         }}
-                        onSelectClick={() => {
-                            setIsOpenShow(true)
-                            setPerson((oldPerson) => element)
-                        }}
                         onEditClick={() => {
-                            setIsOpenEdit(true)
-                            setPerson((oldPerson) => element)
+                            handleListItemClick(element)
                         }}
                     />
                 ))}
@@ -302,30 +299,6 @@ export default function PersonList(props: PersonListProps) {
                     </Button>
                 </div>
             </WindowModal>
-
-            <WindowModal
-                isOpen={isOpenEdit}
-                setIsOpen={setIsOpenEdit}>
-                <p className="text-center">Deseja realmente editar esta Pessoa {person.name}?</p>
-                <div className="flex mt-10 justify-between content-between">
-                    <Button
-                        onClick={() => setIsOpenEdit(false)}
-                    >
-                        Voltar
-                    </Button>
-                    <Button
-                        onClick={() => handleListItemClick()}
-                    >
-                        Editar
-                    </Button>
-                </div>
-            </WindowModal>
-
-            <IOSModal
-                isOpen={isOpenShow}
-                setIsOpen={setIsOpenShow}>
-                <p>Aqui verás as informações de {person.name}?</p>
-            </IOSModal>
         </div>
     )
 }

@@ -1,11 +1,12 @@
 import Form from "./form"
 import FormRow from "./formRow"
-import { useState } from "react"
 import Button from "../button/button"
 import AddressForm from "./addressForm"
 import FormRowColumn from "./formRowColumn"
 import ArrayTextForm from "./arrayTextForm"
 import { OldDataForm } from "./oldDataForm"
+import { useEffect, useState } from "react"
+import WindowModal from "../modal/windowModal"
 import InputText from "../inputText/inputText"
 import InputSelect from "../inputText/inputSelect"
 import { PersonConversor } from "../../db/converters"
@@ -27,7 +28,7 @@ interface PersonFormProps {
     isForDisable?: boolean,
     isForOldRegister?: boolean,
     person?: Person,
-    onBack?: (object) => void,
+    onBack?: (object?) => void,
     onAfterSave?: (object, any?) => void,
     onSelectPerson?: (object) => void,
     onShowMessage?: (FeedbackMessage) => void,
@@ -42,6 +43,7 @@ export default function PersonForm(props: PersonFormProps) {
     const [isOpen, setIsOpen] = useState(false)
     const [isLoading, setIsLoading] = useState(false)
     const [isMultiple, setIsMultiple] = useState(false)
+    const [isOpenExit, setIsOpenExit] = useState(false)
 
     const handleSetPersonOldData = (value) => { setPerson({ ...person, oldData: value }) }
 
@@ -56,6 +58,41 @@ export default function PersonForm(props: PersonFormProps) {
     const handleSetPersonProfession = (value) => { setPerson({ ...person, profession: value }) }
     const handleSetPersonTelephones = (values) => { setPerson({ ...person, telephones: values }) }
     const handleSetPersonAddress = (address) => { setPerson({ ...person, address: address }) }
+
+    useEffect(() => {
+        if (props.onBack) {
+            history.pushState(null, null, null);
+
+            if (person.id !== "") {
+                window.onbeforeunload = () => {
+                    return false
+                }
+                document.addEventListener("keydown", (event) => {
+                    if (event.keyCode === 116) {
+                        event.preventDefault()
+                        setIsOpenExit(true)
+                    }
+                })
+            }
+
+            window.onpopstate = (event) => {
+                event.preventDefault()
+                event.stopPropagation()
+                handleOnBack()
+            }
+        }
+    })
+
+    const handleOnBack = () => {
+        if (person.id === "") {
+            props.onBack()
+        } else {
+            setIsOpenExit(true)
+        }
+    }
+
+    const handleExitDialog = (event) => {
+    }
 
     const handleListItemClick = async (person: Person) => {
         setIsLoading(true)
@@ -168,7 +205,7 @@ export default function PersonForm(props: PersonFormProps) {
                 <Form
                     title={props.title}
                     subtitle={props.subtitle}>
-                        
+
                     {props.canMultiple && (
                         <FormRow>
                             <FormRowColumn unit="6">
@@ -324,28 +361,28 @@ export default function PersonForm(props: PersonFormProps) {
                 validationMessage="Faltam números no telefone"
             />
 
-            <form
-                onSubmit={handleSave}>
-                <AddressForm
-                    title="Endereço"
-                    isLoading={isLoading}
-                    address={person.address}
-                    setAddress={handleSetPersonAddress}
-                    subtitle="Informações sobre o endereço"
-                />
+            <AddressForm
+                title="Endereço"
+                isLoading={isLoading}
+                address={person.address}
+                setAddress={handleSetPersonAddress}
+                subtitle="Informações sobre o endereço"
+            />
 
-                <FormRow className="p-2">
-                    <FormRowColumn unit="6" className="flex justify-between">
-                        {props.isBack && (
-                            <Button
-                                onClick={props.onBack}
-                                isLoading={isLoading}
-                                isDisabled={isLoading}
-                            >
-                                Voltar
-                            </Button>
-                        )}
+            <FormRow className="p-2">
+                <FormRowColumn unit="6" className="flex justify-between">
+                    {props.isBack && (
+                        <Button
+                            onClick={handleOnBack}
+                            isLoading={isLoading}
+                            isDisabled={isLoading}
+                        >
+                            Voltar
+                        </Button>
+                    )}
 
+                    <form
+                        onSubmit={handleSave}>
                         <Button
                             type="submit"
                             isLoading={isLoading}
@@ -353,9 +390,32 @@ export default function PersonForm(props: PersonFormProps) {
                         >
                             Salvar
                         </Button>
-                    </FormRowColumn>
-                </FormRow>
-            </form>
+                    </form>
+                </FormRowColumn>
+            </FormRow>
+
+            <WindowModal
+                isOpen={isOpenExit}
+                setIsOpen={setIsOpenExit}>
+                <p className="text-center">Deseja realmente sair?</p>
+                <div className="flex mt-10 justify-between content-between">
+                    <Button
+                        onClick={() => setIsOpenExit(false)}
+                    >
+                        Voltar
+                    </Button>
+                    <Button
+                        color="red"
+                        onClick={() => {
+                            if (props.onBack) {
+                                props.onBack()
+                            }
+                        }}
+                    >
+                        Sair
+                    </Button>
+                </div>
+            </WindowModal>
         </>
     )
 }

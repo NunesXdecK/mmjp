@@ -10,8 +10,8 @@ interface PersonItemListProps {
     person?: Person,
     isLoading?: boolean,
     canDelete?: boolean,
+    canSeeInfo?: boolean,
     onEditClick?: () => void,
-    onSelectClick?: () => void,
     onDeleteClick?: () => void,
 }
 
@@ -24,7 +24,8 @@ const buttonTitleClassName = `
                         `
 
 export default function PersonItemList(props: PersonItemListProps) {
-    const [isShowing, setIsShowing] = useState(false)
+    const [isShowingActions, setIsShowingActions] = useState(false)
+    const [isShowingInfo, setIsShowingInfo] = useState(false)
 
     let className = `
         bg-white p-4
@@ -40,18 +41,17 @@ export default function PersonItemList(props: PersonItemListProps) {
                 <PlaceholderItemList />
             ) : (
                 <div
-                    onClick={() =>
-                        setIsShowing(!isShowing)
-                    }
+                    onClick={() => {
+                        setIsShowingActions(!isShowingActions)
+                        setIsShowingInfo(false)
+                    }}
                     className={className}>
                     <div className="flex">
                         <div><span className={titleClassName}>{props.person.name}</span></div>
                     </div>
                     <div><span className={contentClassName}>{handleMaskCPF(props.person.cpf)}</span></div>
-                    {props.person.rg && (<div><span className={contentClassName}>{props.person.rg}</span></div>)}
-
                     <Transition.Root
-                        show={isShowing}>
+                        show={isShowingActions}>
                         <Transition.Child
                             enter="transform transition duration-500"
                             enterFrom="h-0"
@@ -107,14 +107,12 @@ export default function PersonItemList(props: PersonItemListProps) {
                                             </Button>
                                         )}
 
-                                        {props.onSelectClick && (
+                                        {props.canSeeInfo && (
                                             <Button
                                                 className="group"
                                                 onClick={(event) => {
-                                                    if (props.onSelectClick) {
-                                                        props.onSelectClick()
-                                                    }
                                                     event.stopPropagation()
+                                                    setIsShowingInfo(!isShowingInfo)
                                                 }}
                                                 isHidden={props.person.name === ""}
                                             >
@@ -129,6 +127,35 @@ export default function PersonItemList(props: PersonItemListProps) {
                             </div>
                         </Transition.Child>
                     </Transition.Root>
+
+                    {props.canSeeInfo && isShowingActions && (
+                        <Transition.Root
+                            show={isShowingInfo}>
+                            <Transition.Child
+                                enter="transform transition duration-500"
+                                enterFrom="h-0"
+                                enterTo="h-auto"
+                                leave="transform transition duration-500"
+                                leaveFrom="h-auto"
+                                leaveTo="h-0"
+                            >
+                                <div>
+                                    <Transition.Child
+                                        enter=""
+                                        enterFrom="opacity-0"
+                                        enterTo="opacity-100"
+                                        leave=""
+                                        leaveFrom="opacity-100"
+                                        leaveTo="opacity-0"
+                                    >
+                                        <div>
+                                            {props.person.rg && (<div><span className={contentClassName}>{"RG: " + props.person.rg}</span></div>)}
+                                        </div>
+                                    </Transition.Child>
+                                </div>
+                            </Transition.Child>
+                        </Transition.Root>
+                    )}
                 </div>
             )}
         </>

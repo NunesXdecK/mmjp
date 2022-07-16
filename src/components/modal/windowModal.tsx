@@ -54,7 +54,7 @@ export default function WindowModal(props: WindowModalProps) {
                                 `}>
                                 <HeaderModal
                                     onClose={() => props.setIsOpen(false)} />
-                                <div>
+                                <div ref={cancelButtonRef}>
                                     {props.children}
                                 </div>
                             </Dialog.Panel>

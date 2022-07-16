@@ -63,6 +63,7 @@ export default function Persons() {
             {!isRegister ? (
                 <PersonList
                     canDelete
+                    canSeeInfo
                     haveNew={true}
                     onNewClick={handleNewClick}
                     onShowMessage={handleShowMessage}
