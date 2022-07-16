@@ -33,6 +33,8 @@ export default function PersonItemList(props: PersonItemListProps) {
         items-center text-left
         transition duration-200
         hover:shadow-md hover:shadow-indigo-500
+        active:bg-indigo-50 focus:bg-indigo-50
+        active:outline-none focus:outline-none
      `
 
     return (
@@ -40,7 +42,7 @@ export default function PersonItemList(props: PersonItemListProps) {
             {props.isLoading ? (
                 <PlaceholderItemList />
             ) : (
-                <div
+                <button
                     onClick={() => {
                         setIsShowingActions(!isShowingActions)
                         setIsShowingInfo(false)
@@ -156,7 +158,7 @@ export default function PersonItemList(props: PersonItemListProps) {
                             </Transition.Child>
                         </Transition.Root>
                     )}
-                </div>
+                </button>
             )}
         </>
     )

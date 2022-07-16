@@ -44,6 +44,7 @@ export default function PersonForm(props: PersonFormProps) {
     const [isLoading, setIsLoading] = useState(false)
     const [isMultiple, setIsMultiple] = useState(false)
     const [isOpenExit, setIsOpenExit] = useState(false)
+    const [isOpenSave, setIsOpenSave] = useState(false)
 
     const handleSetPersonOldData = (value) => { setPerson({ ...person, oldData: value }) }
 
@@ -126,8 +127,7 @@ export default function PersonForm(props: PersonFormProps) {
         setIsFormValid(isValid)
     }
 
-    const handleSave = async (event) => {
-        event.preventDefault()
+    const handleSave = async () => {
         setIsLoading(true)
         let feedbackMessage: FeedbackMessage = { messages: ["Algo estranho aconteceu"], messageType: "WARNING" }
 
@@ -201,7 +201,14 @@ export default function PersonForm(props: PersonFormProps) {
             )}
 
             <form
-                onSubmit={handleSave}>
+                onSubmit={(event) => {
+                    event.preventDefault()
+                    if (person.id === "") {
+                        handleSave()
+                    } else {
+                        setIsOpenSave(true)
+                    }
+                }}>
                 <Form
                     title={props.title}
                     subtitle={props.subtitle}>
@@ -382,13 +389,20 @@ export default function PersonForm(props: PersonFormProps) {
                     )}
 
                     <form
-                        onSubmit={handleSave}>
+                        onSubmit={(event) => {
+                            event.preventDefault()
+                            if (person.id === "") {
+                                handleSave()
+                            } else {
+                                setIsOpenSave(true)
+                            }
+                        }}>
                         <Button
                             type="submit"
                             isLoading={isLoading}
                             isDisabled={!isFormValid}
                         >
-                            Salvar
+                            {person.id === "" ? "Salvar" : "Editar"}
                         </Button>
                     </form>
                 </FormRowColumn>
@@ -413,6 +427,28 @@ export default function PersonForm(props: PersonFormProps) {
                         }}
                     >
                         Sair
+                    </Button>
+                </div>
+            </WindowModal>
+
+            <WindowModal
+                isOpen={isOpenSave}
+                setIsOpen={setIsOpenSave}>
+                <p className="text-center">Deseja realmente editar as informações?</p>
+                <div className="flex mt-10 justify-between content-between">
+                    <Button
+                        onClick={() => setIsOpenSave(false)}
+                    >
+                        Voltar
+                    </Button>
+                    <Button
+                        color="red"
+                        onClick={(event) => {
+                            handleSave()
+                            setIsOpenSave(false)
+                        }}
+                    >
+                        Editar
                     </Button>
                 </div>
             </WindowModal>

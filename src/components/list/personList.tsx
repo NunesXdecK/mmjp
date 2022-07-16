@@ -187,11 +187,10 @@ export default function PersonList(props: PersonListProps) {
     return (
         <div className="bg-white shadow overflow-hidden rounded-lg">
             <div className="bg-gray-100 border-gray-200 px-4 py-5 sm:px-6">
-
                 <div className="flex w-full">
                     <div className="w-full">
                         <h3 className="text-lg leading-6 font-medium text-gray-900">Lista de pessoas</h3>
-                        <p className={subtitle}>subtitulo lindo</p>
+                        <p className={subtitle}></p>
                     </div>
 
                     {props.haveNew && (
