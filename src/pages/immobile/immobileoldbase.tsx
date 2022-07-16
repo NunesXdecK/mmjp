@@ -4,23 +4,23 @@ import Layout from "../../components/layout/layout"
 import { collection, getDocs } from "firebase/firestore"
 import PersonForm from "../../components/form/personForm"
 import { handleRemoveCPFMask } from "../../util/maskUtil"
-import PropertyList from "../../components/list/propertyList"
-import PropertyForm from "../../components/form/propertyForm"
-import { PersonConversor, PropertyConversor } from "../../db/converters"
+import ImmobileList from "../../components/list/immobileList"
+import ImmobileForm from "../../components/form/immobileForm"
+import { PersonConversor, ImmobileConversor } from "../../db/converters"
 import { extratePerson, handlePreparePersonForShow } from "../../util/converterUtil"
-import { db, PERSON_COLLECTION_NAME, PROPERTY_COLLECTION_NAME } from "../../db/firebaseDB"
-import { defaultPerson, defaultProperty, Person, Property } from "../../interfaces/objectInterfaces"
+import { db, PERSON_COLLECTION_NAME, IMMOBILE_COLLECTION_NAME } from "../../db/firebaseDB"
+import { defaultPerson, defaultImmobile, Person, Immobile } from "../../interfaces/objectInterfaces"
 import FeedbackMessageModal, { defaultFeedbackMessage, FeedbackMessage } from "../../components/modal/feedbackMessageModal"
 
-export default function PropertyOldBase() {
+export default function ImmobileOldBase() {
     const personCollection = collection(db, PERSON_COLLECTION_NAME).withConverter(PersonConversor)
-    const propertyCollection = collection(db, PROPERTY_COLLECTION_NAME).withConverter(PropertyConversor)
+    const immobileCollection = collection(db, IMMOBILE_COLLECTION_NAME).withConverter(ImmobileConversor)
 
-    const [title, setTitle] = useState("Lista de propriedades da base antiga")
+    const [title, setTitle] = useState("Lista de imóveis da base antiga")
     const [person, setPerson] = useState<Person>(defaultPerson)
-    const [property, setProperty] = useState<Property>(defaultProperty)
+    const [immobile, setImmobile] = useState<Immobile>(defaultImmobile)
 
-    const [isForRegisterProperty, setIsForRegisterProperty] = useState(false)
+    const [isForRegisterImmobile, setIsForRegisterImmobile] = useState(false)
     const [isFeedbackOpen, setIsFeedbackOpen] = useState(false)
     const [feedbackMessage, setFeedbackMessage] = useState<FeedbackMessage>(defaultFeedbackMessage)
 
@@ -29,19 +29,19 @@ export default function PropertyOldBase() {
             event.preventDefault()
         }
         setPerson(defaultPerson)
-        setProperty(defaultProperty)
-        setIsForRegisterProperty(false)
-        setTitle("Lista de propriedades da base antiga")
+        setImmobile(defaultImmobile)
+        setIsForRegisterImmobile(false)
+        setTitle("Lista de imóveis da base antiga")
     }
 
-    const handleAfterSaveProperty = (feedbackMessage: FeedbackMessage) => {
+    const handleAfterSaveImmobile = (feedbackMessage: FeedbackMessage) => {
         handleShowMessage(feedbackMessage)
         handleBackClick()
     }
 
     const handleAfterSavePerson = (feedbackMessage: FeedbackMessage, person: Person) => {
-        setProperty({ ...property, owners: [handlePreparePersonForShow(person)] })
-        setIsForRegisterProperty(true)
+        setImmobile({ ...immobile, owners: [handlePreparePersonForShow(person)] })
+        setIsForRegisterImmobile(true)
         handleShowMessage(feedbackMessage)
     }
 
@@ -53,8 +53,8 @@ export default function PropertyOldBase() {
         }
     }
 
-    const handleListItemClick = async (property: Property) => {
-        let localPerson = extratePerson(property.oldData)
+    const handleListItemClick = async (immobile: Immobile) => {
+        let localPerson = extratePerson(immobile.oldData)
         try {
             const querySnapshot = await getDocs(personCollection)
             querySnapshot.forEach((doc) => {
@@ -62,7 +62,7 @@ export default function PropertyOldBase() {
                 const baseCpf = handleRemoveCPFMask(doc.data().cpf)
                 if (doc.id && localCpf === baseCpf) {
                     localPerson = doc.data()
-                    localPerson = { ...localPerson, oldData: property.oldData }
+                    localPerson = { ...localPerson, oldData: immobile.oldData }
                 }
             })
         } catch (err) {
@@ -71,7 +71,7 @@ export default function PropertyOldBase() {
             handleShowMessage(feedbackMessage)
         }
         localPerson = handlePreparePersonForShow(localPerson)
-        setProperty(property)
+        setImmobile(immobile)
         setPerson(localPerson)
         setTitle("Pessoa da base antiga")
     }
@@ -86,14 +86,14 @@ export default function PropertyOldBase() {
             </Head>
 
             {person.cpf === "" ? (
-                <PropertyList
+                <ImmobileList
                     isOldBase={true}
                     onShowMessage={handleShowMessage}
                     onListItemClick={handleListItemClick}
                 />
             ) : (
                 <>
-                    {isForRegisterProperty === false ? (
+                    {isForRegisterImmobile === false ? (
                         <PersonForm
                             isBack={true}
                             person={person}
@@ -104,15 +104,15 @@ export default function PropertyOldBase() {
                             onShowMessage={handleShowMessage}
                             subtitle="Dados importantes sobre a pessoa" />
                     ) : (
-                        <PropertyForm
+                        <ImmobileForm
                             isBack={true}
-                            property={property}
+                            immobile={immobile}
                             isForOldRegister={true}
                             onBack={handleBackClick}
                             title="Informações básicas"
                             onShowMessage={handleShowMessage}
-                            onAfterSave={handleAfterSaveProperty}
-                            subtitle="Dados importantes sobre a propriedade"
+                            onAfterSave={handleAfterSaveImmobile}
+                            subtitle="Dados importantes sobre o imóvel"
                         />
                     )}
                 </>

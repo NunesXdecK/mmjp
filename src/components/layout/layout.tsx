@@ -15,16 +15,15 @@ export interface LayoutMenuItem {
 const menus: LayoutMenuItem[] = [
     { name: "Dashboard", href: "/", current: false, disabled: false },
     {
-        name: "Pessoas", current: false, disabled: false,
+        name: "Cadastros", current: false, disabled: false,
         subMenus:
             [
                 { name: "Pessoas", href: "/person", current: false, disabled: false },
                 { name: "Empresas", href: "/company", current: false, disabled: false },
                 { name: "Profissionais", href: "/professional", current: false, disabled: false },
+                { name: "Imóveis", href: "/immobile", current: false, disabled: false },
+                
             ]
-    },
-    {
-        name: "Propriedades", current: false, disabled: false, href: "/property",
     },
     {
         name: "Projetos", href: "/project", current: false, disabled: false,
@@ -33,7 +32,7 @@ const menus: LayoutMenuItem[] = [
 
 {/*
     { name: "Pessoas da base antiga", href: "/person/personoldbase", current: false, disabled: true },
-    { name: "Propriedade da base antiga", href: "/property/propertyoldbase", current: false, disabled: true },
+    { name: "Imóvel da base antiga", href: "/immobile/immobileoldbase", current: false, disabled: true },
 */}
 
 const user = {
@@ -46,7 +45,7 @@ const user = {
 const navigation = [
     { name: "Dashboard", href: "/", current: false },
     { name: "Pessoas", href: "/person", current: false },
-    { name: "Propriedades", href: "/property", current: false },
+    { name: "Imóveis", href: "/immobile", current: false },
     { name: "Projetos", href: "/project", current: false },
 ]
 

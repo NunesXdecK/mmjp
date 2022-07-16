@@ -1,14 +1,14 @@
 import Head from "next/head"
 import { useState } from "react"
 import Layout from "../../components/layout/layout"
-import PropertyForm from "../../components/form/propertyForm"
-import PropertyList from "../../components/list/propertyList"
-import { defaultProperty, Property } from "../../interfaces/objectInterfaces"
+import ImmobileForm from "../../components/form/immobileForm"
+import ImmobileList from "../../components/list/immobileList"
+import { defaultImmobile, Immobile } from "../../interfaces/objectInterfaces"
 import FeedbackMessageModal, { defaultFeedbackMessage, FeedbackMessage } from "../../components/modal/feedbackMessageModal"
 
 export default function Properties() {
-    const [title, setTitle] = useState("Lista de propriedades")
-    const [property, setProperty] = useState<Property>(defaultProperty)
+    const [title, setTitle] = useState("Lista de imóveis")
+    const [immobile, setImmobile] = useState<Immobile>(defaultImmobile)
     const [isRegister, setIsRegister] = useState(false)
 
     const [isFeedbackOpen, setIsFeedbackOpen] = useState(false)
@@ -19,20 +19,20 @@ export default function Properties() {
             event.preventDefault()
         }
         setIsRegister(false)
-        setProperty(defaultProperty)
-        setTitle("Lista de propriedades")
+        setImmobile(defaultImmobile)
+        setTitle("Lista de imóveis")
     }
 
     const handleNewClick = () => {
         setIsRegister(true)
-        setProperty(defaultProperty)
-        setTitle("Nova propriedade")
+        setImmobile(defaultImmobile)
+        setTitle("Novo imóvel")
     }
 
-    const handleListItemClick = (property) => {
+    const handleListItemClick = (immobile) => {
         setIsRegister(true)
-        setProperty(property)
-        setTitle("Editar propriedade")
+        setImmobile(immobile)
+        setTitle("Editar imóvel")
     }
 
     const handleAfterSave = (feedbackMessage: FeedbackMessage) => {
@@ -58,21 +58,21 @@ export default function Properties() {
             </Head>
 
             {!isRegister ? (
-                <PropertyList
+                <ImmobileList
                     haveNew={true}
                     onNewClick={handleNewClick}
                     onShowMessage={handleShowMessage}
                     onListItemClick={handleListItemClick}
                 />
             ) : (
-                <PropertyForm
+                <ImmobileForm
                     isBack={true}
-                    property={property}
+                    immobile={immobile}
                     onBack={handleBackClick}
-                    title="Informações da propriedade"
+                    title="Informações do imóvel"
                     onAfterSave={handleAfterSave}
                     onShowMessage={handleShowMessage}
-                    subtitle="Dados importantes sobre a propriedade" />
+                    subtitle="Dados importantes sobre o imóvel" />
             )}
 
             <FeedbackMessageModal

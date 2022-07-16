@@ -8,16 +8,16 @@ import InputText from "../inputText/inputText";
 import { handleNewDateToUTC } from "../../util/dateUtils";
 import SelectPersonCompanyForm from "./selectPersonCompanyForm";
 import { FeedbackMessage } from "../modal/feedbackMessageModal";
-import { CompanyConversor, PersonConversor, PropertyConversor } from "../../db/converters";
-import { handlePropertyValidationForDB } from "../../util/validationUtil";
-import { defaultProperty, Property } from "../../interfaces/objectInterfaces";
+import { CompanyConversor, PersonConversor, ImmobileConversor } from "../../db/converters";
+import { handleImmobileValidationForDB } from "../../util/validationUtil";
+import { defaultImmobile, Immobile } from "../../interfaces/objectInterfaces";
 import { NOT_NULL_MARK, NUMBER_MARK } from "../../util/patternValidationUtil";
 import { addDoc, collection, doc, getDocs, updateDoc } from "firebase/firestore";
-import { COMPANY_COLLECTION_NAME, db, PERSON_COLLECTION_NAME, PROPERTY_COLLECTION_NAME } from "../../db/firebaseDB";
-import { defaultElementFromBase, ElementFromBase, handlePreparePropertyForDB } from "../../util/converterUtil";
+import { COMPANY_COLLECTION_NAME, db, PERSON_COLLECTION_NAME, IMMOBILE_COLLECTION_NAME } from "../../db/firebaseDB";
+import { defaultElementFromBase, ElementFromBase, handlePrepareImmobileForDB } from "../../util/converterUtil";
 import InputCheckbox from "../inputText/inputCheckbox";
 
-interface PropertyFormProps {
+interface ImmobileFormProps {
     title?: string,
     subtitle?: string,
     isBack?: boolean,
@@ -25,41 +25,41 @@ interface PropertyFormProps {
     isForSelect?: boolean,
     isForDisable?: boolean,
     isForOldRegister?: boolean,
-    property?: Property,
+    immobile?: Immobile,
     onBack?: (object) => void,
     onAfterSave?: (object, any?) => void,
     onSelectPerson?: (object) => void,
     onShowMessage?: (FeedbackMessage) => void,
 }
 
-export default function PropertyForm(props: PropertyFormProps) {
+export default function ImmobileForm(props: ImmobileFormProps) {
     const personCollection = collection(db, PERSON_COLLECTION_NAME).withConverter(PersonConversor)
     const companyCollection = collection(db, COMPANY_COLLECTION_NAME).withConverter(CompanyConversor)
-    const propertyCollection = collection(db, PROPERTY_COLLECTION_NAME).withConverter(PropertyConversor)
+    const immobileCollection = collection(db, IMMOBILE_COLLECTION_NAME).withConverter(ImmobileConversor)
 
-    const [property, setProperty] = useState<Property>(props?.property ?? defaultProperty)
-    const [isFormValid, setIsFormValid] = useState(handlePropertyValidationForDB(property).validation)
+    const [immobile, setImmobile] = useState<Immobile>(props?.immobile ?? defaultImmobile)
+    const [isFormValid, setIsFormValid] = useState(handleImmobileValidationForDB(immobile).validation)
 
     const [isOpen, setIsOpen] = useState(false)
     const [isLoading, setIsLoading] = useState(false)
     const [isMultiple, setIsMultiple] = useState(false)
 
-    const [oldData, setOldData] = useState<ElementFromBase>(props?.property?.oldData ?? defaultElementFromBase)
+    const [oldData, setOldData] = useState<ElementFromBase>(props?.immobile?.oldData ?? defaultElementFromBase)
 
-    const handleSetPropertyName = (value) => { setProperty({ ...property, name: value }) }
-    const handleSetPropertyLand = (value) => { setProperty({ ...property, land: value }) }
-    const handleSetPropertyArea = (value) => { setProperty({ ...property, area: value }) }
-    const handleSetPropertyCounty = (value) => { setProperty({ ...property, county: value }) }
-    const handleSetPropertyOwners = (value) => { setProperty({ ...property, owners: value }) }
-    const handleSetPropertyPerimeter = (value) => { setProperty({ ...property, perimeter: value }) }
-    const handleSetPropertyAddress = (value) => { setProperty({ ...property, address: value }) }
+    const handleSetImmobileName = (value) => { setImmobile({ ...immobile, name: value }) }
+    const handleSetImmobileLand = (value) => { setImmobile({ ...immobile, land: value }) }
+    const handleSetImmobileArea = (value) => { setImmobile({ ...immobile, area: value }) }
+    const handleSetImmobileCounty = (value) => { setImmobile({ ...immobile, county: value }) }
+    const handleSetImmobileOwners = (value) => { setImmobile({ ...immobile, owners: value }) }
+    const handleSetImmobilePerimeter = (value) => { setImmobile({ ...immobile, perimeter: value }) }
+    const handleSetImmobileAddress = (value) => { setImmobile({ ...immobile, address: value }) }
 
-    const handleListItemClick = async (property: Property) => {
+    const handleListItemClick = async (immobile: Immobile) => {
         setIsLoading(true)
         if (props.onSelectPerson) {
-            props.onSelectPerson(property)
+            props.onSelectPerson(immobile)
         }
-        setProperty(property)
+        setImmobile(immobile)
         setIsOpen(false)
         setIsFormValid(true)
         setIsLoading(false)
@@ -70,14 +70,14 @@ export default function PropertyForm(props: PropertyFormProps) {
         setIsLoading(true)
         let feedbackMessage: FeedbackMessage = { messages: ["Algo estranho aconteceu"], messageType: "WARNING" }
 
-        let propertyForDB = { ...property }
-        const isValid = handlePropertyValidationForDB(propertyForDB)
+        let immobileForDB = { ...immobile }
+        const isValid = handleImmobileValidationForDB(immobileForDB)
         if (isValid.validation) {
-            let nowID = propertyForDB?.id ?? ""
+            let nowID = immobileForDB?.id ?? ""
             let docRefsForDB = []
 
-            if (propertyForDB.owners?.length > 0) {
-                propertyForDB.owners?.map((element, index) => {
+            if (immobileForDB.owners?.length > 0) {
+                immobileForDB.owners?.map((element, index) => {
                     if (element.id) {
                         let docRef = {}
                         if ("cpf" in element) {
@@ -88,44 +88,44 @@ export default function PropertyForm(props: PropertyFormProps) {
                         docRefsForDB = [...docRefsForDB, docRef]
                     }
                 })
-                propertyForDB = { ...propertyForDB, owners: docRefsForDB }
+                immobileForDB = { ...immobileForDB, owners: docRefsForDB }
             }
 
-            propertyForDB = handlePreparePropertyForDB(propertyForDB)
+            immobileForDB = handlePrepareImmobileForDB(immobileForDB)
 
             const isSave = nowID === ""
             if (isSave) {
                 try {
-                    const docRef = await addDoc(propertyCollection, propertyForDB)
-                    setProperty({ ...property, id: docRef.id })
-                    propertyForDB = { ...propertyForDB, id: docRef.id }
+                    const docRef = await addDoc(immobileCollection, immobileForDB)
+                    setImmobile({ ...immobile, id: docRef.id })
+                    immobileForDB = { ...immobileForDB, id: docRef.id }
                     feedbackMessage = { ...feedbackMessage, messages: ["Salvo com sucesso!"], messageType: "SUCCESS" }
-                    handleListItemClick(defaultProperty)
+                    handleListItemClick(defaultImmobile)
                 } catch (e) {
                     feedbackMessage = { ...feedbackMessage, messages: ["Erro em salvar!"], messageType: "ERROR" }
                     console.error("Error adding document: ", e)
                 }
             } else {
                 try {
-                    propertyForDB = { ...propertyForDB, dateLastUpdateUTC: handleNewDateToUTC() }
-                    const docRef = doc(propertyCollection, nowID)
-                    await updateDoc(docRef, propertyForDB)
+                    immobileForDB = { ...immobileForDB, dateLastUpdateUTC: handleNewDateToUTC() }
+                    const docRef = doc(immobileCollection, nowID)
+                    await updateDoc(docRef, immobileForDB)
                     feedbackMessage = { ...feedbackMessage, messages: ["Atualizado com sucesso!"], messageType: "SUCCESS" }
-                    handleListItemClick(defaultProperty)
+                    handleListItemClick(defaultImmobile)
                 } catch (e) {
                     feedbackMessage = { ...feedbackMessage, messages: ["Erro em atualizar!"], messageType: "ERROR" }
                     console.error("Error upddating document: ", e)
                 }
             }
             if (isMultiple) {
-                setProperty(defaultProperty)
+                setImmobile(defaultImmobile)
                 if (props.onShowMessage) {
                     props.onShowMessage(feedbackMessage)
                 }
             }
 
             if (!isMultiple && props.onAfterSave) {
-                props.onAfterSave(feedbackMessage, propertyForDB)
+                props.onAfterSave(feedbackMessage, immobileForDB)
             }
         } else {
             feedbackMessage = { ...feedbackMessage, messages: isValid.messages, messageType: "ERROR" }
@@ -166,15 +166,15 @@ export default function PropertyForm(props: PropertyFormProps) {
                     <FormRow>
                         <FormRowColumn unit="6">
                             <InputText
-                                id="propertyname"
-                                value={property.name}
+                                id="immobilename"
+                                value={immobile.name}
                                 isLoading={isLoading}
                                 validation={NOT_NULL_MARK}
-                                title="Nome da propriedade"
+                                title="Nome do imóvel"
                                 isDisabled={props.isForDisable}
-                                onSetText={handleSetPropertyName}
+                                onSetText={handleSetImmobileName}
                                 onValidate={handleChangeFormValidation}
-                                validationMessage="O nome da propriedade não pode ficar em branco."
+                                validationMessage="O nome do imóvel não pode ficar em branco."
                             />
                         </FormRowColumn>
                     </FormRow>
@@ -184,10 +184,10 @@ export default function PropertyForm(props: PropertyFormProps) {
                             <InputText
                                 id="land"
                                 title="Gleba"
-                                value={property.land}
+                                value={immobile.land}
                                 isLoading={isLoading}
                                 isDisabled={props.isForDisable}
-                                onSetText={handleSetPropertyLand}
+                                onSetText={handleSetImmobileLand}
                                 onValidate={handleChangeFormValidation}
                                 validationMessage="A gleba não pode ficar em branco."
                             />
@@ -198,9 +198,9 @@ export default function PropertyForm(props: PropertyFormProps) {
                                 id="county"
                                 title="Município/UF"
                                 isLoading={isLoading}
-                                value={property.county}
+                                value={immobile.county}
                                 isDisabled={props.isForDisable}
-                                onSetText={handleSetPropertyCounty}
+                                onSetText={handleSetImmobileCounty}
                                 onValidate={handleChangeFormValidation}
                                 validationMessage="O município não pode ficar em branco."
                             />
@@ -215,9 +215,9 @@ export default function PropertyForm(props: PropertyFormProps) {
                                 title="Área"
                                 isLoading={isLoading}
                                 validation={NUMBER_MARK}
-                                value={property.area}
+                                value={immobile.area}
                                 isDisabled={props.isForDisable}
-                                onSetText={handleSetPropertyArea}
+                                onSetText={handleSetImmobileArea}
                                 onValidate={handleChangeFormValidation}
                                 validationMessage="A área não pode ficar em branco."
                             />
@@ -230,9 +230,9 @@ export default function PropertyForm(props: PropertyFormProps) {
                                 title="Perímetro"
                                 isLoading={isLoading}
                                 validation={NUMBER_MARK}
-                                value={property.perimeter}
+                                value={immobile.perimeter}
                                 isDisabled={props.isForDisable}
-                                onSetText={handleSetPropertyPerimeter}
+                                onSetText={handleSetImmobilePerimeter}
                                 onValidate={handleChangeFormValidation}
                                 validationMessage="O perímetro não pode ficar em branco."
                             />
@@ -251,11 +251,11 @@ export default function PropertyForm(props: PropertyFormProps) {
                 title="Proprietários"
                 isLoading={isLoading}
                 isMultipleSelect={true}
-                persons={property.owners}
+                persons={immobile.owners}
                 onShowMessage={props.onShowMessage}
                 buttonTitle="Adicionar proprietário"
                 subtitle="Selecione os proprietários"
-                onSetPersons={handleSetPropertyOwners}
+                onSetPersons={handleSetImmobileOwners}
                 validationMessage="Esta pessoa, ou empresa já é um proprietário"
             />
 
@@ -264,8 +264,8 @@ export default function PropertyForm(props: PropertyFormProps) {
                 <AddressForm
                     title="Endereço"
                     isLoading={isLoading}
-                    address={property.address}
-                    setAddress={handleSetPropertyAddress}
+                    address={immobile.address}
+                    setAddress={handleSetImmobileAddress}
                     subtitle="Informações sobre o endereço"
                 />
 

@@ -1,5 +1,5 @@
 import { handleNewDateToUTC } from "./dateUtils"
-import { defaultPerson, defaultAddress, defaultProfessional, defaultProperty, Person, Address, Professional, Property, Company, defaultCompany, Project, ProjectStage, ProjectPayment } from "../interfaces/objectInterfaces"
+import { defaultPerson, defaultAddress, defaultProfessional, defaultImmobile, Person, Address, Professional, Immobile, Company, defaultCompany, Project, ProjectStage, ProjectPayment } from "../interfaces/objectInterfaces"
 import { handleMaskCNPJ, handleMaskCPF, handleMaskTelephone, handleMountMask, handleRemoveCEPMask, handleRemoveCNPJMask, handleRemoveCPFMask, handleRemoveDateMask, handleRemoveTelephoneMask } from "./maskUtil"
 
 export interface ElementFromBase {
@@ -185,20 +185,20 @@ export const handlePrepareProfessionalForDB = (professional: Professional) => {
     return professional
 }
 
-export const handlePreparePropertyForDB = (property: Property) => {
-    if (property.dateInsertUTC === 0) {
-        property = { ...property, dateInsertUTC: handleNewDateToUTC() }
+export const handlePrepareImmobileForDB = (immobile: Immobile) => {
+    if (immobile.dateInsertUTC === 0) {
+        immobile = { ...immobile, dateInsertUTC: handleNewDateToUTC() }
     }
 
-    if (property.oldData) {
-        delete property.oldData
+    if (immobile.oldData) {
+        delete immobile.oldData
     }
 
-    property = {
-        ...property
-        , address: { ...property.address, cep: handleRemoveCEPMask(property.address.cep) }
+    immobile = {
+        ...immobile
+        , address: { ...immobile.address, cep: handleRemoveCEPMask(immobile.address.cep) }
     }
-    return property
+    return immobile
 }
 
 export const handlePrepareProjectForDB = (project: Project) => {
@@ -462,25 +462,25 @@ export const extrateCompany = (element: ElementFromBase) => {
 
     return company
 }
-export const extrateProperty = (element: ElementFromBase) => {
-    let property: Property = defaultProperty
-    let propertyAddress: Address = defaultAddress
+export const extrateImmobile = (element: ElementFromBase) => {
+    let immobile: Immobile = defaultImmobile
+    let immobileAddress: Address = defaultAddress
     {/*
-let propertyAddress: Address = extratePersonAddress(element)
+let immobileAddress: Address = extratePersonAddress(element)
 */}
 
-    let areaProperty = ""
+    let areaImmobile = ""
     if (element["Área"]) {
-        let areaPropertyString = element["Área"]?.trim() ?? ""
-        areaPropertyString = areaPropertyString.replaceAll(".", "").replace(",", ".")
-        areaProperty = areaPropertyString
+        let areaImmobileString = element["Área"]?.trim() ?? ""
+        areaImmobileString = areaImmobileString.replaceAll(".", "").replace(",", ".")
+        areaImmobile = areaImmobileString
     }
 
-    let perimeterProperty = ""
+    let perimeterImmobile = ""
     if (element["Perímetro"]) {
-        let perimeterPropertyString = element["Perímetro"]?.trim() ?? ""
-        perimeterPropertyString = perimeterPropertyString.replaceAll(".", "").replace(",", ".")
-        areaProperty = perimeterPropertyString
+        let perimeterImmobileString = element["Perímetro"]?.trim() ?? ""
+        perimeterImmobileString = perimeterImmobileString.replaceAll(".", "").replace(",", ".")
+        areaImmobile = perimeterImmobileString
     }
 
     let name = ""
@@ -498,17 +498,17 @@ let propertyAddress: Address = extratePersonAddress(element)
         county = element["Município/UF"]?.trim() ?? ""
     }
 
-    property = {
-        ...property,
+    immobile = {
+        ...immobile,
         name: name,
         land: land,
         county: county,
-        area: areaProperty,
-        address: propertyAddress,
-        perimeter: perimeterProperty,
+        area: areaImmobile,
+        address: immobileAddress,
+        perimeter: perimeterImmobile,
         owners: [extratePerson(element)],
         dateInsertUTC: getUTCDate(element),
     }
 
-    return property
+    return immobile
 }

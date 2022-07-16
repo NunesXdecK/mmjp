@@ -1,4 +1,4 @@
-import { Company, Person, Professional, Project, ProjectPayment, ProjectStage, Property } from "../interfaces/objectInterfaces"
+import { Company, Person, Professional, Project, ProjectPayment, ProjectStage, Immobile } from "../interfaces/objectInterfaces"
 import { handleRemoveCNPJMask } from "./maskUtil"
 import { CNPJ_PATTERN, CPF_PATTERN, ONLY_CHARACTERS_PATTERN, ONLY_CHARACTERS_PATTERN_TWO, ONLY_SPECIAL_FOR_NUMBER_PATTERN } from "./patternValidationUtil"
 
@@ -107,10 +107,10 @@ export const handleCompanyValidationForDB = (company: Company) => {
     return validation
 }
 
-export const handlePropertyValidationForDB = (property: Property) => {
+export const handleImmobileValidationForDB = (immobile: Immobile) => {
     let validation: ValidationReturn = { validation: false, messages: [] }
-    let nameCheck = handleValidationNotNull(property.name)
-    let ownersCheck = property?.owners?.length > 0 ?? false
+    let nameCheck = handleValidationNotNull(immobile.name)
+    let ownersCheck = immobile?.owners?.length > 0 ?? false
     let ownersOnBaseCheck = true
 
     if (!nameCheck) {
@@ -118,10 +118,10 @@ export const handlePropertyValidationForDB = (property: Property) => {
     }
 
     if (!ownersCheck) {
-        validation = { ...validation, messages: [...validation.messages, "A propriedade precisa de ao menos um proprietário."] }
+        validation = { ...validation, messages: [...validation.messages, "O imóvel precisa de ao menos um proprietário."] }
     }
 
-    property.owners.map((element, index) => {
+    immobile.owners.map((element, index) => {
         if (!handleValidationNotNull(element.id)) {
             ownersOnBaseCheck = false
             validation = { ...validation, messages: [...validation.messages, "O proprietário não está cadastrado na base."] }
@@ -153,7 +153,7 @@ export const handleProjectValidationForDB = (project: Project) => {
     }
 
     if (!propertiesCheck) {
-        validation = { ...validation, messages: [...validation.messages, "O projeto precisa de ao menos uma propriedade."] }
+        validation = { ...validation, messages: [...validation.messages, "O projeto precisa de ao menos um imóvel."] }
     }
 
     project.clients.map((element, index) => {
@@ -166,7 +166,7 @@ export const handleProjectValidationForDB = (project: Project) => {
     project.properties.map((element, index) => {
         if (!handleValidationNotNull(element.id)) {
             propertiesOnBaseCheck = false
-            validation = { ...validation, messages: [...validation.messages, "A propriedade não está cadastrado na base."] }
+            validation = { ...validation, messages: [...validation.messages, "O imóvel não está cadastrado na base."] }
         }
     })
 

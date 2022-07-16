@@ -6,9 +6,9 @@ import { FeedbackMessage } from "../modal/feedbackMessageModal"
 import { handleValidationNotNull } from "../../util/validationUtil"
 import { handleMaskCNPJ, handleMaskCPF } from "../../util/maskUtil"
 import { collection, getDocs, query, where } from "firebase/firestore"
-import { Company, Person, Project, Property } from "../../interfaces/objectInterfaces"
-import { CompanyConversor, PersonConversor, ProfessionalConversor, ProjectConversor, PropertyConversor } from "../../db/converters"
-import { COMPANY_COLLECTION_NAME, db, PERSON_COLLECTION_NAME, PROFESSIONAL_COLLECTION_NAME, PROJECT_COLLECTION_NAME, PROPERTY_COLLECTION_NAME } from "../../db/firebaseDB"
+import { Company, Person, Project, Immobile } from "../../interfaces/objectInterfaces"
+import { CompanyConversor, PersonConversor, ProfessionalConversor, ProjectConversor, ImmobileConversor } from "../../db/converters"
+import { COMPANY_COLLECTION_NAME, db, PERSON_COLLECTION_NAME, PROFESSIONAL_COLLECTION_NAME, PROJECT_COLLECTION_NAME, IMMOBILE_COLLECTION_NAME } from "../../db/firebaseDB"
 
 const contentClassName = "text-sm text-gray-900"
 const subtitle = "mt-1 max-w-2xl text-sm text-gray-500"
@@ -29,7 +29,7 @@ export default function ProjectList(props: ProjectListProps) {
     const personCollection = collection(db, PERSON_COLLECTION_NAME).withConverter(PersonConversor)
     const companyCollection = collection(db, COMPANY_COLLECTION_NAME).withConverter(CompanyConversor)
     const projectCollection = collection(db, PROJECT_COLLECTION_NAME).withConverter(ProjectConversor)
-    const propertyCollection = collection(db, PROPERTY_COLLECTION_NAME).withConverter(PropertyConversor)
+    const immobileCollection = collection(db, IMMOBILE_COLLECTION_NAME).withConverter(ImmobileConversor)
     const professionalCollection = collection(db, PROFESSIONAL_COLLECTION_NAME).withConverter(ProfessionalConversor)
 
     const [page, setPage] = useState(-1)
@@ -65,7 +65,7 @@ export default function ProjectList(props: ProjectListProps) {
         try {
             const querySnapshotPerson = await getDocs(personCollection)
             const querySnapshotCompany = await getDocs(companyCollection)
-            const querySnapshotProperties = await getDocs(propertyCollection)
+            const querySnapshotProperties = await getDocs(immobileCollection)
             const querySnapshotProfessional = await getDocs(professionalCollection)
             let querySnapshotProject
             if (props.isBudgetAllowed) {
@@ -307,10 +307,10 @@ export default function ProjectList(props: ProjectListProps) {
                                     </p>
                                 </div>
                             ))}
-                            {element?.properties?.map((elementProperty: Property, indexOwners) => (
-                                <div key={elementProperty.name + index + indexOwners}>
+                            {element?.properties?.map((elementImmobile: Immobile, indexOwners) => (
+                                <div key={elementImmobile.name + index + indexOwners}>
                                     <p className={contentClassName}>
-                                        {elementProperty.name && elementProperty.name} {elementProperty.area && "Área: " + elementProperty.area} {elementProperty.perimeter && "Perimetro: " + elementProperty.perimeter}
+                                        {elementImmobile.name && elementImmobile.name} {elementImmobile.area && "Área: " + elementImmobile.area} {elementImmobile.perimeter && "Perimetro: " + elementImmobile.perimeter}
                                     </p>
                                 </div>
                             ))}

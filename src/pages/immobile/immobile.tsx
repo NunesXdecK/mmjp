@@ -1,10 +1,10 @@
 import Head from "next/head"
 import { useState } from "react"
 import Layout from "../../components/layout/layout"
-import PropertyForm from "../../components/form/propertyForm"
+import ImmobileForm from "../../components/form/immobileForm"
 import FeedbackMessageModal, { defaultFeedbackMessage, FeedbackMessage } from "../../components/modal/feedbackMessageModal"
 
-export default function Property() {
+export default function Immobile() {
     const [isFeedbackOpen, setIsFeedbackOpen] = useState(false)
     const [feedbackMessage, setFeedbackMessage] = useState<FeedbackMessage>(defaultFeedbackMessage)
 
@@ -20,23 +20,23 @@ export default function Property() {
         }
     }
 
-    function handleListItemClick(property) {
+    function handleListItemClick(immobile) {
     }
 
     return (
         <Layout
-            title="Nova propriedade">
+            title="Novo imóvel">
             <Head>
-                <title>Nova propriedade</title>
-                <meta name="description" content="Nova propriedade" />
+                <title>Novo imóvel</title>
+                <meta name="description" content="Novo imóvel" />
                 <link rel="icon" href="/favicon.ico" />
             </Head>
 
-            <PropertyForm
+            <ImmobileForm
                 title="Informações básicas"
                 onAfterSave={handleAfterSave}
                 onShowMessage={handleShowMessage}
-                subtitle="Dados importantes sobre a propriedade" />
+                subtitle="Dados importantes sobre o imóvel" />
 
             <FeedbackMessageModal
                 isOpen={isFeedbackOpen}

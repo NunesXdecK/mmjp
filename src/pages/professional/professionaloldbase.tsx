@@ -16,7 +16,7 @@ export default function ProfessionalOldBase() {
     const personCollection = collection(db, PERSON_COLLECTION_NAME).withConverter(PersonConversor)
     const professionalCollection = collection(db, PROFESSIONAL_COLLECTION_NAME).withConverter(ProfessionalConversor)
 
-    const [title, setTitle] = useState("Lista de propriedades da base antiga")
+    const [title, setTitle] = useState("Lista de imóveis da base antiga")
     const [person, setPerson] = useState<Person>(defaultPerson)
     const [professional, setProfessional] = useState<Professional>(defaultProfessional)
 
@@ -31,7 +31,7 @@ export default function ProfessionalOldBase() {
         setPerson(defaultPerson)
         setProfessional(defaultProfessional)
         setIsForRegisterProfessional(false)
-        setTitle("Lista de propriedades da base antiga")
+        setTitle("Lista de imóveis da base antiga")
     }
 
     const handleAfterSaveProfessional = (feedbackMessage: FeedbackMessage) => {
@@ -112,7 +112,7 @@ export default function ProfessionalOldBase() {
                             professional={professional}
                             onShowMessage={handleShowMessage}
                             onAfterSave={handleAfterSaveProfessional}
-                            subtitle="Dados importantes sobre a propriedade"
+                            subtitle="Dados importantes sobre o imóvel"
                         />
                     )}
                 </>

@@ -93,7 +93,7 @@ export const CompanyConversor = {
     }
 }
 
-export const PropertyConversor = {
+export const ImmobileConversor = {
     toFirestore(data) {
         return {
             name: data.name,

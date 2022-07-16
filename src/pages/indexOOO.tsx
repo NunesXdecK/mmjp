@@ -5,11 +5,11 @@ import { db } from "../db/firebaseDB";
 import { useEffect, useState } from "react";
 import data from "../data/data.json";
 import Button from "../components/button/button";
-import { PersonConversor, PropertyConversor } from "../db/converters";
-import { Person, Address, Professional, Property, Project } from "../interfaces/objectInterfaces";
+import { PersonConversor, ImmobileConversor } from "../db/converters";
+import { Person, Address, Professional, Immobile, Project } from "../interfaces/objectInterfaces";
 
-async function hasProperty(collection, { county, name, perimeter, area }: Property) {
-    let property = {}
+async function hasImmobile(collection, { county, name, perimeter, area }: Immobile) {
+    let immobile = {}
     const q = query(collection,
         where("area", "==", area),
         where("county", "==", county),
@@ -19,17 +19,17 @@ async function hasProperty(collection, { county, name, perimeter, area }: Proper
     const querySnapshot = await getDocs(q)
     querySnapshot.forEach((doc) => {
         // doc.data() is never undefined for query doc snapshots
-        property = doc.data()
+        immobile = doc.data()
     });
-    return property
+    return immobile
 }
 
-async function propertyToDB(collection, property) {
-    hasProperty(collection, property).then((res: Property) => {
+async function immobileToDB(collection, immobile) {
+    hasImmobile(collection, immobile).then((res: Immobile) => {
         if (res.hasOwnProperty("id")) {
-            update(collection, res.id, property)
+            update(collection, res.id, immobile)
         } else {
-            add(collection, property)
+            add(collection, immobile)
         }
     })
 }
@@ -90,7 +90,7 @@ const buttonFunction = async () => {
     const dataList = data.Plan1.slice(data.Plan1.length - 15, data.Plan1.length - 0)
     const arrayList = dataList
     const personCollection = collection(db, "person").withConverter(PersonConversor)
-    const propertyCollection = collection(db, "property").withConverter(PropertyConversor)
+    const immobileCollection = collection(db, "immobile").withConverter(ImmobileConversor)
 
     arrayList.map((element, index) => {
 
@@ -145,24 +145,24 @@ const buttonFunction = async () => {
                 address: personAddress,
             }
 
-            let areaProperty = element["Área"]?.trim() ?? ""
-            if (areaProperty) {
-                areaProperty = areaProperty.replaceAll(".", "").replace(",", ".")
-                areaProperty = parseFloat(areaProperty)
+            let areaImmobile = element["Área"]?.trim() ?? ""
+            if (areaImmobile) {
+                areaImmobile = areaImmobile.replaceAll(".", "").replace(",", ".")
+                areaImmobile = parseFloat(areaImmobile)
             }
 
-            let perimeterProperty = element["Perímetro"]?.trim() ?? ""
-            if (perimeterProperty) {
-                perimeterProperty = perimeterProperty.replaceAll(".", "").replaceAll(",", ".")
-                perimeterProperty = parseFloat(perimeterProperty)
+            let perimeterImmobile = element["Perímetro"]?.trim() ?? ""
+            if (perimeterImmobile) {
+                perimeterImmobile = perimeterImmobile.replaceAll(".", "").replaceAll(",", ".")
+                perimeterImmobile = parseFloat(perimeterImmobile)
             }
 
             let land = element["Gleba"]?.trim() ?? ""
 
-            let property: Property = {
+            let immobile: Immobile = {
                 name: element["Lote"]?.trim() ?? "",
-                area: areaProperty,
-                perimeter: perimeterProperty,
+                area: areaImmobile,
+                perimeter: perimeterImmobile,
                 land: land,
                 county: element["Município/UF"]?.trim() ?? "",
             }
@@ -175,8 +175,8 @@ const buttonFunction = async () => {
                     person = { ...person, dateInsertUTC: dateCad }
                 }
 
-                if (!property.hasOwnProperty("dateInsertUTC")) {
-                    property = { ...property, dateInsertUTC: dateCad }
+                if (!immobile.hasOwnProperty("dateInsertUTC")) {
+                    immobile = { ...immobile, dateInsertUTC: dateCad }
                 }
 
                 if (res.hasOwnProperty("id")) {
@@ -189,8 +189,8 @@ const buttonFunction = async () => {
                         console.log(personCPF)
                         console.log("added")
                         const personDocRef = doc(personCollection, r + "")
-                        property = { ...property, person: personDocRef }
-                        propertyToDB(propertyCollection, property)
+                        immobile = { ...immobile, person: personDocRef }
+                        immobileToDB(immobileCollection, immobile)
                     })
                 }
             })

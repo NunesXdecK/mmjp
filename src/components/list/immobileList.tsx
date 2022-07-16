@@ -6,17 +6,17 @@ import { collection, getDocs } from "firebase/firestore"
 import { FeedbackMessage } from "../modal/feedbackMessageModal"
 import { handleValidationNotNull } from "../../util/validationUtil"
 import { handleMaskCNPJ, handleMaskCPF } from "../../util/maskUtil"
-import { ElementFromBase, extrateProperty } from "../../util/converterUtil"
-import { Company, Person, Property } from "../../interfaces/objectInterfaces"
-import { CompanyConversor, PersonConversor, PropertyConversor } from "../../db/converters"
-import { COMPANY_COLLECTION_NAME, db, PERSON_COLLECTION_NAME, PROPERTY_COLLECTION_NAME } from "../../db/firebaseDB"
+import { ElementFromBase, extrateImmobile } from "../../util/converterUtil"
+import { Company, Person, Immobile } from "../../interfaces/objectInterfaces"
+import { CompanyConversor, PersonConversor, ImmobileConversor } from "../../db/converters"
+import { COMPANY_COLLECTION_NAME, db, PERSON_COLLECTION_NAME, IMMOBILE_COLLECTION_NAME } from "../../db/firebaseDB"
 import PlaceholderItemList from "./placeholderItemList"
 
 const subtitle = "mt-1 max-w-2xl text-sm text-gray-500"
 const contentClassName = "sm:px-4 sm:py-5 mt-1 text-sm text-gray-900"
 const titleClassName = "sm:px-4 sm:py-5 text-md leading-6 font-medium text-gray-900"
 
-interface PropertyListProps {
+interface ImmobileListProps {
     haveNew?: boolean,
     isOldBase?: boolean,
     onNewClick?: () => void,
@@ -24,10 +24,10 @@ interface PropertyListProps {
     onShowMessage?: (FeedbackMessage) => void,
 }
 
-export default function PropertyList(props: PropertyListProps) {
+export default function ImmobileList(props: ImmobileListProps) {
     const personCollection = collection(db, PERSON_COLLECTION_NAME).withConverter(PersonConversor)
     const companyCollection = collection(db, COMPANY_COLLECTION_NAME).withConverter(CompanyConversor)
-    const propertyCollection = collection(db, PROPERTY_COLLECTION_NAME).withConverter(PropertyConversor)
+    const immobileCollection = collection(db, IMMOBILE_COLLECTION_NAME).withConverter(ImmobileConversor)
 
     const [page, setPage] = useState(-1)
 
@@ -37,7 +37,7 @@ export default function PropertyList(props: PropertyListProps) {
 
     const [listItems, setListItems] = useState([])
 
-    const handleListItemClick = (element: Property) => {
+    const handleListItemClick = (element: Immobile) => {
         setIsLoading(true)
         if (element.name !== "") {
             props.onListItemClick && props.onListItemClick(element)
@@ -57,14 +57,14 @@ export default function PropertyList(props: PropertyListProps) {
         event?.preventDefault()
         setIsLoading(true)
         let listItemsFiltered = []
-        let arrayList: Property[] = []
+        let arrayList: Immobile[] = []
 
         if (props.isOldBase) {
             const startList = 0
             const endList = data.Plan1.length - 0
             const dataList = data.Plan1.slice(startList, endList)
             dataList.map((element: ElementFromBase, index) => {
-                let newElement: Property = extrateProperty(element)
+                let newElement: Immobile = extrateImmobile(element)
                 if (handleValidationNotNull(newElement.name)) {
                     newElement = { ...newElement, oldData: element }
                     arrayList = [...arrayList, newElement]
@@ -74,13 +74,13 @@ export default function PropertyList(props: PropertyListProps) {
             try {
                 const querySnapshotPerson = await getDocs(personCollection)
                 const querySnapshotCompany = await getDocs(companyCollection)
-                const querySnapshotProperty = await getDocs(propertyCollection)
-                querySnapshotProperty.forEach((docProperty) => {
-                    let property: Property = docProperty.data()
+                const querySnapshotImmobile = await getDocs(immobileCollection)
+                querySnapshotImmobile.forEach((docImmobile) => {
+                    let immobile: Immobile = docImmobile.data()
                     let personOwnersIdList = []
                     let companyOwnersIdList = []
                     let ownersList = []
-                    property?.owners?.map((element, index) => {
+                    immobile?.owners?.map((element, index) => {
                         if (element.parent.id === PERSON_COLLECTION_NAME) {
                             personOwnersIdList = [...personOwnersIdList, element.id]
                         } else if (element.parent.id === COMPANY_COLLECTION_NAME) {
@@ -103,8 +103,8 @@ export default function PropertyList(props: PropertyListProps) {
                             }
                         }
                     })
-                    property = { ...property, owners: ownersList }
-                    arrayList = [...arrayList, property]
+                    immobile = { ...immobile, owners: ownersList }
+                    arrayList = [...arrayList, immobile]
                 })
             } catch (err) {
                 console.error(err)
@@ -115,7 +115,7 @@ export default function PropertyList(props: PropertyListProps) {
             }
         }
 
-        listItemsFiltered = arrayList.filter((element: Property, index) => {
+        listItemsFiltered = arrayList.filter((element: Immobile, index) => {
             if (handleValidationNotNull(inputSearch)) {
                 let matchName = element.name.toLowerCase().includes(inputSearch.toLowerCase())
                 return matchName
@@ -123,7 +123,7 @@ export default function PropertyList(props: PropertyListProps) {
             return true
         })
 
-        listItemsFiltered = listItemsFiltered.sort((elementOne: Property, elementTwo: Property) => {
+        listItemsFiltered = listItemsFiltered.sort((elementOne: Immobile, elementTwo: Immobile) => {
             if (first) {
                 let dateOne = elementOne.dateInsertUTC
                 let dateTwo = elementTwo.dateInsertUTC
@@ -195,7 +195,7 @@ export default function PropertyList(props: PropertyListProps) {
 
                 <div className="flex w-full">
                     <div className="w-full">
-                        <h3 className="text-lg leading-6 font-medium text-gray-900">Lista de propriedades</h3>
+                        <h3 className="text-lg leading-6 font-medium text-gray-900">Lista de imóveis</h3>
                         <p className={subtitle}>subtitulo lindo</p>
                     </div>
 
@@ -248,7 +248,7 @@ export default function PropertyList(props: PropertyListProps) {
                     </>
                 )}
 
-                {listItems[page]?.map((element: Property, index) => (
+                {listItems[page]?.map((element: Immobile, index) => (
                     <div
                         key={index.toString()}
                         className="bg-white p-4 rounded-sm shadow items-center text-left">

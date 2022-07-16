@@ -4,7 +4,7 @@ import Button from "../button/button";
 import { useEffect, useState } from "react";
 import FormRowColumn from "./formRowColumn";
 import InputText from "../inputText/inputText";
-import SelectPropertyForm from "./selectPropertyForm";
+import SelectImmobileForm from "./selectImmobileForm";
 import InputCheckbox from "../inputText/inputCheckbox";
 import { handleNewDateToUTC } from "../../util/dateUtils";
 import SelectProfessionalForm from "./selectProfessionalForm";
@@ -15,8 +15,8 @@ import { DATE_MARK, NOT_NULL_MARK, TEXT_NOT_NULL_MARK } from "../../util/pattern
 import { defaultProject, Professional, Project } from "../../interfaces/objectInterfaces";
 import { addDoc, collection, doc, getDocs, limit, orderBy, query, updateDoc } from "firebase/firestore";
 import { defaultElementFromBase, ElementFromBase, handlePrepareProjectForDB } from "../../util/converterUtil";
-import { CompanyConversor, PersonConversor, ProfessionalConversor, ProjectConversor, PropertyConversor } from "../../db/converters";
-import { COMPANY_COLLECTION_NAME, db, PERSON_COLLECTION_NAME, PROFESSIONAL_COLLECTION_NAME, PROJECT_COLLECTION_NAME, PROPERTY_COLLECTION_NAME } from "../../db/firebaseDB";
+import { CompanyConversor, PersonConversor, ProfessionalConversor, ProjectConversor, ImmobileConversor } from "../../db/converters";
+import { COMPANY_COLLECTION_NAME, db, PERSON_COLLECTION_NAME, PROFESSIONAL_COLLECTION_NAME, PROJECT_COLLECTION_NAME, IMMOBILE_COLLECTION_NAME } from "../../db/firebaseDB";
 import InputTextAutoComplete from "../inputText/inputTextAutocomplete";
 
 interface ProjectFormProps {
@@ -38,7 +38,7 @@ export default function ProjectForm(props: ProjectFormProps) {
     const personCollection = collection(db, PERSON_COLLECTION_NAME).withConverter(PersonConversor)
     const companyCollection = collection(db, COMPANY_COLLECTION_NAME).withConverter(CompanyConversor)
     const projectCollection = collection(db, PROJECT_COLLECTION_NAME).withConverter(ProjectConversor)
-    const propertyCollection = collection(db, PROPERTY_COLLECTION_NAME).withConverter(PropertyConversor)
+    const immobileCollection = collection(db, IMMOBILE_COLLECTION_NAME).withConverter(ImmobileConversor)
     const professionalCollection = collection(db, PROFESSIONAL_COLLECTION_NAME).withConverter(ProfessionalConversor)
 
     const [project, setProject] = useState<Project>(props?.project ?? defaultProject)
@@ -138,7 +138,7 @@ export default function ProjectForm(props: ProjectFormProps) {
             if (projectForDB.properties?.length > 0) {
                 projectForDB.properties?.map((element, index) => {
                     if (element.id) {
-                        const docRef = doc(propertyCollection, element.id)
+                        const docRef = doc(immobileCollection, element.id)
                         propertiesDocRefsForDB = [...propertiesDocRefsForDB, docRef]
                     }
                 })
@@ -296,16 +296,16 @@ export default function ProjectForm(props: ProjectFormProps) {
                 validationMessage="Esta pessoa, ou empresa já é um cliente"
             />
 
-            <SelectPropertyForm
+            <SelectImmobileForm
                 isLoading={isLoading}
                 isMultipleSelect={true}
-                title="Propriedades"
+                title="Imóveis"
                 properties={project.properties}
-                subtitle="Selecione as propriedades"
+                subtitle="Selecione os imovéis"
                 onShowMessage={props.onShowMessage}
-                buttonTitle="Adicionar propriedades"
+                buttonTitle="Adicionar imóveis"
                 onSetProperties={handleSetProjectProperties}
-                validationMessage="Esta propriedade já está selecionada"
+                validationMessage="Este imóvel já está selecionado"
             />
 
             <SelectProfessionalForm

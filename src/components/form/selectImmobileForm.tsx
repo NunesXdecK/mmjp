@@ -5,12 +5,12 @@ import Button from "../button/button";
 import IOSModal from "../modal/iosModal";
 import FormRowColumn from "./formRowColumn";
 import InputText from "../inputText/inputText";
-import PropertyList from "../list/propertyList";
-import { defaultProperty, Property } from "../../interfaces/objectInterfaces";
+import ImmobileList from "../list/immobileList";
+import { defaultImmobile, Immobile } from "../../interfaces/objectInterfaces";
 import { FeedbackMessage } from "../modal/feedbackMessageModal";
-import PropertyForm from "./propertyForm";
+import ImmobileForm from "./immobileForm";
 
-interface SelectPropertyFormProps {
+interface SelectImmobileFormProps {
     id?: string,
     title?: string,
     subtitle?: string,
@@ -21,45 +21,45 @@ interface SelectPropertyFormProps {
     isLocked?: boolean,
     isLoading?: boolean,
     isMultipleSelect?: boolean,
-    properties?: Property[],
+    properties?: Immobile[],
     onSetProperties?: (array) => void,
     onShowMessage?: (FeedbackMessage) => void,
 }
 
-export default function SelectPropertyForm(props: SelectPropertyFormProps) {
+export default function SelectImmobileForm(props: SelectImmobileFormProps) {
     const [isOpen, setIsOpen] = useState(false)
     const [isRegister, setIsRegister] = useState(false)
 
-    const [property, setProperty] = useState<Property>(defaultProperty)
+    const [immobile, setImmobile] = useState<Immobile>(defaultImmobile)
 
     const handleNewClick = () => {
         setIsRegister(true)
-        setProperty(defaultProperty)
+        setImmobile(defaultImmobile)
     }
 
     const handleBackClick = (event?) => {
         if (event) {
             event.preventDefault()
         }
-        setProperty(defaultProperty)
+        setImmobile(defaultImmobile)
         setIsRegister(false)
     }
 
-    const handleAfterSave = (feedbackMessage: FeedbackMessage, property) => {
-        handleAdd(property)
+    const handleAfterSave = (feedbackMessage: FeedbackMessage, immobile) => {
+        handleAdd(immobile)
         handleBackClick()
         if (props.onShowMessage) {
             props.onShowMessage(feedbackMessage)
         }
     }
 
-    const handleAdd = (property) => {
+    const handleAdd = (immobile) => {
         let localProperties = props.properties
         let canAdd = true
 
         if (props.isMultipleSelect) {
             localProperties?.map((element, index) => {
-                if (element.name === property.name) {
+                if (element.name === immobile.name) {
                     canAdd = false
                 }
             })
@@ -67,9 +67,9 @@ export default function SelectPropertyForm(props: SelectPropertyFormProps) {
 
         if (canAdd) {
             if (props.isMultipleSelect) {
-                localProperties = [...localProperties, property]
+                localProperties = [...localProperties, immobile]
             } else {
-                localProperties = [property]
+                localProperties = [immobile]
             }
             if (props.onSetProperties) {
                 props.onSetProperties(localProperties)
@@ -83,14 +83,14 @@ export default function SelectPropertyForm(props: SelectPropertyFormProps) {
         }
     }
 
-    const handleRemoveProperty = (event, property) => {
+    const handleRemoveImmobile = (event, immobile) => {
         event.preventDefault()
         if (!props.isMultipleSelect) {
             props.onSetProperties([])
         } else {
             let localProperties = props.properties
             if (localProperties.length > -1) {
-                let index = localProperties.indexOf(property)
+                let index = localProperties.indexOf(immobile)
                 localProperties.splice(index, 1)
                 if (props.onSetProperties) {
                     props.onSetProperties(localProperties)
@@ -122,7 +122,7 @@ export default function SelectPropertyForm(props: SelectPropertyFormProps) {
 
                 {props.properties?.map((element, index) => (
                     <form key={index + element.dateInsertUTC}
-                        onSubmit={(event) => handleRemoveProperty(event, element)}>
+                        onSubmit={(event) => handleRemoveImmobile(event, element)}>
                         <FormRow>
                             <FormRowColumn unit="4">
                                 <InputText
@@ -130,7 +130,7 @@ export default function SelectPropertyForm(props: SelectPropertyFormProps) {
                                     isDisabled={true}
                                     value={element.name}
                                     isLoading={props.isLoading}
-                                    id={"property-title-" + index}
+                                    id={"immobile-title-" + index}
                                 />
                             </FormRowColumn>
 
@@ -157,22 +157,22 @@ export default function SelectPropertyForm(props: SelectPropertyFormProps) {
                 setIsOpen={setIsOpen}>
                 <>
                     {!isRegister ? (
-                        <PropertyList
+                        <ImmobileList
                             haveNew={true}
                             onNewClick={handleNewClick}
                             onListItemClick={handleAdd}
                             onShowMessage={props.onShowMessage}
                         />
                     ) : (
-                        <PropertyForm
+                        <ImmobileForm
                             isBack={true}
-                            property={property}
+                            immobile={immobile}
                             canMultiple={false}
                             onBack={handleBackClick}
-                            title="Informações da propriedade"
+                            title="Informações do imóvel"
                             onAfterSave={handleAfterSave}
                             onShowMessage={props.onShowMessage}
-                            subtitle="Dados importantes sobre a propriedade" />
+                            subtitle="Dados importantes sobre o imóvel" />
                     )}
                 </>
             </IOSModal>

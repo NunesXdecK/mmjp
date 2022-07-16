@@ -50,7 +50,7 @@ export interface Professional {
     oldData?: any,
 }
 
-export interface Property {
+export interface Immobile {
     id?: string,
     name?: string,
     land?: string,
@@ -163,7 +163,7 @@ export const defaultProfessional: Professional = {
     person: null,
 }
 
-export const defaultProperty: Property = {
+export const defaultImmobile: Immobile = {
     id: "",
     name: "",
     land: "",
