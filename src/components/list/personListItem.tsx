@@ -7,12 +7,15 @@ import { Person } from "../../interfaces/objectInterfaces"
 import { EyeIcon, PencilAltIcon, TrashIcon } from "@heroicons/react/outline"
 
 interface PersonItemListProps {
+    index?: number,
     person?: Person,
+    isActive?: boolean,
     isLoading?: boolean,
     canDelete?: boolean,
     canSeeInfo?: boolean,
     onEditClick?: () => void,
     onDeleteClick?: () => void,
+    onActiveChange?: (any) => void,
 }
 
 const contentClassName = "sm:px-4 sm:py-5 mt-1 text-sm text-gray-900"
@@ -24,7 +27,6 @@ const buttonTitleClassName = `
                         `
 
 export default function PersonItemList(props: PersonItemListProps) {
-    const [isShowingActions, setIsShowingActions] = useState(false)
     const [isShowingInfo, setIsShowingInfo] = useState(false)
 
     let className = `
@@ -37,9 +39,9 @@ export default function PersonItemList(props: PersonItemListProps) {
         active:outline-none focus:outline-none
      `
 
-     if (isShowingActions || isShowingInfo) {
+    if (props.isActive) {
         className = className + " bg-indigo-50"
-     }
+    }
 
     return (
         <>
@@ -48,7 +50,9 @@ export default function PersonItemList(props: PersonItemListProps) {
             ) : (
                 <div
                     onClick={() => {
-                        setIsShowingActions(!isShowingActions)
+                        if (props.onActiveChange) {
+                            props.onActiveChange(props.isActive ? -1 : props.index)
+                        }
                         setIsShowingInfo(false)
                     }}
                     className={className}>
@@ -57,7 +61,7 @@ export default function PersonItemList(props: PersonItemListProps) {
                     </div>
                     <div><span className={contentClassName}>{handleMaskCPF(props.person.cpf)}</span></div>
                     <Transition.Root
-                        show={isShowingActions}>
+                        show={props.isActive}>
                         <Transition.Child
                             enter="transform transition duration-500"
                             enterFrom="h-0"
@@ -134,7 +138,7 @@ export default function PersonItemList(props: PersonItemListProps) {
                         </Transition.Child>
                     </Transition.Root>
 
-                    {props.canSeeInfo && isShowingActions && (
+                    {props.canSeeInfo && props.isActive && (
                         <Transition.Root
                             show={isShowingInfo}>
                             <Transition.Child
@@ -145,7 +149,7 @@ export default function PersonItemList(props: PersonItemListProps) {
                                 leaveFrom="h-auto"
                                 leaveTo="h-0"
                             >
-                                <div>
+                                <div onClick={(event) => event.stopPropagation()}>
                                     <Transition.Child
                                         enter=""
                                         enterFrom="opacity-0"

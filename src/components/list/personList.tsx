@@ -35,11 +35,16 @@ export default function PersonList(props: PersonListProps) {
 
     const [page, setPage] = useState(-1)
 
+    const [isActiveItem, setIsActiveItem] = useState(-1)
     const [isOpenDelete, setIsOpenDelete] = useState(false)
     const [isLoading, setIsLoading] = useState(true)
     const [inputSearch, setInputSearch] = useState("")
 
     const [listItems, setListItems] = useState([])
+
+    const handleActiveChange = (index) => {
+        setIsActiveItem((old) => index)
+    }
 
     const handleRemove = async () => {
         if (person.id !== "") {
@@ -246,10 +251,13 @@ export default function PersonList(props: PersonListProps) {
 
                 {listItems[page]?.map((element: Person, index) => (
                     <PersonItemList
+                        index={index}
                         person={element}
                         isLoading={isLoading}
                         canDelete={props.canDelete}
                         canSeeInfo={props.canSeeInfo}
+                        isActive={isActiveItem === index}
+                        onActiveChange={handleActiveChange}
                         key={index.toString() + element.id + element.name}
                         onDeleteClick={() => {
                             setIsOpenDelete(true)
