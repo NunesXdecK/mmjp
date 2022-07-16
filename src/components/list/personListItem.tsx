@@ -37,12 +37,16 @@ export default function PersonItemList(props: PersonItemListProps) {
         active:outline-none focus:outline-none
      `
 
+     if (isShowingActions || isShowingInfo) {
+        className = className + " bg-indigo-50"
+     }
+
     return (
         <>
             {props.isLoading ? (
                 <PlaceholderItemList />
             ) : (
-                <button
+                <div
                     onClick={() => {
                         setIsShowingActions(!isShowingActions)
                         setIsShowingInfo(false)
@@ -109,7 +113,7 @@ export default function PersonItemList(props: PersonItemListProps) {
                                             </Button>
                                         )}
 
-                                        {props.canSeeInfo && (
+                                        {props.canSeeInfo && props.person.rg !== "" && (
                                             <Button
                                                 className="group"
                                                 onClick={(event) => {
@@ -158,7 +162,7 @@ export default function PersonItemList(props: PersonItemListProps) {
                             </Transition.Child>
                         </Transition.Root>
                     )}
-                </button>
+                </div>
             )}
         </>
     )
