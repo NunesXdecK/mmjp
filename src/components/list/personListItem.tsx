@@ -71,7 +71,7 @@ export default function PersonItemList(props: PersonItemListProps) {
                                     leaveFrom="opacity-100"
                                     leaveTo="opacity-0"
                                 >
-                                    <div className="mt-2 w-full flex justify-end">
+                                    <div className="mt-2 w-full text-right">
                                         {props.canDelete && props.onDeleteClick && (
                                             <Button
                                                 color="red"
