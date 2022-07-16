@@ -65,6 +65,7 @@ export default function Persons() {
                     canDelete
                     canSeeInfo
                     haveNew={true}
+                    title="Lista de pessoas"
                     onNewClick={handleNewClick}
                     onShowMessage={handleShowMessage}
                     onListItemClick={handleListItemClick}

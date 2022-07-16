@@ -17,6 +17,8 @@ import { handleValidationOnlyNumbersNotNull, handleValidationOnlyTextNotNull } f
 const subtitle = "mt-1 max-w-2xl text-sm text-gray-500"
 
 interface PersonListProps {
+    title?: string,
+    subtitle?: string,
     haveNew?: boolean,
     isOldBase?: boolean,
     canDelete?: boolean,
@@ -176,8 +178,8 @@ export default function PersonList(props: PersonListProps) {
     }
 
     useEffect(() => {
-        window.removeEventListener("popstate", () => {})
-        window.onbeforeunload = () => {}
+        window.removeEventListener("popstate", () => { })
+        window.onbeforeunload = () => { }
 
         if (listItems.length === 0) {
             handleFilterList(null, true)
@@ -189,8 +191,8 @@ export default function PersonList(props: PersonListProps) {
             <div className="bg-gray-100 border-gray-200 px-4 py-5 sm:px-6">
                 <div className="flex w-full">
                     <div className="w-full">
-                        <h3 className="text-lg leading-6 font-medium text-gray-900">Lista de pessoas</h3>
-                        <p className={subtitle}></p>
+                        {props.title && (<h3 className="text-lg leading-6 font-medium text-gray-900">{props.title}</h3>)}
+                        {props.subtitle && (<p className={subtitle}>{props.subtitle}</p>)}
                     </div>
 
                     {props.haveNew && (
@@ -246,9 +248,9 @@ export default function PersonList(props: PersonListProps) {
                     <PersonItemList
                         person={element}
                         isLoading={isLoading}
-                        key={index.toString() + element.id + element.name}
                         canDelete={props.canDelete}
                         canSeeInfo={props.canSeeInfo}
+                        key={index.toString() + element.id + element.name}
                         onDeleteClick={() => {
                             setIsOpenDelete(true)
                             setPerson((oldPerson) => element)
