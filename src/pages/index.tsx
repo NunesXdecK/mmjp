@@ -1,5 +1,5 @@
 import Head from "next/head"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import Form from "../components/form/form"
 import List from "../components/list/list"
 import Button from "../components/button/button"
@@ -43,6 +43,15 @@ export default function Index() {
         localProjectPayments.splice(index, 1)
         setProjectPayments((old) => localProjectPayments)
     }
+
+
+    const test = async () => {
+        return await fetch("api/persons").then(res => res.json())
+    }
+
+    useEffect(() => {
+        test().then(res => console.log(res))
+    })
 
     return (
         <Layout

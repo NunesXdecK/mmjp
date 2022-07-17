@@ -232,6 +232,7 @@ export default function List(props: ListProps) {
                                 props.onDeleteClick(element)
                             }
                             setIsOpenDelete(false)
+                            setIsActiveItem(-1)
                         }}
                     >
                         Excluir

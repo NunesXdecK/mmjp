@@ -1,8 +1,8 @@
 import Head from "next/head"
-import { useEffect, useState } from "react"
-import List from "../../components/list/list"
+import { useState } from "react"
 import Layout from "../../components/layout/layout"
 import PersonForm from "../../components/form/personForm"
+import PersonList from "../../components/list/personList"
 import { handlePreparePersonForShow } from "../../util/converterUtil"
 import { defaultPerson, Person } from "../../interfaces/objectInterfaces"
 import FeedbackMessageModal, { defaultFeedbackMessage, FeedbackMessage } from "../../components/modal/feedbackMessageModal"
@@ -10,10 +10,6 @@ import FeedbackMessageModal, { defaultFeedbackMessage, FeedbackMessage } from ".
 export default function Persons() {
     const [title, setTitle] = useState("Lista de pessoas")
     const [person, setPerson] = useState<Person>(defaultPerson)
-    const [persons, setPersons] = useState<Person[]>([])
-    const [personsForShow, setPersonsForShow] = useState<Person[]>([])
-
-    const [isLoading, setIsLoading] = useState(true)
     const [isRegister, setIsRegister] = useState(false)
 
     const [isFeedbackOpen, setIsFeedbackOpen] = useState(false)
@@ -23,43 +19,15 @@ export default function Persons() {
         if (event) {
             event.preventDefault()
         }
-        setPersons([])
-        setPersonsForShow([])
         setPerson(defaultPerson)
-        setIsLoading(true)
         setIsRegister(false)
         setTitle("Lista de pessoas")
-    }
-
-    const handleDeleteClick = async (person) => {
-        setIsLoading(true)
-        let feedbackMessage: FeedbackMessage = { messages: ["Removido com sucesso!"], messageType: "SUCCESS" }
-        const res = await fetch("api/person", {
-            method: "DELETE",
-            body: JSON.stringify({ id: person.id }),
-        }).then((res) => res.json())
-        if (res.status === "SUCCESS") {
-            feedbackMessage = { messages: ["Removido com sucesso!"], messageType: "SUCCESS" }
-        } else {
-            feedbackMessage = { messages: ["Algo deu errado"], messageType: "ERROR" }
-        }
-        handleShowMessage(feedbackMessage)
-        setPersons([])
     }
 
     const handleNewClick = () => {
         setIsRegister(true)
         setPerson(defaultPerson)
         setTitle("Nova pessoa")
-    }
-
-    const handleFilterList = (string) => {
-        let listItems = [...persons]
-        let listItemsFiltered: Person[] = []
-        listItemsFiltered = listItems.filter((element: Person, index) => {
-            return element.name.toLowerCase().includes(string.toLowerCase())
-        })
-        setPersonsForShow((old) => listItemsFiltered)
     }
 
     const handleListItemClick = (person) => {
@@ -83,16 +51,6 @@ export default function Persons() {
         }
     }
 
-    useEffect(() => {
-        if (persons.length === 0) {
-            fetch("api/persons").then((res) => res.json()).then((res) => {
-                setPersons(res)
-                setPersonsForShow(res)
-                setIsLoading(false)
-            })
-        }
-    })
-
     return (
         <Layout
             title={title}>
@@ -103,25 +61,14 @@ export default function Persons() {
             </Head>
 
             {!isRegister ? (
-                <List
-                    haveNew
+                <PersonList
                     canDelete
                     canSeeInfo
-                    autoSearch
-                    title={title}
-                    list={personsForShow}
-                    isLoading={isLoading}
+                    haveNew={true}
+                    title="Lista de pessoas"
                     onNewClick={handleNewClick}
-                    onFilterList={handleFilterList}
-                    onEditClick={handleListItemClick}
-                    onDeleteClick={handleDeleteClick}
+                    onShowMessage={handleShowMessage}
                     onListItemClick={handleListItemClick}
-                    onTitle={(element: Person) => {
-                        return (<p>{element.name}</p>)
-                    }}
-                    onInfo={(element: Person) => {
-                        return (<p>{element.name}</p>)
-                    }}
                 />
             ) : (
                 <PersonForm
