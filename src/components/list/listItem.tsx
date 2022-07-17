@@ -3,16 +3,17 @@ import Button from "../button/button"
 import { Transition } from "@headlessui/react"
 import { handleMaskCPF } from "../../util/maskUtil"
 import PlaceholderItemList from "./placeholderItemList"
-import { Person } from "../../interfaces/objectInterfaces"
 import { EyeIcon, PencilAltIcon, TrashIcon } from "@heroicons/react/outline"
 
-interface PersonItemListProps {
+interface ItemListProps {
     index?: number,
-    person?: Person,
+    element?: any,
     isActive?: boolean,
     isLoading?: boolean,
     canDelete?: boolean,
     canSeeInfo?: boolean,
+    onInfo?: (element) => any,
+    onTitle?: (element) => any,
     onEditClick?: () => void,
     onDeleteClick?: () => void,
     onActiveChange?: (any) => void,
@@ -26,7 +27,7 @@ const buttonTitleClassName = `
                             group-hover:h-auto sm:group-hover:mr-2
                         `
 
-export default function PersonItemList(props: PersonItemListProps) {
+export default function ItemList(props: ItemListProps) {
     const [isShowingInfo, setIsShowingInfo] = useState(false)
 
     let className = `
@@ -56,10 +57,9 @@ export default function PersonItemList(props: PersonItemListProps) {
                         setIsShowingInfo(false)
                     }}
                     className={className}>
-                    <div className="flex">
-                        <div><span className={titleClassName}>{props.person.name}</span></div>
+                    <div>
+                        {props.onTitle && props.onTitle(props.element)}
                     </div>
-                    <div><span className={contentClassName}>{handleMaskCPF(props.person.cpf)}</span></div>
                     <Transition.Root
                         show={props.isActive}>
                         <Transition.Child
@@ -90,7 +90,6 @@ export default function PersonItemList(props: PersonItemListProps) {
                                                     }
                                                     event.stopPropagation()
                                                 }}
-                                                isHidden={props.person.name === ""}
                                             >
                                                 <div className="flex flex-row">
                                                     <span className={buttonTitleClassName}>Excluir</span>
@@ -108,7 +107,6 @@ export default function PersonItemList(props: PersonItemListProps) {
                                                     }
                                                     event.stopPropagation()
                                                 }}
-                                                isHidden={props.person.name === ""}
                                             >
                                                 <div className="flex flex-row">
                                                     <span className={buttonTitleClassName}>Editar</span>
@@ -117,14 +115,13 @@ export default function PersonItemList(props: PersonItemListProps) {
                                             </Button>
                                         )}
 
-                                        {props.canSeeInfo && props.person.rg !== "" && (
+                                        {props.canSeeInfo && (
                                             <Button
                                                 className="group"
                                                 onClick={(event) => {
                                                     event.stopPropagation()
                                                     setIsShowingInfo(!isShowingInfo)
                                                 }}
-                                                isHidden={props.person.name === ""}
                                             >
                                                 <div className="flex flex-row">
                                                     <span className={buttonTitleClassName}>Visualizar</span>
@@ -158,8 +155,9 @@ export default function PersonItemList(props: PersonItemListProps) {
                                         leaveFrom="opacity-100"
                                         leaveTo="opacity-0"
                                     >
+
                                         <div>
-                                            {props.person.rg && (<div><span className={contentClassName}>{"RG: " + props.person.rg}</span></div>)}
+                                            {props.onInfo && props.onInfo(props.element)}
                                         </div>
                                     </Transition.Child>
                                 </div>
