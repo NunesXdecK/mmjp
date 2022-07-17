@@ -14,7 +14,6 @@ import InputCheckbox from "../inputText/inputCheckbox"
 import { handleNewDateToUTC } from "../../util/dateUtils"
 import { FeedbackMessage } from "../modal/feedbackMessageModal"
 import { db, PERSON_COLLECTION_NAME } from "../../db/firebaseDB"
-import { handlePreparePersonForDB } from "../../util/converterUtil"
 import { handlePersonValidationForDB } from "../../util/validationUtil"
 import { defaultPerson, Person } from "../../interfaces/objectInterfaces"
 import { addDoc, collection, doc, getDocs, updateDoc } from "firebase/firestore"
@@ -130,56 +129,55 @@ export default function PersonForm(props: PersonFormProps) {
     const handleSave = async () => {
         setIsLoading(true)
         let feedbackMessage: FeedbackMessage = { messages: ["Algo estranho aconteceu"], messageType: "WARNING" }
-
         let personForDB: Person = { ...person }
         const isValid = handlePersonValidationForDB(personForDB)
         if (isValid.validation) {
+            let itsOK = true
             let nowID = personForDB?.id ?? ""
-
-            const querySnapshot = await getDocs(personCollection)
-            querySnapshot.forEach((doc) => {
-                const cpf = doc.data().cpf
-                if (doc.id && person.cpf === cpf) {
-                    nowID = doc.id
-                }
-            })
-
-            personForDB = handlePreparePersonForDB(personForDB)
-
             const isSave = nowID === ""
             if (isSave) {
                 try {
-                    const docRef = await addDoc(personCollection, personForDB)
-                    setPerson({ ...person, id: docRef.id })
-                    personForDB = { ...personForDB, id: docRef.id }
+                    const res = await fetch("api/person", {
+                        method: "POST",
+                        body: JSON.stringify(personForDB),
+                    }).then((res) => res.json())
+                    setPerson({ ...person, id: res.id })
+                    personForDB = { ...personForDB, id: res.id }
                     feedbackMessage = { ...feedbackMessage, messages: ["Salvo com sucesso!"], messageType: "SUCCESS" }
                     handleListItemClick(defaultPerson)
                 } catch (e) {
                     feedbackMessage = { ...feedbackMessage, messages: ["Erro em salvar!"], messageType: "ERROR" }
                     console.error("Error adding document: ", e)
+                    itsOK = false
                 }
             } else {
                 try {
                     personForDB = { ...personForDB, dateLastUpdateUTC: handleNewDateToUTC() }
-                    const docRef = doc(personCollection, nowID)
-                    await updateDoc(docRef, personForDB)
+                    const res = await fetch("api/person", {
+                        method: "PUT",
+                        body: JSON.stringify(personForDB),
+                    }).then((res) => res.json())
+                    setPerson({ ...person, id: res.id })
+                    personForDB = { ...personForDB, id: res.id }
                     feedbackMessage = { ...feedbackMessage, messages: ["Atualizado com sucesso!"], messageType: "SUCCESS" }
                     handleListItemClick(defaultPerson)
                 } catch (e) {
                     feedbackMessage = { ...feedbackMessage, messages: ["Erro em atualizar!"], messageType: "ERROR" }
                     console.error("Error upddating document: ", e)
+                    itsOK = false
                 }
             }
-
-            if (isMultiple) {
-                setPerson(defaultPerson)
-                if (props.onShowMessage) {
-                    props.onShowMessage(feedbackMessage)
+            if (itsOK) {
+                if (isMultiple) {
+                    setPerson(defaultPerson)
+                    if (props.onShowMessage) {
+                        props.onShowMessage(feedbackMessage)
+                    }
                 }
-            }
 
-            if (!isMultiple && props.onAfterSave) {
-                props.onAfterSave(feedbackMessage, personForDB)
+                if (!isMultiple && props.onAfterSave) {
+                    props.onAfterSave(feedbackMessage, personForDB)
+                }
             }
         } else {
             feedbackMessage = { ...feedbackMessage, messages: isValid.messages, messageType: "ERROR" }
