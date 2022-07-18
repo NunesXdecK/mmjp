@@ -36,8 +36,8 @@ export default async function handler(req, res) {
             res.status(200).json(resGET)
             break
         case "POST":
-            let resPOST = { status: "ERROR", error: {}, message: body }
             let data: Person = JSON.parse(body)
+            let resPOST = { status: "ERROR", error: {}, message: data }
             try {
                 data = handlePreparePersonForDB(data)
                 let nowID = data?.id ?? ""
