@@ -135,13 +135,14 @@ export default function PersonForm(props: PersonFormProps) {
             let nowID = personForDB?.id ?? ""
             const isSave = nowID === ""
             let res = { status: "ERROR", id: nowID, message: "" }
+            const headersJSON = { 'Content-Type': 'application/json', }
             const headers = {
                 "Access-Control-Allow-Credentials": "true",
                 "Access-Control-Allow-Origin": "*",
                 "Access-Control-Allow-Methods": "GET,OPTIONS,PATCH,DELETE,POST,PUT",
                 "Access-Control-Allow-Headers": "X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version",
             }
-            
+
             if (isSave) {
                 feedbackMessage = { ...feedbackMessage, messages: ["Salvo com sucesso!"], messageType: "SUCCESS" }
             } else {
@@ -152,7 +153,9 @@ export default function PersonForm(props: PersonFormProps) {
                 res = await fetch("api/person", {
                     method: "POST",
                     body: JSON.stringify(personForDB),
+                    headers: headersJSON,
                 }).then((res) => res.json())
+                console.log(JSON.parse(res.message))
             } catch (e) {
                 if (isSave) {
                     feedbackMessage = { ...feedbackMessage, messages: ["Erro em salvar!"], messageType: "ERROR" }
@@ -161,7 +164,6 @@ export default function PersonForm(props: PersonFormProps) {
                 }
                 console.error("Error adding document: ", e)
             }
-            console.log(JSON.parse(res.message))
 
             if (res.status === "SUCCESS") {
                 setPerson({ ...person, id: res.id })
