@@ -10,13 +10,13 @@ export default async function handler(req, res) {
     const personCollection = collection(db, PERSON_COLLECTION_NAME).withConverter(PersonConversor)
     switch (method) {
         case "GET":
+            let data = JSON.parse(body)
+            const docRef = doc(personCollection, data.id)
+            data = (await getDoc(docRef)).data()
+            res.status(200).json({ status: "SUCCESS", data: data })
             try {
-                let data = JSON.parse(body)
-                const docRef = doc(personCollection, data.id)
-                data = (await getDoc(docRef)).data()
-                res.status(200).json(JSON.stringify({ status: "SUCCESS", data: data }))
             } catch (err) {
-                res.status(200).json(JSON.stringify({ status: "ERROR", erro: JSON.stringify(err) }))
+                res.status(200).json({ status: "ERROR", erro: err })
             }
             break
         case "POST":
@@ -40,9 +40,9 @@ export default async function handler(req, res) {
                     const docRef = doc(personCollection, nowID)
                     await updateDoc(docRef, data)
                 }
-                res.status(200).json(JSON.stringify({ status: "SUCCESS", id: nowID }))
+                res.status(200).json({ status: "SUCCESS", id: nowID })
             } catch (err) {
-                res.status(200).json(JSON.stringify({ status: "ERROR", erro: JSON.stringify(err) }))
+                res.status(200).json({ status: "ERROR", erro: err })
             }
             break
         case "PUT":
@@ -54,12 +54,12 @@ export default async function handler(req, res) {
                     data = { ...data, dateLastUpdateUTC: handleNewDateToUTC() }
                     const docRef = doc(personCollection, nowID)
                     await updateDoc(docRef, data)
-                    res.status(200).json(JSON.stringify({ status: "SUCCESS", id: nowID }))
+                    res.status(200).json({ status: "SUCCESS", id: nowID })
                 } else {
-                    res.status(200).json(JSON.stringify({ status: "ERROR", message: "Não há ID" }))
+                    res.status(200).json({ status: "ERROR", message: "Não há ID" })
                 }
             } catch (err) {
-                res.status(200).json(JSON.stringify({ status: "ERROR", erro: err, body: body }))
+                res.status(200).json({ status: "ERROR", erro: err, body: body })
             }
             break
         case "DELETE":
@@ -67,9 +67,9 @@ export default async function handler(req, res) {
                 const data = JSON.parse(body)
                 const docRef = doc(personCollection, data.id)
                 await deleteDoc(docRef)
-                res.status(200).json(JSON.stringify({ status: "SUCCESS", body: body.id }))
+                res.status(200).json({ status: "SUCCESS", body: body.id })
             } catch (err) {
-                res.status(200).json(JSON.stringify({ status: "ERROR", erro: JSON.stringify(err) }))
+                res.status(200).json({ status: "ERROR", erro: err })
             }
             break
         default:
