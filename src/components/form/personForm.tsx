@@ -145,7 +145,6 @@ export default function PersonForm(props: PersonFormProps) {
                 try {
                     res = await fetch("api/person", {
                         method: "POST",
-                        headers: headers,
                         body: JSON.stringify(personForDB),
                     }).then((res) => res.json())
                     feedbackMessage = { ...feedbackMessage, messages: ["Salvo com sucesso!"], messageType: "SUCCESS" }
@@ -158,7 +157,6 @@ export default function PersonForm(props: PersonFormProps) {
                     personForDB = { ...personForDB, dateLastUpdateUTC: handleNewDateToUTC() }
                     res = await fetch("api/person", {
                         method: "PUT",
-                        headers: headers,
                         body: JSON.stringify(personForDB),
                     }).then((res) => res.json())
                     feedbackMessage = { ...feedbackMessage, messages: ["Atualizado com sucesso!"], messageType: "SUCCESS" }

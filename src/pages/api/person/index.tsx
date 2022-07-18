@@ -6,7 +6,7 @@ import { handlePreparePersonForDB } from "../../../util/converterUtil"
 import { addDoc, collection, deleteDoc, doc, getDoc, getDocs, updateDoc } from "firebase/firestore"
 
 export default async function handler(req, res) {
-    const { query, method, body } = req
+    const { query, method, body, param } = req
     {/*
     res.setHeader('Access-Control-Allow-Credentials', true)
     res.setHeader('Access-Control-Allow-Origin', '*')
@@ -32,7 +32,7 @@ export default async function handler(req, res) {
             }
             break
         case "POST":
-            res.status(200).json(JSON.stringify({ status: "SUCCESS", id: "a paporra" }))
+            console.log("teste API")
             try {
                 let data: Person = JSON.parse(body)
                 data = handlePreparePersonForDB(data)
@@ -59,11 +59,10 @@ export default async function handler(req, res) {
             }
             break
         case "PUT":
-            res.status(200).json({ status: "SUCCESS", id: "TESTE" })
+            console.log("teste API")
             try {
                 let data: Person = JSON.parse(body)
                 data = handlePreparePersonForDB(data)
-                res.status(200).json({ status: "SUCCESS", id: data })
                 let nowID = data?.id ?? ""
                 if (nowID) {
                     data = { ...data, dateLastUpdateUTC: handleNewDateToUTC() }
