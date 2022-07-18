@@ -38,11 +38,11 @@ export default async function handler(req, res) {
         case "POST":
             let data: Person = JSON.parse(body)
             let resPOST = { status: "ERROR", error: {}, message: data }
-            data = handlePreparePersonForDB(data)
             try {
                 let nowID = data?.id ?? ""
-
+                
                 {/*
+                data = handlePreparePersonForDB(data)
             */}
                 const querySnapshot = await getDocs(personCollection)
                 querySnapshot.forEach((doc) => {
