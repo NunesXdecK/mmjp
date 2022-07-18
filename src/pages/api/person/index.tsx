@@ -10,11 +10,11 @@ export default async function handler(req, res) {
     const personCollection = collection(db, PERSON_COLLECTION_NAME).withConverter(PersonConversor)
     switch (method) {
         case "GET":
-            let data = JSON.parse(body)
-            const docRef = doc(personCollection, data.id)
-            data = (await getDoc(docRef)).data()
-            res.status(200).json({ status: "SUCCESS", data: data })
             try {
+                let data = JSON.parse(body)
+                const docRef = doc(personCollection, data.id)
+                data = (await getDoc(docRef)).data()
+                res.status(200).json({ status: "SUCCESS", data: data })
             } catch (err) {
                 res.status(200).json({ status: "ERROR", erro: err })
             }
@@ -46,8 +46,8 @@ export default async function handler(req, res) {
             }
             break
         case "PUT":
+            let data: Person = JSON.parse(body)
             try {
-                let data: Person = JSON.parse(body)
                 data = handlePreparePersonForDB(data)
                 let nowID = data?.id ?? ""
                 if (nowID) {
