@@ -32,8 +32,8 @@ export default async function handler(req, res) {
             }
             break
         case "POST":
+            res.status(200).json(JSON.stringify({ status: "SUCCESS", id: "a paporra" }))
             try {
-                res.status(200).json(JSON.stringify({ status: "SUCCESS", id: "a paporra" }))
                 let data: Person = JSON.parse(body)
                 data = handlePreparePersonForDB(data)
                 let nowID = data?.id ?? ""
@@ -59,6 +59,7 @@ export default async function handler(req, res) {
             }
             break
         case "PUT":
+            res.status(200).json({ status: "SUCCESS", id: "TESTE" })
             try {
                 let data: Person = JSON.parse(body)
                 data = handlePreparePersonForDB(data)
