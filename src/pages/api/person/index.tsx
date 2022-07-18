@@ -10,7 +10,6 @@ export const handleNewDateToUTC = () => {
 export const handleRemoveCEPMask = (text: string) => {
     if (text) {
         text = text.replaceAll(" ", "").replaceAll("-", "").replaceAll(".", "")
-        text = text.replace(new RegExp(/\D/g), "")
     }
     return text
 }
@@ -30,7 +29,7 @@ export const handleRemoveCPFMask = (text: string) => {
 }
 
 
-export const handlePreparePersonForDB = (person: Person) => {
+export const handlePreparePersonForDB = (person: Person): Person => {
     if (person.address && person.address?.cep) {
         person = { ...person, address: { ...person.address, cep: handleRemoveCEPMask(person.address.cep) } }
     }
@@ -81,25 +80,25 @@ export default async function handler(req, res) {
             try {
                 let nowID = data?.id ?? ""
                 
-                data = handlePreparePersonForDB(data)
+                const person = handlePreparePersonForDB(data)
                 {/*
             */}
                 const querySnapshot = await getDocs(personCollection)
                 querySnapshot.forEach((doc) => {
                     const cpf = doc.data().cpf
-                    if (doc.id && data.cpf === cpf) {
+                    if (doc.id && person.cpf === cpf) {
                         nowID = doc.id
                     }
                 })
 
                 const isSave = nowID === ""
                 if (isSave) {
-                    const docRef = await addDoc(personCollection, data)
+                    const docRef = await addDoc(personCollection, person)
                     nowID = docRef.id
                 } else {
                     data = { ...data, dateLastUpdateUTC: handleNewDateToUTC() }
                     const docRef = doc(personCollection, nowID)
-                    await updateDoc(docRef, data)
+                    await updateDoc(docRef, person)
                 }
                 resPOST = { ...resPOST, status: "SUCCESS" }
             } catch (err) {
