@@ -60,6 +60,7 @@ export default async function handler(req, res) {
             break
         case "PUT":
             try {
+                let response = { status: "ERROR", message: "Não há ID", id: "" }
                 let data: Person = JSON.parse(body)
                 data = handlePreparePersonForDB(data)
                 console.log(JSON.stringify(data))
@@ -68,10 +69,9 @@ export default async function handler(req, res) {
                     data = { ...data, dateLastUpdateUTC: handleNewDateToUTC() }
                     const docRef = doc(personCollection, nowID)
                     await updateDoc(docRef, data)
-                    res.status(200).json({ status: "SUCCESS", id: nowID })
-                } else {
-                    res.status(200).json({ status: "ERROR", message: "Não há ID" })
+                    response = {status: "SUCCESS", message: "Ae sim!", id: nowID }
                 }
+                res.status(200).json(response)
             } catch (err) {
                 let data: Person = JSON.parse(body)
                 res.status(200).json({ status: "ERROR", erro: err, data: data })
