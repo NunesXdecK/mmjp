@@ -1,9 +1,34 @@
 import { PersonConversor } from "../../../db/converters"
-import { handleNewDateToUTC } from "../../../util/dateUtils"
 import { Person } from "../../../interfaces/objectInterfaces"
 import { db, PERSON_COLLECTION_NAME } from "../../../db/firebaseDB"
 import { addDoc, collection, deleteDoc, doc, getDoc, getDocs, updateDoc } from "firebase/firestore"
-import { handleRemoveCEPMask, handleRemoveCPFMask, handleRemoveTelephoneMask } from "../../../util/maskUtil"
+
+export const handleNewDateToUTC = () => {
+    return Date.parse(new Date().toUTCString())
+}
+
+export const handleRemoveCEPMask = (text: string) => {
+    if (text) {
+        text = text.replaceAll(" ", "").replaceAll("-", "").replaceAll(".", "")
+        text = text.replace(new RegExp(/\D/g), "")
+    }
+    return text
+}
+
+export const handleRemoveTelephoneMask = (text: string) => {
+    if (text) {
+        text = text.replaceAll(" ", "").replaceAll("(", "").replaceAll(")", "").replaceAll("-", "")
+    }
+    return text
+}
+
+export const handleRemoveCPFMask = (text: string) => {
+    if (text) {
+        text = text.replaceAll("-", "").replaceAll(".", "")
+    }
+    return text
+}
+
 
 export const handlePreparePersonForDB = (person: Person) => {
     if (person.address && person.address?.cep) {
