@@ -36,19 +36,22 @@ export default async function handler(req, res) {
             res.status(200).json(resGET)
             break
         case "POST":
-            let resPOST = { status: "ERROR", error: {}, message: body }
             let data: Person = JSON.parse(body)
             data = handlePreparePersonForDB(data)
             console.log(data)
+            let resPOST = { status: "ERROR", error: {}, message: data }
             try {
                 let nowID = data?.id ?? ""
-                const querySnapshot = await getDocs(personCollection)
-                querySnapshot.forEach((doc) => {
-                    const cpf = doc.data().cpf
-                    if (doc.id && data.cpf === cpf) {
-                        nowID = doc.id
-                    }
-                })
+
+                {/*
+            const querySnapshot = await getDocs(personCollection)
+            querySnapshot.forEach((doc) => {
+                const cpf = doc.data().cpf
+                if (doc.id && data.cpf === cpf) {
+                    nowID = doc.id
+                }
+            })
+        */}
                 const isSave = nowID === ""
                 if (isSave) {
                     const docRef = await addDoc(personCollection, data)
@@ -63,8 +66,6 @@ export default async function handler(req, res) {
                 console.error(err)
                 resPOST = { ...resPOST, status: "ERROR", error: err }
             }
-            {/*
-        */}
             res.status(200).json(resPOST)
             break
         case "DELETE":
