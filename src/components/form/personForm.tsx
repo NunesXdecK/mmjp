@@ -134,7 +134,7 @@ export default function PersonForm(props: PersonFormProps) {
         if (isValid.validation) {
             let nowID = personForDB?.id ?? ""
             const isSave = nowID === ""
-            let res = { status: "ERROR", id: nowID }
+            let res = { status: "ERROR", id: nowID, message: "" }
             const headers = {
                 "Access-Control-Allow-Credentials": "true",
                 "Access-Control-Allow-Origin": "*",
@@ -161,7 +161,7 @@ export default function PersonForm(props: PersonFormProps) {
                 }
                 console.error("Error adding document: ", e)
             }
-            console.log(res)
+            console.log(JSON.parse(res.message))
 
             if (res.status === "SUCCESS") {
                 setPerson({ ...person, id: res.id })
