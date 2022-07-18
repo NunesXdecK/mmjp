@@ -132,52 +132,51 @@ export default function PersonForm(props: PersonFormProps) {
         let personForDB: Person = { ...person }
         const isValid = handlePersonValidationForDB(personForDB)
         if (isValid.validation) {
-            let itsOK = true
             let nowID = personForDB?.id ?? ""
             const isSave = nowID === ""
+            let res = { status: "ERROR", id: nowID }
             if (isSave) {
                 try {
-                    const res = await fetch("api/person", {
+                    res = await fetch("api/person", {
                         method: "POST",
                         body: JSON.stringify(personForDB),
                     }).then((res) => res.json())
-                    setPerson({ ...person, id: res.id })
-                    personForDB = { ...personForDB, id: res.id }
                     feedbackMessage = { ...feedbackMessage, messages: ["Salvo com sucesso!"], messageType: "SUCCESS" }
-                    handleListItemClick(defaultPerson)
                 } catch (e) {
                     feedbackMessage = { ...feedbackMessage, messages: ["Erro em salvar!"], messageType: "ERROR" }
                     console.error("Error adding document: ", e)
-                    itsOK = false
                 }
             } else {
                 try {
                     personForDB = { ...personForDB, dateLastUpdateUTC: handleNewDateToUTC() }
-                    const res = await fetch("api/person", {
+                    res = await fetch("api/person", {
                         method: "PUT",
                         body: JSON.stringify(personForDB),
                     }).then((res) => res.json())
-                    setPerson({ ...person, id: res.id })
-                    personForDB = { ...personForDB, id: res.id }
                     feedbackMessage = { ...feedbackMessage, messages: ["Atualizado com sucesso!"], messageType: "SUCCESS" }
-                    handleListItemClick(defaultPerson)
                 } catch (e) {
                     feedbackMessage = { ...feedbackMessage, messages: ["Erro em atualizar!"], messageType: "ERROR" }
                     console.error("Error upddating document: ", e)
-                    itsOK = false
                 }
             }
-            if (itsOK) {
+            
+            if (res.status === "SUCCESS") {
+                setPerson({ ...person, id: res.id })
+                personForDB = { ...personForDB, id: res.id }
+                handleListItemClick(defaultPerson)
                 if (isMultiple) {
                     setPerson(defaultPerson)
-                    if (props.onShowMessage) {
-                        props.onShowMessage(feedbackMessage)
-                    }
                 }
 
                 if (!isMultiple && props.onAfterSave) {
                     props.onAfterSave(feedbackMessage, personForDB)
                 }
+            } else {
+                feedbackMessage = { ...feedbackMessage, messages: ["Erro!"], messageType: "ERROR" }
+            }
+
+            if (props.onShowMessage) {
+                props.onShowMessage(feedbackMessage)
             }
         } else {
             feedbackMessage = { ...feedbackMessage, messages: isValid.messages, messageType: "ERROR" }
