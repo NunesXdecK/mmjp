@@ -38,8 +38,8 @@ export default async function handler(req, res) {
         case "POST":
             let data: Person = JSON.parse(body)
             let resPOST = { status: "ERROR", error: {}, message: data }
+            data = handlePreparePersonForDB(data)
             try {
-                data = handlePreparePersonForDB(data)
                 let nowID = data?.id ?? ""
 
                 {/*
