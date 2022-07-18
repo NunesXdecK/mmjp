@@ -106,7 +106,11 @@ export const handlePreparePersonForDB = (person: Person) => {
     if (person.dateInsertUTC === 0) {
         person = { ...person, dateInsertUTC: handleNewDateToUTC() }
     }
-
+    
+    if (person.id !== "") {
+        person = { ...person, dateLastUpdateUTC: handleNewDateToUTC() }
+    }
+    
     let telephonesWithNoMask = []
     person.telephones?.map((element, index) => {
         telephonesWithNoMask = [...telephonesWithNoMask, handleRemoveTelephoneMask(element)]

@@ -17,6 +17,7 @@ import { db, PERSON_COLLECTION_NAME } from "../../db/firebaseDB"
 import { handlePersonValidationForDB } from "../../util/validationUtil"
 import { defaultPerson, Person } from "../../interfaces/objectInterfaces"
 import { CPF_MARK, TELEPHONE_MARK, TEXT_NOT_NULL_MARK } from "../../util/patternValidationUtil"
+import { handlePreparePersonForDB } from "../../util/converterUtil"
 
 interface PersonFormProps {
     title?: string,
@@ -131,26 +132,16 @@ export default function PersonForm(props: PersonFormProps) {
         let personForDB: Person = { ...person }
         const isValid = handlePersonValidationForDB(personForDB)
         if (isValid.validation) {
+            personForDB = handlePreparePersonForDB(personForDB)
             let nowID = personForDB?.id ?? ""
             const isSave = nowID === ""
             let res = { status: "ERROR", id: nowID, message: "" }
-            const headersJSON = { 'Content-Type': 'application/json', }
-            const headers = {
-                "Access-Control-Allow-Credentials": "true",
-                "Access-Control-Allow-Origin": "*",
-                "Access-Control-Allow-Methods": "GET,OPTIONS,PATCH,DELETE,POST,PUT",
-                "Access-Control-Allow-Headers": "X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version",
-            }
 
             if (isSave) {
                 feedbackMessage = { ...feedbackMessage, messages: ["Salvo com sucesso!"], messageType: "SUCCESS" }
             } else {
                 feedbackMessage = { ...feedbackMessage, messages: ["Atualizado com sucesso!"], messageType: "SUCCESS" }
             }
-
-            {/*
-        "\"{\"rg\":\"\",\"cpf\":\"123.654.789-65\",\"name\":\"Testeqqq\",\"id\":\"vjb1ZU0fcKykILBivJA0\",\"rgIssuer\":\"\",\"clientCode\":\"7\",\"profession\":\"\",\"nationality\":\"\",\"naturalness\":\"\",\"maritalStatus\":\"\",\"dateInsertUTC\":1658146548000,\"dateLastUpdateUTC\":1658169440000,\"address\":{\"cep\":\"\",\"district\":\"\",\"number\":\"\",\"publicPlace\":\"\",\"complement\":\"\",\"county\":\"\"},\"telephones\":[]}\""
-        */}
 
             try {
                 res = await fetch("api/person", {
@@ -169,7 +160,7 @@ export default function PersonForm(props: PersonFormProps) {
             if (res.status === "SUCCESS") {
                 setPerson({ ...person, id: res.id })
                 personForDB = { ...personForDB, id: res.id }
-                handleListItemClick(defaultPerson)
+
                 if (isMultiple) {
                     setPerson(defaultPerson)
                 }
