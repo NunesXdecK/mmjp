@@ -32,10 +32,10 @@ export default async function handler(req, res) {
             }
             break
         case "POST":
-            console.log("teste API")
             try {
                 let data: Person = JSON.parse(body)
                 data = handlePreparePersonForDB(data)
+                console.log(JSON.stringify(data))
                 let nowID = data?.id ?? ""
                 const querySnapshot = await getDocs(personCollection)
                 querySnapshot.forEach((doc) => {
@@ -59,10 +59,10 @@ export default async function handler(req, res) {
             }
             break
         case "PUT":
-            console.log("teste API")
             try {
                 let data: Person = JSON.parse(body)
                 data = handlePreparePersonForDB(data)
+                console.log(JSON.stringify(data))
                 let nowID = data?.id ?? ""
                 if (nowID) {
                     data = { ...data, dateLastUpdateUTC: handleNewDateToUTC() }
