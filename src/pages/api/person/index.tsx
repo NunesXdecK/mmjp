@@ -7,6 +7,7 @@ import { addDoc, collection, deleteDoc, doc, getDoc, getDocs, updateDoc } from "
 
 export default async function handler(req, res) {
     const { query, method, body } = req
+    {/*
     res.setHeader('Access-Control-Allow-Credentials', true)
     res.setHeader('Access-Control-Allow-Origin', '*')
     // another common pattern
@@ -15,7 +16,8 @@ export default async function handler(req, res) {
     res.setHeader(
         'Access-Control-Allow-Headers',
         'X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version'
-    )
+        )
+    */}
 
     const personCollection = collection(db, PERSON_COLLECTION_NAME).withConverter(PersonConversor)
     switch (method) {
