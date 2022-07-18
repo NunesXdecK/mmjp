@@ -35,7 +35,8 @@ export default async function handler(req, res) {
             res.status(200).json(resGET)
             break
         case "POST":
-            let resPOST = { status: "ERROR", error: {}, message: "" }
+            let resPOST = { status: "ERROR", error: {}, message: JSON.parse(body) }
+            {/*
             let data: Person = JSON.parse(body)
             data = handlePreparePersonForDB(data)
             console.log(data)
@@ -61,6 +62,7 @@ export default async function handler(req, res) {
             } catch (err) {
                 resPOST = { ...resPOST, status: "ERROR", error: err }
             }
+        */}
             res.status(200).json(resPOST)
             break
         case "DELETE":
