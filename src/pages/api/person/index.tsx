@@ -30,13 +30,13 @@ export default async function handler(req, res) {
                 data = (await getDoc(docRef)).data()
                 resGET = { ...resGET, status: "SUCCESS" }
             } catch (err) {
+                console.error(err)
                 resGET = { ...resGET, status: "ERROR", error: err }
             }
             res.status(200).json(resGET)
             break
         case "POST":
             let resPOST = { status: "ERROR", error: {}, message: body }
-            {/*
             let data: Person = JSON.parse(body)
             data = handlePreparePersonForDB(data)
             console.log(data)
@@ -60,8 +60,10 @@ export default async function handler(req, res) {
                 }
                 resPOST = { ...resPOST, status: "SUCCESS" }
             } catch (err) {
+                console.error(err)
                 resPOST = { ...resPOST, status: "ERROR", error: err }
             }
+            {/*
         */}
             res.status(200).json(resPOST)
             break
@@ -73,6 +75,7 @@ export default async function handler(req, res) {
                 await deleteDoc(docRef)
                 resDELETE = { ...resDELETE, status: "SUCCESS" }
             } catch (err) {
+                console.error(err)
                 resDELETE = { ...resDELETE, status: "ERROR", error: err }
             }
             res.status(200).json(resDELETE)
