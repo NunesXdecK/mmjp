@@ -58,25 +58,6 @@ export default async function handler(req, res) {
                 res.status(200).json({ status: "ERROR", erro: err })
             }
             break
-        case "PUT":
-            try {
-                let response = { status: "ERROR", message: "Não há ID", id: "" }
-                let data: Person = JSON.parse(body)
-                data = handlePreparePersonForDB(data)
-                console.log(JSON.stringify(data))
-                let nowID = data?.id ?? ""
-                if (nowID) {
-                    data = { ...data, dateLastUpdateUTC: handleNewDateToUTC() }
-                    const docRef = doc(personCollection, nowID)
-                    await updateDoc(docRef, data)
-                    response = {status: "SUCCESS", message: "Ae sim!", id: nowID }
-                }
-                res.status(200).json(response)
-            } catch (err) {
-                let data: Person = JSON.parse(body)
-                res.status(200).json({ status: "ERROR", erro: err, data: data })
-            }
-            break
         case "DELETE":
             try {
                 const data = JSON.parse(body)

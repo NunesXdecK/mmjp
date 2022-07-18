@@ -141,29 +141,25 @@ export default function PersonForm(props: PersonFormProps) {
                 "Access-Control-Allow-Methods": "GET,OPTIONS,PATCH,DELETE,POST,PUT",
                 "Access-Control-Allow-Headers": "X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version",
             }
+            
             if (isSave) {
-                try {
-                    res = await fetch("api/person", {
-                        method: "POST",
-                        body: JSON.stringify(personForDB),
-                    }).then((res) => res.json())
-                    feedbackMessage = { ...feedbackMessage, messages: ["Salvo com sucesso!"], messageType: "SUCCESS" }
-                } catch (e) {
-                    feedbackMessage = { ...feedbackMessage, messages: ["Erro em salvar!"], messageType: "ERROR" }
-                    console.error("Error adding document: ", e)
-                }
+                feedbackMessage = { ...feedbackMessage, messages: ["Salvo com sucesso!"], messageType: "SUCCESS" }
             } else {
-                try {
-                    personForDB = { ...personForDB, dateLastUpdateUTC: handleNewDateToUTC() }
-                    res = await fetch("api/person", {
-                        method: "PUT",
-                        body: JSON.stringify(personForDB),
-                    }).then((res) => res.json())
-                    feedbackMessage = { ...feedbackMessage, messages: ["Atualizado com sucesso!"], messageType: "SUCCESS" }
-                } catch (e) {
-                    feedbackMessage = { ...feedbackMessage, messages: ["Erro em atualizar!"], messageType: "ERROR" }
-                    console.error("Error upddating document: ", e)
+                feedbackMessage = { ...feedbackMessage, messages: ["Atualizado com sucesso!"], messageType: "SUCCESS" }
+            }
+
+            try {
+                res = await fetch("api/person", {
+                    method: "POST",
+                    body: JSON.stringify(personForDB),
+                }).then((res) => res.json())
+            } catch (e) {
+                if (isSave) {
+                    feedbackMessage = { ...feedbackMessage, messages: ["Erro em salvar!"], messageType: "ERROR" }
+                } else {
+                    feedbackMessage = { ...feedbackMessage, messages: ["Erro em Atualizadar!"], messageType: "ERROR" }
                 }
+                console.error("Error adding document: ", e)
             }
 
             if (res.status === "SUCCESS") {
