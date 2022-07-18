@@ -3,12 +3,22 @@ import { handleNewDateToUTC } from "../../../util/dateUtils"
 import { Person } from "../../../interfaces/objectInterfaces"
 import { db, PERSON_COLLECTION_NAME } from "../../../db/firebaseDB"
 import { handlePreparePersonForDB } from "../../../util/converterUtil"
-import { addDoc, collection, deleteDoc, doc, getDocs, updateDoc } from "firebase/firestore"
+import { addDoc, collection, deleteDoc, doc, getDoc, getDocs, updateDoc } from "firebase/firestore"
 
 export default async function handler(req, res) {
     const { query, method, body } = req
     const personCollection = collection(db, PERSON_COLLECTION_NAME).withConverter(PersonConversor)
     switch (method) {
+        case "GET":
+            try {
+                let data = JSON.parse(body)
+                const docRef = doc(personCollection, data.id)
+                data = (await getDoc(docRef)).data()
+                res.status(200).json(JSON.stringify({ status: "SUCCESS", data: data }))
+            } catch (err) {
+                res.status(200).json(JSON.stringify({ status: "ERROR", erro: JSON.stringify(err) }))
+            }
+            break
         case "POST":
             try {
                 let data: Person = JSON.parse(body)
