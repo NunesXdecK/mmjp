@@ -49,7 +49,7 @@ export default async function handler(req, res) {
                     res.status(200).json(JSON.stringify({ status: "ERROR", message: "Não há ID" }))
                 }
             } catch (err) {
-                res.status(200).json(JSON.stringify({ status: "ERROR", erro: JSON.stringify(err) }))
+                res.status(200).json(JSON.stringify({ status: "ERROR", erro: err, body: body }))
             }
             break
         case "DELETE":

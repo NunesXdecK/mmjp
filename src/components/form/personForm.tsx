@@ -135,6 +135,7 @@ export default function PersonForm(props: PersonFormProps) {
             let nowID = personForDB?.id ?? ""
             const isSave = nowID === ""
             let res = { status: "ERROR", id: nowID }
+            console.log(personForDB)
             if (isSave) {
                 try {
                     res = await fetch("api/person", {
@@ -159,7 +160,7 @@ export default function PersonForm(props: PersonFormProps) {
                     console.error("Error upddating document: ", e)
                 }
             }
-            
+
             if (res.status === "SUCCESS") {
                 setPerson({ ...person, id: res.id })
                 personForDB = { ...personForDB, id: res.id }
