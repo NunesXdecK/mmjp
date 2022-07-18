@@ -36,28 +36,28 @@ export default async function handler(req, res) {
             break
         case "POST":
             let resPOST = { status: "ERROR", error: {}, message: "" }
-            try {
-                let data: Person = JSON.parse(body)
-                data = handlePreparePersonForDB(data)
-                console.log(JSON.stringify(data))
-                let nowID = data?.id ?? ""
-                const querySnapshot = await getDocs(personCollection)
-                querySnapshot.forEach((doc) => {
-                    const cpf = doc.data().cpf
-                    if (doc.id && data.cpf === cpf) {
-                        nowID = doc.id
-                    }
-                })
-                const isSave = nowID === ""
-                if (isSave) {
-                    const docRef = await addDoc(personCollection, data)
-                    nowID = docRef.id
-                } else {
-                    data = { ...data, dateLastUpdateUTC: handleNewDateToUTC() }
-                    const docRef = doc(personCollection, nowID)
-                    await updateDoc(docRef, data)
+            let data: Person = JSON.parse(body)
+            data = handlePreparePersonForDB(data)
+            console.log(JSON.stringify(data))
+            let nowID = data?.id ?? ""
+            const querySnapshot = await getDocs(personCollection)
+            querySnapshot.forEach((doc) => {
+                const cpf = doc.data().cpf
+                if (doc.id && data.cpf === cpf) {
+                    nowID = doc.id
                 }
-                resPOST = { ...resPOST, status: "SUCCESS" }
+            })
+            const isSave = nowID === ""
+            if (isSave) {
+                const docRef = await addDoc(personCollection, data)
+                nowID = docRef.id
+            } else {
+                data = { ...data, dateLastUpdateUTC: handleNewDateToUTC() }
+                const docRef = doc(personCollection, nowID)
+                await updateDoc(docRef, data)
+            }
+            resPOST = { ...resPOST, status: "SUCCESS" }
+            try {
             } catch (err) {
                 resPOST = { ...resPOST, status: "ERROR", error: err }
             }
