@@ -20,18 +20,22 @@ export default async function handler(req, res) {
     */}
 
     const personCollection = collection(db, PERSON_COLLECTION_NAME).withConverter(PersonConversor)
+
     switch (method) {
         case "GET":
+            let resGET = { status: "ERROR", error: {}, message: "" }
             try {
                 let data = JSON.parse(body)
                 const docRef = doc(personCollection, data.id)
                 data = (await getDoc(docRef)).data()
-                res.status(200).json({ status: "SUCCESS", data: data })
+                resGET = { ...resGET, status: "SUCCESS" }
             } catch (err) {
-                res.status(200).json({ status: "ERROR", erro: err })
+                resGET = { ...resGET, status: "ERROR", error: err }
             }
+            res.status(200).json(resGET)
             break
         case "POST":
+            let resPOST = { status: "ERROR", error: {}, message: "" }
             try {
                 let data: Person = JSON.parse(body)
                 data = handlePreparePersonForDB(data)
@@ -53,20 +57,23 @@ export default async function handler(req, res) {
                     const docRef = doc(personCollection, nowID)
                     await updateDoc(docRef, data)
                 }
-                res.status(200).json({ status: "SUCCESS", id: nowID })
+                resPOST = { ...resPOST, status: "SUCCESS" }
             } catch (err) {
-                res.status(200).json({ status: "ERROR", erro: err })
+                resPOST = { ...resPOST, status: "ERROR", error: err }
             }
+            res.status(200).json(resPOST)
             break
         case "DELETE":
+            let resDELETE = { status: "ERROR", error: {}, message: "" }
             try {
                 const data = JSON.parse(body)
                 const docRef = doc(personCollection, data.id)
                 await deleteDoc(docRef)
-                res.status(200).json({ status: "SUCCESS", body: body.id })
+                resDELETE = { ...resDELETE, status: "SUCCESS" }
             } catch (err) {
-                res.status(200).json({ status: "ERROR", erro: err })
+                resDELETE = { ...resDELETE, status: "ERROR", error: err }
             }
+            res.status(200).json(resDELETE)
             break
         default:
             res.setHeader("Allow", ["PUT", "UPDATE", "DELETE"])
