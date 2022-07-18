@@ -36,6 +36,7 @@ export default async function handler(req, res) {
             }
             break
         case "PUT":
+            console.log("começou")
             try {
                 let data: Person = JSON.parse(body)
                 data = handlePreparePersonForDB(data)
@@ -44,6 +45,7 @@ export default async function handler(req, res) {
                     data = { ...data, dateLastUpdateUTC: handleNewDateToUTC() }
                     const docRef = doc(personCollection, nowID)
                     await updateDoc(docRef, data)
+                    console.log("chegou aqui")
                     res.status(200).json(JSON.stringify({ status: "SUCCESS", id: nowID }))
                 } else {
                     res.status(200).json(JSON.stringify({ status: "ERROR", message: "Não há ID" }))
