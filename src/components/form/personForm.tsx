@@ -161,6 +161,7 @@ export default function PersonForm(props: PersonFormProps) {
                 }
                 console.error("Error adding document: ", e)
             }
+            console.log(res)
 
             if (res.status === "SUCCESS") {
                 setPerson({ ...person, id: res.id })
