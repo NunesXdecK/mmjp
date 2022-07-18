@@ -2,22 +2,37 @@ import { PersonConversor } from "../../../db/converters"
 import { handleNewDateToUTC } from "../../../util/dateUtils"
 import { Person } from "../../../interfaces/objectInterfaces"
 import { db, PERSON_COLLECTION_NAME } from "../../../db/firebaseDB"
-import { handlePreparePersonForDB } from "../../../util/converterUtil"
 import { addDoc, collection, deleteDoc, doc, getDoc, getDocs, updateDoc } from "firebase/firestore"
+import { handleRemoveCEPMask, handleRemoveCPFMask, handleRemoveTelephoneMask } from "../../../util/maskUtil"
+
+export const handlePreparePersonForDB = (person: Person) => {
+    if (person.address && person.address?.cep) {
+        person = { ...person, address: { ...person.address, cep: handleRemoveCEPMask(person.address.cep) } }
+    }
+
+    if (person.dateInsertUTC === 0) {
+        person = { ...person, dateInsertUTC: handleNewDateToUTC() }
+    }
+
+    let telephonesWithNoMask = []
+    person.telephones?.map((element, index) => {
+        telephonesWithNoMask = [...telephonesWithNoMask, handleRemoveTelephoneMask(element)]
+    })
+
+    if (person.oldData) {
+        delete person.oldData
+    }
+
+    person = {
+        ...person
+        , cpf: handleRemoveCPFMask(person.cpf)
+        , telephones: telephonesWithNoMask
+    }
+    return person
+}
 
 export default async function handler(req, res) {
     const { query, method, body, param } = req
-    {/*
-    res.setHeader('Access-Control-Allow-Credentials', true)
-    res.setHeader('Access-Control-Allow-Origin', '*')
-    // another common pattern
-    // res.setHeader('Access-Control-Allow-Origin', req.headers.origin);
-    res.setHeader('Access-Control-Allow-Methods', 'GET,OPTIONS,PATCH,DELETE,POST,PUT')
-    res.setHeader(
-        'Access-Control-Allow-Headers',
-        'X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version'
-        )
-    */}
 
     const personCollection = collection(db, PERSON_COLLECTION_NAME).withConverter(PersonConversor)
 
@@ -41,8 +56,8 @@ export default async function handler(req, res) {
             try {
                 let nowID = data?.id ?? ""
                 
-                {/*
                 data = handlePreparePersonForDB(data)
+                {/*
             */}
                 const querySnapshot = await getDocs(personCollection)
                 querySnapshot.forEach((doc) => {

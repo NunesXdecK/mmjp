@@ -11,12 +11,11 @@ import InputText from "../inputText/inputText"
 import InputSelect from "../inputText/inputSelect"
 import { PersonConversor } from "../../db/converters"
 import InputCheckbox from "../inputText/inputCheckbox"
-import { handleNewDateToUTC } from "../../util/dateUtils"
+import { collection, getDocs } from "firebase/firestore"
 import { FeedbackMessage } from "../modal/feedbackMessageModal"
 import { db, PERSON_COLLECTION_NAME } from "../../db/firebaseDB"
 import { handlePersonValidationForDB } from "../../util/validationUtil"
 import { defaultPerson, Person } from "../../interfaces/objectInterfaces"
-import { addDoc, collection, doc, getDocs, updateDoc } from "firebase/firestore"
 import { CPF_MARK, TELEPHONE_MARK, TEXT_NOT_NULL_MARK } from "../../util/patternValidationUtil"
 
 interface PersonFormProps {
@@ -158,7 +157,6 @@ export default function PersonForm(props: PersonFormProps) {
                     method: "POST",
                     body: JSON.stringify(personForDB),
                 }).then((res) => res.json())
-                console.log(res)
             } catch (e) {
                 if (isSave) {
                     feedbackMessage = { ...feedbackMessage, messages: ["Erro em salvar!"], messageType: "ERROR" }
