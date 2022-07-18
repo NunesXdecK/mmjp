@@ -149,13 +149,16 @@ export default function PersonForm(props: PersonFormProps) {
                 feedbackMessage = { ...feedbackMessage, messages: ["Atualizado com sucesso!"], messageType: "SUCCESS" }
             }
 
+            {/*
+        "\"{\"rg\":\"\",\"cpf\":\"123.654.789-65\",\"name\":\"Testeqqq\",\"id\":\"vjb1ZU0fcKykILBivJA0\",\"rgIssuer\":\"\",\"clientCode\":\"7\",\"profession\":\"\",\"nationality\":\"\",\"naturalness\":\"\",\"maritalStatus\":\"\",\"dateInsertUTC\":1658146548000,\"dateLastUpdateUTC\":1658169440000,\"address\":{\"cep\":\"\",\"district\":\"\",\"number\":\"\",\"publicPlace\":\"\",\"complement\":\"\",\"county\":\"\"},\"telephones\":[]}\""
+        */}
+
             try {
                 res = await fetch("api/person", {
                     method: "POST",
                     body: JSON.stringify(personForDB),
-                    headers: headersJSON,
                 }).then((res) => res.json())
-                console.log(JSON.parse(res.message))
+                console.log(res)
             } catch (e) {
                 if (isSave) {
                     feedbackMessage = { ...feedbackMessage, messages: ["Erro em salvar!"], messageType: "ERROR" }
