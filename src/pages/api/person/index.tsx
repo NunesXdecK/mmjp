@@ -16,7 +16,7 @@ export default async function handler(req, res) {
         'Access-Control-Allow-Headers',
         'X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version'
     )
-    
+
     const personCollection = collection(db, PERSON_COLLECTION_NAME).withConverter(PersonConversor)
     switch (method) {
         case "GET":
@@ -56,8 +56,8 @@ export default async function handler(req, res) {
             }
             break
         case "PUT":
-            let data: Person = JSON.parse(body)
             try {
+                let data: Person = JSON.parse(body)
                 data = handlePreparePersonForDB(data)
                 let nowID = data?.id ?? ""
                 if (nowID) {
@@ -69,6 +69,7 @@ export default async function handler(req, res) {
                     res.status(200).json({ status: "ERROR", message: "Não há ID" })
                 }
             } catch (err) {
+                let data: Person = JSON.parse(body)
                 res.status(200).json({ status: "ERROR", erro: err, data: data })
             }
             break
