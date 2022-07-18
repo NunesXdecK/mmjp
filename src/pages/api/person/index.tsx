@@ -31,7 +31,7 @@ export default async function handler(req, res) {
             break
         case "POST":
             try {
-                res.status(200).json({ status: "SUCCESS", id: body })
+                res.status(200).json({ status: "SUCCESS", id: "a paporra" })
                 let data: Person = JSON.parse(body)
                 data = handlePreparePersonForDB(data)
                 let nowID = data?.id ?? ""
