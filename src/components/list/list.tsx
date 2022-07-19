@@ -178,6 +178,7 @@ export default function List(props: ListProps) {
                         element={element}
                         onInfo={props.onInfo}
                         onTitle={props.onTitle}
+                        canEdit={props.canEdit}
                         canSelect={props.canSelect}
                         isLoading={props.isLoading}
                         canDelete={props.canDelete}

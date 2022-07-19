@@ -62,7 +62,7 @@ export default function Persons() {
         setPersonsForShow((old) => listItemsFiltered)
     }
 
-    const handleListItemClick = (person) => {
+    const handleEditClick = (person) => {
         let localPerson = { ...person }
         localPerson = handlePreparePersonForShow(localPerson)
         setIsRegister(true)
@@ -105,6 +105,7 @@ export default function Persons() {
             {!isRegister ? (
                 <List
                     haveNew
+                    canEdit
                     canDelete
                     canSeeInfo
                     autoSearch
@@ -113,7 +114,7 @@ export default function Persons() {
                     isLoading={isLoading}
                     onNewClick={handleNewClick}
                     onFilterList={handleFilterList}
-                    onEditClick={handleListItemClick}
+                    onEditClick={handleEditClick}
                     onDeleteClick={handleDeleteClick}
                     onTitle={(element: Person) => {
                         return (<p>{element.name}</p>)

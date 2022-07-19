@@ -1,6 +1,6 @@
 import Form from "./form";
 import FormRow from "./formRow";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Button from "../button/button";
 import AddressForm from "./addressForm";
 import FormRowColumn from "./formRowColumn";
@@ -17,6 +17,7 @@ import { defaultCompany, Company } from "../../interfaces/objectInterfaces";
 import { COMPANY_COLLECTION_NAME, db, PERSON_COLLECTION_NAME } from "../../db/firebaseDB";
 import { CNPJ_MARK, NOT_NULL_MARK, TELEPHONE_MARK } from "../../util/patternValidationUtil";
 import { defaultElementFromBase, ElementFromBase, handlePrepareCompanyForDB } from "../../util/converterUtil";
+import WindowModal from "../modal/windowModal";
 
 interface CompanyFormProps {
     title?: string,
@@ -27,7 +28,7 @@ interface CompanyFormProps {
     isForDisable?: boolean,
     isForOldRegister?: boolean,
     company?: Company,
-    onBack?: (object) => void,
+    onBack?: (object?) => void,
     onAfterSave?: (object, any?) => void,
     onSelectPerson?: (object) => void,
     onShowMessage?: (FeedbackMessage) => void,
@@ -37,12 +38,15 @@ export default function CompanyForm(props: CompanyFormProps) {
     const personCollection = collection(db, PERSON_COLLECTION_NAME).withConverter(PersonConversor)
     const companyCollection = collection(db, COMPANY_COLLECTION_NAME).withConverter(CompanyConversor)
 
+    const [companyOriginal, setCompanyOriginal] = useState<Company>(props?.company ?? defaultCompany)
     const [company, setCompany] = useState<Company>(props?.company ?? defaultCompany)
     const [isFormValid, setIsFormValid] = useState(handleCompanyValidationForDB(company).validation)
 
     const [isOpen, setIsOpen] = useState(false)
     const [isLoading, setIsLoading] = useState(false)
     const [isMultiple, setIsMultiple] = useState(false)
+    const [isOpenExit, setIsOpenExit] = useState(false)
+    const [isOpenSave, setIsOpenSave] = useState(false)
 
     const [oldData, setOldData] = useState<ElementFromBase>(props?.company?.oldData ?? defaultElementFromBase)
 
@@ -53,76 +57,101 @@ export default function CompanyForm(props: CompanyFormProps) {
     const handleSetCompanyOwners = (value) => { setCompany({ ...company, owners: value }) }
     const handleSetCompanyAddress = (value) => { setCompany({ ...company, address: value }) }
 
-    const handleListItemClick = async (company: Company) => {
-        setIsLoading(true)
-        if (props.onSelectPerson) {
-            props.onSelectPerson(company)
-        }
-        setCompany(company)
-        setIsOpen(false)
-        setIsFormValid(true)
-        setIsLoading(false)
-    }
-
-    const handleSave = async (event) => {
-        event.preventDefault()
-        setIsLoading(true)
-        let feedbackMessage: FeedbackMessage = { messages: ["Algo estranho aconteceu"], messageType: "WARNING" }
-
-        let companyForDB = { ...company }
-        const isValid = handleCompanyValidationForDB(companyForDB)
-
-        if (isValid.validation) {
-            let nowID = companyForDB?.id ?? ""
-            let docRefsForDB = []
-
-            if (companyForDB.owners?.length > 0) {
-                companyForDB.owners?.map((element, index) => {
-                    if (element.id) {
-                        const docRef = doc(personCollection, element.id)
-                        docRefsForDB = [...docRefsForDB, docRef]
+    useEffect(() => {
+        if (props.onBack) {
+            history.pushState(null, null, null)
+            if (company.id !== "" && handleDiference()) {
+                window.onbeforeunload = () => {
+                    return false
+                }
+                document.addEventListener("keydown", (event) => {
+                    if (event.keyCode === 116) {
+                        event.preventDefault()
+                        setIsOpenExit(true)
                     }
                 })
-                companyForDB = { ...companyForDB, owners: docRefsForDB }
+            } else {
+                window.onbeforeunload = () => { }
+                document.addEventListener("keydown", (event) => { })
             }
 
+            window.onpopstate = (event) => {
+                event.preventDefault()
+                event.stopPropagation()
+                handleOnBack()
+            }
+        }
+    })
+
+    const handleDiference = (): boolean => {
+        let hasDiference = false
+        Object.keys(companyOriginal)?.map((element, index) => {
+            if (company[element] !== companyOriginal[element]) {
+                hasDiference = true
+            }
+        })
+        return hasDiference
+    }
+
+    const handleOnBack = () => {
+        if (company.id !== "" && handleDiference()) {
+            setIsOpenExit(true)
+        } else {
+            props.onBack()
+        }
+    }
+
+    const handleChangeFormValidation = (isValid) => {
+        setIsFormValid(isValid)
+    }
+
+    const handleSave = async () => {
+        setIsLoading(true)
+        let feedbackMessage: FeedbackMessage = { messages: ["Algo estranho aconteceu"], messageType: "WARNING" }
+        let companyForDB = { ...company }
+        const isValid = handleCompanyValidationForDB(companyForDB)
+        if (isValid.validation) {
             companyForDB = handlePrepareCompanyForDB(companyForDB)
+            let nowID = companyForDB?.id ?? ""
             const isSave = nowID === ""
+            let res = { status: "ERROR", id: nowID, message: "" }
             if (isSave) {
-                try {
-                    const docRef = await addDoc(companyCollection, companyForDB)
-                    setCompany({ ...company, id: docRef.id })
-                    companyForDB = { ...companyForDB, id: docRef.id }
-                    feedbackMessage = { ...feedbackMessage, messages: ["Salvo com sucesso!"], messageType: "SUCCESS" }
-                } catch (e) {
+                feedbackMessage = { ...feedbackMessage, messages: ["Salvo com sucesso!"], messageType: "SUCCESS" }
+            } else {
+                feedbackMessage = { ...feedbackMessage, messages: ["Atualizado com sucesso!"], messageType: "SUCCESS" }
+            }
+            try {
+                res = await fetch("api/company", {
+                    method: "POST",
+                    body: JSON.stringify({ token: "tokenbemseguro", data: companyForDB }),
+                }).then((res) => res.json())
+            } catch (e) {
+                if (isSave) {
                     feedbackMessage = { ...feedbackMessage, messages: ["Erro em salvar!"], messageType: "ERROR" }
-                    console.error("Error adding document: ", e)
+                } else {
+                    feedbackMessage = { ...feedbackMessage, messages: ["Erro em Atualizadar!"], messageType: "ERROR" }
+                }
+                console.error("Error adding document: ", e)
+            }
+
+            if (res.status === "SUCCESS") {
+                setCompany({ ...company, id: res.id })
+                companyForDB = { ...companyForDB, id: res.id }
+
+                if (isMultiple) {
+                    setCompany(defaultCompany)
+                }
+
+                if (!isMultiple && props.onAfterSave) {
+                    props.onAfterSave(feedbackMessage, companyForDB)
                 }
             } else {
-                try {
-                    companyForDB = { ...companyForDB, dateLastUpdateUTC: handleNewDateToUTC() }
-                    const docRef = doc(companyCollection, nowID)
-                    await updateDoc(docRef, companyForDB)
-                    feedbackMessage = { ...feedbackMessage, messages: ["Atualizado com sucesso!"], messageType: "SUCCESS" }
-                } catch (e) {
-                    feedbackMessage = { ...feedbackMessage, messages: ["Erro em atualizar!"], messageType: "ERROR" }
-                    console.error("Error upddating document: ", e)
-                }
+                feedbackMessage = { ...feedbackMessage, messages: ["Erro!"], messageType: "ERROR" }
             }
 
-            if (isMultiple) {
-                setCompany(defaultCompany)
-                if (props.onShowMessage) {
-                    props.onShowMessage(feedbackMessage)
-                }
+            if (props.onShowMessage) {
+                props.onShowMessage(feedbackMessage)
             }
-
-            if (!isMultiple && props.onAfterSave) {
-                props.onAfterSave(feedbackMessage, companyForDB)
-            }
-            {/*
-            handleListItemClick(defaultCompany)
-        */}
         } else {
             feedbackMessage = { ...feedbackMessage, messages: isValid.messages, messageType: "ERROR" }
             if (props.onShowMessage) {
@@ -132,14 +161,17 @@ export default function CompanyForm(props: CompanyFormProps) {
         setIsLoading(false)
     }
 
-    const handleChangeFormValidation = (isValid) => {
-        setIsFormValid(isValid)
-    }
-
     return (
         <>
             <form
-                onSubmit={handleSave}>
+                onSubmit={(event) => {
+                    event.preventDefault()
+                    if (company.id === "") {
+                        handleSave()
+                    } else {
+                        setIsOpenSave(true)
+                    }
+                }}>
                 <Form
                     title={props.title}
                     subtitle={props.subtitle}>
@@ -239,7 +271,14 @@ export default function CompanyForm(props: CompanyFormProps) {
             />
 
             <form
-                onSubmit={handleSave}>
+                onSubmit={(event) => {
+                    event.preventDefault()
+                    if (company.id === "") {
+                        handleSave()
+                    } else {
+                        setIsOpenSave(true)
+                    }
+                }}>
                 <AddressForm
                     title="Endereço"
                     isLoading={isLoading}
@@ -252,7 +291,10 @@ export default function CompanyForm(props: CompanyFormProps) {
                     <FormRowColumn unit="6" className="flex justify-between">
                         {props.isBack && (
                             <Button
-                                onClick={props.onBack}
+                                onClick={(event) => {
+                                    event.preventDefault()
+                                    handleOnBack()
+                                }}
                                 isLoading={isLoading}
                                 isDisabled={isLoading}
                             >
@@ -265,11 +307,63 @@ export default function CompanyForm(props: CompanyFormProps) {
                             isLoading={isLoading}
                             isDisabled={!isFormValid}
                         >
-                            Salvar
+                            {company.id === "" ? "Salvar" : "Editar"}
                         </Button>
                     </FormRowColumn>
                 </FormRow>
             </form>
+
+
+            <WindowModal
+                isOpen={isOpenExit}
+                setIsOpen={setIsOpenExit}>
+                <p className="text-center">Deseja realmente sair?</p>
+                <div className="flex mt-10 justify-between content-between">
+                    <Button
+                        onClick={() => setIsOpenExit(false)}
+                    >
+                        Voltar
+                    </Button>
+                    <Button
+                        color="red"
+                        onClick={() => {
+                            if (props.onBack) {
+                                props.onBack()
+                            }
+                        }}
+                    >
+                        Sair
+                    </Button>
+                </div>
+            </WindowModal>
+
+            <WindowModal
+                isOpen={isOpenSave}
+                setIsOpen={setIsOpenSave}>
+                <form onSubmit={(event) => {
+                    event.preventDefault()
+                    handleSave()
+                    setIsOpenSave(false)
+                }}>
+                    <p className="text-center">Deseja realmente editar as informações?</p>
+                    <div className="flex mt-10 justify-between content-between">
+                        <Button
+                            onClick={(event) => {
+                                event.preventDefault()
+                                setIsOpenSave(false)
+                            }}
+                        >
+                            Voltar
+                        </Button>
+                        <Button
+                            color="red"
+                            type="submit"
+                        >
+                            Editar
+                        </Button>
+                    </div>
+                </form>
+            </WindowModal>
         </>
     )
 }

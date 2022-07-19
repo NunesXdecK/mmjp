@@ -9,11 +9,8 @@ import { useEffect, useState } from "react"
 import WindowModal from "../modal/windowModal"
 import InputText from "../inputText/inputText"
 import InputSelect from "../inputText/inputSelect"
-import { PersonConversor } from "../../db/converters"
 import InputCheckbox from "../inputText/inputCheckbox"
-import { collection, getDocs } from "firebase/firestore"
 import { FeedbackMessage } from "../modal/feedbackMessageModal"
-import { db, PERSON_COLLECTION_NAME } from "../../db/firebaseDB"
 import { handlePreparePersonForDB } from "../../util/converterUtil"
 import { handlePersonValidationForDB } from "../../util/validationUtil"
 import { defaultPerson, Person } from "../../interfaces/objectInterfaces"
@@ -34,7 +31,6 @@ interface PersonFormProps {
 }
 
 export default function PersonForm(props: PersonFormProps) {
-    const personCollection = collection(db, PERSON_COLLECTION_NAME).withConverter(PersonConversor)
 
     const [personOriginal, setPersonOriginal] = useState<Person>(props?.person ?? defaultPerson)
     const [person, setPerson] = useState<Person>(props?.person ?? defaultPerson)
@@ -102,37 +98,6 @@ export default function PersonForm(props: PersonFormProps) {
         } else {
             props.onBack()
         }
-    }
-
-    const handleExitDialog = (event) => {
-    }
-
-    const handleListItemClick = async (person: Person) => {
-        setIsLoading(true)
-        if (props.onSelectPerson) {
-            props.onSelectPerson(person)
-        }
-        setPerson(person)
-        setIsOpen(false)
-        setIsFormValid(true)
-        if (person.id !== "" || props.isForOldRegister) {
-            try {
-                const querySnapshot = await getDocs(personCollection)
-                querySnapshot.forEach((doc) => {
-                    const cpf = doc.data().cpf
-                    if (doc.id && (person.cpf === cpf)) {
-                        setPerson(doc.data())
-                    }
-                })
-            } catch (err) {
-                console.error(err)
-                if (props.onShowMessage) {
-                    let feedbackMessage: FeedbackMessage = { messages: ["Algo estranho aconteceu, tente novamente."], messageType: "ERROR" }
-                    props.onShowMessage(feedbackMessage)
-                }
-            }
-        }
-        setIsLoading(false)
     }
 
     const handleChangeFormValidation = (isValid) => {
@@ -387,7 +352,10 @@ export default function PersonForm(props: PersonFormProps) {
                 <FormRowColumn unit="6" className="flex justify-between">
                     {props.isBack && (
                         <Button
-                            onClick={handleOnBack}
+                            onClick={(event) => {
+                                event.preventDefault()
+                                handleOnBack()
+                            }}
                             isLoading={isLoading}
                             isDisabled={isLoading}
                         >

@@ -62,8 +62,9 @@ export default function Companies() {
         setCompaniesForShow((old) => listItemsFiltered)
     }
 
-    const handleListItemClick = (company) => {
-        let localCompany = { ...company }
+    const handleEditClick = async (company) => {
+        setIsLoading(true)
+        let localCompany = await fetch("api/company/" + company.id).then((res) => res.json()).then((res) => res.data)
         localCompany = handlePrepareCompanyForShow(localCompany)
         setIsRegister(true)
         setCompany(localCompany)
@@ -105,15 +106,16 @@ export default function Companies() {
             {!isRegister ? (
                 <List
                     haveNew
+                    canEdit
                     canDelete
                     canSeeInfo
                     autoSearch
                     title={title}
-                    list={companiesForShow}
                     isLoading={isLoading}
+                    list={companiesForShow}
                     onNewClick={handleNewClick}
+                    onEditClick={handleEditClick}
                     onFilterList={handleFilterList}
-                    onEditClick={handleListItemClick}
                     onDeleteClick={handleDeleteClick}
                     onTitle={(element: Company) => {
                         return (<p>{element.name}</p>)

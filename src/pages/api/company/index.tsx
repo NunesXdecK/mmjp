@@ -1,46 +1,34 @@
-import { CompanyConversor } from "../../../db/converters"
-import { db, COMPANY_COLLECTION_NAME } from "../../../db/firebaseDB"
-import { addDoc, collection, deleteDoc, doc, getDoc, getDocs, updateDoc } from "firebase/firestore"
+import { Company, Person } from "../../../interfaces/objectInterfaces"
+import { CompanyConversor, PersonConversor } from "../../../db/converters"
+import { db, COMPANY_COLLECTION_NAME, PERSON_COLLECTION_NAME } from "../../../db/firebaseDB"
+import { addDoc, collection, deleteDoc, doc, getDoc, updateDoc } from "firebase/firestore"
 
 export default async function handler(req, res) {
-    const { query, method, body, param } = req
+    const { query, method, body } = req
 
+    const personCollection = collection(db, PERSON_COLLECTION_NAME).withConverter(PersonConversor)
     const companyCollection = collection(db, COMPANY_COLLECTION_NAME).withConverter(CompanyConversor)
 
     switch (method) {
-        case "GET":
-            let resGET = { status: "ERROR", error: {}, message: "" }
-            try {
-                let { token, data } = JSON.parse(body)
-                if (token === "tokenbemseguro") {
-                    const docRef = doc(companyCollection, data.id)
-                    data = (await getDoc(docRef)).data()
-                    resGET = { ...resGET, status: "SUCCESS" }
-                } else {
-                    resGET = { ...resGET, status: "ERROR", message: "Token invalido!" }
-                }
-            } catch (err) {
-                console.error(err)
-                resGET = { ...resGET, status: "ERROR", error: err }
-            }
-            res.status(200).json(resGET)
-            break
         case "POST":
             let resPOST = { status: "ERROR", error: {}, id: "", message: "" }
             try {
                 let { token, data } = JSON.parse(body)
                 if (token === "tokenbemseguro") {
                     let nowID = data?.id ?? ""
-                    const querySnapshot = await getDocs(companyCollection)
-                    querySnapshot.forEach((doc) => {
-                        const cpf = doc.data().cpf
-                        if (doc.id && data.cpf === cpf) {
-                            nowID = doc.id
-                        }
-                    })
+                    let docRefsForDB = []
+                    if (data.owners?.length > 0) {
+                        data.owners?.map((element, index) => {
+                            if (element.id) {
+                                const docRef = doc(personCollection, element.id)
+                                docRefsForDB = [...docRefsForDB, docRef]
+                            }
+                        })
+                        data = { ...data, owners: docRefsForDB }
+                    }
                     const isSave = nowID === ""
                     if (isSave) {
-                        const docRef = await addDoc(companyCollection, data)
+                        const docRef = await addDoc(companyCollection, CompanyConversor.toFirestore(data))
                         nowID = docRef.id
                     } else {
                         const docRef = doc(companyCollection, nowID)
@@ -75,6 +63,6 @@ export default async function handler(req, res) {
             break
         default:
             res.setHeader("Allow", ["PUT", "UPDATE", "DELETE"])
-            res.status(405).end(`Metodo ${method} não permitido`)
+            res.status(405).end(`Metodo ${method} nao permitido`)
     }
 }

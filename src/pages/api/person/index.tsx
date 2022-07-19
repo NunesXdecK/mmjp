@@ -4,28 +4,11 @@ import { db, PERSON_COLLECTION_NAME } from "../../../db/firebaseDB"
 import { addDoc, collection, deleteDoc, doc, getDoc, getDocs, updateDoc } from "firebase/firestore"
 
 export default async function handler(req, res) {
-    const { query, method, body, param } = req
+    const { method, body } = req
 
     const personCollection = collection(db, PERSON_COLLECTION_NAME).withConverter(PersonConversor)
 
     switch (method) {
-        case "GET":
-            let resGET = { status: "ERROR", error: {}, message: "" }
-            try {
-                let { token, data } = JSON.parse(body)
-                if (token === "tokenbemseguro") {
-                    const docRef = doc(personCollection, data.id)
-                    data = (await getDoc(docRef)).data()
-                    resGET = { ...resGET, status: "SUCCESS" }
-                } else {
-                    resGET = { ...resGET, status: "ERROR", message: "Token invalido!" }
-                }
-            } catch (err) {
-                console.error(err)
-                resGET = { ...resGET, status: "ERROR", error: err }
-            }
-            res.status(200).json(resGET)
-            break
         case "POST":
             let resPOST = { status: "ERROR", error: {}, id: "", message: "" }
             try {
@@ -41,7 +24,7 @@ export default async function handler(req, res) {
                     })
                     const isSave = nowID === ""
                     if (isSave) {
-                        const docRef = await addDoc(personCollection, data)
+                        const docRef = await addDoc(personCollection, PersonConversor.toFirestore(data))
                         nowID = docRef.id
                     } else {
                         const docRef = doc(personCollection, nowID)
@@ -76,6 +59,6 @@ export default async function handler(req, res) {
             break
         default:
             res.setHeader("Allow", ["PUT", "UPDATE", "DELETE"])
-            res.status(405).end(`Metodo ${method} não permitido`)
+            res.status(405).end(`Metodo ${method} nao permitido`)
     }
 }
