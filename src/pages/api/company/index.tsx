@@ -1,12 +1,11 @@
-import { PersonConversor } from "../../../db/converters"
-import { Person } from "../../../interfaces/objectInterfaces"
-import { db, PERSON_COLLECTION_NAME } from "../../../db/firebaseDB"
+import { CompanyConversor } from "../../../db/converters"
+import { db, COMPANY_COLLECTION_NAME } from "../../../db/firebaseDB"
 import { addDoc, collection, deleteDoc, doc, getDoc, getDocs, updateDoc } from "firebase/firestore"
 
 export default async function handler(req, res) {
     const { query, method, body, param } = req
 
-    const personCollection = collection(db, PERSON_COLLECTION_NAME).withConverter(PersonConversor)
+    const companyCollection = collection(db, COMPANY_COLLECTION_NAME).withConverter(CompanyConversor)
 
     switch (method) {
         case "GET":
@@ -14,7 +13,7 @@ export default async function handler(req, res) {
             try {
                 let { token, data } = JSON.parse(body)
                 if (token === "tokenbemseguro") {
-                    const docRef = doc(personCollection, data.id)
+                    const docRef = doc(companyCollection, data.id)
                     data = (await getDoc(docRef)).data()
                     resGET = { ...resGET, status: "SUCCESS" }
                 } else {
@@ -32,7 +31,7 @@ export default async function handler(req, res) {
                 let { token, data } = JSON.parse(body)
                 if (token === "tokenbemseguro") {
                     let nowID = data?.id ?? ""
-                    const querySnapshot = await getDocs(personCollection)
+                    const querySnapshot = await getDocs(companyCollection)
                     querySnapshot.forEach((doc) => {
                         const cpf = doc.data().cpf
                         if (doc.id && data.cpf === cpf) {
@@ -41,10 +40,10 @@ export default async function handler(req, res) {
                     })
                     const isSave = nowID === ""
                     if (isSave) {
-                        const docRef = await addDoc(personCollection, data)
+                        const docRef = await addDoc(companyCollection, data)
                         nowID = docRef.id
                     } else {
-                        const docRef = doc(personCollection, nowID)
+                        const docRef = doc(companyCollection, nowID)
                         await updateDoc(docRef, data)
                     }
                     resPOST = { ...resPOST, status: "SUCCESS", id: nowID }
@@ -62,7 +61,7 @@ export default async function handler(req, res) {
             try {
                 const { token, id } = JSON.parse(body)
                 if (token === "tokenbemseguro") {
-                    const docRef = doc(personCollection, id)
+                    const docRef = doc(companyCollection, id)
                     await deleteDoc(docRef)
                     resDELETE = { ...resDELETE, status: "SUCCESS" }
                 } else {

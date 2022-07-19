@@ -15,8 +15,8 @@ export default function Persons() {
 
     const [isLoading, setIsLoading] = useState(true)
     const [isRegister, setIsRegister] = useState(false)
-
     const [isFeedbackOpen, setIsFeedbackOpen] = useState(false)
+    
     const [feedbackMessage, setFeedbackMessage] = useState<FeedbackMessage>(defaultFeedbackMessage)
 
     const handleBackClick = (event?) => {
@@ -33,10 +33,10 @@ export default function Persons() {
 
     const handleDeleteClick = async (person) => {
         setIsLoading(true)
-        let feedbackMessage: FeedbackMessage = { messages: ["Removido com sucesso!"], messageType: "SUCCESS" }
+        let feedbackMessage: FeedbackMessage = { messages: ["Algo deu errado"], messageType: "ERROR" }
         const res = await fetch("api/person", {
             method: "DELETE",
-            body: JSON.stringify({ id: person.id }),
+            body: JSON.stringify({ token: "tokenbemseguro", id: person.id }),
         }).then((res) => res.json())
         if (res.status === "SUCCESS") {
             feedbackMessage = { messages: ["Removido com sucesso!"], messageType: "SUCCESS" }
@@ -86,8 +86,8 @@ export default function Persons() {
     useEffect(() => {
         if (persons.length === 0) {
             fetch("api/persons").then((res) => res.json()).then((res) => {
-                setPersons(res)
-                setPersonsForShow(res)
+                setPersons(res.list)
+                setPersonsForShow(res.list)
                 setIsLoading(false)
             })
         }
@@ -115,7 +115,6 @@ export default function Persons() {
                     onFilterList={handleFilterList}
                     onEditClick={handleListItemClick}
                     onDeleteClick={handleDeleteClick}
-                    onListItemClick={handleListItemClick}
                     onTitle={(element: Person) => {
                         return (<p>{element.name}</p>)
                     }}

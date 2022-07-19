@@ -1,7 +1,6 @@
 import { useState } from "react"
 import Button from "../button/button"
 import { Transition } from "@headlessui/react"
-import { handleMaskCPF } from "../../util/maskUtil"
 import PlaceholderItemList from "./placeholderItemList"
 import { EyeIcon, PencilAltIcon, TrashIcon } from "@heroicons/react/outline"
 
@@ -10,10 +9,13 @@ interface ItemListProps {
     element?: any,
     isActive?: boolean,
     isLoading?: boolean,
+    canSelect?: boolean,
+    canEdit?: boolean,
     canDelete?: boolean,
     canSeeInfo?: boolean,
     onInfo?: (element) => any,
     onTitle?: (element) => any,
+    onSelectClick?: (element) => void,
     onEditClick?: () => void,
     onDeleteClick?: () => void,
     onActiveChange?: (any) => void,
@@ -79,7 +81,7 @@ export default function ItemList(props: ItemListProps) {
                                     leaveFrom="opacity-100"
                                     leaveTo="opacity-0"
                                 >
-                                    <div className="mt-2 w-full text-right">
+                                    <div className="mt-2 w-full text-right ">
                                         {props.canDelete && props.onDeleteClick && (
                                             <Button
                                                 color="red"
@@ -98,7 +100,7 @@ export default function ItemList(props: ItemListProps) {
                                             </Button>
                                         )}
 
-                                        {props.onEditClick && (
+                                        {props.canEdit && props.onEditClick && (
                                             <Button
                                                 className="mr-2 group"
                                                 onClick={(event) => {
@@ -110,6 +112,23 @@ export default function ItemList(props: ItemListProps) {
                                             >
                                                 <div className="flex flex-row">
                                                     <span className={buttonTitleClassName}>Editar</span>
+                                                    <PencilAltIcon className="text-white block h-5 w-5 " aria-hidden="true" />
+                                                </div>
+                                            </Button>
+                                        )}
+
+                                        {props.canSelect && props.onSelectClick && (
+                                            <Button
+                                                className="mr-2 group"
+                                                onClick={(event) => {
+                                                    event.stopPropagation()
+                                                    if (props.onSelectClick) {
+                                                        props.onSelectClick(props.element)
+                                                    }
+                                                }}
+                                            >
+                                                <div className="flex flex-row">
+                                                    <span className={buttonTitleClassName}>Selecionar</span>
                                                     <PencilAltIcon className="text-white block h-5 w-5 " aria-hidden="true" />
                                                 </div>
                                             </Button>

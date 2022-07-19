@@ -7,6 +7,7 @@ import FormRowColumn from "./formRowColumn";
 import ArrayTextForm from "./arrayTextForm";
 import InputText from "../inputText/inputText";
 import SelectPersonForm from "./selectPersonForm";
+import InputCheckbox from "../inputText/inputCheckbox";
 import { handleNewDateToUTC } from "../../util/dateUtils";
 import { FeedbackMessage } from "../modal/feedbackMessageModal";
 import { addDoc, collection, doc, updateDoc } from "firebase/firestore";
@@ -16,7 +17,6 @@ import { defaultCompany, Company } from "../../interfaces/objectInterfaces";
 import { COMPANY_COLLECTION_NAME, db, PERSON_COLLECTION_NAME } from "../../db/firebaseDB";
 import { CNPJ_MARK, NOT_NULL_MARK, TELEPHONE_MARK } from "../../util/patternValidationUtil";
 import { defaultElementFromBase, ElementFromBase, handlePrepareCompanyForDB } from "../../util/converterUtil";
-import InputCheckbox from "../inputText/inputCheckbox";
 
 interface CompanyFormProps {
     title?: string,
@@ -230,6 +230,7 @@ export default function CompanyForm(props: CompanyFormProps) {
                 isLoading={isLoading}
                 isMultipleSelect={true}
                 persons={company.owners}
+                onSetLoading={setIsLoading}
                 onShowMessage={props.onShowMessage}
                 buttonTitle="Adicionar proprietário"
                 subtitle="Selecione os proprietários"

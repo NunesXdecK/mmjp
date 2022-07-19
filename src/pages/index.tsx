@@ -8,6 +8,7 @@ import Layout from "../components/layout/layout"
 import FormRowColumn from "../components/form/formRowColumn"
 import ProjectPaymentFormTest from "../components/form/projectPaymentFormNew"
 import { defaultProjectPayment, ProjectPayment } from "../interfaces/objectInterfaces"
+import SelectPersonForm from "../components/form/selectPersonForm"
 
 export default function Index() {
     const mockData = [
@@ -62,9 +63,9 @@ export default function Index() {
                 <link rel="icon" href="/favicon.ico" />
             </Head>
 
+
             <Form>
-                <FormRow>
-                    <FormRowColumn unit="6">
+                {/*
                         <List
                             haveNew
                             canDelete
@@ -119,7 +120,9 @@ export default function Index() {
                         </Button>
                     </FormRowColumn>
                 </FormRow>
+*/}
+
             </Form>
-        </Layout>
+        </Layout >
     )
 }

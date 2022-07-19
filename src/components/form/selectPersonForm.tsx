@@ -1,15 +1,15 @@
 import Form from "./form";
 import FormRow from "./formRow";
-import { useState } from "react";
+import List from "../list/list";
 import Button from "../button/button";
 import PersonForm from "./personForm";
 import IOSModal from "../modal/iosModal";
+import { useEffect, useState } from "react";
 import FormRowColumn from "./formRowColumn";
-import PersonList from "../list/personList";
 import InputText from "../inputText/inputText";
 import { FeedbackMessage } from "../modal/feedbackMessageModal";
-import { defaultPerson, Person } from "../../interfaces/objectInterfaces";
 import { handleMaskCPF, handleRemoveCPFMask } from "../../util/maskUtil";
+import { defaultPerson, Person } from "../../interfaces/objectInterfaces";
 
 interface SelectPersonFormProps {
     id?: string,
@@ -23,6 +23,7 @@ interface SelectPersonFormProps {
     isLoading?: boolean,
     isMultipleSelect?: boolean,
     persons?: Person[],
+    onSetLoading?: (any) => void,
     onSetPersons?: (array) => void,
     onShowMessage?: (FeedbackMessage) => void,
 }
@@ -32,6 +33,9 @@ export default function SelectPersonForm(props: SelectPersonFormProps) {
     const [isRegister, setIsRegister] = useState(false)
 
     const [person, setPerson] = useState<Person>(defaultPerson)
+
+    const [persons, setPersons] = useState<Person[]>([])
+    const [personsForShow, setPersonsForShow] = useState<Person[]>([])
 
     const handleNewClick = () => {
         setIsRegister(true)
@@ -44,6 +48,15 @@ export default function SelectPersonForm(props: SelectPersonFormProps) {
         }
         setPerson(defaultPerson)
         setIsRegister(false)
+    }
+
+    const handleFilterList = (string) => {
+        let listItems = [...persons]
+        let listItemsFiltered: Person[] = []
+        listItemsFiltered = listItems.filter((element: Person, index) => {
+            return element.name.toLowerCase().includes(string.toLowerCase())
+        })
+        setPersonsForShow((old) => listItemsFiltered)
     }
 
     const handleAfterSave = (feedbackMessage: FeedbackMessage, person) => {
@@ -98,6 +111,18 @@ export default function SelectPersonForm(props: SelectPersonFormProps) {
             }
         }
     }
+
+    useEffect(() => {
+        if (persons.length === 0) {
+            fetch("api/persons").then((res) => res.json()).then((res) => {
+                setPersons(res.list)
+                setPersonsForShow(res.list)
+                if (props.onSetLoading) {
+                    props.onSetLoading(false)
+                }
+            })
+        }
+    })
 
     return (
         <>
@@ -167,12 +192,26 @@ export default function SelectPersonForm(props: SelectPersonFormProps) {
                 setIsOpen={setIsOpen}>
                 <>
                     {!isRegister ? (
-                        <PersonList
-                            haveNew={true}
-                            onNewClick={handleNewClick}
-                            onListItemClick={handleAdd}
-                            onShowMessage={props.onShowMessage}
-                        />
+                        <>
+                            <List
+                                haveNew
+                                canSelect
+                                autoSearch
+                                list={personsForShow}
+                                onSelectClick={handleAdd}
+                                title={"Lista de pessoas"}
+                                isLoading={props.isLoading}
+                                onNewClick={handleNewClick}
+                                onFilterList={handleFilterList}
+                                onTitle={(element: Person) => {
+                                    return (<p>{element.name}</p>)
+                                }}
+                                onInfo={(element: Person) => {
+                                    return (<p>{element.name}</p>)
+                                }}
+                                onShowMessage={props.onShowMessage}
+                            />
+                        </>
                     ) : (
                         <PersonForm
                             isBack={true}

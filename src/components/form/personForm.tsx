@@ -14,10 +14,10 @@ import InputCheckbox from "../inputText/inputCheckbox"
 import { collection, getDocs } from "firebase/firestore"
 import { FeedbackMessage } from "../modal/feedbackMessageModal"
 import { db, PERSON_COLLECTION_NAME } from "../../db/firebaseDB"
+import { handlePreparePersonForDB } from "../../util/converterUtil"
 import { handlePersonValidationForDB } from "../../util/validationUtil"
 import { defaultPerson, Person } from "../../interfaces/objectInterfaces"
 import { CPF_MARK, TELEPHONE_MARK, TEXT_NOT_NULL_MARK } from "../../util/patternValidationUtil"
-import { handlePreparePersonForDB } from "../../util/converterUtil"
 
 interface PersonFormProps {
     title?: string,
@@ -36,6 +36,7 @@ interface PersonFormProps {
 export default function PersonForm(props: PersonFormProps) {
     const personCollection = collection(db, PERSON_COLLECTION_NAME).withConverter(PersonConversor)
 
+    const [personOriginal, setPersonOriginal] = useState<Person>(props?.person ?? defaultPerson)
     const [person, setPerson] = useState<Person>(props?.person ?? defaultPerson)
     const [isFormValid, setIsFormValid] = useState(handlePersonValidationForDB(person).validation)
 
@@ -61,9 +62,8 @@ export default function PersonForm(props: PersonFormProps) {
 
     useEffect(() => {
         if (props.onBack) {
-            history.pushState(null, null, null);
-
-            if (person.id !== "") {
+            history.pushState(null, null, null)
+            if (person.id !== "" && handleDiference()) {
                 window.onbeforeunload = () => {
                     return false
                 }
@@ -73,6 +73,9 @@ export default function PersonForm(props: PersonFormProps) {
                         setIsOpenExit(true)
                     }
                 })
+            } else {
+                window.onbeforeunload = () => { }
+                document.addEventListener("keydown", (event) => { })
             }
 
             window.onpopstate = (event) => {
@@ -83,11 +86,21 @@ export default function PersonForm(props: PersonFormProps) {
         }
     })
 
+    const handleDiference = (): boolean => {
+        let hasDiference = false
+        Object.keys(personOriginal)?.map((element, index) => {
+            if (person[element] !== personOriginal[element]) {
+                hasDiference = true
+            }
+        })
+        return hasDiference
+    }
+
     const handleOnBack = () => {
-        if (person.id === "") {
-            props.onBack()
-        } else {
+        if (person.id !== "" && handleDiference()) {
             setIsOpenExit(true)
+        } else {
+            props.onBack()
         }
     }
 
@@ -146,7 +159,7 @@ export default function PersonForm(props: PersonFormProps) {
             try {
                 res = await fetch("api/person", {
                     method: "POST",
-                    body: JSON.stringify(personForDB),
+                    body: JSON.stringify({ token: "tokenbemseguro", data: personForDB }),
                 }).then((res) => res.json())
             } catch (e) {
                 if (isSave) {
@@ -428,23 +441,29 @@ export default function PersonForm(props: PersonFormProps) {
             <WindowModal
                 isOpen={isOpenSave}
                 setIsOpen={setIsOpenSave}>
-                <p className="text-center">Deseja realmente editar as informações?</p>
-                <div className="flex mt-10 justify-between content-between">
-                    <Button
-                        onClick={() => setIsOpenSave(false)}
-                    >
-                        Voltar
-                    </Button>
-                    <Button
-                        color="red"
-                        onClick={(event) => {
-                            handleSave()
-                            setIsOpenSave(false)
-                        }}
-                    >
-                        Editar
-                    </Button>
-                </div>
+                <form onSubmit={(event) => {
+                    event.preventDefault()
+                    handleSave()
+                    setIsOpenSave(false)
+                }}>
+                    <p className="text-center">Deseja realmente editar as informações?</p>
+                    <div className="flex mt-10 justify-between content-between">
+                        <Button
+                            onClick={(event) => {
+                                event.preventDefault()
+                                setIsOpenSave(false)
+                            }}
+                        >
+                            Voltar
+                        </Button>
+                        <Button
+                            color="red"
+                            type="submit"
+                        >
+                            Editar
+                        </Button>
+                    </div>
+                </form>
             </WindowModal>
         </>
     )

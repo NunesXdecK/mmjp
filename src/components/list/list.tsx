@@ -12,6 +12,8 @@ interface ListProps {
     title?: string,
     subtitle?: string,
     haveNew?: boolean,
+    canEdit?: boolean,
+    canSelect?: boolean,
     canDelete?: boolean,
     isLoading?: boolean,
     canSeeInfo?: boolean,
@@ -21,7 +23,7 @@ interface ListProps {
     onEditClick?: (any) => void,
     onDeleteClick?: (any) => void,
     onFilterList?: (string) => void,
-    onListItemClick?: (any) => void,
+    onSelectClick?: (any) => void,
     onShowMessage?: (FeedbackMessage) => void,
     onInfo?: (element) => any,
     onTitle?: (element) => any,
@@ -92,7 +94,7 @@ export default function List(props: ListProps) {
         } else {
             pagesArray = [...pagesArray, list]
         }
-        return pagesArray[page]
+        return pagesArray[page] ?? []
     }
 
     let classNavigationBar = "bg-white px-4 py-3 flex items-center justify-between border-t border-gray-200 sm:px-6"
@@ -170,12 +172,13 @@ export default function List(props: ListProps) {
                     </>
                 )}
 
-                {handlePagination(props.list).map((element, index) => (
+                {handlePagination(props.list)?.map((element, index) => (
                     <ItemList
                         index={index}
                         element={element}
                         onInfo={props.onInfo}
                         onTitle={props.onTitle}
+                        canSelect={props.canSelect}
                         isLoading={props.isLoading}
                         canDelete={props.canDelete}
                         canSeeInfo={props.canSeeInfo}
@@ -189,6 +192,11 @@ export default function List(props: ListProps) {
                         onEditClick={() => {
                             if (props.onEditClick) {
                                 props.onEditClick(element)
+                            }
+                        }}
+                        onSelectClick={() => {
+                            if (props.onSelectClick) {
+                                props.onSelectClick(element)
                             }
                         }}
                     />
@@ -218,27 +226,35 @@ export default function List(props: ListProps) {
             <WindowModal
                 isOpen={isOpenDelete}
                 setIsOpen={setIsOpenDelete}>
-                <p className="text-center">Deseja realmente deletar?</p>
-                <div className="flex mt-10 justify-between content-between">
-                    <Button
-                        onClick={() => setIsOpenDelete(false)}
-                    >
-                        Voltar
-                    </Button>
-                    <Button
-                        color="red"
-                        onClick={() => {
-                            if (props.onDeleteClick) {
-                                props.onDeleteClick(element)
-                            }
-                            setIsOpenDelete(false)
-                            setIsActiveItem(-1)
-                        }}
-                    >
-                        Excluir
-                    </Button>
-                </div>
+                <form
+                    onSubmit={(event) => {
+                        event.preventDefault()
+                        if (props.onDeleteClick) {
+                            props.onDeleteClick(element)
+                        }
+                        setIsOpenDelete(false)
+                        setIsActiveItem(-1)
+                    }}
+                >
+                    <p className="text-center">Deseja realmente deletar?</p>
+                    <div className="flex mt-10 justify-between content-between">
+                        <Button
+                            onClick={(event) => {
+                                event.preventDefault()
+                                setIsOpenDelete(false)
+                            }}
+                        >
+                            Voltar
+                        </Button>
+                        <Button
+                            color="red"
+                            type="submit"
+                        >
+                            Excluir
+                        </Button>
+                    </div>
+                </form>
             </WindowModal>
-        </div>
+        </div >
     )
 }
