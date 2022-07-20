@@ -1,21 +1,18 @@
 import Form from "./form";
 import FormRow from "./formRow";
-import { useState } from "react";
 import Button from "../button/button";
 import AddressForm from "./addressForm";
 import FormRowColumn from "./formRowColumn";
+import { useEffect, useState } from "react";
 import InputText from "../inputText/inputText";
-import { handleNewDateToUTC } from "../../util/dateUtils";
+import WindowModal from "../modal/windowModal";
+import InputCheckbox from "../inputText/inputCheckbox";
 import SelectPersonCompanyForm from "./selectPersonCompanyForm";
 import { FeedbackMessage } from "../modal/feedbackMessageModal";
-import { CompanyConversor, PersonConversor, ImmobileConversor } from "../../db/converters";
 import { handleImmobileValidationForDB } from "../../util/validationUtil";
 import { defaultImmobile, Immobile } from "../../interfaces/objectInterfaces";
 import { NOT_NULL_MARK, NUMBER_MARK } from "../../util/patternValidationUtil";
-import { addDoc, collection, doc, getDocs, updateDoc } from "firebase/firestore";
-import { COMPANY_COLLECTION_NAME, db, PERSON_COLLECTION_NAME, IMMOBILE_COLLECTION_NAME } from "../../db/firebaseDB";
 import { defaultElementFromBase, ElementFromBase, handlePrepareImmobileForDB } from "../../util/converterUtil";
-import InputCheckbox from "../inputText/inputCheckbox";
 
 interface ImmobileFormProps {
     title?: string,
@@ -26,23 +23,21 @@ interface ImmobileFormProps {
     isForDisable?: boolean,
     isForOldRegister?: boolean,
     immobile?: Immobile,
-    onBack?: (object) => void,
+    onBack?: (object?) => void,
     onAfterSave?: (object, any?) => void,
     onSelectPerson?: (object) => void,
     onShowMessage?: (FeedbackMessage) => void,
 }
 
 export default function ImmobileForm(props: ImmobileFormProps) {
-    const personCollection = collection(db, PERSON_COLLECTION_NAME).withConverter(PersonConversor)
-    const companyCollection = collection(db, COMPANY_COLLECTION_NAME).withConverter(CompanyConversor)
-    const immobileCollection = collection(db, IMMOBILE_COLLECTION_NAME).withConverter(ImmobileConversor)
-
+    const [immobileOriginal, setImmobileOriginal] = useState<Immobile>(props?.immobile ?? defaultImmobile)
     const [immobile, setImmobile] = useState<Immobile>(props?.immobile ?? defaultImmobile)
     const [isFormValid, setIsFormValid] = useState(handleImmobileValidationForDB(immobile).validation)
 
-    const [isOpen, setIsOpen] = useState(false)
     const [isLoading, setIsLoading] = useState(false)
     const [isMultiple, setIsMultiple] = useState(false)
+    const [isOpenExit, setIsOpenExit] = useState(false)
+    const [isOpenSave, setIsOpenSave] = useState(false)
 
     const [oldData, setOldData] = useState<ElementFromBase>(props?.immobile?.oldData ?? defaultElementFromBase)
 
@@ -54,78 +49,101 @@ export default function ImmobileForm(props: ImmobileFormProps) {
     const handleSetImmobilePerimeter = (value) => { setImmobile({ ...immobile, perimeter: value }) }
     const handleSetImmobileAddress = (value) => { setImmobile({ ...immobile, address: value }) }
 
-    const handleListItemClick = async (immobile: Immobile) => {
-        setIsLoading(true)
-        if (props.onSelectPerson) {
-            props.onSelectPerson(immobile)
+    useEffect(() => {
+        if (props.onBack) {
+            history.pushState(null, null, null)
+            if (immobile.id !== "" && handleDiference()) {
+                window.onbeforeunload = () => {
+                    return false
+                }
+                document.addEventListener("keydown", (event) => {
+                    if (event.keyCode === 116) {
+                        event.preventDefault()
+                        setIsOpenExit(true)
+                    }
+                })
+            } else {
+                window.onbeforeunload = () => { }
+                document.addEventListener("keydown", (event) => { })
+            }
+
+            window.onpopstate = (event) => {
+                event.preventDefault()
+                event.stopPropagation()
+                handleOnBack()
+            }
         }
-        setImmobile(immobile)
-        setIsOpen(false)
-        setIsFormValid(true)
-        setIsLoading(false)
+    })
+
+    const handleDiference = (): boolean => {
+        let hasDiference = false
+        Object.keys(immobileOriginal)?.map((element, index) => {
+            if (immobile[element] !== immobileOriginal[element]) {
+                hasDiference = true
+            }
+        })
+        return hasDiference
     }
 
-    const handleSave = async (event) => {
-        event.preventDefault()
+    const handleOnBack = () => {
+        if (immobile.id !== "" && handleDiference()) {
+            setIsOpenExit(true)
+        } else {
+            if (props.onBack) {
+                props.onBack()
+            }
+        }
+    }
+
+    const handleChangeFormValidation = (isValid) => {
+        setIsFormValid(isValid)
+    }
+
+    const handleSave = async () => {
         setIsLoading(true)
         let feedbackMessage: FeedbackMessage = { messages: ["Algo estranho aconteceu"], messageType: "WARNING" }
-
         let immobileForDB = { ...immobile }
         const isValid = handleImmobileValidationForDB(immobileForDB)
         if (isValid.validation) {
-            let nowID = immobileForDB?.id ?? ""
-            let docRefsForDB = []
-
-            if (immobileForDB.owners?.length > 0) {
-                immobileForDB.owners?.map((element, index) => {
-                    if (element.id) {
-                        let docRef = {}
-                        if ("cpf" in element) {
-                            docRef = doc(personCollection, element.id)
-                        } else if ("cnpj" in element) {
-                            docRef = doc(companyCollection, element.id)
-                        }
-                        docRefsForDB = [...docRefsForDB, docRef]
-                    }
-                })
-                immobileForDB = { ...immobileForDB, owners: docRefsForDB }
-            }
-
             immobileForDB = handlePrepareImmobileForDB(immobileForDB)
-
+            let nowID = immobileForDB?.id ?? ""
             const isSave = nowID === ""
+            let res = { status: "ERROR", id: nowID, message: "" }
             if (isSave) {
-                try {
-                    const docRef = await addDoc(immobileCollection, immobileForDB)
-                    setImmobile({ ...immobile, id: docRef.id })
-                    immobileForDB = { ...immobileForDB, id: docRef.id }
-                    feedbackMessage = { ...feedbackMessage, messages: ["Salvo com sucesso!"], messageType: "SUCCESS" }
-                    handleListItemClick(defaultImmobile)
-                } catch (e) {
+                feedbackMessage = { ...feedbackMessage, messages: ["Salvo com sucesso!"], messageType: "SUCCESS" }
+            } else {
+                feedbackMessage = { ...feedbackMessage, messages: ["Atualizado com sucesso!"], messageType: "SUCCESS" }
+            }
+            try {
+                res = await fetch("api/immobile", {
+                    method: "POST",
+                    body: JSON.stringify({ token: "tokenbemseguro", data: immobileForDB }),
+                }).then((res) => res.json())
+            } catch (e) {
+                if (isSave) {
                     feedbackMessage = { ...feedbackMessage, messages: ["Erro em salvar!"], messageType: "ERROR" }
-                    console.error("Error adding document: ", e)
+                } else {
+                    feedbackMessage = { ...feedbackMessage, messages: ["Erro em Atualizadar!"], messageType: "ERROR" }
+                }
+                console.error("Error adding document: ", e)
+            }
+            if (res.status === "SUCCESS") {
+                setImmobile({ ...immobile, id: res.id })
+                immobileForDB = { ...immobileForDB, id: res.id }
+
+                if (isMultiple) {
+                    setImmobile(defaultImmobile)
+                }
+
+                if (!isMultiple && props.onAfterSave) {
+                    props.onAfterSave(feedbackMessage, immobileForDB)
                 }
             } else {
-                try {
-                    immobileForDB = { ...immobileForDB, dateLastUpdateUTC: handleNewDateToUTC() }
-                    const docRef = doc(immobileCollection, nowID)
-                    await updateDoc(docRef, immobileForDB)
-                    feedbackMessage = { ...feedbackMessage, messages: ["Atualizado com sucesso!"], messageType: "SUCCESS" }
-                    handleListItemClick(defaultImmobile)
-                } catch (e) {
-                    feedbackMessage = { ...feedbackMessage, messages: ["Erro em atualizar!"], messageType: "ERROR" }
-                    console.error("Error upddating document: ", e)
-                }
-            }
-            if (isMultiple) {
-                setImmobile(defaultImmobile)
-                if (props.onShowMessage) {
-                    props.onShowMessage(feedbackMessage)
-                }
+                feedbackMessage = { ...feedbackMessage, messages: ["Erro!"], messageType: "ERROR" }
             }
 
-            if (!isMultiple && props.onAfterSave) {
-                props.onAfterSave(feedbackMessage, immobileForDB)
+            if (props.onShowMessage) {
+                props.onShowMessage(feedbackMessage)
             }
         } else {
             feedbackMessage = { ...feedbackMessage, messages: isValid.messages, messageType: "ERROR" }
@@ -136,18 +154,21 @@ export default function ImmobileForm(props: ImmobileFormProps) {
         setIsLoading(false)
     }
 
-    const handleChangeFormValidation = (isValid) => {
-        setIsFormValid(isValid)
-    }
-
     return (
         <>
             <form
-                onSubmit={handleSave}>
+                onSubmit={(event) => {
+                    event.preventDefault()
+                    if (immobile.id === "") {
+                        handleSave()
+                    } else {
+                        setIsOpenSave(true)
+                    }
+                }}>
                 <Form
                     title={props.title}
                     subtitle={props.subtitle}>
-                        
+
                     {props.canMultiple && (
                         <FormRow>
                             <FormRowColumn unit="6">
@@ -251,16 +272,23 @@ export default function ImmobileForm(props: ImmobileFormProps) {
                 title="Proprietários"
                 isLoading={isLoading}
                 isMultipleSelect={true}
-                persons={immobile.owners}
                 onShowMessage={props.onShowMessage}
                 buttonTitle="Adicionar proprietário"
                 subtitle="Selecione os proprietários"
-                onSetPersons={handleSetImmobileOwners}
+                personsAndCompanies={immobile.owners}
+                onSetPersonsAndCompanies={handleSetImmobileOwners}
                 validationMessage="Esta pessoa, ou empresa já é um proprietário"
             />
 
             <form
-                onSubmit={handleSave}>
+                onSubmit={(event) => {
+                    event.preventDefault()
+                    if (immobile.id === "") {
+                        handleSave()
+                    } else {
+                        setIsOpenSave(true)
+                    }
+                }}>
                 <AddressForm
                     title="Endereço"
                     isLoading={isLoading}
@@ -291,6 +319,57 @@ export default function ImmobileForm(props: ImmobileFormProps) {
                     </FormRowColumn>
                 </FormRow>
             </form>
+
+            <WindowModal
+                isOpen={isOpenExit}
+                setIsOpen={setIsOpenExit}>
+                <p className="text-center">Deseja realmente sair?</p>
+                <div className="flex mt-10 justify-between content-between">
+                    <Button
+                        onClick={() => setIsOpenExit(false)}
+                    >
+                        Voltar
+                    </Button>
+                    <Button
+                        color="red"
+                        onClick={() => {
+                            if (props.onBack) {
+                                props.onBack()
+                            }
+                        }}
+                    >
+                        Sair
+                    </Button>
+                </div>
+            </WindowModal>
+
+            <WindowModal
+                isOpen={isOpenSave}
+                setIsOpen={setIsOpenSave}>
+                <form onSubmit={(event) => {
+                    event.preventDefault()
+                    handleSave()
+                    setIsOpenSave(false)
+                }}>
+                    <p className="text-center">Deseja realmente editar as informações?</p>
+                    <div className="flex mt-10 justify-between content-between">
+                        <Button
+                            onClick={(event) => {
+                                event.preventDefault()
+                                setIsOpenSave(false)
+                            }}
+                        >
+                            Voltar
+                        </Button>
+                        <Button
+                            color="red"
+                            type="submit"
+                        >
+                            Editar
+                        </Button>
+                    </div>
+                </form>
+            </WindowModal>
         </>
     )
 }

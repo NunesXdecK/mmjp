@@ -81,18 +81,18 @@ const checkStringForNull = (string) => {
 }
 
 export const handlePreparePersonForShow = (person: Person) => {
-    if (person.address && person.address?.cep) {
+    if (person?.address && person?.address?.cep) {
         person = { ...person, address: { ...person.address, cep: handleMountMask(handleRemoveCEPMask(person.address.cep), "99999-999") } }
     }
 
     let telephonesWithMask = []
-    person.telephones?.map((element, index) => {
+    person?.telephones?.map((element, index) => {
         telephonesWithMask = [...telephonesWithMask, handleMaskTelephone(element)]
     })
 
     person = {
         ...person
-        , cpf: handleMaskCPF(person.cpf)
+        , cpf: handleMaskCPF(person?.cpf)
         , telephones: telephonesWithMask
     }
     return person

@@ -1,10 +1,11 @@
-import { CompanyConversor, PersonConversor } from "../../../db/converters"
-import { addDoc, collection, deleteDoc, doc, updateDoc } from "firebase/firestore"
-import { db, COMPANY_COLLECTION_NAME, PERSON_COLLECTION_NAME } from "../../../db/firebaseDB"
+import { CompanyConversor, ImmobileConversor, PersonConversor } from "../../../db/converters"
+import { COMPANY_COLLECTION_NAME, db, IMMOBILE_COLLECTION_NAME, PERSON_COLLECTION_NAME } from "../../../db/firebaseDB"
+import { addDoc, collection, deleteDoc, doc, getDoc, updateDoc } from "firebase/firestore"
 
 export default async function handler(req, res) {
     const { method, body } = req
 
+    const immobileCollection = collection(db, IMMOBILE_COLLECTION_NAME).withConverter(ImmobileConversor)
     const personCollection = collection(db, PERSON_COLLECTION_NAME).withConverter(PersonConversor)
     const companyCollection = collection(db, COMPANY_COLLECTION_NAME).withConverter(CompanyConversor)
 
@@ -19,18 +20,25 @@ export default async function handler(req, res) {
                     if (data.owners?.length > 0) {
                         data.owners?.map((element, index) => {
                             if (element.id) {
-                                const docRef = doc(personCollection, element.id)
-                                docRefsForDB = [...docRefsForDB, docRef]
+                                let docRef = null
+                                if ("cpf" in element) {
+                                    docRef = doc(personCollection, element.id)
+                                } else if ("cnpj" in element) {
+                                    docRef = doc(companyCollection, element.id)
+                                }
+                                if (docRef) {
+                                    docRefsForDB = [...docRefsForDB, docRef]
+                                }
                             }
                         })
                         data = { ...data, owners: docRefsForDB }
                     }
                     const isSave = nowID === ""
                     if (isSave) {
-                        const docRef = await addDoc(companyCollection, CompanyConversor.toFirestore(data))
+                        const docRef = await addDoc(immobileCollection, ImmobileConversor.toFirestore(data))
                         nowID = docRef.id
                     } else {
-                        const docRef = doc(companyCollection, nowID)
+                        const docRef = doc(immobileCollection, nowID)
                         await updateDoc(docRef, data)
                     }
                     resPOST = { ...resPOST, status: "SUCCESS", id: nowID }
@@ -48,7 +56,7 @@ export default async function handler(req, res) {
             try {
                 const { token, id } = JSON.parse(body)
                 if (token === "tokenbemseguro") {
-                    const docRef = doc(companyCollection, id)
+                    const docRef = doc(immobileCollection, id)
                     await deleteDoc(docRef)
                     resDELETE = { ...resDELETE, status: "SUCCESS" }
                 } else {

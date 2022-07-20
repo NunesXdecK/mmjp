@@ -5,6 +5,7 @@ import HeaderModal from "./headerModal";
 interface IOSModalProps {
     isOpen?: boolean,
     children?: any,
+    onClose?: () => void,
     setIsOpen?: (boolean) => void,
 }
 
@@ -14,10 +15,15 @@ export default function IOSModal(props: IOSModalProps) {
     return (
         <Transition.Root show={props.isOpen} as={Fragment}>
             <Dialog
+                onClose={() => {
+                    if (props.onClose) {
+                        props.onClose()
+                    }
+                }}
+                open={props.isOpen}
                 className="fixed inset-0 z-10"
                 initialFocus={cancelButtonRef}
-                open={props.isOpen}
-                onClose={() => { }}>
+            >
 
                 <div className="fex flex-col px-1 pt-10 justify-center h-full sm:block">
                     <Transition.Child
@@ -53,7 +59,12 @@ export default function IOSModal(props: IOSModalProps) {
                                 leaveFrom="opacity-100"
                                 leaveTo="opacity-0">
                                 <HeaderModal
-                                    onClose={() => props.setIsOpen(false)} />
+                                    onClose={() => {
+                                        props.setIsOpen(false)
+                                        if (props.onClose) {
+                                            props.onClose()
+                                        }
+                                    }} />
                                 <div ref={cancelButtonRef} className="p-4">
                                     {props.children}
                                 </div>

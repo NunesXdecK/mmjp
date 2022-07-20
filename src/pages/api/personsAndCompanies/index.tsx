@@ -1,22 +1,28 @@
 import { collection, getDocs } from "firebase/firestore"
-import { CompanyConversor } from "../../../db/converters"
-import { Company } from "../../../interfaces/objectInterfaces"
-import { db, COMPANY_COLLECTION_NAME } from "../../../db/firebaseDB"
+import { Person } from "../../../interfaces/objectInterfaces"
+import { CompanyConversor, PersonConversor } from "../../../db/converters"
+import { COMPANY_COLLECTION_NAME, db, PERSON_COLLECTION_NAME } from "../../../db/firebaseDB"
 
 export default async function handler(req, res) {
-    const { method} = req
+    const { method } = req
 
     switch (method) {
         case 'GET':
             let resGET = { status: "ERROR", error: {}, message: "", list: [] }
+            const personCollection = collection(db, PERSON_COLLECTION_NAME).withConverter(PersonConversor)
             const companyCollection = collection(db, COMPANY_COLLECTION_NAME).withConverter(CompanyConversor)
             let list = []
             try {
-                const querySnapshot = await getDocs(companyCollection)
+                const querySnapshot = await getDocs(personCollection)
+                const querySnapshotCompany = await getDocs(companyCollection)
                 querySnapshot.forEach((doc) => {
                     list = [...list, doc.data()]
                 })
-                list = list.sort((elementOne: Company, elementTwo: Company) => {
+                querySnapshotCompany.forEach((doc) => {
+                    list = [...list, doc.data()]
+                })
+
+                list = list.sort((elementOne: Person, elementTwo: Person) => {
                     let dateOne = elementOne.dateInsertUTC
                     let dateTwo = elementTwo.dateInsertUTC
                     if (elementOne.dateLastUpdateUTC > 0 && elementOne.dateLastUpdateUTC > dateOne) {

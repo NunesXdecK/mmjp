@@ -27,6 +27,7 @@ interface ListProps {
     onShowMessage?: (FeedbackMessage) => void,
     onInfo?: (element) => any,
     onTitle?: (element) => any,
+    onCustomNewButton?: () => any,
 }
 
 export default function List(props: ListProps) {
@@ -117,6 +118,8 @@ export default function List(props: ListProps) {
                         {props.subtitle && (<p className={subtitle}>{props.subtitle}</p>)}
                     </div>
 
+                    {props.onCustomNewButton && (props.onCustomNewButton())}
+                    
                     {props.haveNew && (
                         <div className="self-center">
                             <Button

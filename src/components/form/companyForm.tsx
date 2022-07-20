@@ -1,23 +1,19 @@
 import Form from "./form";
 import FormRow from "./formRow";
-import { useEffect, useState } from "react";
 import Button from "../button/button";
 import AddressForm from "./addressForm";
+import { useEffect, useState } from "react";
 import FormRowColumn from "./formRowColumn";
 import ArrayTextForm from "./arrayTextForm";
+import WindowModal from "../modal/windowModal";
 import InputText from "../inputText/inputText";
 import SelectPersonForm from "./selectPersonForm";
 import InputCheckbox from "../inputText/inputCheckbox";
-import { handleNewDateToUTC } from "../../util/dateUtils";
 import { FeedbackMessage } from "../modal/feedbackMessageModal";
-import { addDoc, collection, doc, updateDoc } from "firebase/firestore";
-import { PersonConversor, CompanyConversor } from "../../db/converters";
 import { handleCompanyValidationForDB } from "../../util/validationUtil";
 import { defaultCompany, Company } from "../../interfaces/objectInterfaces";
-import { COMPANY_COLLECTION_NAME, db, PERSON_COLLECTION_NAME } from "../../db/firebaseDB";
 import { CNPJ_MARK, NOT_NULL_MARK, TELEPHONE_MARK } from "../../util/patternValidationUtil";
 import { defaultElementFromBase, ElementFromBase, handlePrepareCompanyForDB } from "../../util/converterUtil";
-import WindowModal from "../modal/windowModal";
 
 interface CompanyFormProps {
     title?: string,
@@ -35,14 +31,10 @@ interface CompanyFormProps {
 }
 
 export default function CompanyForm(props: CompanyFormProps) {
-    const personCollection = collection(db, PERSON_COLLECTION_NAME).withConverter(PersonConversor)
-    const companyCollection = collection(db, COMPANY_COLLECTION_NAME).withConverter(CompanyConversor)
-
     const [companyOriginal, setCompanyOriginal] = useState<Company>(props?.company ?? defaultCompany)
     const [company, setCompany] = useState<Company>(props?.company ?? defaultCompany)
     const [isFormValid, setIsFormValid] = useState(handleCompanyValidationForDB(company).validation)
 
-    const [isOpen, setIsOpen] = useState(false)
     const [isLoading, setIsLoading] = useState(false)
     const [isMultiple, setIsMultiple] = useState(false)
     const [isOpenExit, setIsOpenExit] = useState(false)
@@ -52,10 +44,10 @@ export default function CompanyForm(props: CompanyFormProps) {
 
     const handleSetCompanyName = (value) => { setCompany({ ...company, name: value }) }
     const handleSetCompanyCnpj = (value) => { setCompany({ ...company, cnpj: value }) }
-    const handleSetCompanyClientCode = (value) => { setCompany({ ...company, clientCode: value }) }
-    const handleSetCompanyTelephones = (value) => { setCompany({ ...company, telephones: value }) }
     const handleSetCompanyOwners = (value) => { setCompany({ ...company, owners: value }) }
     const handleSetCompanyAddress = (value) => { setCompany({ ...company, address: value }) }
+    const handleSetCompanyClientCode = (value) => { setCompany({ ...company, clientCode: value }) }
+    const handleSetCompanyTelephones = (value) => { setCompany({ ...company, telephones: value }) }
 
     useEffect(() => {
         if (props.onBack) {
@@ -133,7 +125,6 @@ export default function CompanyForm(props: CompanyFormProps) {
                 }
                 console.error("Error adding document: ", e)
             }
-
             if (res.status === "SUCCESS") {
                 setCompany({ ...company, id: res.id })
                 companyForDB = { ...companyForDB, id: res.id }
@@ -312,7 +303,6 @@ export default function CompanyForm(props: CompanyFormProps) {
                     </FormRowColumn>
                 </FormRow>
             </form>
-
 
             <WindowModal
                 isOpen={isOpenExit}

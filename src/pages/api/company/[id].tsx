@@ -1,7 +1,7 @@
+import { collection, doc, getDoc } from "firebase/firestore"
 import { Company, Person } from "../../../interfaces/objectInterfaces"
 import { CompanyConversor, PersonConversor } from "../../../db/converters"
 import { db, COMPANY_COLLECTION_NAME, PERSON_COLLECTION_NAME } from "../../../db/firebaseDB"
-import { addDoc, collection, deleteDoc, doc, getDoc, updateDoc } from "firebase/firestore"
 
 export default async function handler(req, res) {
     const { query, method, body } = req
@@ -20,8 +20,12 @@ export default async function handler(req, res) {
                     let data: Company = (await getDoc(docRef)).data()
                     await Promise.all(data.owners.map(async (element, index) => {
                         const personDocRef = doc(personCollection, element.id)
-                        const personData: Person = (await getDoc(personDocRef)).data()
-                        ownersArray = [...ownersArray, personData]
+                        if (personDocRef) {
+                            const personData: Person = (await getDoc(personDocRef)).data()
+                            if (personData) {
+                                ownersArray = [...ownersArray, personData]
+                            }
+                        }
                     }))
                     data = { ...data, owners: ownersArray }
                     resGET = { ...resGET, status: "SUCCESS", data: data }

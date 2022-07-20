@@ -1,7 +1,6 @@
 import { PersonConversor } from "../../../db/converters"
-import { Person } from "../../../interfaces/objectInterfaces"
 import { db, PERSON_COLLECTION_NAME } from "../../../db/firebaseDB"
-import { addDoc, collection, deleteDoc, doc, getDoc, getDocs, updateDoc } from "firebase/firestore"
+import { addDoc, collection, deleteDoc, doc, updateDoc } from "firebase/firestore"
 
 export default async function handler(req, res) {
     const { method, body } = req
@@ -15,6 +14,7 @@ export default async function handler(req, res) {
                 let { token, data } = JSON.parse(body)
                 if (token === "tokenbemseguro") {
                     let nowID = data?.id ?? ""
+                    {/*
                     const querySnapshot = await getDocs(personCollection)
                     querySnapshot.forEach((doc) => {
                         const cpf = doc.data().cpf
@@ -22,6 +22,7 @@ export default async function handler(req, res) {
                             nowID = doc.id
                         }
                     })
+                */}
                     const isSave = nowID === ""
                     if (isSave) {
                         const docRef = await addDoc(personCollection, PersonConversor.toFirestore(data))

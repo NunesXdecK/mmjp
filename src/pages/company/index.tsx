@@ -126,11 +126,12 @@ export default function Companies() {
                 />
             ) : (
                 <CompanyForm
+                    canMultiple
                     isBack={true}
                     company={company}
                     onBack={handleBackClick}
-                    title="Informações empresariais"
                     onAfterSave={handleAfterSave}
+                    title="Informações empresariais"
                     onShowMessage={handleShowMessage}
                     subtitle="Dados importantes sobre a empresa" />
             )}

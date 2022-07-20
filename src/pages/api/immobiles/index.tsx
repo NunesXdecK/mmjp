@@ -1,22 +1,22 @@
 import { collection, getDocs } from "firebase/firestore"
-import { CompanyConversor } from "../../../db/converters"
-import { Company } from "../../../interfaces/objectInterfaces"
-import { db, COMPANY_COLLECTION_NAME } from "../../../db/firebaseDB"
+import { ImmobileConversor } from "../../../db/converters"
+import { Immobile } from "../../../interfaces/objectInterfaces"
+import { db, IMMOBILE_COLLECTION_NAME } from "../../../db/firebaseDB"
 
 export default async function handler(req, res) {
-    const { method} = req
+    const { method } = req
 
     switch (method) {
         case 'GET':
             let resGET = { status: "ERROR", error: {}, message: "", list: [] }
-            const companyCollection = collection(db, COMPANY_COLLECTION_NAME).withConverter(CompanyConversor)
+            const immbileCollection = collection(db, IMMOBILE_COLLECTION_NAME).withConverter(ImmobileConversor)
             let list = []
             try {
-                const querySnapshot = await getDocs(companyCollection)
+                const querySnapshot = await getDocs(immbileCollection)
                 querySnapshot.forEach((doc) => {
                     list = [...list, doc.data()]
                 })
-                list = list.sort((elementOne: Company, elementTwo: Company) => {
+                list = list.sort((elementOne: Immobile, elementTwo: Immobile) => {
                     let dateOne = elementOne.dateInsertUTC
                     let dateTwo = elementTwo.dateInsertUTC
                     if (elementOne.dateLastUpdateUTC > 0 && elementOne.dateLastUpdateUTC > dateOne) {

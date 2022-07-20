@@ -1,10 +1,10 @@
 import { PersonConversor } from "../../../db/converters"
 import { Person } from "../../../interfaces/objectInterfaces"
+import { collection, doc, getDoc } from "firebase/firestore"
 import { db, PERSON_COLLECTION_NAME } from "../../../db/firebaseDB"
-import { addDoc, collection, deleteDoc, doc, getDoc, getDocs, updateDoc } from "firebase/firestore"
 
 export default async function handler(req, res) {
-    const { query, method, body, param } = req
+    const { query, method } = req
 
     const personCollection = collection(db, PERSON_COLLECTION_NAME).withConverter(PersonConversor)
 

@@ -4,7 +4,7 @@ import { Person } from "../../../interfaces/objectInterfaces"
 import { db, PERSON_COLLECTION_NAME } from "../../../db/firebaseDB"
 
 export default async function handler(req, res) {
-    const { query, method, body } = req
+    const { method } = req
 
     switch (method) {
         case 'GET':

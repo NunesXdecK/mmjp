@@ -188,30 +188,31 @@ export default function SelectPersonForm(props: SelectPersonFormProps) {
             </Form>
 
             <IOSModal
+                onClose={() => {
+                    setIsRegister(false)
+                }}
                 isOpen={isOpen}
                 setIsOpen={setIsOpen}>
                 <>
                     {!isRegister ? (
-                        <>
-                            <List
-                                haveNew
-                                canSelect
-                                autoSearch
-                                list={personsForShow}
-                                onSelectClick={handleAdd}
-                                title={"Lista de pessoas"}
-                                isLoading={props.isLoading}
-                                onNewClick={handleNewClick}
-                                onFilterList={handleFilterList}
-                                onTitle={(element: Person) => {
-                                    return (<p>{element.name}</p>)
-                                }}
-                                onInfo={(element: Person) => {
-                                    return (<p>{element.name}</p>)
-                                }}
-                                onShowMessage={props.onShowMessage}
-                            />
-                        </>
+                        <List
+                            haveNew
+                            canSelect
+                            autoSearch
+                            list={personsForShow}
+                            onSelectClick={handleAdd}
+                            title={"Lista de pessoas"}
+                            isLoading={props.isLoading}
+                            onNewClick={handleNewClick}
+                            onFilterList={handleFilterList}
+                            onTitle={(element: Person) => {
+                                return (<p>{element.name}</p>)
+                            }}
+                            onInfo={(element: Person) => {
+                                return (<p>{element.name}</p>)
+                            }}
+                            onShowMessage={props.onShowMessage}
+                        />
                     ) : (
                         <PersonForm
                             isBack={true}

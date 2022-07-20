@@ -1,16 +1,17 @@
 import Form from "./form";
+import List from "../list/list";
 import FormRow from "./formRow";
-import { useState } from "react";
 import Button from "../button/button";
 import PersonForm from "./personForm";
 import CompanyForm from "./companyForm";
 import IOSModal from "../modal/iosModal";
 import FormRowColumn from "./formRowColumn";
+import { useEffect, useState } from "react";
 import InputText from "../inputText/inputText";
-import PersonCompanyList from "../list/personCompanyList";
 import { FeedbackMessage } from "../modal/feedbackMessageModal";
-import { handleMaskCNPJ, handleMaskCPF, handleRemoveCPFMask } from "../../util/maskUtil";
+import { handleMaskCNPJ, handleMaskCPF, handleRemoveCNPJMask, handleRemoveCPFMask } from "../../util/maskUtil";
 import { Company, defaultCompany, defaultPerson, Person } from "../../interfaces/objectInterfaces";
+import { handleValidationOnlyNumbersNotNull, handleValidationOnlyTextNotNull } from "../../util/validationUtil";
 
 interface SelectPersonCompanyFormProps {
     id?: string,
@@ -23,9 +24,10 @@ interface SelectPersonCompanyFormProps {
     isLocked?: boolean,
     isLoading?: boolean,
     isMultipleSelect?: boolean,
-    persons?: Person[],
-    onSetPersons?: (array) => void,
+    personsAndCompanies?: Person[],
+    onSetLoading?: (any) => void,
     onShowMessage?: (FeedbackMessage) => void,
+    onSetPersonsAndCompanies?: (array) => void,
 }
 
 export default function SelectPersonCompanyForm(props: SelectPersonCompanyFormProps) {
@@ -35,6 +37,9 @@ export default function SelectPersonCompanyForm(props: SelectPersonCompanyFormPr
 
     const [person, setPerson] = useState<Person>(defaultPerson)
     const [company, setCompany] = useState<Person>(defaultCompany)
+
+    const [personsAndCompanies, setPersonsAndCompanies] = useState<Person[]>([])
+    const [personsAndCompaniesForShow, setPersonsAndCompaniesForShow] = useState<Person[]>([])
 
     const handleNewClickPerson = () => {
         setIsRegisterCompany(false)
@@ -54,8 +59,32 @@ export default function SelectPersonCompanyForm(props: SelectPersonCompanyFormPr
         }
         setPerson(defaultPerson)
         setCompany(defaultCompany)
-        setIsRegisterCompany(false)
         setIsRegisterPerson(false)
+        setIsRegisterCompany(false)
+    }
+
+    const handleFilterList = (string) => {
+        let listItems = [...props.personsAndCompanies]
+        let listItemsFiltered: (Person | Company)[] = []
+        listItemsFiltered = listItems.filter((element: (Person | Company), index) => {
+            if ("cpf" in element) {
+                if (handleValidationOnlyNumbersNotNull(handleRemoveCPFMask(string))) {
+                    return handleRemoveCPFMask(element.cpf).includes(handleRemoveCPFMask(string))
+                }
+                if (handleValidationOnlyTextNotNull(string)) {
+                    return element.name.toLowerCase().includes(string.toLowerCase())
+                }
+            } else if ("cnpj" in element) {
+                if (handleValidationOnlyNumbersNotNull(handleRemoveCPFMask(string))) {
+                    return handleRemoveCPFMask(element.cnpj).includes(handleRemoveCPFMask(string))
+                }
+                if (handleValidationOnlyTextNotNull(string)) {
+                    return element.name.toLowerCase().includes(string.toLowerCase())
+                }
+            }
+            return true
+        })
+        setPersonsAndCompaniesForShow((old) => listItemsFiltered)
     }
 
     const handleAfterSave = (feedbackMessage: FeedbackMessage, element) => {
@@ -66,26 +95,32 @@ export default function SelectPersonCompanyForm(props: SelectPersonCompanyFormPr
         }
     }
 
-    const handleAdd = (person) => {
-        let localPersons = props.persons
+    const handleAdd = (personOrCompany) => {
+        let localPersonsAndCompanies = props.personsAndCompanies
         let canAdd = true
 
         if (props.isMultipleSelect) {
-            localPersons?.map((element, index) => {
-                if (handleRemoveCPFMask(element.cpf) === handleRemoveCPFMask(person.cpf)) {
-                    canAdd = false
+            localPersonsAndCompanies?.map((element, index) => {
+                if ("cpf" in element && "cpf" in personOrCompany) {
+                    if (handleRemoveCPFMask(element.cpf) === handleRemoveCPFMask(personOrCompany.cpf)) {
+                        canAdd = false
+                    }
+                } else if ("cnpj" in element && "cnpj" in personOrCompany) {
+                    if (handleRemoveCNPJMask(element.cpf) === handleRemoveCNPJMask(personOrCompany.cpf)) {
+                        canAdd = false
+                    }
                 }
             })
         }
 
         if (canAdd) {
             if (props.isMultipleSelect) {
-                localPersons = [...localPersons, person]
+                localPersonsAndCompanies = [...localPersonsAndCompanies, personOrCompany]
             } else {
-                localPersons = [person]
+                localPersonsAndCompanies = [personOrCompany]
             }
-            if (props.onSetPersons) {
-                props.onSetPersons(localPersons)
+            if (props.onSetPersonsAndCompanies) {
+                props.onSetPersonsAndCompanies(localPersonsAndCompanies)
                 setIsOpen(false)
             }
         } else {
@@ -96,21 +131,33 @@ export default function SelectPersonCompanyForm(props: SelectPersonCompanyFormPr
         }
     }
 
-    const handleRemovePerson = (event, person) => {
+    const handleRemove = (event, element) => {
         event.preventDefault()
         if (!props.isMultipleSelect) {
-            props.onSetPersons([])
+            props.onSetPersonsAndCompanies([])
         } else {
-            let localPersons = props.persons
-            if (localPersons.length > -1) {
-                let index = localPersons.indexOf(person)
-                localPersons.splice(index, 1)
-                if (props.onSetPersons) {
-                    props.onSetPersons(localPersons)
+            let localPersonsAndCompanies = props.personsAndCompanies
+            if (localPersonsAndCompanies.length > -1) {
+                let index = localPersonsAndCompanies.indexOf(element)
+                localPersonsAndCompanies.splice(index, 1)
+                if (props.onSetPersonsAndCompanies) {
+                    props.onSetPersonsAndCompanies(localPersonsAndCompanies)
                 }
             }
         }
     }
+
+    useEffect(() => {
+        if (personsAndCompanies.length === 0) {
+            fetch("api/personsAndCompanies").then((res) => res.json()).then((res) => {
+                setPersonsAndCompanies(res.list)
+                setPersonsAndCompaniesForShow(res.list)
+                if (props.onSetLoading) {
+                    props.onSetLoading(false)
+                }
+            })
+        }
+    })
 
     return (
         <>
@@ -133,9 +180,9 @@ export default function SelectPersonCompanyForm(props: SelectPersonCompanyFormPr
                     </FormRow>
                 )}
 
-                {props.persons?.map((element: Person | Company, index) => (
+                {props.personsAndCompanies?.map((element: Person | Company, index) => (
                     <form key={index + element.dateInsertUTC}
-                        onSubmit={(event) => handleRemovePerson(event, element)}>
+                        onSubmit={(event) => handleRemove(event, element)}>
                         <FormRow>
 
                             <FormRowColumn unit="3">
@@ -194,19 +241,48 @@ export default function SelectPersonCompanyForm(props: SelectPersonCompanyFormPr
             </Form>
 
             <IOSModal
+                onClose={() => {
+                    setIsRegisterPerson(false)
+                    setIsRegisterCompany(false)
+                }}
                 isOpen={isOpen}
                 setIsOpen={setIsOpen}>
-
                 {!isRegisterPerson && !isRegisterCompany && (
-                    <PersonCompanyList
-                        haveNew={true}
-                        onNewClickPerson={handleNewClickPerson}
-                        onNewClickCompany={handleNewClickCompany}
-                        onListItemClick={handleAdd}
+                    <List
+                        canSelect
+                        autoSearch
+                        onSelectClick={handleAdd}
+                        isLoading={props.isLoading}
+                        onFilterList={handleFilterList}
+                        list={personsAndCompaniesForShow}
+                        title={"Lista de pessoas e empresas"}
+                        onCustomNewButton={() => {
+                            return (
+                                <div className="self-center text-right">
+                                    <Button
+                                        isLoading={props.isLoading}
+                                        isDisabled={props.isLoading}
+                                        onClick={handleNewClickPerson}>
+                                        Nova pessoa
+                                    </Button>
+                                    <Button
+                                        className="mt-2"
+                                        isLoading={props.isLoading}
+                                        isDisabled={props.isLoading}
+                                        onClick={handleNewClickCompany}>
+                                        Nova empresa
+                                    </Button>
+                                </div>)
+                        }}
+                        onTitle={(element: (Person | Company)) => {
+                            return (<p>{element.name}</p>)
+                        }}
+                        onInfo={(element: (Person | Company)) => {
+                            return (<p>{element.name}</p>)
+                        }}
                         onShowMessage={props.onShowMessage}
                     />
                 )}
-
                 {isRegisterPerson && (
                     <PersonForm
                         isBack={true}
@@ -218,7 +294,6 @@ export default function SelectPersonCompanyForm(props: SelectPersonCompanyFormPr
                         onShowMessage={props.onShowMessage}
                         subtitle="Dados importantes sobre a pessoa" />
                 )}
-
                 {isRegisterCompany && (
                     <CompanyForm
                         isBack={true}
