@@ -113,8 +113,8 @@ export default function Persons() {
                     list={personsForShow}
                     isLoading={isLoading}
                     onNewClick={handleNewClick}
-                    onFilterList={handleFilterList}
                     onEditClick={handleEditClick}
+                    onFilterList={handleFilterList}
                     onDeleteClick={handleDeleteClick}
                     onTitle={(element: Person) => {
                         return (<p>{element.name}</p>)

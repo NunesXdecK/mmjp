@@ -288,11 +288,11 @@ export default function ProjectForm(props: ProjectFormProps) {
                 title="Clientes"
                 isLoading={isLoading}
                 isMultipleSelect={false}
-                persons={project.clients}
-                onShowMessage={props.onShowMessage}
-                buttonTitle="Adicionar cliente"
                 subtitle="Selecione o cliente"
-                onSetPersons={handleSetProjectClients}
+                buttonTitle="Adicionar cliente"
+                onShowMessage={props.onShowMessage}
+                personsAndCompanies={project.clients}
+                onSetPersonsAndCompanies={handleSetProjectClients}
                 validationMessage="Esta pessoa, ou empresa já é um cliente"
             />
 

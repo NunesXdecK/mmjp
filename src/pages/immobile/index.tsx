@@ -1,11 +1,10 @@
 import Head from "next/head"
 import { useEffect, useState } from "react"
+import List from "../../components/list/list"
 import Layout from "../../components/layout/layout"
 import ImmobileForm from "../../components/form/immobileForm"
-import ImmobileList from "../../components/list/immobileList"
 import { defaultImmobile, Immobile } from "../../interfaces/objectInterfaces"
 import FeedbackMessageModal, { defaultFeedbackMessage, FeedbackMessage } from "../../components/modal/feedbackMessageModal"
-import List from "../../components/list/list"
 
 export default function Properties() {
     const [title, setTitle] = useState("Lista de imóveis")
@@ -63,8 +62,8 @@ export default function Properties() {
     }
 
     const handleEditClick = async (immobile) => {
+        setIsLoading(true)
         let localImmobile = await fetch("api/immobile/" + immobile.id).then((res) => res.json()).then((res) => res.data)
-        console.log(localImmobile)
         setIsRegister(true)
         setImmobile(localImmobile)
         setTitle("Editar Imóvel")
@@ -110,8 +109,8 @@ export default function Properties() {
                     canSeeInfo
                     autoSearch
                     title={title}
-                    list={immobilesForShow}
                     isLoading={isLoading}
+                    list={immobilesForShow}
                     onNewClick={handleNewClick}
                     onEditClick={handleEditClick}
                     onFilterList={handleFilterList}

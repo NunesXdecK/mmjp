@@ -46,8 +46,8 @@ export default function ImmobileForm(props: ImmobileFormProps) {
     const handleSetImmobileArea = (value) => { setImmobile({ ...immobile, area: value }) }
     const handleSetImmobileCounty = (value) => { setImmobile({ ...immobile, county: value }) }
     const handleSetImmobileOwners = (value) => { setImmobile({ ...immobile, owners: value }) }
-    const handleSetImmobilePerimeter = (value) => { setImmobile({ ...immobile, perimeter: value }) }
     const handleSetImmobileAddress = (value) => { setImmobile({ ...immobile, address: value }) }
+    const handleSetImmobilePerimeter = (value) => { setImmobile({ ...immobile, perimeter: value }) }
 
     useEffect(() => {
         if (props.onBack) {
@@ -190,8 +190,8 @@ export default function ImmobileForm(props: ImmobileFormProps) {
                                 id="immobilename"
                                 value={immobile.name}
                                 isLoading={isLoading}
-                                validation={NOT_NULL_MARK}
                                 title="Nome do imóvel"
+                                validation={NOT_NULL_MARK}
                                 isDisabled={props.isForDisable}
                                 onSetText={handleSetImmobileName}
                                 onValidate={handleChangeFormValidation}
@@ -235,8 +235,8 @@ export default function ImmobileForm(props: ImmobileFormProps) {
                                 mask="area"
                                 title="Área"
                                 isLoading={isLoading}
-                                validation={NUMBER_MARK}
                                 value={immobile.area}
+                                validation={NUMBER_MARK}
                                 isDisabled={props.isForDisable}
                                 onSetText={handleSetImmobileArea}
                                 onValidate={handleChangeFormValidation}

@@ -188,8 +188,8 @@ export default function CompanyForm(props: CompanyFormProps) {
                                 id="companyname"
                                 value={company.name}
                                 isLoading={isLoading}
-                                validation={NOT_NULL_MARK}
                                 title="Nome da empresa"
+                                validation={NOT_NULL_MARK}
                                 isDisabled={props.isForDisable}
                                 onSetText={handleSetCompanyName}
                                 onValidate={handleChangeFormValidation}
@@ -200,11 +200,11 @@ export default function CompanyForm(props: CompanyFormProps) {
                         <FormRowColumn unit="2">
                             <InputText
                                 id="code"
+                                isLoading={isLoading}
                                 title="Codigo do cliente"
                                 value={company.clientCode}
-                                isLoading={isLoading}
-                                onSetText={handleSetCompanyClientCode}
                                 isDisabled={props.isForDisable}
+                                onSetText={handleSetCompanyClientCode}
                             />
                         </FormRowColumn>
                     </FormRow>

@@ -20,7 +20,6 @@ export default async function handler(req, res) {
                     const docRef = doc(immobileCollection, id)
                     let data: Immobile = (await getDoc(docRef)).data()
                     await Promise.all(data.owners.map(async (element, index) => {
-                        console.log(element.path)
                         if (element.path.includes(PERSON_COLLECTION_NAME)) {
                             const docRef = doc(personCollection, element.id)
                             if (docRef) {

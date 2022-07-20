@@ -36,7 +36,6 @@ export default function PersonForm(props: PersonFormProps) {
     const [person, setPerson] = useState<Person>(props?.person ?? defaultPerson)
     const [isFormValid, setIsFormValid] = useState(handlePersonValidationForDB(person).validation)
 
-    const [isOpen, setIsOpen] = useState(false)
     const [isLoading, setIsLoading] = useState(false)
     const [isMultiple, setIsMultiple] = useState(false)
     const [isOpenExit, setIsOpenExit] = useState(false)
@@ -44,17 +43,17 @@ export default function PersonForm(props: PersonFormProps) {
 
     const handleSetPersonOldData = (value) => { setPerson({ ...person, oldData: value }) }
 
-    const handleSetPersonName = (value) => { setPerson({ ...person, name: value }) }
-    const handleSetPersonClientCode = (value) => { setPerson({ ...person, clientCode: value }) }
-    const handleSetPersonCPF = (value) => { setPerson({ ...person, cpf: value }) }
     const handleSetPersonRG = (value) => { setPerson({ ...person, rg: value }) }
+    const handleSetPersonCPF = (value) => { setPerson({ ...person, cpf: value }) }
+    const handleSetPersonName = (value) => { setPerson({ ...person, name: value }) }
     const handleSetPersonRgIssuer = (value) => { setPerson({ ...person, rgIssuer: value }) }
+    const handleSetPersonAddress = (address) => { setPerson({ ...person, address: address }) }
+    const handleSetPersonClientCode = (value) => { setPerson({ ...person, clientCode: value }) }
+    const handleSetPersonProfession = (value) => { setPerson({ ...person, profession: value }) }
     const handleSetPersonNaturalness = (value) => { setPerson({ ...person, naturalness: value }) }
     const handleSetPersonNationality = (value) => { setPerson({ ...person, nationality: value }) }
-    const handleSetPersonMaritalStatus = (value) => { setPerson({ ...person, maritalStatus: value }) }
-    const handleSetPersonProfession = (value) => { setPerson({ ...person, profession: value }) }
     const handleSetPersonTelephones = (values) => { setPerson({ ...person, telephones: values }) }
-    const handleSetPersonAddress = (address) => { setPerson({ ...person, address: address }) }
+    const handleSetPersonMaritalStatus = (value) => { setPerson({ ...person, maritalStatus: value }) }
 
     useEffect(() => {
         if (props.onBack) {
