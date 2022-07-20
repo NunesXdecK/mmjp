@@ -13,6 +13,7 @@ import { handleImmobileValidationForDB } from "../../util/validationUtil";
 import { defaultImmobile, Immobile } from "../../interfaces/objectInterfaces";
 import { NOT_NULL_MARK, NUMBER_MARK } from "../../util/patternValidationUtil";
 import { defaultElementFromBase, ElementFromBase, handlePrepareImmobileForDB } from "../../util/converterUtil";
+import InputImmobilePoints from "../inputText/inputImmobilePoints";
 
 interface ImmobileFormProps {
     title?: string,
@@ -46,6 +47,7 @@ export default function ImmobileForm(props: ImmobileFormProps) {
     const handleSetImmobileArea = (value) => { setImmobile({ ...immobile, area: value }) }
     const handleSetImmobileCounty = (value) => { setImmobile({ ...immobile, county: value }) }
     const handleSetImmobileOwners = (value) => { setImmobile({ ...immobile, owners: value }) }
+    const handleSetImmobilePoints = (value) => { setImmobile({ ...immobile, points: value }) }
     const handleSetImmobileAddress = (value) => { setImmobile({ ...immobile, address: value }) }
     const handleSetImmobilePerimeter = (value) => { setImmobile({ ...immobile, perimeter: value }) }
 
@@ -295,6 +297,12 @@ export default function ImmobileForm(props: ImmobileFormProps) {
                     address={immobile.address}
                     setAddress={handleSetImmobileAddress}
                     subtitle="Informações sobre o endereço"
+                />
+
+                <InputImmobilePoints
+                    canTest
+                    points={immobile.points}
+                    onSetPoints={handleSetImmobilePoints}
                 />
 
                 <FormRow className="p-2">

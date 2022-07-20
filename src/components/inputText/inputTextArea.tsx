@@ -1,6 +1,6 @@
 import { useState } from "react"
-import { handleValidationNotNull } from "../../util/validationUtil"
-import { NOT_NULL_MARK, STYLE_FOR_INPUT_LOADING, STYLE_FOR_INPUT_LOADING_TRANSPARENT } from "../../util/patternValidationUtil"
+import { handleJSONcheck, handleValidationNotNull } from "../../util/validationUtil"
+import { JSON_MARK, NOT_NULL_MARK, STYLE_FOR_INPUT_LOADING, STYLE_FOR_INPUT_LOADING_TRANSPARENT } from "../../util/patternValidationUtil"
 
 interface InputTextAreaProps {
     id?: string,
@@ -20,6 +20,7 @@ interface InputTextAreaProps {
     onSetText?: (string) => void,
     onValidate?: (boolean) => void,
 }
+
 
 export default function InputTextArea(props: InputTextAreaProps) {
     const [isValid, setIsValid] = useState(true)
@@ -50,6 +51,10 @@ export default function InputTextArea(props: InputTextAreaProps) {
                 test = handleValidationNotNull(text)
                 setIsValid(test)
                 break
+            case JSON_MARK:
+                test = handleJSONcheck(text)
+                setIsValid(test)
+                break
         }
 
         if (props.onValidate) {
@@ -78,6 +83,9 @@ export default function InputTextArea(props: InputTextAreaProps) {
                     let text = event.target.value
                     text = handleValidation(text)
                     props.onSetText(text)
+                    if (props.onChange) {
+                        props.onChange(event)
+                    }
                 }}
             />
             {!isValid && (<p className="text-red-600">{props.validationMessage}</p>)}

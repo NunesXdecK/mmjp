@@ -1,30 +1,24 @@
 import Head from "next/head"
-import { useEffect, useState } from "react"
+import { useState } from "react"
 import Form from "../components/form/form"
-import List from "../components/list/list"
 import Button from "../components/button/button"
 import FormRow from "../components/form/formRow"
 import Layout from "../components/layout/layout"
 import FormRowColumn from "../components/form/formRowColumn"
 import ProjectPaymentFormTest from "../components/form/projectPaymentFormNew"
 import { defaultProjectPayment, ProjectPayment } from "../interfaces/objectInterfaces"
-import SelectPersonForm from "../components/form/selectPersonForm"
+import InputTextArea from "../components/inputText/inputTextArea"
+import { JSON_MARK } from "../util/patternValidationUtil"
+import { handleJSONcheck } from "../util/validationUtil"
+import InputImmobilePoints from "../components/inputText/inputImmobilePoints"
 
 export default function Index() {
     const mockData = [
         { ...defaultProjectPayment, description: "teste 01" },
         { ...defaultProjectPayment, description: "teste 02" },
-        { ...defaultProjectPayment, description: "teste 03" },
-        { ...defaultProjectPayment, description: "teste 04" },
-        { ...defaultProjectPayment, description: "teste 05" },
-        { ...defaultProjectPayment, description: "teste 06" },
-        { ...defaultProjectPayment, description: "teste 07" },
-        { ...defaultProjectPayment, description: "teste 08" },
-        { ...defaultProjectPayment, description: "teste 09" },
-        { ...defaultProjectPayment, description: "teste 10" },
-        { ...defaultProjectPayment, description: "teste 11" },
     ]
-    const [projectPayments, setProjectPayments] = useState<ProjectPayment[]>(mockData)
+    const [text, setText] = useState<string>("")
+    const [projectPayments, setProjectPayments] = useState<ProjectPayment[]>([])
 
     const handleFilterList = (string) => {
         let listItems = [...mockData]
@@ -35,8 +29,24 @@ export default function Index() {
         setProjectPayments((old) => listItemsFiltered)
     }
 
-    const handleReturnData = (projectPayment: ProjectPayment) => {
-        console.log(projectPayment)
+    const handleAddTest = () => {
+        if (text) {
+            const element = JSON.parse(text)
+            setProjectPayments((old) => element)
+        }
+    }
+
+    const handleReturnData = () => {
+        console.log(JSON.stringify(projectPayments))
+    }
+
+    const handleChangeText = (event) => {
+        const text = event.target.value
+        if (handleJSONcheck(text)) {
+            const element = JSON.parse(text)
+            let localProjectPayments = [element]
+            setProjectPayments((old) => localProjectPayments)
+        }
     }
 
     const handeOnDelete = (index: number) => {
@@ -45,14 +55,6 @@ export default function Index() {
         setProjectPayments((old) => localProjectPayments)
     }
 
-
-    const test = async () => {
-        return await fetch("api/persons").then(res => res.json())
-    }
-
-    useEffect(() => {
-        test().then(res => console.log(res))
-    })
 
     return (
         <Layout
@@ -63,32 +65,14 @@ export default function Index() {
                 <link rel="icon" href="/favicon.ico" />
             </Head>
 
+            <InputImmobilePoints
+                canTest
+                points={projectPayments}
+                onSetPoints={setProjectPayments}
+            />
 
-            <Form>
-                {/*
-                        <List
-                            haveNew
-                            canDelete
-                            canSeeInfo
-                            autoSearch
-                            isLoading={false}
-                            list={projectPayments}
-                            title="Teste de lista dinamica"
-                            onNewClick={() => console.log("Novo")}
-                            onEditClick={() => console.log("Editou")}
-                            onDeleteClick={() => console.log("Deletou")}
-                            onListItemClick={() => console.log("Clicou")}
-                            onFilterList={handleFilterList}
-                            onTitle={(element: ProjectPayment) => {
-                                return (<p>{element.description}</p>)
-                            }}
-                            onInfo={(element: ProjectPayment) => {
-                                return (<p>{element.description}</p>)
-                            }}
-                        />
-
-                    </FormRowColumn>
-                </FormRow>
+            {/*
+                    <Form>
                 <FormRow>
                     <FormRowColumn unit="6" className="flex justify-end">
                         <Button
@@ -113,16 +97,14 @@ export default function Index() {
                 <FormRow>
                     <FormRowColumn unit="6" className="flex justify-end">
                         <Button
-                            onClick={() => projectPayments.map((element, index) => {
-                                console.log(element)
-                            })}>
+                            onClick={handleReturnData}>
                             ver tudo
                         </Button>
                     </FormRowColumn>
                 </FormRow>
+            </Form>
 */}
 
-            </Form>
         </Layout >
     )
 }

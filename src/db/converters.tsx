@@ -105,6 +105,7 @@ export const ImmobileConversor = {
             perimeter: data.perimeter,
             dateInsertUTC: data.dateInsertUTC,
             dateLastUpdateUTC: data.dateLastUpdateUTC,
+            points: data.points,
         }
     },
     fromFirestore(snapshot, options) {
@@ -120,6 +121,7 @@ export const ImmobileConversor = {
             dateLastUpdateUTC: data.dateLastUpdateUTC ?? 0,
             address: data.address ?? defaultAddress,
             owners: data.owners ?? [],
+            points: data.points ?? [],
         }
     }
 }

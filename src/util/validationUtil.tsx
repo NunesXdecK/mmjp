@@ -7,6 +7,17 @@ interface ValidationReturn {
     validation: boolean,
 }
 
+export const  handleJSONcheck = (value) => {
+    if (typeof value !== 'string') return false
+    try {
+        const result = JSON.parse(value)
+        const type = Object.prototype.toString.call(result)
+        return type === "[object Object]" || type === "[object Array]"
+    } catch (err) {
+        return false
+    }
+}
+
 export const handleValidationCNPJ = (text) => {
     let test = false
     if (text) {

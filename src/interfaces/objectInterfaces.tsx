@@ -50,6 +50,16 @@ export interface Professional {
     oldData?: any,
 }
 
+export interface ImmobilePoint {
+    id?: string,
+    description?: string,
+    latitude?: string,
+    longitude?: string,
+    dateInsertUTC?: number,
+    dateLastUpdateUTC?: number,
+    immobile?: Immobile,
+}
+
 export interface Immobile {
     id?: string,
     name?: string,
@@ -62,6 +72,7 @@ export interface Immobile {
     oldData?: any,
     address?: Address,
     owners?: any[],
+    points?: ImmobilePoint[],
 }
 
 export interface Project {
@@ -160,7 +171,7 @@ export const defaultProfessional: Professional = {
     dateInsertUTC: 0,
     dateLastUpdateUTC: 0,
     oldData: {},
-    person: null,
+    person: defaultPerson,
 }
 
 export const defaultImmobile: Immobile = {
@@ -173,8 +184,18 @@ export const defaultImmobile: Immobile = {
     dateInsertUTC: 0,
     dateLastUpdateUTC: 0,
     oldData: {},
-    owners: [],
     address: defaultAddress,
+    owners: [],
+    points: [],
+}
+
+export const defaultImmobilePoint: ImmobilePoint = {
+    id: "",
+    latitude: "",
+    longitude: "",
+    description: "",
+    dateInsertUTC: 0,
+    dateLastUpdateUTC: 0,
 }
 
 export const defaultProject: Project = {

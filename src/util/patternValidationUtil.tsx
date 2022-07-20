@@ -7,6 +7,7 @@ export const NUMBER_MARK = "nmb"
 export const NOT_NULL_MARK = "nt"
 export const TELEPHONE_MARK = "tlp"
 export const TEXT_NOT_NULL_MARK = "tnt"
+export const JSON_MARK = "json"
 
 export const ONLY_NUMBERS_PATTERN = "[^0-9]"
 export const ONLY_NUMBERS_PATTERN_TWO = /\D/g
