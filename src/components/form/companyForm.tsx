@@ -7,13 +7,13 @@ import FormRowColumn from "./formRowColumn";
 import ArrayTextForm from "./arrayTextForm";
 import WindowModal from "../modal/windowModal";
 import InputText from "../inputText/inputText";
-import SelectPersonForm from "./selectPersonForm";
 import InputCheckbox from "../inputText/inputCheckbox";
 import { FeedbackMessage } from "../modal/feedbackMessageModal";
 import { handleCompanyValidationForDB } from "../../util/validationUtil";
 import { defaultCompany, Company } from "../../interfaces/objectInterfaces";
 import { CNPJ_MARK, NOT_NULL_MARK, TELEPHONE_MARK } from "../../util/patternValidationUtil";
 import { defaultElementFromBase, ElementFromBase, handlePrepareCompanyForDB } from "../../util/converterUtil";
+import SelectPersonForm from "../select/selectPersonForm";
 
 interface CompanyFormProps {
     title?: string,
@@ -51,7 +51,6 @@ export default function CompanyForm(props: CompanyFormProps) {
 
     useEffect(() => {
         if (props.onBack) {
-            history.pushState(null, null, null)
             if (company.id !== "" && handleDiference()) {
                 window.onbeforeunload = () => {
                     return false

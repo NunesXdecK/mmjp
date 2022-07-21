@@ -1,21 +1,17 @@
 import Form from "./form";
 import FormRow from "./formRow";
-import { useEffect, useState } from "react";
 import Button from "../button/button";
+import { useEffect, useState } from "react";
 import FormRowColumn from "./formRowColumn";
+import WindowModal from "../modal/windowModal";
 import InputText from "../inputText/inputText";
-import SelectPersonForm from "./selectPersonForm";
-import { handleNewDateToUTC } from "../../util/dateUtils";
+import InputCheckbox from "../inputText/inputCheckbox";
 import { FeedbackMessage } from "../modal/feedbackMessageModal";
 import { NOT_NULL_MARK } from "../../util/patternValidationUtil";
-import { addDoc, collection, doc, updateDoc } from "firebase/firestore";
-import { PersonConversor, ProfessionalConversor } from "../../db/converters";
 import { handleProfessionalValidationForDB } from "../../util/validationUtil";
 import { defaultProfessional, Professional } from "../../interfaces/objectInterfaces";
-import { db, PERSON_COLLECTION_NAME, PROFESSIONAL_COLLECTION_NAME } from "../../db/firebaseDB";
 import { defaultElementFromBase, ElementFromBase, handlePrepareProfessionalForDB } from "../../util/converterUtil";
-import InputCheckbox from "../inputText/inputCheckbox";
-import WindowModal from "../modal/windowModal";
+import SelectPersonForm from "../select/selectPersonForm";
 
 interface ProfessionalFormProps {
     title?: string,
@@ -49,11 +45,9 @@ export default function ProfessionalForm(props: ProfessionalFormProps) {
     const handleSetProfessionalTitle = (value) => { setProfessional({ ...professional, title: value }) }
     const handleSetProfessionalCreaNumber = (value) => { setProfessional({ ...professional, creaNumber: value }) }
     const handleSetProfessionalCredentialCode = (value) => { setProfessional({ ...professional, credentialCode: value }) }
-    const handleSetProfessionalPerson = (value) => { setProfessional({ ...professional, title: value }) }
 
     useEffect(() => {
         if (props.onBack) {
-            history.pushState(null, null, null)
             if (professional.id !== "" && handleDiference()) {
                 window.onbeforeunload = () => {
                     return false

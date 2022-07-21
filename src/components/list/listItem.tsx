@@ -21,12 +21,14 @@ interface ItemListProps {
     onActiveChange?: (any) => void,
 }
 
-const contentClassName = "sm:px-4 sm:py-5 mt-1 text-sm text-gray-900"
-const titleClassName = "sm:px-4 sm:py-5 text-md leading-6 font-medium text-gray-900"
-const buttonTitleClassName = `
+const buttonTitleHoverClassName = `
                             mr-0 w-0 h-0 opacity-0 
                             sm:group-hover:opacity-100 sm:group-hover:w-auto 
                             group-hover:h-auto sm:group-hover:mr-2
+                        `
+
+const buttonTitleClassName = `
+                            hidden sm:block
                         `
 
 export default function ItemList(props: ItemListProps) {

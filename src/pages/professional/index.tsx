@@ -64,9 +64,8 @@ export default function Professionals() {
     const handleEditClick = async (professional) => {
         setIsLoading(true)
         let localProfessional = await fetch("api/professional/" + professional.id).then((res) => res.json()).then((res) => res.data)
-        console.log(localProfessional)
         setIsRegister(true)
-        setProfessional(localProfessional)
+        setProfessional({ ...defaultProfessional, ...localProfessional })
         setTitle("Editar empresa")
     }
 
@@ -125,6 +124,7 @@ export default function Professionals() {
                 />
             ) : (
                 <ProfessionalForm
+                    canMultiple
                     isBack={true}
                     professional={professional}
                     onBack={handleBackClick}

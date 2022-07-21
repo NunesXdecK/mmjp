@@ -7,7 +7,6 @@ import InputText from "../inputText/inputText";
 import SelectProjectForm from "./selectProjectForm";
 import InputTextArea from "../inputText/inputTextArea";
 import { handleNewDateToUTC } from "../../util/dateUtils";
-import SelectProfessionalForm from "./selectProfessionalForm";
 import { FeedbackMessage } from "../modal/feedbackMessageModal";
 import { NOT_NULL_MARK } from "../../util/patternValidationUtil";
 import { addDoc, collection, doc, updateDoc } from "firebase/firestore";
@@ -16,6 +15,7 @@ import { handleProjectStageValidationForDB } from "../../util/validationUtil";
 import { defaultProjectStage, ProjectStage } from "../../interfaces/objectInterfaces";
 import { ProfessionalConversor, ProjectConversor, ProjectStageConversor } from "../../db/converters";
 import { db, PROFESSIONAL_COLLECTION_NAME, PROJECT_COLLECTION_NAME, PROJECT_STAGE_COLLECTION_NAME } from "../../db/firebaseDB";
+import SelectProfessionalForm from "../select/selectProfessionalForm";
 
 interface ProjectStageFormProps {
     title?: string,

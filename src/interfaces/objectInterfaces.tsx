@@ -57,7 +57,7 @@ export interface ImmobilePoint {
     longitude?: string,
     dateInsertUTC?: number,
     dateLastUpdateUTC?: number,
-    immobile?: Immobile,
+    immobile?: any,
 }
 
 export interface Immobile {
@@ -72,7 +72,7 @@ export interface Immobile {
     oldData?: any,
     address?: Address,
     owners?: any[],
-    points?: ImmobilePoint[],
+    points?: any[],
 }
 
 export interface Project {
@@ -84,10 +84,11 @@ export interface Project {
     dateInsertUTC?: number,
     dateLastUpdateUTC?: number,
     budget?: boolean,
-    professional?: Professional,
+    professional?: any,
     oldData?: any,
     clients?: any[],
-    properties?: any[],
+    immobilesOrigin?: any[],
+    immobilesTarget?: any[],
 }
 
 export interface ProjectStage {
@@ -97,8 +98,8 @@ export interface ProjectStage {
     finished?: boolean,
     dateInsertUTC?: number,
     dateLastUpdateUTC?: number,
-    project?: Project,
-    responsible?: Professional,
+    project?: any,
+    responsible?: any,
     updates?: [],
 }
 
@@ -119,7 +120,7 @@ export interface ProjectPayment {
     dateDue?: number,
     dateInsertUTC?: number,
     dateLastUpdateUTC?: number,
-    project?: Project,
+    project?: any,
 }
 
 export const defaultAddress: Address = {
@@ -209,7 +210,8 @@ export const defaultProject: Project = {
     budget: true,
     clients: [],
     oldData: {},
-    properties: [],
+    immobilesOrigin: [],
+    immobilesTarget: [],
     professional: defaultProfessional,
 }
 

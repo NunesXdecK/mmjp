@@ -57,7 +57,6 @@ export default function PersonForm(props: PersonFormProps) {
 
     useEffect(() => {
         if (props.onBack) {
-            history.pushState(null, null, null)
             if (person.id !== "" && handleDiference()) {
                 window.onbeforeunload = () => {
                     return false

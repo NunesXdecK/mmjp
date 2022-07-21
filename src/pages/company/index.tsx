@@ -67,7 +67,7 @@ export default function Companies() {
         let localCompany = await fetch("api/company/" + company.id).then((res) => res.json()).then((res) => res.data)
         localCompany = handlePrepareCompanyForShow(localCompany)
         setIsRegister(true)
-        setCompany(localCompany)
+        setCompany({ ...defaultCompany, ...localCompany })
         setTitle("Editar empresa")
     }
 

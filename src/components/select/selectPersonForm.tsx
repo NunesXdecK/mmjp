@@ -1,16 +1,17 @@
-import Form from "./form";
-import FormRow from "./formRow";
+import Form from "../form/form";
 import List from "../list/list";
 import Button from "../button/button";
+import FormRow from "../form/formRow";
 import IOSModal from "../modal/iosModal";
 import { useEffect, useState } from "react";
-import FormRowColumn from "./formRowColumn";
+import PersonForm from "../form/personForm";
 import InputText from "../inputText/inputText";
-import ProfessionalForm from "./professionalForm";
+import FormRowColumn from "../form/formRowColumn";
 import { FeedbackMessage } from "../modal/feedbackMessageModal";
-import { defaultProfessional, Professional } from "../../interfaces/objectInterfaces";
+import { handleMaskCPF, handleRemoveCPFMask } from "../../util/maskUtil";
+import { defaultPerson, Person } from "../../interfaces/objectInterfaces";
 
-interface SelectProfessionalFormProps {
+interface SelectPersonFormProps {
     id?: string,
     title?: string,
     subtitle?: string,
@@ -21,58 +22,59 @@ interface SelectProfessionalFormProps {
     isLocked?: boolean,
     isLoading?: boolean,
     isMultipleSelect?: boolean,
-    professionals?: Professional[],
+    persons?: Person[],
     onSetLoading?: (any) => void,
-    onSetProfessionals?: (array) => void,
+    onSetPersons?: (array) => void,
     onShowMessage?: (FeedbackMessage) => void,
 }
 
-export default function SelectProfessionalForm(props: SelectProfessionalFormProps) {
+export default function SelectPersonForm(props: SelectPersonFormProps) {
     const [isOpen, setIsOpen] = useState(false)
     const [isRegister, setIsRegister] = useState(false)
 
-    const [professional, setProfessional] = useState<Professional>(defaultProfessional)
+    const [person, setPerson] = useState<Person>(defaultPerson)
 
-    const [professionals, setProfessionals] = useState<Professional[]>([])
-    const [professionalsForShow, setProfessionalsForShow] = useState<Professional[]>([])
+    const [persons, setPersons] = useState<Person[]>([])
+    const [personsForShow, setPersonsForShow] = useState<Person[]>([])
 
     const handleNewClick = () => {
         setIsRegister(true)
-        setProfessional(defaultProfessional)
+        setPerson(defaultPerson)
     }
 
     const handleBackClick = (event?) => {
         if (event) {
             event.preventDefault()
         }
-        setProfessional(defaultProfessional)
+        setPersons([])
+        setPersonsForShow([])
+        setPerson(defaultPerson)
         setIsRegister(false)
     }
 
     const handleFilterList = (string) => {
-        let listItems = [...professionals]
-        let listItemsFiltered: Professional[] = []
-        listItemsFiltered = listItems.filter((element: Professional, index) => {
-            return element.title.toLowerCase().includes(string.toLowerCase())
+        let listItems = [...persons]
+        let listItemsFiltered: Person[] = []
+        listItemsFiltered = listItems.filter((element: Person, index) => {
+            return element.name.toLowerCase().includes(string.toLowerCase())
         })
-        setProfessionalsForShow((old) => listItemsFiltered)
+        setPersonsForShow((old) => listItemsFiltered)
     }
 
-    const handleAfterSave = (feedbackMessage: FeedbackMessage, professional) => {
-        handleAdd(professional)
+    const handleAfterSave = (feedbackMessage: FeedbackMessage, person) => {
+        handleAdd(person)
         handleBackClick()
         if (props.onShowMessage) {
             props.onShowMessage(feedbackMessage)
         }
     }
 
-    const handleAdd = (professional) => {
-        let localProfessionals = props.professionals
+    const handleAdd = (person) => {
+        let localPersons = props.persons
         let canAdd = true
-
         if (props.isMultipleSelect) {
-            localProfessionals?.map((element, index) => {
-                if (element.creaNumber === professional.creaNumber) {
+            localPersons?.map((element, index) => {
+                if (handleRemoveCPFMask(element.cpf) === handleRemoveCPFMask(person.cpf)) {
                     canAdd = false
                 }
             })
@@ -80,12 +82,12 @@ export default function SelectProfessionalForm(props: SelectProfessionalFormProp
 
         if (canAdd) {
             if (props.isMultipleSelect) {
-                localProfessionals = [...localProfessionals, professional]
+                localPersons = [...localPersons, person]
             } else {
-                localProfessionals = [professional]
+                localPersons = [person]
             }
-            if (props.onSetProfessionals) {
-                props.onSetProfessionals(localProfessionals)
+            if (props.onSetPersons) {
+                props.onSetPersons(localPersons)
                 setIsOpen(false)
             }
         } else {
@@ -96,27 +98,27 @@ export default function SelectProfessionalForm(props: SelectProfessionalFormProp
         }
     }
 
-    const handleRemoveProfessional = (event, professional) => {
+    const handleRemovePerson = (event, person) => {
         event.preventDefault()
         if (!props.isMultipleSelect) {
-            props.onSetProfessionals([])
+            props.onSetPersons([])
         } else {
-            let localProfessionals = props.professionals
-            if (localProfessionals.length > -1) {
-                let index = localProfessionals.indexOf(professional)
-                localProfessionals.splice(index, 1)
-                if (props.onSetProfessionals) {
-                    props.onSetProfessionals(localProfessionals)
+            let localPersons = props.persons
+            if (localPersons.length > -1) {
+                let index = localPersons.indexOf(person)
+                localPersons.splice(index, 1)
+                if (props.onSetPersons) {
+                    props.onSetPersons(localPersons)
                 }
             }
         }
     }
 
     useEffect(() => {
-        if (professionals.length === 0) {
-            fetch("api/professionals").then((res) => res.json()).then((res) => {
-                setProfessionals(res.list)
-                setProfessionalsForShow(res.list)
+        if (persons.length === 0) {
+            fetch("api/persons").then((res) => res.json()).then((res) => {
+                setPersons(res.list)
+                setPersonsForShow(res.list)
                 if (props.onSetLoading) {
                     props.onSetLoading(false)
                 }
@@ -144,27 +146,28 @@ export default function SelectProfessionalForm(props: SelectProfessionalFormProp
                     </FormRow>
                 )}
 
-                {props.professionals?.map((element, index) => (
-                    <form key={index + element.dateInsertUTC}
-                        onSubmit={(event) => handleRemoveProfessional(event, element)}>
+                {props.persons?.map((element, index) => (
+                    <form key={index + element.dateInsertUTC + element.cpf}
+                        onSubmit={(event) => handleRemovePerson(event, element)}>
                         <FormRow>
                             <FormRowColumn unit="3">
                                 <InputText
-                                    title="Titulo"
+                                    title="Nome"
                                     isDisabled={true}
-                                    value={element.title}
+                                    value={element.name}
                                     isLoading={props.isLoading}
-                                    id={"professional-title-" + index}
+                                    id={"person-name-" + element.cpf}
                                 />
                             </FormRowColumn>
 
                             <FormRowColumn unit="2">
                                 <InputText
-                                    title="Número do CREA"
+                                    mask="cpf"
+                                    title="CPF"
                                     isDisabled={true}
                                     isLoading={props.isLoading}
-                                    id={"professional-crea-number-" + index}
-                                    value={element.creaNumber}
+                                    id={"person-cpf-" + element.cpf}
+                                    value={handleMaskCPF(element.cpf)}
                                 />
                             </FormRowColumn>
 
@@ -187,6 +190,9 @@ export default function SelectProfessionalForm(props: SelectProfessionalFormProp
             </Form>
 
             <IOSModal
+                onClose={() => {
+                    setIsRegister(false)
+                }}
                 isOpen={isOpen}
                 setIsOpen={setIsOpen}>
                 <>
@@ -195,30 +201,30 @@ export default function SelectProfessionalForm(props: SelectProfessionalFormProp
                             haveNew
                             canSelect
                             autoSearch
+                            list={personsForShow}
                             onSelectClick={handleAdd}
+                            title={"Lista de pessoas"}
                             isLoading={props.isLoading}
                             onNewClick={handleNewClick}
-                            list={professionalsForShow}
                             onFilterList={handleFilterList}
-                            title={"Lista de profissionais"}
-                            onTitle={(element: Professional) => {
-                                return (<p>{element.title}</p>)
+                            onTitle={(element: Person) => {
+                                return (<p>{element.name}</p>)
                             }}
-                            onInfo={(element: Professional) => {
-                                return (<p>{element.title}</p>)
+                            onInfo={(element: Person) => {
+                                return (<p>{element.name}</p>)
                             }}
                             onShowMessage={props.onShowMessage}
                         />
                     ) : (
-                        <ProfessionalForm
+                        <PersonForm
                             isBack={true}
+                            person={person}
                             canMultiple={false}
                             onBack={handleBackClick}
-                            professional={professional}
+                            title="Informações pessoais"
                             onAfterSave={handleAfterSave}
-                            title="Informações do profisisonal"
                             onShowMessage={props.onShowMessage}
-                            subtitle="Dados importantes sobre o profissional" />
+                            subtitle="Dados importantes sobre a pessoa" />
                     )}
                 </>
             </IOSModal>

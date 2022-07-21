@@ -1,13 +1,13 @@
-import Form from "./form";
 import List from "../list/list";
-import FormRow from "./formRow";
+import Form from "../form/form";
+import FormRow from "../form/formRow";
 import Button from "../button/button";
-import PersonForm from "./personForm";
-import CompanyForm from "./companyForm";
 import IOSModal from "../modal/iosModal";
-import FormRowColumn from "./formRowColumn";
+import PersonForm from "../form/personForm";
 import { useEffect, useState } from "react";
+import CompanyForm from "../form/companyForm";
 import InputText from "../inputText/inputText";
+import FormRowColumn from "../form/formRowColumn";
 import { FeedbackMessage } from "../modal/feedbackMessageModal";
 import { handleMaskCNPJ, handleMaskCPF, handleRemoveCNPJMask, handleRemoveCPFMask } from "../../util/maskUtil";
 import { Company, defaultCompany, defaultPerson, Person } from "../../interfaces/objectInterfaces";
@@ -57,6 +57,8 @@ export default function SelectPersonCompanyForm(props: SelectPersonCompanyFormPr
         if (event) {
             event.preventDefault()
         }
+        setPersonsAndCompanies([])
+        setPersonsAndCompaniesForShow([])
         setPerson(defaultPerson)
         setCompany(defaultCompany)
         setIsRegisterPerson(false)

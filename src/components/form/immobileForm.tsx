@@ -7,13 +7,13 @@ import { useEffect, useState } from "react";
 import InputText from "../inputText/inputText";
 import WindowModal from "../modal/windowModal";
 import InputCheckbox from "../inputText/inputCheckbox";
-import SelectPersonCompanyForm from "./selectPersonCompanyForm";
 import { FeedbackMessage } from "../modal/feedbackMessageModal";
+import InputImmobilePoints from "../inputText/inputImmobilePoints";
 import { handleImmobileValidationForDB } from "../../util/validationUtil";
 import { defaultImmobile, Immobile } from "../../interfaces/objectInterfaces";
 import { NOT_NULL_MARK, NUMBER_MARK } from "../../util/patternValidationUtil";
 import { defaultElementFromBase, ElementFromBase, handlePrepareImmobileForDB } from "../../util/converterUtil";
-import InputImmobilePoints from "../inputText/inputImmobilePoints";
+import SelectPersonCompanyForm from "../select/selectPersonCompanyForm";
 
 interface ImmobileFormProps {
     title?: string,
@@ -53,7 +53,6 @@ export default function ImmobileForm(props: ImmobileFormProps) {
 
     useEffect(() => {
         if (props.onBack) {
-            history.pushState(null, null, null)
             if (immobile.id !== "" && handleDiference()) {
                 window.onbeforeunload = () => {
                     return false
@@ -309,7 +308,10 @@ export default function ImmobileForm(props: ImmobileFormProps) {
                     <FormRowColumn unit="6" className="flex justify-between">
                         {props.isBack && (
                             <Button
-                                onClick={props.onBack}
+                                onClick={(event) => {
+                                    event.preventDefault()
+                                    handleOnBack()
+                                }}
                                 isLoading={isLoading}
                                 isDisabled={isLoading}
                             >

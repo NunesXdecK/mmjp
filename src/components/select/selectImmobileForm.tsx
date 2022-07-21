@@ -1,14 +1,14 @@
-import Form from "./form";
-import FormRow from "./formRow";
-import { useState } from "react";
+import Form from "../form/form";
+import List from "../list/list";
+import FormRow from "../form/formRow";
 import Button from "../button/button";
 import IOSModal from "../modal/iosModal";
-import FormRowColumn from "./formRowColumn";
+import { useEffect, useState } from "react";
 import InputText from "../inputText/inputText";
-import ImmobileList from "../list/immobileList";
-import { defaultImmobile, Immobile } from "../../interfaces/objectInterfaces";
+import ImmobileForm from "../form/immobileForm";
+import FormRowColumn from "../form/formRowColumn";
 import { FeedbackMessage } from "../modal/feedbackMessageModal";
-import ImmobileForm from "./immobileForm";
+import { defaultImmobile, Immobile } from "../../interfaces/objectInterfaces";
 
 interface SelectImmobileFormProps {
     id?: string,
@@ -22,6 +22,7 @@ interface SelectImmobileFormProps {
     isLoading?: boolean,
     isMultipleSelect?: boolean,
     properties?: Immobile[],
+    onSetLoading?: (any) => void,
     onSetProperties?: (array) => void,
     onShowMessage?: (FeedbackMessage) => void,
 }
@@ -31,6 +32,9 @@ export default function SelectImmobileForm(props: SelectImmobileFormProps) {
     const [isRegister, setIsRegister] = useState(false)
 
     const [immobile, setImmobile] = useState<Immobile>(defaultImmobile)
+    
+    const [immobiles, setImmobiles] = useState<Immobile[]>([])
+    const [immobilesForShow, setImmobilesForShow] = useState<Immobile[]>([])
 
     const handleNewClick = () => {
         setIsRegister(true)
@@ -41,8 +45,19 @@ export default function SelectImmobileForm(props: SelectImmobileFormProps) {
         if (event) {
             event.preventDefault()
         }
+        setImmobiles([])
+        setImmobilesForShow([])
         setImmobile(defaultImmobile)
         setIsRegister(false)
+    }
+
+    const handleFilterList = (string) => {
+        let listItems = [...immobiles]
+        let listItemsFiltered: Immobile[] = []
+        listItemsFiltered = listItems.filter((element: Immobile, index) => {
+            return element.name.toLowerCase().includes(string.toLowerCase())
+        })
+        setImmobilesForShow((old) => listItemsFiltered)
     }
 
     const handleAfterSave = (feedbackMessage: FeedbackMessage, immobile) => {
@@ -98,6 +113,18 @@ export default function SelectImmobileForm(props: SelectImmobileFormProps) {
             }
         }
     }
+
+    useEffect(() => {
+        if (immobiles.length === 0) {
+            fetch("api/immobiles").then((res) => res.json()).then((res) => {
+                setImmobiles(res.list)
+                setImmobilesForShow(res.list)
+                if (props.onSetLoading) {
+                    props.onSetLoading(false)
+                }
+            })
+        }
+    })
 
     return (
         <>
@@ -157,10 +184,22 @@ export default function SelectImmobileForm(props: SelectImmobileFormProps) {
                 setIsOpen={setIsOpen}>
                 <>
                     {!isRegister ? (
-                        <ImmobileList
-                            haveNew={true}
+                        <List
+                            haveNew
+                            canSelect
+                            autoSearch
+                            list={immobilesForShow}
+                            onSelectClick={handleAdd}
+                            title={"Lista de imóveis"}
+                            isLoading={props.isLoading}
                             onNewClick={handleNewClick}
-                            onListItemClick={handleAdd}
+                            onFilterList={handleFilterList}
+                            onTitle={(element: Immobile) => {
+                                return (<p>{element.name}</p>)
+                            }}
+                            onInfo={(element: Immobile) => {
+                                return (<p>{element.name}</p>)
+                            }}
                             onShowMessage={props.onShowMessage}
                         />
                     ) : (

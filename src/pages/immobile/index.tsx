@@ -65,7 +65,7 @@ export default function Properties() {
         setIsLoading(true)
         let localImmobile = await fetch("api/immobile/" + immobile.id).then((res) => res.json()).then((res) => res.data)
         setIsRegister(true)
-        setImmobile(localImmobile)
+        setImmobile({ ...defaultImmobile, ...localImmobile })
         setTitle("Editar Imóvel")
     }
 

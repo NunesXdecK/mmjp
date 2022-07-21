@@ -14,13 +14,17 @@ export default async function handler(req, res) {
             let resGET = { status: "ERROR", error: {}, message: "", data: {} }
             try {
                 const { id } = query
-                let ownersArray = []
                 if (id) {
                     const docRef = doc(professionalCollection, id)
-                    let data: Professional = (await getDoc(docRef)).data()
-                    let personData: Person = (await getDoc(data.person)).data()
-                    data = { ...data, person: personData }
-                    resGET = { ...resGET, status: "SUCCESS", data: data }
+                    let professional: Professional = (await getDoc(docRef)).data()
+                    if (professional.person?.id !== "") {
+                        const personDocRef = doc(personCollection, professional.person?.id)
+                        let person: Person = (await getDoc(personDocRef)).data()
+                        if (person?.id !== "") {
+                            professional = { ...professional, person: person }
+                        }
+                    }
+                    resGET = { ...resGET, status: "SUCCESS", data: professional }
                 } else {
                     resGET = { ...resGET, status: "ERROR", message: "ID invalido!" }
                 }

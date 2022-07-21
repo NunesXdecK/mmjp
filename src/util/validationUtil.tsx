@@ -7,7 +7,7 @@ interface ValidationReturn {
     validation: boolean,
 }
 
-export const  handleJSONcheck = (value) => {
+export const handleJSONcheck = (value) => {
     if (typeof value !== 'string') return false
     try {
         const result = JSON.parse(value)
@@ -108,7 +108,7 @@ export const handleCompanyValidationForDB = (company: Company) => {
         validation = { ...validation, messages: [...validation.messages, "O campo nome está em branco."] }
     }
 
-    
+
     if (!handleValidationCPF(company?.cnpj)) {
         validation = { ...validation, messages: [...validation.messages, "O campo CNPJ está invalido."] }
         cnpjCheck = false
@@ -146,10 +146,11 @@ export const handleProjectValidationForDB = (project: Project) => {
     let validation: ValidationReturn = { validation: false, messages: [] }
     let nameCheck = handleValidationNotNull(project.title)
     let clientsCheck = project?.clients?.length > 0 ?? false
-    let propertiesCheck = project?.properties?.length > 0 ?? false
-    let professionalCheck = project?.professional?.id?.length > 0?? false
+    let immobilesTargetCheck = project?.immobilesOrigin?.length > 0 ?? false
+    let professionalCheck = project?.professional?.id?.length > 0 ?? false
     let clientsOnBaseCheck = true
-    let propertiesOnBaseCheck = true
+    let immobilesOriginOnBaseCheck = true
+    let immobilesTargetOnBaseCheck = true
 
     if (!nameCheck) {
         validation = { ...validation, messages: [...validation.messages, "O campo titulo está em branco."] }
@@ -163,8 +164,8 @@ export const handleProjectValidationForDB = (project: Project) => {
         validation = { ...validation, messages: [...validation.messages, "O projeto precisa de ao menos um cliente."] }
     }
 
-    if (!propertiesCheck) {
-        validation = { ...validation, messages: [...validation.messages, "O projeto precisa de ao menos um imóvel."] }
+    if (!immobilesTargetCheck) {
+        validation = { ...validation, messages: [...validation.messages, "O projeto precisa de ao menos um imóvel alvo."] }
     }
 
     project.clients.map((element, index) => {
@@ -174,14 +175,21 @@ export const handleProjectValidationForDB = (project: Project) => {
         }
     })
 
-    project.properties.map((element, index) => {
+    project.immobilesTarget.map((element, index) => {
         if (!handleValidationNotNull(element.id)) {
-            propertiesOnBaseCheck = false
-            validation = { ...validation, messages: [...validation.messages, "O imóvel não está cadastrado na base."] }
+            immobilesTargetOnBaseCheck = false
+            validation = { ...validation, messages: [...validation.messages, "O imóvel alvo " + element.name + " não está cadastrado na base."] }
         }
     })
 
-    validation = { ...validation, validation: nameCheck && clientsCheck && clientsOnBaseCheck && propertiesOnBaseCheck }
+    project.immobilesOrigin.map((element, index) => {
+        if (!handleValidationNotNull(element.id)) {
+            immobilesOriginOnBaseCheck = false
+            validation = { ...validation, messages: [...validation.messages, "O imóvel de origem " + element.name + " não está cadastrado na base."] }
+        }
+    })
+
+    validation = { ...validation, validation: nameCheck && clientsCheck && clientsOnBaseCheck && immobilesTargetCheck }
     return validation
 }
 
@@ -210,7 +218,7 @@ export const handleProjectPaymentValidationForDB = (projectPayment: ProjectPayme
     if (!descriptionCheck) {
         validation = { ...validation, messages: [...validation.messages, "O campo descrição está em branco."] }
     }
-    
+
     if (!projectCheck) {
         validation = { ...validation, messages: [...validation.messages, "O pagamento precisa de um projeto referente."] }
     }
