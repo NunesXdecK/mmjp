@@ -106,11 +106,11 @@ export const handlePreparePersonForDB = (person: Person) => {
     if (person.dateInsertUTC === 0) {
         person = { ...person, dateInsertUTC: handleNewDateToUTC() }
     }
-    
+
     if (person.id !== "") {
         person = { ...person, dateLastUpdateUTC: handleNewDateToUTC() }
     }
-    
+
     let telephonesWithNoMask = []
     person.telephones?.map((element, index) => {
         telephonesWithNoMask = [...telephonesWithNoMask, handleRemoveTelephoneMask(element)]
@@ -225,7 +225,7 @@ export const handlePrepareProjectForDB = (project: Project) => {
     if (project.id !== "") {
         project = { ...project, dateLastUpdateUTC: handleNewDateToUTC() }
     }
-    
+
     if (project.dateString.length === 10) {
         const dateText = handleRemoveDateMask(project.dateString)
         if (dateText.length === 8) {
@@ -236,10 +236,32 @@ export const handlePrepareProjectForDB = (project: Project) => {
             project = { ...project, date: Date.parse(utcString) }
         }
     }
-    
+
     if (project.date === 0) {
         project = { ...project, date: handleNewDateToUTC() }
     }
+
+    let projectPayments = []
+    project.projectPayments.map((projectPayment: ProjectPayment, index) => {
+        if (projectPayment.dateInsertUTC === 0) {
+            projectPayment = { ...projectPayment, dateInsertUTC: handleNewDateToUTC() }
+        } else {
+            projectPayment = { ...projectPayment, dateLastUpdateUTC: handleNewDateToUTC() }
+        }
+
+        if (projectPayment.dateString.length === 10) {
+            const dateText = handleRemoveDateMask(projectPayment.dateString)
+            if (dateText.length === 8) {
+                const day = dateText.substring(0, 2)
+                const month = dateText.substring(2, 4)
+                const year = dateText.substring(4, dateText.length)
+                const utcString = new Date(month + " " + day + " " + year).toUTCString()
+                projectPayment = { ...projectPayment, dateDue: Date.parse(utcString) }
+                delete projectPayment.dateString
+            }
+        }
+        projectPayments = [...projectPayments, projectPayment]
+    })
 
     if (project.dateString) {
         delete project.dateString
@@ -250,7 +272,8 @@ export const handlePrepareProjectForDB = (project: Project) => {
     }
 
     project = {
-        ...project
+        ...project,
+        projectPayments: projectPayments
     }
     return project
 }

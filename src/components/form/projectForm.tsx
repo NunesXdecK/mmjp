@@ -15,6 +15,7 @@ import { defaultElementFromBase, ElementFromBase, handlePrepareProjectForDB } fr
 import SelectPersonCompanyForm from "../select/selectPersonCompanyForm";
 import SelectProfessionalForm from "../select/selectProfessionalForm";
 import WindowModal from "../modal/windowModal";
+import ProjectPaymentForm from "./projectPaymentForm";
 
 interface ProjectFormProps {
     title?: string,
@@ -49,6 +50,8 @@ export default function ProjectForm(props: ProjectFormProps) {
     const handleSetProjectBudget = (value) => { setProject({ ...project, budget: value }) }
     const handleSetProjectNumber = (value) => { setProject({ ...project, number: value }) }
     const handleSetProjectDate = (value) => { setProject({ ...project, dateString: value }) }
+    const handleSetProjectStages = (value) => { setProject({ ...project, projectStages: value }) }
+    const handleSetProjectPayments = (value) => { setProject({ ...project, projectPayments: value }) }
     const handleSetProjectImmobilesOrigin = (value) => { setProject({ ...project, immobilesOrigin: value }) }
     const handleSetProjectImmobilesTarget = (value) => { setProject({ ...project, immobilesTarget: value }) }
     const handleSetProjectClients = (value) => {
@@ -304,8 +307,8 @@ export default function ProjectForm(props: ProjectFormProps) {
 
             <SelectProfessionalForm
                 isLoading={isLoading}
-                isMultipleSelect={false}
                 title="Profissional"
+                isMultipleSelect={false}
                 professionals={professionals}
                 subtitle="Selecione o profissional"
                 onShowMessage={props.onShowMessage}
@@ -314,7 +317,13 @@ export default function ProjectForm(props: ProjectFormProps) {
                 validationMessage="Esta pessoa já é um profissional"
             />
 
-
+            <ProjectPaymentForm
+                title="Pagamento"
+                isLoading={isLoading}
+                subtitle="Adicione os pagamentos"
+                projectPayments={project.projectPayments}
+                onSetProjectPayments={handleSetProjectPayments}
+            />
 
             <form
                 onSubmit={(event) => {

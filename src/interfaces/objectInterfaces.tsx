@@ -87,6 +87,8 @@ export interface Project {
     professional?: any,
     oldData?: any,
     clients?: any[],
+    projectStages?: any[],
+    projectPayments?: any[],
     immobilesOrigin?: any[],
     immobilesTarget?: any[],
 }
@@ -94,10 +96,11 @@ export interface Project {
 export interface ProjectStage {
     id?: string,
     title?: string,
+    dateString?: string,
     description?: string,
-    finished?: boolean,
     dateInsertUTC?: number,
     dateLastUpdateUTC?: number,
+    finished?: boolean,
     project?: any,
     responsible?: any,
     updates?: [],
@@ -113,13 +116,13 @@ export interface ProjectStageUpdate {
 export interface ProjectPayment {
     id?: string,
     value?: string,
-    description?: string,
     dateString?: string,
-    payed?: boolean,
+    description?: string,
     index?: number,
     dateDue?: number,
     dateInsertUTC?: number,
     dateLastUpdateUTC?: number,
+    payed?: boolean,
     project?: any,
 }
 
@@ -210,6 +213,8 @@ export const defaultProject: Project = {
     budget: true,
     clients: [],
     oldData: {},
+    projectStages: [],
+    projectPayments: [],
     immobilesOrigin: [],
     immobilesTarget: [],
     professional: defaultProfessional,
@@ -218,6 +223,7 @@ export const defaultProject: Project = {
 export const defaultProjectStage: ProjectStage = {
     id: "",
     title: "",
+    dateString: "",
     description: "",
     dateInsertUTC: 0,
     dateLastUpdateUTC: 0,
@@ -230,8 +236,8 @@ export const defaultProjectStage: ProjectStage = {
 export const defaultProjectPayment: ProjectPayment = {
     id: "",
     value: "",
-    description: "",
     dateString: "",
+    description: "",
     index: -1,
     dateDue: 0,
     dateInsertUTC: 0,

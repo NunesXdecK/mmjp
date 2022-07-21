@@ -5,42 +5,39 @@ import FormRowColumn from "./formRowColumn";
 import InputText from "../inputText/inputText";
 import { TrashIcon } from "@heroicons/react/outline";
 import InputCheckbox from "../inputText/inputCheckbox";
+import { ProjectPayment } from "../../interfaces/objectInterfaces";
 import InputTextAutoComplete from "../inputText/inputTextAutocomplete";
 import { NOT_NULL_MARK, NUMBER_MARK } from "../../util/patternValidationUtil";
 import { handleProjectPaymentValidationForDB } from "../../util/validationUtil";
-import { ProjectPayment } from "../../interfaces/objectInterfaces";
 
-interface ProjectPaymentFormProps {
+interface ProjectPaymentDataFormProps {
+    id?: string,
     title?: string,
     subtitle?: string,
     index?: number,
     isBack?: boolean,
+    isLoading?: boolean,
     isForSelect?: boolean,
     isForDisable?: boolean,
-    isForOldRegister?: boolean,
     projectPayments?: ProjectPayment[],
-    onSet?: (any) => void,
+    onSetText?: (any, number) => void,
     onDelete?: (number) => void,
 }
 
-export default function ProjectPaymentFormTest(props: ProjectPaymentFormProps) {
+export default function ProjectPaymentDataForm(props: ProjectPaymentDataFormProps) {
     const [index, setIndex] = useState(props.index ?? 0)
-    const [isFormValid, setIsFormValid] = useState(handleProjectPaymentValidationForDB(props.projectPayments[index]).validation)
 
-    const [isLoading, setIsLoading] = useState(false)
+    const [isFormValid, setIsFormValid] = useState(handleProjectPaymentValidationForDB(props.projectPayments[index]).validation)
 
     const handleSetProjectPaymentValue = (value) => { handleSetText({ ...props.projectPayments[index], value: value }) }
     const handleSetProjectPaymentPayed = (value) => { handleSetText({ ...props.projectPayments[index], payed: value }) }
-    const handleSetProjectPaymentDescription = (value) => { handleSetText({ ...props.projectPayments[index], description: value }) }
     const handleSetProjectPaymentDate = (value) => { handleSetText({ ...props.projectPayments[index], dateString: value }) }
+    const handleSetProjectPaymentDescription = (value) => { handleSetText({ ...props.projectPayments[index], description: value }) }
 
-    const handleSetText = (object) => {
-        props.onSet([
-            ...props.projectPayments.slice(0, index),
-            object,
-            ...props.projectPayments.slice(index + 1, props.projectPayments.length),
-        ])
-
+    const handleSetText = (element) => {
+        if (props.onSetText) {
+            props.onSetText(element, index)
+        }
     }
 
     const handleChangeFormValidation = (isValid) => {
@@ -52,15 +49,15 @@ export default function ProjectPaymentFormTest(props: ProjectPaymentFormProps) {
             <FormRow>
                 <FormRowColumn unit="4">
                     <InputText
-                        id={"value-" + index}
                         title="Valor"
                         mask="currency"
-                        isLoading={isLoading}
                         validation={NUMBER_MARK}
-                        value={props.projectPayments[index].value}
+                        isLoading={props.isLoading}
                         isDisabled={props.isForDisable}
+                        id={"value-" + index + "-" + props.id}
                         onValidate={handleChangeFormValidation}
                         onSetText={handleSetProjectPaymentValue}
+                        value={props.projectPayments[index].value}
                         validationMessage="O titulo da etapa não pode ficar em branco."
                     />
                 </FormRowColumn>
@@ -69,13 +66,13 @@ export default function ProjectPaymentFormTest(props: ProjectPaymentFormProps) {
                     <InputText
                         mask="date"
                         maxLength={10}
-                        id={"date-due-" + index}
-                        isLoading={isLoading}
                         title="Vencimento"
+                        isLoading={props.isLoading}
                         isDisabled={props.isForDisable}
-                        value={props.projectPayments[index].dateString}
                         onSetText={handleSetProjectPaymentDate}
                         onValidate={handleChangeFormValidation}
+                        id={"date-due-" + index + "-" + props.id}
+                        value={props.projectPayments[index].dateString}
                     />
                 </FormRowColumn>
             </FormRow>
@@ -83,15 +80,15 @@ export default function ProjectPaymentFormTest(props: ProjectPaymentFormProps) {
             <FormRow>
                 <FormRowColumn unit="6">
                     <InputTextAutoComplete
-                        id={"description-" + index}
                         title="Descrição"
-                        isLoading={isLoading}
+                        isLoading={props.isLoading}
                         validation={NOT_NULL_MARK}
                         isDisabled={props.isForDisable}
-                        value={props.projectPayments[index].description}
-                        onValidate={handleChangeFormValidation}
-                        onSetText={handleSetProjectPaymentDescription}
                         sugestions={["Entrada", "Parcela"]}
+                        onValidate={handleChangeFormValidation}
+                        id={"description-" + index + "-" + props.id}
+                        onSetText={handleSetProjectPaymentDescription}
+                        value={props.projectPayments[index].description}
                         validationMessage="A descrição não pode ficar em branco."
                     />
                 </FormRowColumn>
@@ -100,15 +97,16 @@ export default function ProjectPaymentFormTest(props: ProjectPaymentFormProps) {
             <FormRow>
                 <FormRowColumn unit="6" className="">
                     <InputCheckbox
-                        id={"payed-" + index}
                         title="Pago?"
-                        isLoading={isLoading}
-                        value={props.projectPayments[index].payed}
+                        isLoading={props.isLoading}
                         isDisabled={props.isForDisable}
+                        id={"payed-" + index + "-" + props.id}
                         onSetText={handleSetProjectPaymentPayed}
+                        value={props.projectPayments[index].payed}
                     />
                 </FormRowColumn>
             </FormRow>
+
             <FormRow>
                 <FormRowColumn unit="6" className="flex content-end justify-end">
                     <Button

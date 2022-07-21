@@ -3,7 +3,7 @@ import { useEffect, useState } from "react"
 import Layout from "../../components/layout/layout"
 import ProjectForm from "../../components/form/projectForm"
 import ProjectList from "../../components/list/projectList"
-import { defaultProject, Project } from "../../interfaces/objectInterfaces"
+import { defaultProject, Project, ProjectPayment } from "../../interfaces/objectInterfaces"
 import FeedbackMessageModal, { defaultFeedbackMessage, FeedbackMessage } from "../../components/modal/feedbackMessageModal"
 import List from "../../components/list/list"
 import { handleUTCToDateShow } from "../../util/dateUtils"
@@ -73,7 +73,16 @@ export default function Projects() {
     const handleEditClick = async (project) => {
         setIsLoading(true)
         let localProject: Project = await fetch("api/project/" + project.id).then((res) => res.json()).then((res) => res.data)
-        localProject = { ...localProject, dateString: handleUTCToDateShow(localProject.date.toString()) }
+
+        let projectPayments = []
+        localProject.projectPayments.map((projectPayment: ProjectPayment, index) => {
+            projectPayments = [...projectPayments, { ...projectPayment, dateString: handleUTCToDateShow(localProject.date.toString()) }]
+        })
+        localProject = {
+            ...localProject,
+            dateString: handleUTCToDateShow(localProject.date.toString()),
+            projectPayments: projectPayments
+        }
         setIsRegister(true)
         setProject({ ...defaultProject, ...localProject })
         setTitle("Editar projeto")
