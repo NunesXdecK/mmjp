@@ -6,7 +6,7 @@ import ImmobileForm from "../../components/form/immobileForm"
 import { defaultImmobile, Immobile } from "../../interfaces/objectInterfaces"
 import FeedbackMessageModal, { defaultFeedbackMessage, FeedbackMessage } from "../../components/modal/feedbackMessageModal"
 
-export default function Properties() {
+export default function Immobiles() {
     const [title, setTitle] = useState("Lista de imóveis")
     const [immobile, setImmobile] = useState<Immobile>(defaultImmobile)
     const [immobiles, setImmobiles] = useState<Immobile[]>([])

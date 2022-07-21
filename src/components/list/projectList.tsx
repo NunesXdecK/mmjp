@@ -65,7 +65,7 @@ export default function ProjectList(props: ProjectListProps) {
         try {
             const querySnapshotPerson = await getDocs(personCollection)
             const querySnapshotCompany = await getDocs(companyCollection)
-            const querySnapshotProperties = await getDocs(immobileCollection)
+            const querySnapshotImmobiles = await getDocs(immobileCollection)
             const querySnapshotProfessional = await getDocs(professionalCollection)
             let querySnapshotProject
             if (props.isBudgetAllowed) {
@@ -76,11 +76,11 @@ export default function ProjectList(props: ProjectListProps) {
             }
             querySnapshotProject.forEach((docProject) => {
                 let project: Project = docProject.data()
-                let propertiesIdList = []
+                let immobilesIdList = []
                 let personOwnersIdList = []
                 let companyOwnersIdList = []
                 let clientsList = []
-                let propertiesList = []
+                let immobileList = []
 
                 project?.clients?.map((element, index) => {
                     if (element.parent.id === PERSON_COLLECTION_NAME) {
@@ -89,9 +89,9 @@ export default function ProjectList(props: ProjectListProps) {
                         companyOwnersIdList = [...companyOwnersIdList, element.id]
                     }
                 })
-                project?.properties?.map((element, index) => {
+                project?.immobilesOrigin?.map((element, index) => {
                     if (element.id) {
-                        propertiesIdList = [...propertiesIdList, element.id]
+                        immobilesIdList = [...immobilesIdList, element.id]
                     }
                 })
 
@@ -111,11 +111,11 @@ export default function ProjectList(props: ProjectListProps) {
                         }
                     }
                 })
-                querySnapshotProperties.forEach((doc) => {
+                querySnapshotImmobiles.forEach((doc) => {
                     const id = doc.data().id
-                    if (propertiesIdList.includes(id)) {
-                        if (!propertiesList.includes(doc.data())) {
-                            propertiesList = [...propertiesList, doc.data()]
+                    if (immobilesIdList.includes(id)) {
+                        if (!immobileList.includes(doc.data())) {
+                            immobileList = [...immobileList, doc.data()]
                         }
                     }
                 })
@@ -134,7 +134,7 @@ export default function ProjectList(props: ProjectListProps) {
                     ...project,
                     dateString: dateString,
                     clients: clientsList,
-                    properties: propertiesList,
+                    immobilesOrigin: immobilesIdList,
                 }
 
                 arrayList = [...arrayList, project]
@@ -307,7 +307,7 @@ export default function ProjectList(props: ProjectListProps) {
                                     </p>
                                 </div>
                             ))}
-                            {element?.properties?.map((elementImmobile: Immobile, indexOwners) => (
+                            {element?.immobilesOrigin?.map((elementImmobile: Immobile, indexOwners) => (
                                 <div key={elementImmobile.name + index + indexOwners}>
                                     <p className={contentClassName}>
                                         {elementImmobile.name && elementImmobile.name} {elementImmobile.area && "Área: " + elementImmobile.area} {elementImmobile.perimeter && "Perimetro: " + elementImmobile.perimeter}

@@ -282,8 +282,8 @@ export default function ProjectForm(props: ProjectFormProps) {
                 buttonTitle="Adicionar imóveis"
                 subtitle="Selecione os imovéis"
                 onShowMessage={props.onShowMessage}
-                properties={project.immobilesTarget}
-                onSetProperties={handleSetProjectImmobilesTarget}
+                immobiles={project.immobilesTarget}
+                onSetImmobiles={handleSetProjectImmobilesTarget}
                 isMultipleSelect={project.immobilesOrigin?.length < 2}
                 validationMessage="Este imóvel alvo já está selecionado"
             />
@@ -295,8 +295,8 @@ export default function ProjectForm(props: ProjectFormProps) {
                     buttonTitle="Adicionar imóveis"
                     subtitle="Selecione os imovéis"
                     onShowMessage={props.onShowMessage}
-                    properties={project.immobilesOrigin}
-                    onSetProperties={handleSetProjectImmobilesOrigin}
+                    immobiles={project.immobilesOrigin}
+                    onSetImmobiles={handleSetProjectImmobilesOrigin}
                     isMultipleSelect={project.immobilesTarget?.length < 2}
                     validationMessage="Este imóvel de origem já está selecionado"
                 />

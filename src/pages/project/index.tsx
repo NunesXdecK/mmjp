@@ -8,7 +8,7 @@ import FeedbackMessageModal, { defaultFeedbackMessage, FeedbackMessage } from ".
 import List from "../../components/list/list"
 import { handleUTCToDateShow } from "../../util/dateUtils"
 
-export default function Properties() {
+export default function Projects() {
     const [title, setTitle] = useState("Lista de projetos")
     const [project, setProject] = useState<Project>(defaultProject)
     const [projects, setProjects] = useState<Project[]>([])

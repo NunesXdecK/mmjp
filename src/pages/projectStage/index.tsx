@@ -6,7 +6,7 @@ import ProjectStageList from "../../components/list/projectStageList"
 import { defaultProjectStage, ProjectStage } from "../../interfaces/objectInterfaces"
 import FeedbackMessageModal, { defaultFeedbackMessage, FeedbackMessage } from "../../components/modal/feedbackMessageModal"
 
-export default function Properties() {
+export default function ProjectStages() {
     const [title, setTitle] = useState("Lista de etapas")
     const [projectStage, setProjectStage] = useState<ProjectStage>(defaultProjectStage)
     const [isRegister, setIsRegister] = useState(false)

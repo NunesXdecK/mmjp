@@ -9,7 +9,7 @@ import { collection, doc, getDocs, query, where } from "firebase/firestore"
 import { db, PROJECT_COLLECTION_NAME, PROJECT_PAYMENT_COLLECTION_NAME } from "../../db/firebaseDB"
 import { ProjectConversor, ProjectPaymentConversor } from "../../db/converters"
 
-export default function Properties() {
+export default function ProjectPayments() {
     const projectCollection = collection(db, PROJECT_COLLECTION_NAME).withConverter(ProjectConversor)
     const projectPaymentCollection = collection(db, PROJECT_PAYMENT_COLLECTION_NAME).withConverter(ProjectPaymentConversor)
 

@@ -21,9 +21,9 @@ interface SelectImmobileFormProps {
     isLocked?: boolean,
     isLoading?: boolean,
     isMultipleSelect?: boolean,
-    properties?: Immobile[],
+    immobiles?: Immobile[],
     onSetLoading?: (any) => void,
-    onSetProperties?: (array) => void,
+    onSetImmobiles?: (array) => void,
     onShowMessage?: (FeedbackMessage) => void,
 }
 
@@ -69,11 +69,11 @@ export default function SelectImmobileForm(props: SelectImmobileFormProps) {
     }
 
     const handleAdd = (immobile) => {
-        let localProperties = props.properties
+        let localImmobiles = props.immobiles
         let canAdd = true
 
         if (props.isMultipleSelect) {
-            localProperties?.map((element, index) => {
+            localImmobiles?.map((element, index) => {
                 if (element.name === immobile.name) {
                     canAdd = false
                 }
@@ -82,12 +82,12 @@ export default function SelectImmobileForm(props: SelectImmobileFormProps) {
 
         if (canAdd) {
             if (props.isMultipleSelect) {
-                localProperties = [...localProperties, immobile]
+                localImmobiles = [...localImmobiles, immobile]
             } else {
-                localProperties = [immobile]
+                localImmobiles = [immobile]
             }
-            if (props.onSetProperties) {
-                props.onSetProperties(localProperties)
+            if (props.onSetImmobiles) {
+                props.onSetImmobiles(localImmobiles)
                 setIsOpen(false)
             }
         } else {
@@ -101,14 +101,14 @@ export default function SelectImmobileForm(props: SelectImmobileFormProps) {
     const handleRemoveImmobile = (event, immobile) => {
         event.preventDefault()
         if (!props.isMultipleSelect) {
-            props.onSetProperties([])
+            props.onSetImmobiles([])
         } else {
-            let localProperties = props.properties
-            if (localProperties.length > -1) {
-                let index = localProperties.indexOf(immobile)
-                localProperties.splice(index, 1)
-                if (props.onSetProperties) {
-                    props.onSetProperties(localProperties)
+            let localImmobiles = props.immobiles
+            if (localImmobiles.length > -1) {
+                let index = localImmobiles.indexOf(immobile)
+                localImmobiles.splice(index, 1)
+                if (props.onSetImmobiles) {
+                    props.onSetImmobiles(localImmobiles)
                 }
             }
         }
@@ -147,7 +147,7 @@ export default function SelectImmobileForm(props: SelectImmobileFormProps) {
                     </FormRow>
                 )}
 
-                {props.properties?.map((element, index) => (
+                {props.immobiles?.map((element, index) => (
                     <form key={index + element.dateInsertUTC}
                         onSubmit={(event) => handleRemoveImmobile(event, element)}>
                         <FormRow>
