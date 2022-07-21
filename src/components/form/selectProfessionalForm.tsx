@@ -1,12 +1,12 @@
 import Form from "./form";
 import FormRow from "./formRow";
-import { useState } from "react";
+import List from "../list/list";
 import Button from "../button/button";
 import IOSModal from "../modal/iosModal";
+import { useEffect, useState } from "react";
 import FormRowColumn from "./formRowColumn";
 import InputText from "../inputText/inputText";
 import ProfessionalForm from "./professionalForm";
-import ProfessionalList from "../list/professionalList";
 import { FeedbackMessage } from "../modal/feedbackMessageModal";
 import { defaultProfessional, Professional } from "../../interfaces/objectInterfaces";
 
@@ -22,6 +22,7 @@ interface SelectProfessionalFormProps {
     isLoading?: boolean,
     isMultipleSelect?: boolean,
     professionals?: Professional[],
+    onSetLoading?: (any) => void,
     onSetProfessionals?: (array) => void,
     onShowMessage?: (FeedbackMessage) => void,
 }
@@ -31,6 +32,9 @@ export default function SelectProfessionalForm(props: SelectProfessionalFormProp
     const [isRegister, setIsRegister] = useState(false)
 
     const [professional, setProfessional] = useState<Professional>(defaultProfessional)
+
+    const [professionals, setProfessionals] = useState<Professional[]>([])
+    const [professionalsForShow, setProfessionalsForShow] = useState<Professional[]>([])
 
     const handleNewClick = () => {
         setIsRegister(true)
@@ -43,6 +47,15 @@ export default function SelectProfessionalForm(props: SelectProfessionalFormProp
         }
         setProfessional(defaultProfessional)
         setIsRegister(false)
+    }
+
+    const handleFilterList = (string) => {
+        let listItems = [...professionals]
+        let listItemsFiltered: Professional[] = []
+        listItemsFiltered = listItems.filter((element: Professional, index) => {
+            return element.title.toLowerCase().includes(string.toLowerCase())
+        })
+        setProfessionalsForShow((old) => listItemsFiltered)
     }
 
     const handleAfterSave = (feedbackMessage: FeedbackMessage, professional) => {
@@ -98,6 +111,18 @@ export default function SelectProfessionalForm(props: SelectProfessionalFormProp
             }
         }
     }
+
+    useEffect(() => {
+        if (professionals.length === 0) {
+            fetch("api/professionals").then((res) => res.json()).then((res) => {
+                setProfessionals(res.list)
+                setProfessionalsForShow(res.list)
+                if (props.onSetLoading) {
+                    props.onSetLoading(false)
+                }
+            })
+        }
+    })
 
     return (
         <>
@@ -166,12 +191,25 @@ export default function SelectProfessionalForm(props: SelectProfessionalFormProp
                 setIsOpen={setIsOpen}>
                 <>
                     {!isRegister ? (
-                        <ProfessionalList
-                            haveNew={true}
+                        <List
+                            haveNew
+                            canSelect
+                            autoSearch
+                            onSelectClick={handleAdd}
+                            isLoading={props.isLoading}
                             onNewClick={handleNewClick}
-                            onListItemClick={handleAdd}
+                            list={professionalsForShow}
+                            onFilterList={handleFilterList}
+                            title={"Lista de profissionais"}
+                            onTitle={(element: Professional) => {
+                                return (<p>{element.title}</p>)
+                            }}
+                            onInfo={(element: Professional) => {
+                                return (<p>{element.title}</p>)
+                            }}
                             onShowMessage={props.onShowMessage}
-                        />) : (
+                        />
+                    ) : (
                         <ProfessionalForm
                             isBack={true}
                             canMultiple={false}

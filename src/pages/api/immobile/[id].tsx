@@ -4,7 +4,7 @@ import { CompanyConversor, ImmobileConversor, PersonConversor } from "../../../d
 import { db, COMPANY_COLLECTION_NAME, PERSON_COLLECTION_NAME, IMMOBILE_COLLECTION_NAME } from "../../../db/firebaseDB"
 
 export default async function handler(req, res) {
-    const { query, method, body } = req
+    const { query, method } = req
 
     const personCollection = collection(db, PERSON_COLLECTION_NAME).withConverter(PersonConversor)
     const companyCollection = collection(db, COMPANY_COLLECTION_NAME).withConverter(CompanyConversor)

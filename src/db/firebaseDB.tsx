@@ -28,6 +28,7 @@ export { db }
 export const PERSON_COLLECTION_NAME = "person"
 export const COMPANY_COLLECTION_NAME = "company"
 export const PROJECT_COLLECTION_NAME = "project"
+export const HISTORY_COLLECTION_NAME = "history"
 export const IMMOBILE_COLLECTION_NAME = "immobile"
 export const PROFESSIONAL_COLLECTION_NAME = "professional"
 export const PROJECT_STAGE_COLLECTION_NAME = "projectstage"

@@ -23,7 +23,6 @@ interface InputImmobilePointsProps {
 
 export default function InputImmobilePoints(props: InputImmobilePointsProps) {
     const [text, setText] = useState<string>("")
-    console.log(props.points)
 
     const handleGenerateNumber = () => {
         return Math.floor(Math.random() * (99999 - 10000 + 1)) + 10000

@@ -1,6 +1,6 @@
 import Form from "./form";
 import FormRow from "./formRow";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Button from "../button/button";
 import FormRowColumn from "./formRowColumn";
 import InputText from "../inputText/inputText";
@@ -15,6 +15,7 @@ import { defaultProfessional, Professional } from "../../interfaces/objectInterf
 import { db, PERSON_COLLECTION_NAME, PROFESSIONAL_COLLECTION_NAME } from "../../db/firebaseDB";
 import { defaultElementFromBase, ElementFromBase, handlePrepareProfessionalForDB } from "../../util/converterUtil";
 import InputCheckbox from "../inputText/inputCheckbox";
+import WindowModal from "../modal/windowModal";
 
 interface ProfessionalFormProps {
     title?: string,
@@ -25,105 +26,128 @@ interface ProfessionalFormProps {
     isForDisable?: boolean,
     isForOldRegister?: boolean,
     professional?: Professional,
-    onBack?: (object) => void,
+    onBack?: (object?) => void,
     onAfterSave?: (object, any?) => void,
     onSelectPerson?: (object) => void,
     onShowMessage?: (FeedbackMessage) => void,
 }
 
 export default function ProfessionalForm(props: ProfessionalFormProps) {
-    const personCollection = collection(db, PERSON_COLLECTION_NAME).withConverter(PersonConversor)
-    const professionalCollection = collection(db, PROFESSIONAL_COLLECTION_NAME).withConverter(ProfessionalConversor)
-
+    const [professionalOriginal, setProfessionalOriginal] = useState<Professional>(props?.professional ?? defaultProfessional)
     const [professional, setProfessional] = useState<Professional>(props?.professional ?? defaultProfessional)
     const [isFormValid, setIsFormValid] = useState(handleProfessionalValidationForDB(professional).validation)
 
-    const [isOpen, setIsOpen] = useState(false)
     const [isLoading, setIsLoading] = useState(false)
     const [isMultiple, setIsMultiple] = useState(false)
+    const [isOpenExit, setIsOpenExit] = useState(false)
+    const [isOpenSave, setIsOpenSave] = useState(false)
 
     const [oldData, setOldData] = useState<ElementFromBase>(props?.professional?.oldData ?? defaultElementFromBase)
 
-    const [persons, setPersons] = useState(props?.professional?.person ? [props.professional.person] : [])
+    const [persons, setPersons] = useState(props?.professional?.person?.id !== "" ? [props.professional.person] : [])
 
     const handleSetProfessionalTitle = (value) => { setProfessional({ ...professional, title: value }) }
     const handleSetProfessionalCreaNumber = (value) => { setProfessional({ ...professional, creaNumber: value }) }
     const handleSetProfessionalCredentialCode = (value) => { setProfessional({ ...professional, credentialCode: value }) }
     const handleSetProfessionalPerson = (value) => { setProfessional({ ...professional, title: value }) }
 
-    const handleListItemClick = async (professional: Professional) => {
-        setIsLoading(true)
-        if (props.onSelectPerson) {
-            props.onSelectPerson(professional)
+    useEffect(() => {
+        if (props.onBack) {
+            history.pushState(null, null, null)
+            if (professional.id !== "" && handleDiference()) {
+                window.onbeforeunload = () => {
+                    return false
+                }
+                document.addEventListener("keydown", (event) => {
+                    if (event.keyCode === 116) {
+                        event.preventDefault()
+                        setIsOpenExit(true)
+                    }
+                })
+            } else {
+                window.onbeforeunload = () => { }
+                document.addEventListener("keydown", (event) => { })
+            }
+
+            window.onpopstate = (event) => {
+                event.preventDefault()
+                event.stopPropagation()
+                handleOnBack()
+            }
         }
-        setPersons([])
-        setProfessional(professional)
-        setIsOpen(false)
-        setIsFormValid(true)
-        setIsLoading(false)
+    })
+
+    const handleDiference = (): boolean => {
+        let hasDiference = false
+        Object.keys(professionalOriginal)?.map((element, index) => {
+            if (professional[element] !== professionalOriginal[element]) {
+                hasDiference = true
+            }
+        })
+        return hasDiference
     }
 
-    const handleSave = async (event) => {
+    const handleOnBack = () => {
+        if (professional.id !== "" && handleDiference()) {
+            setIsOpenExit(true)
+        } else {
+            props.onBack()
+        }
+    }
+
+    const handleChangeFormValidation = (isValid) => {
+        setIsFormValid(isValid)
+    }
+
+    const handleSave = async () => {
         event.preventDefault()
         setIsLoading(true)
         let feedbackMessage: FeedbackMessage = { messages: ["Algo estranho aconteceu"], messageType: "WARNING" }
-
         let professionalForDB = { ...professional }
         if (persons.length > 0) {
             professionalForDB = { ...professionalForDB, person: persons[0] }
         }
-
         const isValid = handleProfessionalValidationForDB(professionalForDB)
         if (isValid.validation) {
-            let nowID = professionalForDB?.id ?? ""
-            let personDocRef = {}
-
-            if (persons?.length > 0) {
-                persons?.map((element, index) => {
-                    if (element.id) {
-                        personDocRef = doc(personCollection, element.id)
-                    }
-                })
-                professionalForDB = { ...professionalForDB, person: personDocRef }
-            }
-
             professionalForDB = handlePrepareProfessionalForDB(professionalForDB)
-
+            let nowID = professionalForDB?.id ?? ""
             const isSave = nowID === ""
+            let res = { status: "ERROR", id: nowID, message: "" }
             if (isSave) {
-                try {
-                    const docRef = await addDoc(professionalCollection, professionalForDB)
-                    setProfessional({ ...professional, id: docRef.id })
-                    professionalForDB = { ...professionalForDB, id: docRef.id }
-                    feedbackMessage = { ...feedbackMessage, messages: ["Salvo com sucesso!"], messageType: "SUCCESS" }
-                    handleListItemClick(defaultProfessional)
-                } catch (e) {
+                feedbackMessage = { ...feedbackMessage, messages: ["Salvo com sucesso!"], messageType: "SUCCESS" }
+            } else {
+                feedbackMessage = { ...feedbackMessage, messages: ["Atualizado com sucesso!"], messageType: "SUCCESS" }
+            }
+            try {
+                res = await fetch("api/professional", {
+                    method: "POST",
+                    body: JSON.stringify({ token: "tokenbemseguro", data: professionalForDB }),
+                }).then((res) => res.json())
+            } catch (e) {
+                if (isSave) {
                     feedbackMessage = { ...feedbackMessage, messages: ["Erro em salvar!"], messageType: "ERROR" }
-                    console.error("Error adding document: ", e)
+                } else {
+                    feedbackMessage = { ...feedbackMessage, messages: ["Erro em Atualizadar!"], messageType: "ERROR" }
+                }
+                console.error("Error adding document: ", e)
+            }
+            if (res.status === "SUCCESS") {
+                setProfessional({ ...professional, id: res.id })
+                professionalForDB = { ...professionalForDB, id: res.id }
+
+                if (isMultiple) {
+                    setProfessional(defaultProfessional)
+                }
+
+                if (!isMultiple && props.onAfterSave) {
+                    props.onAfterSave(feedbackMessage, professionalForDB)
                 }
             } else {
-                try {
-                    professionalForDB = { ...professionalForDB, dateLastUpdateUTC: handleNewDateToUTC() }
-                    const docRef = doc(professionalCollection, nowID)
-                    await updateDoc(docRef, professionalForDB)
-                    feedbackMessage = { ...feedbackMessage, messages: ["Atualizado com sucesso!"], messageType: "SUCCESS" }
-                    handleListItemClick(defaultProfessional)
-                } catch (e) {
-                    feedbackMessage = { ...feedbackMessage, messages: ["Erro em atualizar!"], messageType: "ERROR" }
-                    console.error("Error upddating document: ", e)
-                }
-            }
-            {/*
-        */}
-            if (isMultiple) {
-                setProfessional(defaultProfessional)
-                if (props.onShowMessage) {
-                    props.onShowMessage(feedbackMessage)
-                }
+                feedbackMessage = { ...feedbackMessage, messages: ["Erro!"], messageType: "ERROR" }
             }
 
-            if (!isMultiple && props.onAfterSave) {
-                props.onAfterSave(feedbackMessage, professionalForDB)
+            if (props.onShowMessage) {
+                props.onShowMessage(feedbackMessage)
             }
         } else {
             feedbackMessage = { ...feedbackMessage, messages: isValid.messages, messageType: "ERROR" }
@@ -134,14 +158,17 @@ export default function ProfessionalForm(props: ProfessionalFormProps) {
         setIsLoading(false)
     }
 
-    const handleChangeFormValidation = (isValid) => {
-        setIsFormValid(isValid)
-    }
-
     return (
         <>
             <form
-                onSubmit={handleSave}>
+                onSubmit={(event) => {
+                    event.preventDefault()
+                    if (professional.id === "") {
+                        handleSave()
+                    } else {
+                        setIsOpenSave(true)
+                    }
+                }}>
                 <Form
                     title={props.title}
                     subtitle={props.subtitle}>
@@ -220,18 +247,28 @@ export default function ProfessionalForm(props: ProfessionalFormProps) {
                 isMultipleSelect={false}
                 onSetPersons={setPersons}
                 subtitle="Selecione a pessoa"
-                onShowMessage={props.onShowMessage}
                 buttonTitle="Adicionar pessoa"
+                onShowMessage={props.onShowMessage}
                 validationMessage="Esta pessoa já é um proprietário"
             />
 
             <form
-                onSubmit={handleSave}>
+                onSubmit={(event) => {
+                    event.preventDefault()
+                    if (professional.id === "") {
+                        handleSave()
+                    } else {
+                        setIsOpenSave(true)
+                    }
+                }}>
                 <FormRow className="p-2">
                     <FormRowColumn unit="6" className="flex justify-between">
                         {props.isBack && (
                             <Button
-                                onClick={props.onBack}
+                                onClick={(event) => {
+                                    event.preventDefault()
+                                    handleOnBack()
+                                }}
                                 isLoading={isLoading}
                                 isDisabled={isLoading}
                             >
@@ -249,6 +286,57 @@ export default function ProfessionalForm(props: ProfessionalFormProps) {
                     </FormRowColumn>
                 </FormRow>
             </form>
+
+            <WindowModal
+                isOpen={isOpenExit}
+                setIsOpen={setIsOpenExit}>
+                <p className="text-center">Deseja realmente sair?</p>
+                <div className="flex mt-10 justify-between content-between">
+                    <Button
+                        onClick={() => setIsOpenExit(false)}
+                    >
+                        Voltar
+                    </Button>
+                    <Button
+                        color="red"
+                        onClick={() => {
+                            if (props.onBack) {
+                                props.onBack()
+                            }
+                        }}
+                    >
+                        Sair
+                    </Button>
+                </div>
+            </WindowModal>
+
+            <WindowModal
+                isOpen={isOpenSave}
+                setIsOpen={setIsOpenSave}>
+                <form onSubmit={(event) => {
+                    event.preventDefault()
+                    handleSave()
+                    setIsOpenSave(false)
+                }}>
+                    <p className="text-center">Deseja realmente editar as informações?</p>
+                    <div className="flex mt-10 justify-between content-between">
+                        <Button
+                            onClick={(event) => {
+                                event.preventDefault()
+                                setIsOpenSave(false)
+                            }}
+                        >
+                            Voltar
+                        </Button>
+                        <Button
+                            color="red"
+                            type="submit"
+                        >
+                            Editar
+                        </Button>
+                    </div>
+                </form>
+            </WindowModal>
         </>
     )
 }

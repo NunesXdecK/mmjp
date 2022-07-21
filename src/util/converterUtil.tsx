@@ -161,6 +161,10 @@ export const handlePrepareCompanyForDB = (company: Company) => {
         company = { ...company, dateInsertUTC: handleNewDateToUTC() }
     }
 
+    if (company.id !== "") {
+        company = { ...company, dateLastUpdateUTC: handleNewDateToUTC() }
+    }
+
     let telephonesWithNoMask = []
     company.telephones?.map((element, index) => {
         telephonesWithNoMask = [...telephonesWithNoMask, handleRemoveTelephoneMask(element)]
@@ -183,6 +187,10 @@ export const handlePrepareProfessionalForDB = (professional: Professional) => {
         professional = { ...professional, dateInsertUTC: handleNewDateToUTC() }
     }
 
+    if (professional.id !== "") {
+        professional = { ...professional, dateLastUpdateUTC: handleNewDateToUTC() }
+    }
+
     if (professional.oldData) {
         delete professional.oldData
     }
@@ -192,6 +200,10 @@ export const handlePrepareProfessionalForDB = (professional: Professional) => {
 export const handlePrepareImmobileForDB = (immobile: Immobile) => {
     if (immobile.dateInsertUTC === 0) {
         immobile = { ...immobile, dateInsertUTC: handleNewDateToUTC() }
+    }
+
+    if (immobile.id !== "") {
+        immobile = { ...immobile, dateLastUpdateUTC: handleNewDateToUTC() }
     }
 
     if (immobile.oldData) {
@@ -208,6 +220,10 @@ export const handlePrepareImmobileForDB = (immobile: Immobile) => {
 export const handlePrepareProjectForDB = (project: Project) => {
     if (project.dateInsertUTC === 0) {
         project = { ...project, dateInsertUTC: handleNewDateToUTC() }
+    }
+
+    if (project.id !== "") {
+        project = { ...project, dateLastUpdateUTC: handleNewDateToUTC() }
     }
     
     if (project.dateString.length === 10) {
@@ -244,6 +260,10 @@ export const handlePrepareProjectStageForDB = (projectStage: ProjectStage) => {
         projectStage = { ...projectStage, dateInsertUTC: handleNewDateToUTC() }
     }
 
+    if (projectStage.id !== "") {
+        projectStage = { ...projectStage, dateLastUpdateUTC: handleNewDateToUTC() }
+    }
+
     projectStage = {
         ...projectStage
     }
@@ -253,6 +273,10 @@ export const handlePrepareProjectStageForDB = (projectStage: ProjectStage) => {
 export const handlePrepareProjectPaymentForDB = (projectPayment: ProjectPayment) => {
     if (projectPayment.dateInsertUTC === 0) {
         projectPayment = { ...projectPayment, dateInsertUTC: handleNewDateToUTC() }
+    }
+
+    if (projectPayment.id !== "") {
+        projectPayment = { ...projectPayment, dateLastUpdateUTC: handleNewDateToUTC() }
     }
 
     projectPayment = {

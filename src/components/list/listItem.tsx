@@ -32,10 +32,6 @@ const buttonTitleClassName = `
 export default function ItemList(props: ItemListProps) {
     const [isShowingInfo, setIsShowingInfo] = useState(false)
 
-    const [isLoadingEdit, setIsLoadingEdit] = useState(false)
-    const [isLoadingSelect, setIsLoadingSelect] = useState(false)
-    const [isLoadingDelete, setIsLoadingDelete] = useState(false)
-
     let className = `
         bg-white p-4
         rounded-sm shadow
@@ -124,11 +120,9 @@ export default function ItemList(props: ItemListProps) {
                                                 className="mr-2 group"
                                                 onClick={(event) => {
                                                     event.stopPropagation()
-                                                    setIsLoadingEdit(old => true)
                                                     if (props.onEditClick) {
                                                         props.onEditClick()
                                                     }
-                                                    setIsLoadingEdit(old => false)
                                                 }}
                                             >
                                                 <div className="flex flex-row">

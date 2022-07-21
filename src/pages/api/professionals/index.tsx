@@ -1,28 +1,22 @@
-import { collection, getDoc, getDocs } from "firebase/firestore"
-import { Company, Person } from "../../../interfaces/objectInterfaces"
-import { CompanyConversor, PersonConversor } from "../../../db/converters"
-import { COMPANY_COLLECTION_NAME, db, PERSON_COLLECTION_NAME } from "../../../db/firebaseDB"
+import { collection, getDocs } from "firebase/firestore"
+import { ProfessionalConversor } from "../../../db/converters"
+import { Professional } from "../../../interfaces/objectInterfaces"
+import { db, PROFESSIONAL_COLLECTION_NAME } from "../../../db/firebaseDB"
 
 export default async function handler(req, res) {
-    const { method } = req
+    const { method} = req
 
     switch (method) {
         case 'GET':
             let resGET = { status: "ERROR", error: {}, message: "", list: [] }
-            const personCollection = collection(db, PERSON_COLLECTION_NAME).withConverter(PersonConversor)
-            const companyCollection = collection(db, COMPANY_COLLECTION_NAME).withConverter(CompanyConversor)
+            const professionalCollection = collection(db, PROFESSIONAL_COLLECTION_NAME).withConverter(ProfessionalConversor)
             let list = []
-            let listCompanies = []
             try {
-                const querySnapshot = await getDocs(personCollection)
-                const querySnapshotCompany = await getDocs(companyCollection)
+                const querySnapshot = await getDocs(professionalCollection)
                 querySnapshot.forEach((doc) => {
                     list = [...list, doc.data()]
                 })
-                querySnapshotCompany.forEach(async (doc) => {
-                    list = [...list, doc.data()]
-                })
-                list = list.sort((elementOne: Person, elementTwo: Person) => {
+                list = list.sort((elementOne: Professional, elementTwo: Professional) => {
                     let dateOne = elementOne.dateInsertUTC
                     let dateTwo = elementTwo.dateInsertUTC
                     if (elementOne.dateLastUpdateUTC > 0 && elementOne.dateLastUpdateUTC > dateOne) {

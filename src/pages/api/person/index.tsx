@@ -1,10 +1,11 @@
 import { PersonConversor } from "../../../db/converters"
-import { db, PERSON_COLLECTION_NAME } from "../../../db/firebaseDB"
 import { addDoc, collection, deleteDoc, doc, updateDoc } from "firebase/firestore"
+import { db, HISTORY_COLLECTION_NAME, PERSON_COLLECTION_NAME } from "../../../db/firebaseDB"
 
 export default async function handler(req, res) {
     const { method, body } = req
 
+    const historyCollection = collection(db, HISTORY_COLLECTION_NAME)
     const personCollection = collection(db, PERSON_COLLECTION_NAME).withConverter(PersonConversor)
 
     switch (method) {
@@ -31,6 +32,8 @@ export default async function handler(req, res) {
                         const docRef = doc(personCollection, nowID)
                         await updateDoc(docRef, data)
                     }
+                    const dataForHistory = { ...PersonConversor.toFirestore(data), databaseid: nowID, databasename: PERSON_COLLECTION_NAME }
+                    await addDoc(historyCollection, dataForHistory)
                     resPOST = { ...resPOST, status: "SUCCESS", id: nowID }
                 } else {
                     resPOST = { ...resPOST, status: "ERROR", message: "Token invalido!" }

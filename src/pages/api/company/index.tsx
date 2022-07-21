@@ -1,10 +1,11 @@
 import { CompanyConversor, PersonConversor } from "../../../db/converters"
 import { addDoc, collection, deleteDoc, doc, updateDoc } from "firebase/firestore"
-import { db, COMPANY_COLLECTION_NAME, PERSON_COLLECTION_NAME } from "../../../db/firebaseDB"
+import { db, COMPANY_COLLECTION_NAME, PERSON_COLLECTION_NAME, HISTORY_COLLECTION_NAME } from "../../../db/firebaseDB"
 
 export default async function handler(req, res) {
     const { method, body } = req
 
+    const historyCollection = collection(db, HISTORY_COLLECTION_NAME)
     const personCollection = collection(db, PERSON_COLLECTION_NAME).withConverter(PersonConversor)
     const companyCollection = collection(db, COMPANY_COLLECTION_NAME).withConverter(CompanyConversor)
 
@@ -33,6 +34,8 @@ export default async function handler(req, res) {
                         const docRef = doc(companyCollection, nowID)
                         await updateDoc(docRef, data)
                     }
+                    const dataForHistory = { ...CompanyConversor.toFirestore(data), databaseid: nowID, databasename: COMPANY_COLLECTION_NAME }
+                    await addDoc(historyCollection, dataForHistory)
                     resPOST = { ...resPOST, status: "SUCCESS", id: nowID }
                 } else {
                     resPOST = { ...resPOST, status: "ERROR", message: "Token invalido!" }

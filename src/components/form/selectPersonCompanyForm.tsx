@@ -64,7 +64,7 @@ export default function SelectPersonCompanyForm(props: SelectPersonCompanyFormPr
     }
 
     const handleFilterList = (string) => {
-        let listItems = [...props.personsAndCompanies]
+        let listItems = [...personsAndCompanies]
         let listItemsFiltered: (Person | Company)[] = []
         listItemsFiltered = listItems.filter((element: (Person | Company), index) => {
             if ("cpf" in element) {
@@ -100,13 +100,13 @@ export default function SelectPersonCompanyForm(props: SelectPersonCompanyFormPr
         let canAdd = true
 
         if (props.isMultipleSelect) {
-            localPersonsAndCompanies?.map((element, index) => {
+            localPersonsAndCompanies?.map((element: (Person | Company), index) => {
                 if ("cpf" in element && "cpf" in personOrCompany) {
                     if (handleRemoveCPFMask(element.cpf) === handleRemoveCPFMask(personOrCompany.cpf)) {
                         canAdd = false
                     }
                 } else if ("cnpj" in element && "cnpj" in personOrCompany) {
-                    if (handleRemoveCNPJMask(element.cpf) === handleRemoveCNPJMask(personOrCompany.cpf)) {
+                    if (handleRemoveCNPJMask(element.cnpj) === handleRemoveCNPJMask(personOrCompany.cnpj)) {
                         canAdd = false
                     }
                 }
