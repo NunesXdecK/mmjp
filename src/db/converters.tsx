@@ -163,8 +163,10 @@ export const ProjectStageConversor = {
     toFirestore(data) {
         return {
             title: data.title,
+            index: data.index,
             project: data.project,
             updates: data.updates,
+            dateDue: data.dateDue,
             finished: data.finished,
             responsible: data.responsible,
             description: data.description,
@@ -178,6 +180,8 @@ export const ProjectStageConversor = {
             id: snapshot?.id ?? "",
             title: data.title ?? "",
             description: data.description ?? "",
+            index: data.index ?? 0,
+            dateDue: data.dateDue ?? 0,
             dateInsertUTC: data.dateInsertUTC ?? 0,
             dateLastUpdateUTC: data.dateLastUpdateUTC ?? 0,
             finished: data.finished ?? false,

@@ -12,6 +12,7 @@ import { FeedbackMessage } from "../modal/feedbackMessageModal";
 import { handleMaskCNPJ, handleMaskCPF, handleRemoveCNPJMask, handleRemoveCPFMask } from "../../util/maskUtil";
 import { Company, defaultCompany, defaultPerson, Person } from "../../interfaces/objectInterfaces";
 import { handleValidationOnlyNumbersNotNull, handleValidationOnlyTextNotNull } from "../../util/validationUtil";
+import { TrashIcon } from "@heroicons/react/outline";
 
 interface SelectPersonCompanyFormProps {
     id?: string,
@@ -232,7 +233,7 @@ export default function SelectPersonCompanyForm(props: SelectPersonCompanyFormPr
                                         isLoading={props.isLoading}
                                         isDisabled={props.isLoading}
                                     >
-                                        X
+                                        <TrashIcon className="text-white block h-5 w-5" aria-hidden="true" />
                                     </Button>
                                 </FormRowColumn>
                             )}

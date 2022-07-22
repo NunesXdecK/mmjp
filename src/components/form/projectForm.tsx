@@ -11,11 +11,12 @@ import { NOT_NULL_MARK } from "../../util/patternValidationUtil";
 import InputTextAutoComplete from "../inputText/inputTextAutocomplete";
 import { handleProjectValidationForDB } from "../../util/validationUtil";
 import { defaultProject, Professional, Project } from "../../interfaces/objectInterfaces";
-import { defaultElementFromBase, ElementFromBase, handlePrepareProjectForDB, handlePrepareProjectPaymentForDB } from "../../util/converterUtil";
+import { defaultElementFromBase, ElementFromBase, handlePrepareProjectForDB, handlePrepareProjectPaymentStageForDB, } from "../../util/converterUtil";
 import SelectPersonCompanyForm from "../select/selectPersonCompanyForm";
 import SelectProfessionalForm from "../select/selectProfessionalForm";
 import WindowModal from "../modal/windowModal";
 import ProjectPaymentForm from "./projectPaymentForm";
+import ProjectStageForm from "./projectStageForm";
 
 interface ProjectFormProps {
     title?: string,
@@ -148,7 +149,11 @@ export default function ProjectForm(props: ProjectFormProps) {
                 setProject({ ...project, id: res.id })
                 projectForDB = { ...projectForDB, id: res.id }
 
-                projectForDB = handlePrepareProjectPaymentForDB(projectForDB)
+                projectForDB = {
+                    ...projectForDB,
+                    projectPayments: handlePrepareProjectPaymentStageForDB(projectForDB, project.projectPayments),
+                    projectStages: handlePrepareProjectPaymentStageForDB(projectForDB, project.projectStages),
+                }
 
                 try {
                     await Promise.all(
@@ -157,8 +162,15 @@ export default function ProjectForm(props: ProjectFormProps) {
                                 method: "POST",
                                 body: JSON.stringify({ token: "tokenbemseguro", data: element }),
                             }).then((res) => res.json())
-                        })
-                    )
+                        }))
+
+                    await Promise.all(
+                        projectForDB.projectStages.map(async (element, index) => {
+                            await fetch("api/projectStage", {
+                                method: "POST",
+                                body: JSON.stringify({ token: "tokenbemseguro", data: element }),
+                            }).then((res) => res.json())
+                        }))
                 } catch (e) {
                     feedbackMessage = { ...feedbackMessage, messages: ["Erro em salvar os pagaments!"], messageType: "ERROR" }
                     console.error("Error adding document: ", e)
@@ -185,6 +197,26 @@ export default function ProjectForm(props: ProjectFormProps) {
             }
         }
         setIsLoading(false)
+    }
+
+    const handleValidadeTarget = (immobile) => {
+        let canAdd = true
+        project.immobilesOrigin.map((element, index) => {
+            if (immobile.id === element.id) {
+                canAdd = false
+            }
+        })
+        return canAdd
+    }
+
+    const handleValidadeOrigin = (immobile) => {
+        let canAdd = true
+        project.immobilesTarget.map((element, index) => {
+            if (immobile.id === element.id) {
+                canAdd = false
+            }
+        })
+        return canAdd
     }
 
     return (
@@ -300,6 +332,7 @@ export default function ProjectForm(props: ProjectFormProps) {
                 title="Imóveis alvo"
                 buttonTitle="Adicionar imóveis"
                 subtitle="Selecione os imovéis"
+                onValidate={handleValidadeTarget}
                 onShowMessage={props.onShowMessage}
                 immobiles={project.immobilesTarget}
                 onSetImmobiles={handleSetProjectImmobilesTarget}
@@ -313,6 +346,7 @@ export default function ProjectForm(props: ProjectFormProps) {
                     title="Imóveis de origem"
                     buttonTitle="Adicionar imóveis"
                     subtitle="Selecione os imovéis"
+                    onValidate={handleValidadeOrigin}
                     onShowMessage={props.onShowMessage}
                     immobiles={project.immobilesOrigin}
                     onSetImmobiles={handleSetProjectImmobilesOrigin}
@@ -337,8 +371,18 @@ export default function ProjectForm(props: ProjectFormProps) {
                 title="Pagamento"
                 isLoading={isLoading}
                 subtitle="Adicione os pagamentos"
+                onShowMessage={props.onShowMessage}
                 projectPayments={project.projectPayments}
                 onSetProjectPayments={handleSetProjectPayments}
+            />
+
+            <ProjectStageForm
+                title="Etapas"
+                isLoading={isLoading}
+                subtitle="Adicione as etapas"
+                onShowMessage={props.onShowMessage}
+                projectStages={project.projectStages}
+                onSetProjectStages={handleSetProjectStages}
             />
 
             <form

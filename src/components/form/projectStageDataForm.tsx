@@ -3,15 +3,17 @@ import { useState } from "react";
 import Button from "../button/button";
 import FormRowColumn from "./formRowColumn";
 import InputText from "../inputText/inputText";
+import WindowModal from "../modal/windowModal";
 import { TrashIcon } from "@heroicons/react/outline";
 import InputCheckbox from "../inputText/inputCheckbox";
-import { ProjectPayment } from "../../interfaces/objectInterfaces";
+import { ProjectStage } from "../../interfaces/objectInterfaces";
 import InputTextAutoComplete from "../inputText/inputTextAutocomplete";
 import { NOT_NULL_MARK, NUMBER_MARK } from "../../util/patternValidationUtil";
-import { handleProjectPaymentValidationForDB } from "../../util/validationUtil";
-import WindowModal from "../modal/windowModal";
+import { handleProjectStageValidationForDB } from "../../util/validationUtil";
+import InputTextArea from "../inputText/inputTextArea";
+import SelectProfessionalForm from "../select/selectProfessionalForm";
 
-interface ProjectPaymentDataFormProps {
+interface ProjectStageDataFormProps {
     id?: string,
     title?: string,
     subtitle?: string,
@@ -20,22 +22,28 @@ interface ProjectPaymentDataFormProps {
     isLoading?: boolean,
     isForSelect?: boolean,
     isForDisable?: boolean,
-    projectPayments?: ProjectPayment[],
+    projectStages?: ProjectStage[],
     onDelete?: (number) => void,
     onSetText?: (any, number) => void,
     onShowMessage?: (FeedbackMessage) => void,
 }
 
-export default function ProjectPaymentDataForm(props: ProjectPaymentDataFormProps) {
+export default function ProjectStageDataForm(props: ProjectStageDataFormProps) {
     const [isOpen, setIsOpen] = useState(false)
     const [index, setIndex] = useState(props.index ?? 0)
 
-    const [isFormValid, setIsFormValid] = useState(handleProjectPaymentValidationForDB(props.projectPayments[index]).validation)
+    const [isFormValid, setIsFormValid] = useState(handleProjectStageValidationForDB(props.projectStages[index]).validation)
 
-    const handleSetProjectPaymentValue = (value) => { handleSetText({ ...props.projectPayments[index], value: value }) }
-    const handleSetProjectPaymentPayed = (value) => { handleSetText({ ...props.projectPayments[index], payed: value }) }
-    const handleSetProjectPaymentDate = (value) => { handleSetText({ ...props.projectPayments[index], dateString: value }) }
-    const handleSetProjectPaymentDescription = (value) => { handleSetText({ ...props.projectPayments[index], description: value }) }
+    const [professionals, setProfessionals] = useState(props.projectStages[index].responsible?.id ? [props.projectStages[index].responsible] : [])
+
+    const handleSetProjectStageProfessional = (value) => {
+        setProfessionals(value)
+        handleSetText({ ...props.projectStages[index], responsible: value[0] })
+    }
+    const handleSetProjectStageTitle = (value) => { handleSetText({ ...props.projectStages[index], title: value }) }
+    const handleSetProjectStageDate = (value) => { handleSetText({ ...props.projectStages[index], dateString: value }) }
+    const handleSetProjectStageFinished = (value) => { handleSetText({ ...props.projectStages[index], finished: value }) }
+    const handleSetProjectStageDescription = (value) => { handleSetText({ ...props.projectStages[index], description: value }) }
 
     const handleSetText = (element) => {
         if (props.onSetText) {
@@ -58,17 +66,17 @@ export default function ProjectPaymentDataForm(props: ProjectPaymentDataFormProp
                 */}
             <FormRow>
                 <FormRowColumn unit="4">
-                    <InputText
-                        title="Valor"
-                        mask="currency"
-                        validation={NUMBER_MARK}
+                    <InputTextAutoComplete
+                        title="Titulo"
+                        validation={NOT_NULL_MARK}
                         isLoading={props.isLoading}
                         isDisabled={props.isForDisable}
-                        id={"value-" + index + "-" + props.id}
+                        sugestions={["Planta", "Memorial"]}
+                        id={"title-" + index + "-" + props.id}
+                        onSetText={handleSetProjectStageTitle}
                         onValidate={handleChangeFormValidation}
-                        onSetText={handleSetProjectPaymentValue}
-                        value={props.projectPayments[index].value}
-                        validationMessage="O titulo da etapa não pode ficar em branco."
+                        value={props.projectStages[index].title}
+                        validationMessage="O titulo não pode ficar em branco."
                     />
                 </FormRowColumn>
 
@@ -76,30 +84,32 @@ export default function ProjectPaymentDataForm(props: ProjectPaymentDataFormProp
                     <InputText
                         mask="date"
                         maxLength={10}
-                        title="Vencimento"
+                        title="Prazo final"
                         isLoading={props.isLoading}
                         isDisabled={props.isForDisable}
-                        onSetText={handleSetProjectPaymentDate}
+                        onSetText={handleSetProjectStageDate}
                         onValidate={handleChangeFormValidation}
                         id={"date-due-" + index + "-" + props.id}
-                        value={props.projectPayments[index].dateString}
+                        value={props.projectStages[index].dateString}
                     />
                 </FormRowColumn>
             </FormRow>
 
             <FormRow>
                 <FormRowColumn unit="6">
-                    <InputTextAutoComplete
-                        title="Descrição"
+
+                </FormRowColumn>
+            </FormRow>
+
+            <FormRow>
+                <FormRowColumn unit="6" className="">
+                    <InputTextArea
+                        title="Descrição da etapa"
                         isLoading={props.isLoading}
-                        validation={NOT_NULL_MARK}
                         isDisabled={props.isForDisable}
-                        sugestions={["Entrada", "Parcela"]}
-                        onValidate={handleChangeFormValidation}
+                        onSetText={handleSetProjectStageDescription}
                         id={"description-" + index + "-" + props.id}
-                        onSetText={handleSetProjectPaymentDescription}
-                        value={props.projectPayments[index].description}
-                        validationMessage="A descrição não pode ficar em branco."
+                        value={props.projectStages[index].description}
                     />
                 </FormRowColumn>
             </FormRow>
@@ -107,12 +117,27 @@ export default function ProjectPaymentDataForm(props: ProjectPaymentDataFormProp
             <FormRow>
                 <FormRowColumn unit="6" className="">
                     <InputCheckbox
-                        title="Pago?"
+                        title="Finalizado?"
                         isLoading={props.isLoading}
                         isDisabled={props.isForDisable}
-                        id={"payed-" + index + "-" + props.id}
-                        onSetText={handleSetProjectPaymentPayed}
-                        value={props.projectPayments[index].payed}
+                        id={"finished-" + index + "-" + props.id}
+                        onSetText={handleSetProjectStageFinished}
+                        value={props.projectStages[index].finished}
+                    />
+                </FormRowColumn>
+            </FormRow>
+
+
+            <FormRow>
+                <FormRowColumn unit="6" className="">
+                    <SelectProfessionalForm
+                        isMultipleSelect={false}
+                        isLoading={props.isLoading}
+                        professionals={professionals}
+                        onShowMessage={props.onShowMessage}
+                        buttonTitle="Adicionar profissional"
+                        onSetProfessionals={handleSetProjectStageProfessional}
+                        validationMessage="Esta pessoa já é um profissional"
                     />
                 </FormRowColumn>
             </FormRow>

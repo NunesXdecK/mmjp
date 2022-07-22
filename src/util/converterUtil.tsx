@@ -241,27 +241,8 @@ export const handlePrepareProjectForDB = (project: Project) => {
         project = { ...project, date: handleNewDateToUTC() }
     }
 
-    let projectPayments = []
-    project.projectPayments.map((projectPayment: ProjectPayment, index) => {
-        if (projectPayment.dateInsertUTC === 0) {
-            projectPayment = { ...projectPayment, dateInsertUTC: handleNewDateToUTC() }
-        } else {
-            projectPayment = { ...projectPayment, dateLastUpdateUTC: handleNewDateToUTC() }
-        }
-
-        if (projectPayment.dateString?.length === 10) {
-            const dateText = handleRemoveDateMask(projectPayment.dateString)
-            if (dateText.length === 8) {
-                const day = dateText.substring(0, 2)
-                const month = dateText.substring(2, 4)
-                const year = dateText.substring(4, dateText.length)
-                const utcString = new Date(month + " " + day + " " + year).toUTCString()
-                projectPayment = { ...projectPayment, dateDue: Date.parse(utcString) }
-                delete projectPayment.dateString
-            }
-        }
-        projectPayments = [...projectPayments, projectPayment]
-    })
+    let projectPayments = handlePrepareProjectPaymentStageForDB(project, project.projectPayments)
+    let projectStages = handlePrepareProjectPaymentStageForDB(project, project.projectPayments)
 
     if (project.dateString) {
         delete project.dateString
@@ -273,47 +254,43 @@ export const handlePrepareProjectForDB = (project: Project) => {
 
     project = {
         ...project,
-        projectPayments: projectPayments
+        projectPayments: projectPayments,
+        projectStages: projectStages,
     }
     return project
 }
 
-export const handlePrepareProjectPaymentForDB = (project: Project) => {
-    let projectPayments = []
-    project.projectPayments.map((projectPayment: ProjectPayment, index) => {
-        if (projectPayment.dateInsertUTC === 0) {
-            projectPayment = { ...projectPayment, dateInsertUTC: handleNewDateToUTC() }
+export const handlePrepareProjectPaymentStageForDB = (project: Project, list: (ProjectPayment | ProjectStage)[]) => {
+    let elements = []
+    list.map((element: (ProjectPayment | ProjectStage), index) => {
+        if (element.dateInsertUTC === 0) {
+            element = { ...element, dateInsertUTC: handleNewDateToUTC() }
         } else {
-            projectPayment = { ...projectPayment, dateLastUpdateUTC: handleNewDateToUTC() }
+            element = { ...element, dateLastUpdateUTC: handleNewDateToUTC() }
         }
 
-        if (projectPayment.dateString?.length === 10) {
-            const dateText = handleRemoveDateMask(projectPayment.dateString)
+        if (element.dateString?.length === 10) {
+            const dateText = handleRemoveDateMask(element.dateString)
             if (dateText.length === 8) {
                 const day = dateText.substring(0, 2)
                 const month = dateText.substring(2, 4)
                 const year = dateText.substring(4, dateText.length)
                 const utcString = new Date(month + " " + day + " " + year).toUTCString()
-                projectPayment = { ...projectPayment, dateDue: Date.parse(utcString) }
-                delete projectPayment.dateString
+                element = { ...element, dateDue: Date.parse(utcString) }
+                delete element.dateString
             }
         }
-        projectPayments = [...projectPayments, { ...projectPayment, project: project, description: projectPayment.description?.trim() }]
+        elements = [...elements, { ...element, project: project, description: element.description?.trim(), index: index }]
     })
-
-    project = {
-        ...project,
-        projectPayments: projectPayments
-    }
-    return project
+    return elements
 }
 
-export const handlePrepareProjectPaymentForShow = (list: ProjectPayment[]) => {
-    let projectPayments = []
-    list.map((projectPayment: ProjectPayment, index) => {
-        projectPayments = [...projectPayments, { ...projectPayment, dateString: handleUTCToDateShow(projectPayment.dateDue.toString()) }]
+export const handlePrepareProjectPaymentStageForShow = (list: (ProjectPayment | ProjectStage)[]) => {
+    let localList = []
+    list.map((element: (ProjectPayment | ProjectStage), index) => {
+        localList = [...localList, { ...element, dateString: handleUTCToDateShow(element.dateDue.toString()) }]
     })
-    return projectPayments
+    return localList
 }
 
 export const handlePrepareProjectStageForDB = (projectStage: ProjectStage) => {

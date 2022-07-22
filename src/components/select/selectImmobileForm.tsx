@@ -9,6 +9,7 @@ import ImmobileForm from "../form/immobileForm";
 import FormRowColumn from "../form/formRowColumn";
 import { FeedbackMessage } from "../modal/feedbackMessageModal";
 import { defaultImmobile, Immobile } from "../../interfaces/objectInterfaces";
+import { TrashIcon } from "@heroicons/react/outline";
 
 interface SelectImmobileFormProps {
     id?: string,
@@ -22,6 +23,7 @@ interface SelectImmobileFormProps {
     isLoading?: boolean,
     isMultipleSelect?: boolean,
     immobiles?: Immobile[],
+    onValidate?: (any) => boolean,
     onSetLoading?: (any) => void,
     onSetImmobiles?: (array) => void,
     onShowMessage?: (FeedbackMessage) => void,
@@ -32,7 +34,7 @@ export default function SelectImmobileForm(props: SelectImmobileFormProps) {
     const [isRegister, setIsRegister] = useState(false)
 
     const [immobile, setImmobile] = useState<Immobile>(defaultImmobile)
-    
+
     const [immobiles, setImmobiles] = useState<Immobile[]>([])
     const [immobilesForShow, setImmobilesForShow] = useState<Immobile[]>([])
 
@@ -78,6 +80,10 @@ export default function SelectImmobileForm(props: SelectImmobileFormProps) {
                     canAdd = false
                 }
             })
+        }
+
+        if (props.onValidate) {
+            canAdd = props.onValidate(immobile)
         }
 
         if (canAdd) {
@@ -170,7 +176,7 @@ export default function SelectImmobileForm(props: SelectImmobileFormProps) {
                                         isLoading={props.isLoading}
                                         isDisabled={props.isLoading}
                                     >
-                                        X
+                                        <TrashIcon className="text-white block h-5 w-5" aria-hidden="true" />
                                     </Button>
                                 </FormRowColumn>
                             )}

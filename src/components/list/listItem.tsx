@@ -28,7 +28,7 @@ const buttonTitleHoverClassName = `
                         `
 
 const buttonTitleClassName = `
-                            hidden sm:block
+                            mr-1 hidden sm:block
                         `
 
 export default function ItemList(props: ItemListProps) {

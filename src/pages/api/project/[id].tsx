@@ -21,7 +21,7 @@ export default async function handler(req, res) {
                     const docRef = doc(projectCollection, id)
                     let project: Project = (await getDoc(docRef)).data()
 
-                    if (project.professional) {
+                    if (project.professional.id && project.professional.id !== "") {
                         const docRef = doc(professionalCollection, project.professional.id)
                         const data: Professional = (await getDoc(docRef)).data()
                         project = { ...project, professional: data }
@@ -48,7 +48,7 @@ export default async function handler(req, res) {
                             }
                         }
                     }))
-
+                    
                     let clients = []
                     await Promise.all(project.clients?.map(async (element, index) => {
                         if (element.path.includes(PERSON_COLLECTION_NAME)) {

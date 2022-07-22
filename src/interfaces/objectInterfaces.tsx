@@ -98,6 +98,8 @@ export interface ProjectStage {
     title?: string,
     dateString?: string,
     description?: string,
+    index?: number,
+    dateDue?: number,
     dateInsertUTC?: number,
     dateLastUpdateUTC?: number,
     finished?: boolean,
@@ -110,6 +112,7 @@ export interface ProjectStageUpdate {
     dateString?: string,
     description?: string,
     dateInsertUTC?: number,
+    dateLastUpdateUTC?: number,
     user?: any,
 }
 

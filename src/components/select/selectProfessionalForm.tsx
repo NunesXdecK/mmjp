@@ -9,6 +9,7 @@ import FormRowColumn from "../form/formRowColumn";
 import ProfessionalForm from "../form/professionalForm";
 import { FeedbackMessage } from "../modal/feedbackMessageModal";
 import { defaultProfessional, Professional } from "../../interfaces/objectInterfaces";
+import { TrashIcon } from "@heroicons/react/outline";
 
 interface SelectProfessionalFormProps {
     id?: string,
@@ -179,7 +180,7 @@ export default function SelectProfessionalForm(props: SelectProfessionalFormProp
                                         isLoading={props.isLoading}
                                         isDisabled={props.isLoading}
                                     >
-                                        X
+                                        <TrashIcon className="text-white block h-5 w-5" aria-hidden="true" />
                                     </Button>
                                 </FormRowColumn>
                             )}

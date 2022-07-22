@@ -10,6 +10,7 @@ import FormRowColumn from "../form/formRowColumn";
 import { FeedbackMessage } from "../modal/feedbackMessageModal";
 import { handleMaskCPF, handleRemoveCPFMask } from "../../util/maskUtil";
 import { defaultPerson, Person } from "../../interfaces/objectInterfaces";
+import { TrashIcon } from "@heroicons/react/outline";
 
 interface SelectPersonFormProps {
     id?: string,
@@ -180,7 +181,7 @@ export default function SelectPersonForm(props: SelectPersonFormProps) {
                                         isLoading={props.isLoading}
                                         isDisabled={props.isLoading}
                                     >
-                                        X
+                                        <TrashIcon className="text-white block h-5 w-5" aria-hidden="true" />
                                     </Button>
                                 </FormRowColumn>
                             )}

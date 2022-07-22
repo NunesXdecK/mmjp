@@ -2,43 +2,43 @@ import Form from "./form";
 import FormRow from "./formRow";
 import Button from "../button/button";
 import FormRowColumn from "./formRowColumn";
-import ProjectPaymentDataForm from "./projectPaymentDataForm";
-import { defaultProjectPayment, ProjectPayment } from "../../interfaces/objectInterfaces";
+import ProjectStageDataForm from "./projectStageDataForm";
+import { defaultProjectStage, ProjectStage } from "../../interfaces/objectInterfaces";
 import { handleNewDateToUTC, handleUTCToDateShow } from "../../util/dateUtils";
 import { FeedbackMessage } from "../modal/feedbackMessageModal";
 
-interface ProjectPaymentFormProps {
+interface ProjectStageFormProps {
     id?: string,
     title?: string,
     subtitle?: string,
     isBack?: boolean,
     isLoading?: boolean,
-    projectPayments?: ProjectPayment[],
-    onSetProjectPayments?: (any) => void,
+    projectStages?: ProjectStage[],
+    onSetProjectStages?: (any) => void,
     onShowMessage?: (FeedbackMessage) => void,
 }
 
-export default function ProjectPaymentForm(props: ProjectPaymentFormProps) {
+export default function ProjectStageForm(props: ProjectStageFormProps) {
     const handleSetText = (object, index) => {
-        if (props.onSetProjectPayments) {
-            props.onSetProjectPayments([
-                ...props.projectPayments.slice(0, index),
+        if (props.onSetProjectStages) {
+            props.onSetProjectStages([
+                ...props.projectStages.slice(0, index),
                 object,
-                ...props.projectPayments.slice(index + 1, props.projectPayments.length),
+                ...props.projectStages.slice(index + 1, props.projectStages.length),
             ])
         }
     }
 
     const handeOnDelete = async (index: number) => {
         let feedbackMessage: FeedbackMessage = { messages: ["Algo deu errado"], messageType: "ERROR" }
-        let localProjectPayments = [...props.projectPayments]
-        let localProjectPayment = localProjectPayments[index]
+        let localProjectStages = [...props.projectStages]
+        let localProjectStage = localProjectStages[index]
         let canDelete = true
 
-        if (localProjectPayment.id && localProjectPayment.id !== "") {
-            const res = await fetch("api/projectPayment", {
+        if (localProjectStage.id && localProjectStage.id !== "") {
+            const res = await fetch("api/projectStage", {
                 method: "DELETE",
-                body: JSON.stringify({ token: "tokenbemseguro", id: localProjectPayment.id }),
+                body: JSON.stringify({ token: "tokenbemseguro", id: localProjectStage.id }),
             }).then((res) => res.json())
 
             if (res.status !== "SUCCESS") {
@@ -49,9 +49,9 @@ export default function ProjectPaymentForm(props: ProjectPaymentFormProps) {
 
         if (canDelete) {
             feedbackMessage = { messages: ["Removido com sucesso!"], messageType: "SUCCESS" }
-            localProjectPayments.splice(index, 1)
-            if (props.onSetProjectPayments) {
-                props.onSetProjectPayments(localProjectPayments)
+            localProjectStages.splice(index, 1)
+            if (props.onSetProjectStages) {
+                props.onSetProjectStages(localProjectStages)
             }
         }
 
@@ -71,23 +71,23 @@ export default function ProjectPaymentForm(props: ProjectPaymentFormProps) {
                         isLoading={props.isLoading}
                         isDisabled={props.isLoading}
                         onClick={() => {
-                            if (props.onSetProjectPayments) {
-                                props.onSetProjectPayments([...props.projectPayments, { ...defaultProjectPayment, dateString: handleUTCToDateShow(handleNewDateToUTC() + ""), index: props.projectPayments?.length }])
+                            if (props.onSetProjectStages) {
+                                props.onSetProjectStages([...props.projectStages, { ...defaultProjectStage, dateString: handleUTCToDateShow(handleNewDateToUTC() + ""), index: props.projectStages?.length }])
                             }
                         }}>
-                        Adicionar pagamento
+                        Adicionar etapa
                     </Button>
                 </FormRowColumn>
             </FormRow>
 
-            {props?.projectPayments?.map((element, index) => (
-                <ProjectPaymentDataForm
+            {props?.projectStages?.map((element, index) => (
+                <ProjectStageDataForm
                     key={index}
                     index={index}
                     onDelete={handeOnDelete}
                     onSetText={handleSetText}
                     isLoading={props.isLoading}
-                    projectPayments={props.projectPayments}
+                    projectStages={props.projectStages}
                 />
             ))}
 
