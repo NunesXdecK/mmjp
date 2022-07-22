@@ -1,4 +1,4 @@
-import { handleNewDateToUTC } from "./dateUtils"
+import { handleNewDateToUTC, handleUTCToDateShow } from "./dateUtils"
 import { defaultPerson, defaultAddress, defaultProfessional, defaultImmobile, Person, Address, Professional, Immobile, Company, defaultCompany, Project, ProjectStage, ProjectPayment } from "../interfaces/objectInterfaces"
 import { handleMaskCNPJ, handleMaskCPF, handleMaskTelephone, handleMountMask, handleRemoveCEPMask, handleRemoveCNPJMask, handleRemoveCPFMask, handleRemoveDateMask, handleRemoveTelephoneMask } from "./maskUtil"
 
@@ -226,7 +226,7 @@ export const handlePrepareProjectForDB = (project: Project) => {
         project = { ...project, dateLastUpdateUTC: handleNewDateToUTC() }
     }
 
-    if (project.dateString.length === 10) {
+    if (project.dateString?.length === 10) {
         const dateText = handleRemoveDateMask(project.dateString)
         if (dateText.length === 8) {
             const day = dateText.substring(0, 2)
@@ -249,7 +249,7 @@ export const handlePrepareProjectForDB = (project: Project) => {
             projectPayment = { ...projectPayment, dateLastUpdateUTC: handleNewDateToUTC() }
         }
 
-        if (projectPayment.dateString.length === 10) {
+        if (projectPayment.dateString?.length === 10) {
             const dateText = handleRemoveDateMask(projectPayment.dateString)
             if (dateText.length === 8) {
                 const day = dateText.substring(0, 2)
@@ -278,6 +278,44 @@ export const handlePrepareProjectForDB = (project: Project) => {
     return project
 }
 
+export const handlePrepareProjectPaymentForDB = (project: Project) => {
+    let projectPayments = []
+    project.projectPayments.map((projectPayment: ProjectPayment, index) => {
+        if (projectPayment.dateInsertUTC === 0) {
+            projectPayment = { ...projectPayment, dateInsertUTC: handleNewDateToUTC() }
+        } else {
+            projectPayment = { ...projectPayment, dateLastUpdateUTC: handleNewDateToUTC() }
+        }
+
+        if (projectPayment.dateString?.length === 10) {
+            const dateText = handleRemoveDateMask(projectPayment.dateString)
+            if (dateText.length === 8) {
+                const day = dateText.substring(0, 2)
+                const month = dateText.substring(2, 4)
+                const year = dateText.substring(4, dateText.length)
+                const utcString = new Date(month + " " + day + " " + year).toUTCString()
+                projectPayment = { ...projectPayment, dateDue: Date.parse(utcString) }
+                delete projectPayment.dateString
+            }
+        }
+        projectPayments = [...projectPayments, { ...projectPayment, project: project, description: projectPayment.description?.trim() }]
+    })
+
+    project = {
+        ...project,
+        projectPayments: projectPayments
+    }
+    return project
+}
+
+export const handlePrepareProjectPaymentForShow = (list: ProjectPayment[]) => {
+    let projectPayments = []
+    list.map((projectPayment: ProjectPayment, index) => {
+        projectPayments = [...projectPayments, { ...projectPayment, dateString: handleUTCToDateShow(projectPayment.dateDue.toString()) }]
+    })
+    return projectPayments
+}
+
 export const handlePrepareProjectStageForDB = (projectStage: ProjectStage) => {
     if (projectStage.dateInsertUTC === 0) {
         projectStage = { ...projectStage, dateInsertUTC: handleNewDateToUTC() }
@@ -291,21 +329,6 @@ export const handlePrepareProjectStageForDB = (projectStage: ProjectStage) => {
         ...projectStage
     }
     return projectStage
-}
-
-export const handlePrepareProjectPaymentForDB = (projectPayment: ProjectPayment) => {
-    if (projectPayment.dateInsertUTC === 0) {
-        projectPayment = { ...projectPayment, dateInsertUTC: handleNewDateToUTC() }
-    }
-
-    if (projectPayment.id !== "") {
-        projectPayment = { ...projectPayment, dateLastUpdateUTC: handleNewDateToUTC() }
-    }
-
-    projectPayment = {
-        ...projectPayment
-    }
-    return projectPayment
 }
 
 export const extratePersonAddress = (element: ElementFromBase) => {

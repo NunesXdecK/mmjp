@@ -46,7 +46,7 @@ export default function ProjectPaymentForm(props: ProjectPaymentFormProps) {
                     <Button
                         onClick={() => {
                             if (props.onSetProjectPayments) {
-                                props.onSetProjectPayments([...props.projectPayments, { ...defaultProjectPayment, dateString: handleUTCToDateShow(handleNewDateToUTC() + "") }])
+                                props.onSetProjectPayments([...props.projectPayments, { ...defaultProjectPayment, dateString: handleUTCToDateShow(handleNewDateToUTC() + ""), index: props.projectPayments?.length }])
                             }
                         }}>
                         Adicionar pagamento

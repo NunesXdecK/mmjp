@@ -70,7 +70,7 @@ export default async function handler(req, res) {
                         nowID = docRef.id
                     } else {
                         const docRef = doc(projectCollection, nowID)
-                        await updateDoc(docRef, project)
+                        await updateDoc(docRef, ProjectConversor.toFirestore(project))
                     }
                     const dataForHistory = { ...ProjectConversor.toFirestore(project), databaseid: nowID, databasename: PROJECT_COLLECTION_NAME }
                     await addDoc(historyCollection, dataForHistory)

@@ -17,9 +17,6 @@ export default async function handler(req, res) {
             let resGET = { status: "ERROR", error: {}, message: "", data: {} }
             try {
                 const { id } = query
-                let clients = []
-                let immobilesOrigin = []
-                let immobilesTarget = []
                 if (id) {
                     const docRef = doc(projectCollection, id)
                     let project: Project = (await getDoc(docRef)).data()
@@ -30,6 +27,7 @@ export default async function handler(req, res) {
                         project = { ...project, professional: data }
                     }
 
+                    let immobilesOrigin = []
                     await Promise.all(project.immobilesOrigin.map(async (element, index) => {
                         const docRef = doc(immobileCollection, element.id)
                         if (docRef) {
@@ -40,6 +38,7 @@ export default async function handler(req, res) {
                         }
                     }))
 
+                    let immobilesTarget = []
                     await Promise.all(project.immobilesTarget.map(async (element, index) => {
                         const docRef = doc(immobileCollection, element.id)
                         if (docRef) {
@@ -50,6 +49,7 @@ export default async function handler(req, res) {
                         }
                     }))
 
+                    let clients = []
                     await Promise.all(project.clients?.map(async (element, index) => {
                         if (element.path.includes(PERSON_COLLECTION_NAME)) {
                             const docRef = doc(personCollection, element.id)

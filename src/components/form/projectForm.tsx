@@ -11,7 +11,7 @@ import { NOT_NULL_MARK } from "../../util/patternValidationUtil";
 import InputTextAutoComplete from "../inputText/inputTextAutocomplete";
 import { handleProjectValidationForDB } from "../../util/validationUtil";
 import { defaultProject, Professional, Project } from "../../interfaces/objectInterfaces";
-import { defaultElementFromBase, ElementFromBase, handlePrepareProjectForDB } from "../../util/converterUtil";
+import { defaultElementFromBase, ElementFromBase, handlePrepareProjectForDB, handlePrepareProjectPaymentForDB } from "../../util/converterUtil";
 import SelectPersonCompanyForm from "../select/selectPersonCompanyForm";
 import SelectProfessionalForm from "../select/selectProfessionalForm";
 import WindowModal from "../modal/windowModal";
@@ -147,6 +147,22 @@ export default function ProjectForm(props: ProjectFormProps) {
             if (res.status === "SUCCESS") {
                 setProject({ ...project, id: res.id })
                 projectForDB = { ...projectForDB, id: res.id }
+
+                projectForDB = handlePrepareProjectPaymentForDB(projectForDB)
+
+                try {
+                    await Promise.all(
+                        projectForDB.projectPayments.map(async (element, index) => {
+                            await fetch("api/projectPayment", {
+                                method: "POST",
+                                body: JSON.stringify({ token: "tokenbemseguro", data: element }),
+                            }).then((res) => res.json())
+                        })
+                    )
+                } catch (e) {
+                    feedbackMessage = { ...feedbackMessage, messages: ["Erro em salvar os pagaments!"], messageType: "ERROR" }
+                    console.error("Error adding document: ", e)
+                }
 
                 if (isMultiple) {
                     setProject(defaultProject)

@@ -136,8 +136,6 @@ export const ProjectConversor = {
             clients: data.clients,
             professional: data.professional,
             dateInsertUTC: data.dateInsertUTC,
-            projectStages: data.projectStages,
-            projectPayments: data.projectPayments,
             immobilesOrigin: data.immobilesOrigin,
             immobilesTarget: data.immobilesTarget,
             dateLastUpdateUTC: data.dateLastUpdateUTC,
@@ -155,8 +153,6 @@ export const ProjectConversor = {
             budget: data.budget ?? true,
             professional: data.professional ?? defaultProfessional,
             clients: data.clients ?? [],
-            projectStages: data.projectStages ?? [],
-            projectPayments: data.projectPayments ?? [],
             immobilesOrigin: data.immobilesOrigin ?? [],
             immobilesTarget: data.immobilesTarget ?? [],
         }

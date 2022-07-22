@@ -146,7 +146,7 @@ export const handleProjectValidationForDB = (project: Project) => {
     let validation: ValidationReturn = { validation: false, messages: [] }
     let nameCheck = handleValidationNotNull(project.title)
     let clientsCheck = project?.clients?.length > 0 ?? false
-    let immobilesTargetCheck = project?.immobilesOrigin?.length > 0 ?? false
+    let immobilesTargetCheck = project?.immobilesTarget?.length > 0 ?? false
     let professionalCheck = project?.professional?.id?.length > 0 ?? false
     let clientsOnBaseCheck = true
     let immobilesOriginOnBaseCheck = true

@@ -30,7 +30,7 @@ export default async function handler(req, res) {
                         nowID = docRef.id
                     } else {
                         const docRef = doc(personCollection, nowID)
-                        await updateDoc(docRef, data)
+                        await updateDoc(docRef, PersonConversor.toFirestore(data))
                     }
                     const dataForHistory = { ...PersonConversor.toFirestore(data), databaseid: nowID, databasename: PERSON_COLLECTION_NAME }
                     await addDoc(historyCollection, dataForHistory)

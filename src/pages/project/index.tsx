@@ -1,12 +1,12 @@
 import Head from "next/head"
 import { useEffect, useState } from "react"
+import List from "../../components/list/list"
 import Layout from "../../components/layout/layout"
 import ProjectForm from "../../components/form/projectForm"
-import ProjectList from "../../components/list/projectList"
+import {  handlePrepareProjectPaymentForShow } from "../../util/converterUtil"
+import { handleNewDateToUTC, handleUTCToDateShow } from "../../util/dateUtils"
 import { defaultProject, Project, ProjectPayment } from "../../interfaces/objectInterfaces"
 import FeedbackMessageModal, { defaultFeedbackMessage, FeedbackMessage } from "../../components/modal/feedbackMessageModal"
-import List from "../../components/list/list"
-import { handleUTCToDateShow } from "../../util/dateUtils"
 
 export default function Projects() {
     const [title, setTitle] = useState("Lista de projetos")
@@ -50,7 +50,7 @@ export default function Projects() {
 
     const handleNewClick = async () => {
         setIsLoading(true)
-        let newProject = { ...defaultProject }
+        let newProject = { ...defaultProject, dateString: handleUTCToDateShow(handleNewDateToUTC().toString()) }
         const lastProfessional = await fetch("api/lastProfessional").then((res) => res.json()).then((res) => res.professional)
         if (lastProfessional.id && lastProfessional.id !== "") {
             newProject = { ...newProject, professional: lastProfessional }
@@ -73,16 +73,16 @@ export default function Projects() {
     const handleEditClick = async (project) => {
         setIsLoading(true)
         let localProject: Project = await fetch("api/project/" + project.id).then((res) => res.json()).then((res) => res.data)
-
-        let projectPayments = []
-        localProject.projectPayments.map((projectPayment: ProjectPayment, index) => {
-            projectPayments = [...projectPayments, { ...projectPayment, dateString: handleUTCToDateShow(localProject.date.toString()) }]
-        })
+        let localProjectPayments: ProjectPayment[] = await fetch("api/projectPayments/" + project.id).then((res) => res.json()).then((res) => res.list)
+        localProjectPayments = handlePrepareProjectPaymentForShow(localProjectPayments)
         localProject = {
             ...localProject,
+            projectPayments: localProjectPayments,
             dateString: handleUTCToDateShow(localProject.date.toString()),
-            projectPayments: projectPayments
         }
+        setIsLoading(false)
+        {/*
+    */}
         setIsRegister(true)
         setProject({ ...defaultProject, ...localProject })
         setTitle("Editar projeto")
@@ -138,7 +138,11 @@ export default function Projects() {
                     onFilterList={handleFilterList}
                     onDeleteClick={handleDeleteClick}
                     onTitle={(element: Project) => {
-                        return (<p>{element.title}</p>)
+                        return (<>
+                            <p>{element.title}</p>
+                            <p>Data do projeto: {handleUTCToDateShow(element.date.toString())}</p>
+                        </>
+                        )
                     }}
                     onInfo={(element: Project) => {
                         return (<p>{element.title}</p>)
