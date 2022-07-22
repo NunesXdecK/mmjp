@@ -151,8 +151,8 @@ export default function ProjectForm(props: ProjectFormProps) {
 
                 projectForDB = {
                     ...projectForDB,
-                    projectPayments: handlePrepareProjectPaymentStageForDB(projectForDB, project.projectPayments),
                     projectStages: handlePrepareProjectPaymentStageForDB(projectForDB, project.projectStages),
+                    projectPayments: handlePrepareProjectPaymentStageForDB(projectForDB, project.projectPayments),
                 }
 
                 try {

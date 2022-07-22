@@ -263,6 +263,10 @@ export const handlePrepareProjectForDB = (project: Project) => {
 export const handlePrepareProjectPaymentStageForDB = (project: Project, list: (ProjectPayment | ProjectStage)[]) => {
     let elements = []
     list.map((element: (ProjectPayment | ProjectStage), index) => {
+        if ("title" in element) {
+            element = { ...element, title: element.title?.trim() }
+        }
+
         if (element.dateInsertUTC === 0) {
             element = { ...element, dateInsertUTC: handleNewDateToUTC() }
         } else {
