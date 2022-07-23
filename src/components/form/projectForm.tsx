@@ -205,11 +205,15 @@ export default function ProjectForm(props: ProjectFormProps) {
                         rightButtonText={project.id === "" ? "Salvar" : "Editar"}
                         leftWindowText="Dejesa realmente voltar e descartar as alterações?"
                         onLeftClick={(event) => {
-                            event.preventDefault()
+                            if (event) {
+                                event.preventDefault()
+                            }
                             handleOnBack()
                         }}
                         onRightClick={(event) => {
-                            event.preventDefault()
+                            if (event) {
+                                event.preventDefault()
+                            }
                             handleSave()
                         }}
                     />
@@ -247,7 +251,9 @@ export default function ProjectForm(props: ProjectFormProps) {
 
             <form
                 onSubmit={(event) => {
-                    event.preventDefault()
+                    if (event) {
+                        event.preventDefault()
+                    }
                 }}>
 
                 <FormRow className="p-2 hidden">
@@ -261,11 +267,15 @@ export default function ProjectForm(props: ProjectFormProps) {
                             rightButtonText={project.id === "" ? "Salvar" : "Editar"}
                             leftWindowText="Dejesa realmente voltar e descartar as alterações?"
                             onLeftClick={(event) => {
-                                event.preventDefault()
+                                if (event) {
+                                    event.preventDefault()
+                                }
                                 handleOnBack()
                             }}
                             onRightClick={(event) => {
-                                event.preventDefault()
+                                if (event) {
+                                    event.preventDefault()
+                                }
                                 handleSave()
                             }}
                         />
@@ -404,7 +414,9 @@ export default function ProjectForm(props: ProjectFormProps) {
 
             <form
                 onSubmit={(event) => {
-                    event.preventDefault()
+                    if (event) {
+                        event.preventDefault()
+                    }
                 }}>
                 <FormRow className="p-2">
                     <FormRowColumn unit="6">
@@ -417,11 +429,15 @@ export default function ProjectForm(props: ProjectFormProps) {
                             rightButtonText={project.id === "" ? "Salvar" : "Editar"}
                             leftWindowText="Dejesa realmente voltar e descartar as alterações?"
                             onLeftClick={(event) => {
-                                event.preventDefault()
+                                if (event) {
+                                    event.preventDefault()
+                                }
                                 handleOnBack()
                             }}
                             onRightClick={(event) => {
-                                event.preventDefault()
+                                if (event) {
+                                    event.preventDefault()
+                                }
                                 handleSave()
                             }}
                         />

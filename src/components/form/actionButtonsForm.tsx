@@ -53,14 +53,20 @@ export default function ActionButtonsForm(props: ActionButtonsFormProps) {
                         window.onbeforeunload = () => { }
                         document.addEventListener("keydown", (event) => { })
                     }
+                    history.pushState(null, null, null);
+                    history.replaceState({}, "", "");
+                    var currentState = history.state;
+                    console.log(document.referrer)
+                    history.pushState(currentState, currentState.url, currentState.url);
+                    window.onpopstate = (event) => {
+                        if (event) {
+                            event.preventDefault()
+                            event.stopPropagation()
+                        }
+                        props.onLeftClick()
+                    }
                 */}
-
                 {/*
-                window.onpopstate = (event) => {
-                    event.preventDefault()
-                    event.stopPropagation()
-                    props.onLeftClick()
-                }
             */}
             }
         }

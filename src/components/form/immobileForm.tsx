@@ -127,7 +127,9 @@ export default function ImmobileForm(props: ImmobileFormProps) {
         <>
             <form
                 onSubmit={(event) => {
-                    event.preventDefault()
+                    if (event) {
+                        event.preventDefault()
+                    }
                 }}>
 
                 <FormRow className="p-2">
@@ -142,11 +144,15 @@ export default function ImmobileForm(props: ImmobileFormProps) {
                             rightButtonText={immobile.id === "" ? "Salvar" : "Editar"}
                             leftWindowText="Dejesa realmente voltar e descartar as alterações?"
                             onLeftClick={(event) => {
-                                event.preventDefault()
+                                if (event) {
+                                    event.preventDefault()
+                                }
                                 handleOnBack()
                             }}
                             onRightClick={(event) => {
-                                event.preventDefault()
+                                if (event) {
+                                    event.preventDefault()
+                                }
                                 handleSave()
                             }}
                         />
@@ -280,7 +286,9 @@ export default function ImmobileForm(props: ImmobileFormProps) {
 
             <form
                 onSubmit={(event) => {
-                    event.preventDefault()
+                    if (event) {
+                        event.preventDefault()
+                    }
                 }}>
 
                 <AddressForm
@@ -303,11 +311,15 @@ export default function ImmobileForm(props: ImmobileFormProps) {
                             rightButtonText={immobile.id === "" ? "Salvar" : "Editar"}
                             leftWindowText="Dejesa realmente voltar e descartar as alterações?"
                             onLeftClick={(event) => {
-                                event.preventDefault()
+                                if (event) {
+                                    event.preventDefault()
+                                }
                                 handleOnBack()
                             }}
                             onRightClick={(event) => {
-                                event.preventDefault()
+                                if (event) {
+                                    event.preventDefault()
+                                }
                                 handleSave()
                             }}
                         />

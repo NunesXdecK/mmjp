@@ -64,7 +64,6 @@ export default function ProfessionalForm(props: ProfessionalFormProps) {
     }
 
     const handleSave = async () => {
-        event.preventDefault()
         setIsLoading(true)
         let feedbackMessage: FeedbackMessage = { messages: ["Algo estranho aconteceu"], messageType: "WARNING" }
         let professionalForDB = { ...professional }
@@ -126,7 +125,9 @@ export default function ProfessionalForm(props: ProfessionalFormProps) {
         <>
             <form
                 onSubmit={(event) => {
-                    event.preventDefault()
+                    if (event) {
+                        event.preventDefault()
+                    }
                 }}>
 
                 <FormRow className="p-2">
@@ -141,11 +142,15 @@ export default function ProfessionalForm(props: ProfessionalFormProps) {
                             rightButtonText={professional.id === "" ? "Salvar" : "Editar"}
                             leftWindowText="Dejesa realmente voltar e descartar as alterações?"
                             onLeftClick={(event) => {
-                                event.preventDefault()
+                                if (event) {
+                                    event.preventDefault()
+                                }
                                 handleOnBack()
                             }}
                             onRightClick={(event) => {
-                                event.preventDefault()
+                                if (event) {
+                                    event.preventDefault()
+                                }
                                 handleSave()
                             }}
                         />
@@ -231,7 +236,9 @@ export default function ProfessionalForm(props: ProfessionalFormProps) {
 
             <form
                 onSubmit={(event) => {
-                    event.preventDefault()
+                    if (event) {
+                        event.preventDefault()
+                    }
                 }}>
                 <FormRow className="p-2">
                     <FormRowColumn unit="6">
@@ -244,11 +251,15 @@ export default function ProfessionalForm(props: ProfessionalFormProps) {
                             rightButtonText={professional.id === "" ? "Salvar" : "Editar"}
                             leftWindowText="Dejesa realmente voltar e descartar as alterações?"
                             onLeftClick={(event) => {
-                                event.preventDefault()
+                                if (event) {
+                                    event.preventDefault()
+                                }
                                 handleOnBack()
                             }}
                             onRightClick={(event) => {
-                                event.preventDefault()
+                                if (event) {
+                                    event.preventDefault()
+                                }
                                 handleSave()
                             }}
                         />

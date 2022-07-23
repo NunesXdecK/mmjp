@@ -127,7 +127,9 @@ export default function CompanyForm(props: CompanyFormProps) {
         <>
             <form
                 onSubmit={(event) => {
-                    event.preventDefault()
+                    if (event) {
+                        event.preventDefault()
+                    }
                 }}>
                 <FormRow className="p-2">
                     <FormRowColumn unit="6">
@@ -141,11 +143,15 @@ export default function CompanyForm(props: CompanyFormProps) {
                             rightButtonText={company.id === "" ? "Salvar" : "Editar"}
                             leftWindowText="Dejesa realmente voltar e descartar as alterações?"
                             onLeftClick={(event) => {
-                                event.preventDefault()
+                                if (event) {
+                                    event.preventDefault()
+                                }
                                 handleOnBack()
                             }}
                             onRightClick={(event) => {
-                                event.preventDefault()
+                                if (event) {
+                                    event.preventDefault()
+                                }
                                 handleSave()
                             }}
                         />
@@ -246,7 +252,9 @@ export default function CompanyForm(props: CompanyFormProps) {
 
             <form
                 onSubmit={(event) => {
-                    event.preventDefault()
+                    if (event) {
+                        event.preventDefault()
+                    }
                 }}>
 
                 <AddressForm
@@ -268,11 +276,15 @@ export default function CompanyForm(props: CompanyFormProps) {
                             rightButtonText={company.id === "" ? "Salvar" : "Editar"}
                             leftWindowText="Dejesa realmente voltar e descartar as alterações?"
                             onLeftClick={(event) => {
-                                event.preventDefault()
+                                if (event) {
+                                    event.preventDefault()
+                                }
                                 handleOnBack()
                             }}
                             onRightClick={(event) => {
-                                event.preventDefault()
+                                if (event) {
+                                    event.preventDefault()
+                                }
                                 handleSave()
                             }}
                         />
