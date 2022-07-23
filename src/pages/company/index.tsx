@@ -113,10 +113,12 @@ export default function Companies() {
                     title={title}
                     isLoading={isLoading}
                     list={companiesForShow}
+                    onSetElement={setCompany}
                     onNewClick={handleNewClick}
                     onEditClick={handleEditClick}
                     onFilterList={handleFilterList}
                     onDeleteClick={handleDeleteClick}
+                    deleteWindowTitle={"Deseja realmente deletar " + company.name + "?"}
                     onTitle={(element: Company) => {
                         return (<p>{element.name}</p>)
                     }}

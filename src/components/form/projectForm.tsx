@@ -17,6 +17,7 @@ import SelectProfessionalForm from "../select/selectProfessionalForm";
 import WindowModal from "../modal/windowModal";
 import ProjectPaymentForm from "./projectPaymentForm";
 import ProjectStageForm from "./projectStageForm";
+import ActionButtonsForm from "./actionButtonsForm";
 
 interface ProjectFormProps {
     title?: string,
@@ -40,8 +41,6 @@ export default function ProjectForm(props: ProjectFormProps) {
 
     const [isLoading, setIsLoading] = useState(false)
     const [isMultiple, setIsMultiple] = useState(false)
-    const [isOpenExit, setIsOpenExit] = useState(false)
-    const [isOpenSave, setIsOpenSave] = useState(false)
 
     const [oldData, setOldData] = useState<ElementFromBase>(props?.project?.oldData ?? defaultElementFromBase)
 
@@ -66,31 +65,6 @@ export default function ProjectForm(props: ProjectFormProps) {
         setProject({ ...project, clients: value, number: number })
     }
 
-    useEffect(() => {
-        if (props.onBack) {
-            if (project.id !== "" && handleDiference()) {
-                window.onbeforeunload = () => {
-                    return false
-                }
-                document.addEventListener("keydown", (event) => {
-                    if (event.keyCode === 116) {
-                        event.preventDefault()
-                        setIsOpenExit(true)
-                    }
-                })
-            } else {
-                window.onbeforeunload = () => { }
-                document.addEventListener("keydown", (event) => { })
-            }
-
-            window.onpopstate = (event) => {
-                event.preventDefault()
-                event.stopPropagation()
-                handleOnBack()
-            }
-        }
-    })
-
     const handleDiference = (): boolean => {
         let hasDiference = false
         Object.keys(projectOriginal)?.map((element, index) => {
@@ -102,9 +76,7 @@ export default function ProjectForm(props: ProjectFormProps) {
     }
 
     const handleOnBack = () => {
-        if (project.id !== "" && handleDiference()) {
-            setIsOpenExit(true)
-        } else {
+        if (props.onBack) {
             props.onBack()
         }
     }
@@ -221,6 +193,29 @@ export default function ProjectForm(props: ProjectFormProps) {
 
     return (
         <>
+            <FormRow className="p-2">
+                <FormRowColumn unit="6">
+                    <ActionButtonsForm
+                        isLeftOn
+                        isForBackControl
+                        isDisabled={!isFormValid}
+                        rightWindowText="Deseja confirmar as alterações?"
+                        isForOpenLeft={project.id !== "" && handleDiference()}
+                        isForOpenRight={project.id !== "" && handleDiference()}
+                        rightButtonText={project.id === "" ? "Salvar" : "Editar"}
+                        leftWindowText="Dejesa realmente voltar e descartar as alterações?"
+                        onLeftClick={(event) => {
+                            event.preventDefault()
+                            handleOnBack()
+                        }}
+                        onRightClick={(event) => {
+                            event.preventDefault()
+                            handleSave()
+                        }}
+                    />
+                </FormRowColumn>
+            </FormRow>
+
             {props.canMultiple && (
                 <Form>
                     <FormRow>
@@ -253,12 +248,30 @@ export default function ProjectForm(props: ProjectFormProps) {
             <form
                 onSubmit={(event) => {
                     event.preventDefault()
-                    if (project.id === "") {
-                        handleSave()
-                    } else {
-                        setIsOpenSave(true)
-                    }
                 }}>
+
+                <FormRow className="p-2 hidden">
+                    <FormRowColumn unit="6">
+                        <ActionButtonsForm
+                            isLeftOn
+                            isDisabled={!isFormValid}
+                            rightWindowText="Deseja confirmar as alterações?"
+                            isForOpenLeft={project.id !== "" && handleDiference()}
+                            isForOpenRight={project.id !== "" && handleDiference()}
+                            rightButtonText={project.id === "" ? "Salvar" : "Editar"}
+                            leftWindowText="Dejesa realmente voltar e descartar as alterações?"
+                            onLeftClick={(event) => {
+                                event.preventDefault()
+                                handleOnBack()
+                            }}
+                            onRightClick={(event) => {
+                                event.preventDefault()
+                                handleSave()
+                            }}
+                        />
+                    </FormRowColumn>
+                </FormRow>
+
                 <Form
                     title={props.title}
                     subtitle={props.subtitle}>
@@ -318,12 +331,6 @@ export default function ProjectForm(props: ProjectFormProps) {
                             />
                         </FormRowColumn>
                     </FormRow>
-
-                    <div className="hidden">
-                        <Button
-                            type="submit">
-                        </Button>
-                    </div>
                 </Form>
             </form>
 
@@ -388,88 +395,29 @@ export default function ProjectForm(props: ProjectFormProps) {
             <form
                 onSubmit={(event) => {
                     event.preventDefault()
-                    if (project.id === "") {
-                        handleSave()
-                    } else {
-                        setIsOpenSave(true)
-                    }
                 }}>
                 <FormRow className="p-2">
-                    <FormRowColumn unit="6" className="flex justify-between">
-                        {props.isBack && (
-                            <Button
-                                onClick={(event) => {
-                                    event.preventDefault()
-                                    handleOnBack()
-                                }}
-                                isLoading={isLoading}
-                                isDisabled={isLoading}
-                            >
-                                Voltar
-                            </Button>
-                        )}
-
-                        <Button
-                            type="submit"
-                            isLoading={isLoading}
+                    <FormRowColumn unit="6">
+                        <ActionButtonsForm
+                            isLeftOn
                             isDisabled={!isFormValid}
-                        >
-                            Salvar
-                        </Button>
+                            rightWindowText="Deseja confirmar as alterações?"
+                            isForOpenLeft={project.id !== "" && handleDiference()}
+                            isForOpenRight={project.id !== "" && handleDiference()}
+                            rightButtonText={project.id === "" ? "Salvar" : "Editar"}
+                            leftWindowText="Dejesa realmente voltar e descartar as alterações?"
+                            onLeftClick={(event) => {
+                                event.preventDefault()
+                                handleOnBack()
+                            }}
+                            onRightClick={(event) => {
+                                event.preventDefault()
+                                handleSave()
+                            }}
+                        />
                     </FormRowColumn>
                 </FormRow>
             </form>
-
-            <WindowModal
-                isOpen={isOpenExit}
-                setIsOpen={setIsOpenExit}>
-                <p className="text-center">Deseja realmente sair?</p>
-                <div className="flex mt-10 justify-between content-between">
-                    <Button
-                        onClick={() => setIsOpenExit(false)}
-                    >
-                        Voltar
-                    </Button>
-                    <Button
-                        color="red"
-                        onClick={() => {
-                            if (props.onBack) {
-                                props.onBack()
-                            }
-                        }}
-                    >
-                        Sair
-                    </Button>
-                </div>
-            </WindowModal>
-
-            <WindowModal
-                isOpen={isOpenSave}
-                setIsOpen={setIsOpenSave}>
-                <form onSubmit={(event) => {
-                    event.preventDefault()
-                    handleSave()
-                    setIsOpenSave(false)
-                }}>
-                    <p className="text-center">Deseja realmente editar as informações?</p>
-                    <div className="flex mt-10 justify-between content-between">
-                        <Button
-                            onClick={(event) => {
-                                event.preventDefault()
-                                setIsOpenSave(false)
-                            }}
-                        >
-                            Voltar
-                        </Button>
-                        <Button
-                            color="red"
-                            type="submit"
-                        >
-                            Editar
-                        </Button>
-                    </div>
-                </form>
-            </WindowModal>
         </>
     )
 }

@@ -212,10 +212,12 @@ export default function Projects() {
                     title={title}
                     isLoading={isLoading}
                     list={projectsForShow}
+                    onSetElement={setProject}
                     onNewClick={handleNewClick}
                     onEditClick={handleEditClick}
                     onFilterList={handleFilterList}
                     onDeleteClick={handleDeleteClick}
+                    deleteWindowTitle={"Deseja realmente deletar " + project.title + "?"}
                     onTitle={(element: Project) => {
                         return (<>
                             <p>{element.title}</p>

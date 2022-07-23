@@ -1,14 +1,13 @@
 import Form from "./form"
 import FormRow from "./formRow"
-import Button from "../button/button"
+import { useState } from "react"
 import AddressForm from "./addressForm"
 import FormRowColumn from "./formRowColumn"
 import ArrayTextForm from "./arrayTextForm"
 import { OldDataForm } from "./oldDataForm"
-import { useEffect, useState } from "react"
-import WindowModal from "../modal/windowModal"
 import InputText from "../inputText/inputText"
 import InputSelect from "../inputText/inputSelect"
+import ActionButtonsForm from "./actionButtonsForm"
 import InputCheckbox from "../inputText/inputCheckbox"
 import { FeedbackMessage } from "../modal/feedbackMessageModal"
 import { handlePreparePersonForDB } from "../../util/converterUtil"
@@ -38,8 +37,6 @@ export default function PersonForm(props: PersonFormProps) {
 
     const [isLoading, setIsLoading] = useState(false)
     const [isMultiple, setIsMultiple] = useState(false)
-    const [isOpenExit, setIsOpenExit] = useState(false)
-    const [isOpenSave, setIsOpenSave] = useState(false)
 
     const handleSetPersonOldData = (value) => { setPerson({ ...person, oldData: value }) }
 
@@ -55,30 +52,7 @@ export default function PersonForm(props: PersonFormProps) {
     const handleSetPersonTelephones = (values) => { setPerson({ ...person, telephones: values }) }
     const handleSetPersonMaritalStatus = (value) => { setPerson({ ...person, maritalStatus: value }) }
 
-    useEffect(() => {
-        if (props.onBack) {
-            if (person.id !== "" && handleDiference()) {
-                window.onbeforeunload = () => {
-                    return false
-                }
-                document.addEventListener("keydown", (event) => {
-                    if (event.keyCode === 116) {
-                        event.preventDefault()
-                        setIsOpenExit(true)
-                    }
-                })
-            } else {
-                window.onbeforeunload = () => { }
-                document.addEventListener("keydown", (event) => { })
-            }
 
-            window.onpopstate = (event) => {
-                event.preventDefault()
-                event.stopPropagation()
-                handleOnBack()
-            }
-        }
-    })
 
     const handleDiference = (): boolean => {
         let hasDiference = false
@@ -91,9 +65,7 @@ export default function PersonForm(props: PersonFormProps) {
     }
 
     const handleOnBack = () => {
-        if (person.id !== "" && handleDiference()) {
-            setIsOpenExit(true)
-        } else {
+        if (props.onBack) {
             props.onBack()
         }
     }
@@ -173,12 +145,30 @@ export default function PersonForm(props: PersonFormProps) {
             <form
                 onSubmit={(event) => {
                     event.preventDefault()
-                    if (person.id === "") {
-                        handleSave()
-                    } else {
-                        setIsOpenSave(true)
-                    }
                 }}>
+                <FormRow className="p-2">
+                    <FormRowColumn unit="6">
+                        <ActionButtonsForm
+                            isLeftOn
+                            isForBackControl
+                            isDisabled={!isFormValid}
+                            rightWindowText="Deseja confirmar as alterações?"
+                            isForOpenLeft={person.id !== "" && handleDiference()}
+                            isForOpenRight={person.id !== "" && handleDiference()}
+                            rightButtonText={person.id === "" ? "Salvar" : "Editar"}
+                            leftWindowText="Dejesa realmente voltar e descartar as alterações?"
+                            onLeftClick={(event) => {
+                                event.preventDefault()
+                                handleOnBack()
+                            }}
+                            onRightClick={(event) => {
+                                event.preventDefault()
+                                handleSave()
+                            }}
+                        />
+                    </FormRowColumn>
+                </FormRow>
+
                 <Form
                     title={props.title}
                     subtitle={props.subtitle}>
@@ -317,12 +307,6 @@ export default function PersonForm(props: PersonFormProps) {
                         </FormRowColumn>
                     </FormRow>
                 </Form>
-
-                <div className="hidden">
-                    <Button
-                        type="submit">
-                    </Button>
-                </div>
             </form>
 
             <ArrayTextForm
@@ -338,99 +322,41 @@ export default function PersonForm(props: PersonFormProps) {
                 validationMessage="Faltam números no telefone"
             />
 
-            <AddressForm
-                title="Endereço"
-                isLoading={isLoading}
-                address={person.address}
-                setAddress={handleSetPersonAddress}
-                subtitle="Informações sobre o endereço"
-            />
+            <form
+                onSubmit={(event) => {
+                    event.preventDefault()
+                }}>
 
-            <FormRow className="p-2">
-                <FormRowColumn unit="6" className="flex justify-between">
-                    {props.isBack && (
-                        <Button
-                            onClick={(event) => {
+                <AddressForm
+                    title="Endereço"
+                    isLoading={isLoading}
+                    address={person.address}
+                    setAddress={handleSetPersonAddress}
+                    subtitle="Informações sobre o endereço"
+                />
+
+                <FormRow className="p-2">
+                    <FormRowColumn unit="6">
+                        <ActionButtonsForm
+                            isLeftOn
+                            isDisabled={!isFormValid}
+                            rightWindowText="Deseja confirmar as alterações?"
+                            isForOpenLeft={person.id !== "" && handleDiference()}
+                            isForOpenRight={person.id !== "" && handleDiference()}
+                            rightButtonText={person.id === "" ? "Salvar" : "Editar"}
+                            leftWindowText="Dejesa realmente voltar e descartar as alterações?"
+                            onLeftClick={(event) => {
                                 event.preventDefault()
                                 handleOnBack()
                             }}
-                            isLoading={isLoading}
-                            isDisabled={isLoading}
-                        >
-                            Voltar
-                        </Button>
-                    )}
-
-                    <form
-                        onSubmit={(event) => {
-                            event.preventDefault()
-                            if (person.id === "") {
-                                handleSave()
-                            } else {
-                                setIsOpenSave(true)
-                            }
-                        }}>
-                        <Button
-                            type="submit"
-                            isLoading={isLoading}
-                            isDisabled={!isFormValid}
-                        >
-                            {person.id === "" ? "Salvar" : "Editar"}
-                        </Button>
-                    </form>
-                </FormRowColumn>
-            </FormRow>
-
-            <WindowModal
-                isOpen={isOpenExit}
-                setIsOpen={setIsOpenExit}>
-                <p className="text-center">Deseja realmente sair?</p>
-                <div className="flex mt-10 justify-between content-between">
-                    <Button
-                        onClick={() => setIsOpenExit(false)}
-                    >
-                        Voltar
-                    </Button>
-                    <Button
-                        color="red"
-                        onClick={() => {
-                            if (props.onBack) {
-                                props.onBack()
-                            }
-                        }}
-                    >
-                        Sair
-                    </Button>
-                </div>
-            </WindowModal>
-
-            <WindowModal
-                isOpen={isOpenSave}
-                setIsOpen={setIsOpenSave}>
-                <form onSubmit={(event) => {
-                    event.preventDefault()
-                    handleSave()
-                    setIsOpenSave(false)
-                }}>
-                    <p className="text-center">Deseja realmente editar as informações?</p>
-                    <div className="flex mt-10 justify-between content-between">
-                        <Button
-                            onClick={(event) => {
+                            onRightClick={(event) => {
                                 event.preventDefault()
-                                setIsOpenSave(false)
+                                handleSave()
                             }}
-                        >
-                            Voltar
-                        </Button>
-                        <Button
-                            color="red"
-                            type="submit"
-                        >
-                            Editar
-                        </Button>
-                    </div>
-                </form>
-            </WindowModal>
+                        />
+                    </FormRowColumn>
+                </FormRow>
+            </form>
         </>
     )
 }

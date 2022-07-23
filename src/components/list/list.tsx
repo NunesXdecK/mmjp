@@ -11,6 +11,7 @@ const subtitle = "mt-1 max-w-2xl text-sm text-gray-500"
 interface ListProps {
     title?: string,
     subtitle?: string,
+    deleteWindowTitle?: string,
     haveNew?: boolean,
     canEdit?: boolean,
     canSelect?: boolean,
@@ -21,9 +22,10 @@ interface ListProps {
     list?: any[],
     onNewClick?: () => void,
     onEditClick?: (any) => void,
+    onSetElement?: (any) => void,
     onDeleteClick?: (any) => void,
-    onFilterList?: (string) => void,
     onSelectClick?: (any) => void,
+    onFilterList?: (string) => void,
     onShowMessage?: (FeedbackMessage) => void,
     onInfo?: (element) => any,
     onTitle?: (element) => any,
@@ -119,7 +121,7 @@ export default function List(props: ListProps) {
                     </div>
 
                     {props.onCustomNewButton && (props.onCustomNewButton())}
-                    
+
                     {props.haveNew && (
                         <div className="self-center">
                             <Button
@@ -192,6 +194,9 @@ export default function List(props: ListProps) {
                         onDeleteClick={() => {
                             setIsOpenDelete(true)
                             setElement(element)
+                            if (props.onSetElement) {
+                                props.onSetElement(element)
+                            }
                         }}
                         onEditClick={() => {
                             if (props.onEditClick) {
@@ -240,7 +245,9 @@ export default function List(props: ListProps) {
                         setIsActiveItem(-1)
                     }}
                 >
-                    <p className="text-center">Deseja realmente deletar?</p>
+                    <p className="text-center">
+                        {props.deleteWindowTitle ?? "Deseja realmente deletar?"}
+                    </p>
                     <div className="flex mt-10 justify-between content-between">
                         <Button
                             onClick={(event) => {

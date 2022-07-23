@@ -113,8 +113,10 @@ export default function Professionals() {
                     list={professionalsForShow}
                     onNewClick={handleNewClick}
                     onEditClick={handleEditClick}
+                    onSetElement={setProfessional}
                     onFilterList={handleFilterList}
                     onDeleteClick={handleDeleteClick}
+                    deleteWindowTitle={"Deseja realmente deletar " + professional.title + "?"}
                     onTitle={(element: Professional) => {
                         return (<p>{element.title}</p>)
                     }}

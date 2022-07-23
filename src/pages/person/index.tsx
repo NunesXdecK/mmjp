@@ -16,7 +16,7 @@ export default function Persons() {
     const [isLoading, setIsLoading] = useState(true)
     const [isRegister, setIsRegister] = useState(false)
     const [isFeedbackOpen, setIsFeedbackOpen] = useState(false)
-    
+
     const [feedbackMessage, setFeedbackMessage] = useState<FeedbackMessage>(defaultFeedbackMessage)
 
     const handleBackClick = (event?) => {
@@ -116,6 +116,8 @@ export default function Persons() {
                     onEditClick={handleEditClick}
                     onFilterList={handleFilterList}
                     onDeleteClick={handleDeleteClick}
+                    onSetElement={setPerson}
+                    deleteWindowTitle={"Deseja realmente deletar " + person.name + "?"}
                     onTitle={(element: Person) => {
                         return (<p>{element.name}</p>)
                     }}

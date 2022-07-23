@@ -111,10 +111,12 @@ export default function Immobiles() {
                     title={title}
                     isLoading={isLoading}
                     list={immobilesForShow}
+                    onSetElement={setImmobile}
                     onNewClick={handleNewClick}
                     onEditClick={handleEditClick}
                     onFilterList={handleFilterList}
                     onDeleteClick={handleDeleteClick}
+                    deleteWindowTitle={"Deseja realmente deletar " + immobile.name + "?"}
                     onTitle={(element: Immobile) => {
                         return (<p>{element.name}</p>)
                     }}

@@ -1,19 +1,18 @@
 import Form from "./form";
 import FormRow from "./formRow";
-import Button from "../button/button";
 import AddressForm from "./addressForm";
 import FormRowColumn from "./formRowColumn";
 import { useEffect, useState } from "react";
 import InputText from "../inputText/inputText";
-import WindowModal from "../modal/windowModal";
+import ActionButtonsForm from "./actionButtonsForm";
 import InputCheckbox from "../inputText/inputCheckbox";
 import { FeedbackMessage } from "../modal/feedbackMessageModal";
 import InputImmobilePoints from "../inputText/inputImmobilePoints";
+import SelectPersonCompanyForm from "../select/selectPersonCompanyForm";
 import { handleImmobileValidationForDB } from "../../util/validationUtil";
 import { defaultImmobile, Immobile } from "../../interfaces/objectInterfaces";
 import { NOT_NULL_MARK, NUMBER_MARK } from "../../util/patternValidationUtil";
 import { defaultElementFromBase, ElementFromBase, handlePrepareImmobileForDB } from "../../util/converterUtil";
-import SelectPersonCompanyForm from "../select/selectPersonCompanyForm";
 
 interface ImmobileFormProps {
     title?: string,
@@ -25,8 +24,8 @@ interface ImmobileFormProps {
     isForOldRegister?: boolean,
     immobile?: Immobile,
     onBack?: (object?) => void,
-    onAfterSave?: (object, any?) => void,
     onSelectPerson?: (object) => void,
+    onAfterSave?: (object, any?) => void,
     onShowMessage?: (FeedbackMessage) => void,
 }
 
@@ -37,8 +36,6 @@ export default function ImmobileForm(props: ImmobileFormProps) {
 
     const [isLoading, setIsLoading] = useState(false)
     const [isMultiple, setIsMultiple] = useState(false)
-    const [isOpenExit, setIsOpenExit] = useState(false)
-    const [isOpenSave, setIsOpenSave] = useState(false)
 
     const [oldData, setOldData] = useState<ElementFromBase>(props?.immobile?.oldData ?? defaultElementFromBase)
 
@@ -51,31 +48,6 @@ export default function ImmobileForm(props: ImmobileFormProps) {
     const handleSetImmobileAddress = (value) => { setImmobile({ ...immobile, address: value }) }
     const handleSetImmobilePerimeter = (value) => { setImmobile({ ...immobile, perimeter: value }) }
 
-    useEffect(() => {
-        if (props.onBack) {
-            if (immobile.id !== "" && handleDiference()) {
-                window.onbeforeunload = () => {
-                    return false
-                }
-                document.addEventListener("keydown", (event) => {
-                    if (event.keyCode === 116) {
-                        event.preventDefault()
-                        setIsOpenExit(true)
-                    }
-                })
-            } else {
-                window.onbeforeunload = () => { }
-                document.addEventListener("keydown", (event) => { })
-            }
-
-            window.onpopstate = (event) => {
-                event.preventDefault()
-                event.stopPropagation()
-                handleOnBack()
-            }
-        }
-    })
-
     const handleDiference = (): boolean => {
         let hasDiference = false
         Object.keys(immobileOriginal)?.map((element, index) => {
@@ -87,12 +59,8 @@ export default function ImmobileForm(props: ImmobileFormProps) {
     }
 
     const handleOnBack = () => {
-        if (immobile.id !== "" && handleDiference()) {
-            setIsOpenExit(true)
-        } else {
-            if (props.onBack) {
-                props.onBack()
-            }
+        if (props.onBack) {
+            props.onBack()
         }
     }
 
@@ -160,12 +128,31 @@ export default function ImmobileForm(props: ImmobileFormProps) {
             <form
                 onSubmit={(event) => {
                     event.preventDefault()
-                    if (immobile.id === "") {
-                        handleSave()
-                    } else {
-                        setIsOpenSave(true)
-                    }
                 }}>
+
+                <FormRow className="p-2">
+                    <FormRowColumn unit="6">
+                        <ActionButtonsForm
+                            isLeftOn
+                            isForBackControl
+                            isDisabled={!isFormValid}
+                            rightWindowText="Deseja confirmar as alterações?"
+                            isForOpenLeft={immobile.id !== "" && handleDiference()}
+                            isForOpenRight={immobile.id !== "" && handleDiference()}
+                            rightButtonText={immobile.id === "" ? "Salvar" : "Editar"}
+                            leftWindowText="Dejesa realmente voltar e descartar as alterações?"
+                            onLeftClick={(event) => {
+                                event.preventDefault()
+                                handleOnBack()
+                            }}
+                            onRightClick={(event) => {
+                                event.preventDefault()
+                                handleSave()
+                            }}
+                        />
+                    </FormRowColumn>
+                </FormRow>
+
                 <Form
                     title={props.title}
                     subtitle={props.subtitle}>
@@ -260,12 +247,6 @@ export default function ImmobileForm(props: ImmobileFormProps) {
                             />
                         </FormRowColumn>
                     </FormRow>
-
-                    <div className="hidden">
-                        <Button
-                            type="submit">
-                        </Button>
-                    </div>
                 </Form>
             </form>
 
@@ -284,12 +265,8 @@ export default function ImmobileForm(props: ImmobileFormProps) {
             <form
                 onSubmit={(event) => {
                     event.preventDefault()
-                    if (immobile.id === "") {
-                        handleSave()
-                    } else {
-                        setIsOpenSave(true)
-                    }
                 }}>
+
                 <AddressForm
                     title="Endereço"
                     isLoading={isLoading}
@@ -305,81 +282,27 @@ export default function ImmobileForm(props: ImmobileFormProps) {
                 />
 
                 <FormRow className="p-2">
-                    <FormRowColumn unit="6" className="flex justify-between">
-                        {props.isBack && (
-                            <Button
-                                onClick={(event) => {
-                                    event.preventDefault()
-                                    handleOnBack()
-                                }}
-                                isLoading={isLoading}
-                                isDisabled={isLoading}
-                            >
-                                Voltar
-                            </Button>
-                        )}
-
-                        <Button
-                            type="submit"
-                            isLoading={isLoading}
+                    <FormRowColumn unit="6">
+                        <ActionButtonsForm
+                            isLeftOn
                             isDisabled={!isFormValid}
-                        >
-                            Salvar
-                        </Button>
+                            rightWindowText="Deseja confirmar as alterações?"
+                            isForOpenLeft={immobile.id !== "" && handleDiference()}
+                            isForOpenRight={immobile.id !== "" && handleDiference()}
+                            rightButtonText={immobile.id === "" ? "Salvar" : "Editar"}
+                            leftWindowText="Dejesa realmente voltar e descartar as alterações?"
+                            onLeftClick={(event) => {
+                                event.preventDefault()
+                                handleOnBack()
+                            }}
+                            onRightClick={(event) => {
+                                event.preventDefault()
+                                handleSave()
+                            }}
+                        />
                     </FormRowColumn>
                 </FormRow>
             </form>
-
-            <WindowModal
-                isOpen={isOpenExit}
-                setIsOpen={setIsOpenExit}>
-                <p className="text-center">Deseja realmente sair?</p>
-                <div className="flex mt-10 justify-between content-between">
-                    <Button
-                        onClick={() => setIsOpenExit(false)}
-                    >
-                        Voltar
-                    </Button>
-                    <Button
-                        color="red"
-                        onClick={() => {
-                            if (props.onBack) {
-                                props.onBack()
-                            }
-                        }}
-                    >
-                        Sair
-                    </Button>
-                </div>
-            </WindowModal>
-
-            <WindowModal
-                isOpen={isOpenSave}
-                setIsOpen={setIsOpenSave}>
-                <form onSubmit={(event) => {
-                    event.preventDefault()
-                    handleSave()
-                    setIsOpenSave(false)
-                }}>
-                    <p className="text-center">Deseja realmente editar as informações?</p>
-                    <div className="flex mt-10 justify-between content-between">
-                        <Button
-                            onClick={(event) => {
-                                event.preventDefault()
-                                setIsOpenSave(false)
-                            }}
-                        >
-                            Voltar
-                        </Button>
-                        <Button
-                            color="red"
-                            type="submit"
-                        >
-                            Editar
-                        </Button>
-                    </div>
-                </form>
-            </WindowModal>
         </>
     )
 }
