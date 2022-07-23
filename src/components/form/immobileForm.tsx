@@ -173,7 +173,7 @@ export default function ImmobileForm(props: ImmobileFormProps) {
                     )}
 
                     <FormRow>
-                        <FormRowColumn unit="6">
+                        <FormRowColumn unit="4">
                             <InputText
                                 id="immobilename"
                                 value={immobile.name}
@@ -184,6 +184,15 @@ export default function ImmobileForm(props: ImmobileFormProps) {
                                 onSetText={handleSetImmobileName}
                                 onValidate={handleChangeFormValidation}
                                 validationMessage="O nome do imóvel não pode ficar em branco."
+                            />
+                        </FormRowColumn>
+
+                        <FormRowColumn unit="2">
+                            <InputText
+                                id="status"
+                                isDisabled={true}
+                                value={immobile.status}
+                                title="Status do imóvel"
                             />
                         </FormRowColumn>
                     </FormRow>
@@ -262,6 +271,13 @@ export default function ImmobileForm(props: ImmobileFormProps) {
                 validationMessage="Esta pessoa, ou empresa já é um proprietário"
             />
 
+            <InputImmobilePoints
+                canTest
+                points={immobile.points}
+                title="Pontos geograficos do imóvel"
+                onSetPoints={handleSetImmobilePoints}
+            />
+
             <form
                 onSubmit={(event) => {
                     event.preventDefault()
@@ -275,11 +291,6 @@ export default function ImmobileForm(props: ImmobileFormProps) {
                     subtitle="Informações sobre o endereço"
                 />
 
-                <InputImmobilePoints
-                    canTest
-                    points={immobile.points}
-                    onSetPoints={handleSetImmobilePoints}
-                />
 
                 <FormRow className="p-2">
                     <FormRowColumn unit="6">

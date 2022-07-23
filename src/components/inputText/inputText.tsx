@@ -91,6 +91,11 @@ export default function InputText(props: InputTextProps) {
                         `
     let classNameLabelLocal = "block text-sm font-medium text-gray-700"
 
+    if (props.isDisabled) {
+        classNameInputLocal = classNameInputLocal + " opacity-60"
+        classNameLabelLocal = classNameLabelLocal + " opacity-60"
+    }
+
     if (props.isLoading) {
         classNameInputLocal = classNameInputLocal + STYLE_FOR_INPUT_LOADING
         classNameLabelLocal = classNameLabelLocal + STYLE_FOR_INPUT_LOADING_TRANSPARENT

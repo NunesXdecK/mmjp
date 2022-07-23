@@ -275,6 +275,18 @@ export default function ProjectForm(props: ProjectFormProps) {
                 <Form
                     title={props.title}
                     subtitle={props.subtitle}>
+                    <FormRow>
+                        <FormRowColumn unit="6" className="sm:place-self-left">
+                            <InputCheckbox
+                                id="budget"
+                                title="É orçamento?"
+                                isLoading={isLoading}
+                                value={project.budget}
+                                isDisabled={props.isForDisable}
+                                onSetText={handleSetProjectBudget}
+                            />
+                        </FormRowColumn>
+                    </FormRow>
 
                     <FormRow>
                         <FormRowColumn unit="4">
@@ -292,14 +304,12 @@ export default function ProjectForm(props: ProjectFormProps) {
                             />
                         </FormRowColumn>
 
-                        <FormRowColumn unit="2" className="sm:place-self-center">
-                            <InputCheckbox
-                                id="budget"
-                                title="É orçamento?"
-                                isLoading={isLoading}
-                                value={project.budget}
-                                isDisabled={props.isForDisable}
-                                onSetText={handleSetProjectBudget}
+                        <FormRowColumn unit="2">
+                            <InputText
+                                id="status"
+                                isDisabled={true}
+                                value={project.status}
+                                title="Status do projeto"
                             />
                         </FormRowColumn>
                     </FormRow>

@@ -82,6 +82,17 @@ export default function ProjectStageDataForm(props: ProjectStageDataFormProps) {
 
                 <FormRowColumn unit="2">
                     <InputText
+                        id="status"
+                        isDisabled={true}
+                        value={props.projectStages[index].status}
+                        title="Status da etapa"
+                    />
+                </FormRowColumn>
+            </FormRow>
+
+            <FormRow>
+                <FormRowColumn unit="2">
+                    <InputText
                         mask="date"
                         maxLength={10}
                         title="Prazo final"
@@ -92,12 +103,6 @@ export default function ProjectStageDataForm(props: ProjectStageDataFormProps) {
                         id={"date-due-" + index + "-" + props.id}
                         value={props.projectStages[index].dateString}
                     />
-                </FormRowColumn>
-            </FormRow>
-
-            <FormRow>
-                <FormRowColumn unit="6">
-
                 </FormRowColumn>
             </FormRow>
 
