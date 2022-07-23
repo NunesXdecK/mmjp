@@ -6,6 +6,7 @@ import PersonForm from "../../components/form/personForm"
 import { handlePreparePersonForShow } from "../../util/converterUtil"
 import { defaultPerson, Person } from "../../interfaces/objectInterfaces"
 import FeedbackMessageModal, { defaultFeedbackMessage, FeedbackMessage } from "../../components/modal/feedbackMessageModal"
+import PersonView from "../../components/view/personView"
 
 export default function Persons() {
     const [title, setTitle] = useState("Lista de pessoas")
@@ -119,10 +120,10 @@ export default function Persons() {
                     onSetElement={setPerson}
                     deleteWindowTitle={"Deseja realmente deletar " + person.name + "?"}
                     onTitle={(element: Person) => {
-                        return (<p>{element.name}</p>)
+                        return (<p>{element.clientCode + " - " + element.name}</p>)
                     }}
                     onInfo={(element: Person) => {
-                        return (<p>{element.name}</p>)
+                        return (<PersonView id={element.id} person={element} />)
                     }}
                 />
             ) : (

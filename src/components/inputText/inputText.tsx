@@ -1,7 +1,7 @@
 import { useState } from "react"
-import { handleMaskCPF, handleMaskTelephone, handleMountCNPJMask, handleMountDateMask, handleMountMask, handleMountNumberCurrency, handleRemoveCEPMask, handleRemoveCNPJMask, handleRemoveCPFMask, handleRemoveDateMask } from "../../util/maskUtil"
-import { CEP_MARK, CNPJ_MARK, CNPJ_PATTERN, CPF_MARK, CPF_PATTERN, DATE_MARK, DATE_PATTERN, NOT_NULL_MARK, NUMBER_MARK, ONLY_CHARACTERS_PATTERN, ONLY_CHARACTERS_PATTERN_TWO, ONLY_SPECIAL_FOR_NUMBER_PATTERN, STYLE_FOR_INPUT_LOADING, STYLE_FOR_INPUT_LOADING_TRANSPARENT, TELEPHONE_MARK, TEXT_NOT_NULL_MARK } from "../../util/patternValidationUtil"
 import { handleValidationNotNull } from "../../util/validationUtil"
+import { handleMaskCEP, handleMaskCPF, handleMaskTelephone, handleMountCNPJMask, handleMountDateMask, handleMountMask, handleMountNumberCurrency, handleRemoveCEPMask, handleRemoveCNPJMask, handleRemoveCPFMask, handleRemoveDateMask } from "../../util/maskUtil"
+import { CEP_MARK, CNPJ_MARK, CNPJ_PATTERN, CPF_MARK, CPF_PATTERN, DATE_MARK, DATE_PATTERN, NOT_NULL_MARK, NUMBER_MARK, ONLY_CHARACTERS_PATTERN, ONLY_CHARACTERS_PATTERN_TWO, ONLY_SPECIAL_FOR_NUMBER_PATTERN, STYLE_FOR_INPUT_LOADING, STYLE_FOR_INPUT_LOADING_TRANSPARENT, TELEPHONE_MARK, TEXT_NOT_NULL_MARK } from "../../util/patternValidationUtil"
 
 interface InputTextProps {
     id?: string,
@@ -52,11 +52,6 @@ const handleMountRG = (text, dig1, dig2) => {
 const handleMaskDate = (text: string) => {
     text = handleRemoveDateMask(text)
     return handleMountDateMask(text)
-}
-
-const handleMaskCEP = (text: string) => {
-    text = handleRemoveCEPMask(text)
-    return handleMountMask(text, "99999-999")
 }
 
 const handleMaskRG = (text) => {

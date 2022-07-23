@@ -1,5 +1,10 @@
 import { ONLY_NUMBERS_PATTERN_TWO } from "./patternValidationUtil"
 
+export const handleMaskCEP = (text: string) => {
+    text = handleRemoveCEPMask(text)
+    return handleMountMask(text, "99999-999")
+}
+
 export const handleMaskCPF = (text) => {
     if (text) {
         const dig1 = "-"
