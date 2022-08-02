@@ -1,6 +1,9 @@
 import { useEffect, useState } from "react"
 import Button from "../button/button"
 import WindowModal from "../modal/windowModal"
+import Form from "./form"
+import FormRow from "./formRow"
+import FormRowColumn from "./formRowColumn"
 
 const subtitle = "mt-1 max-w-2xl text-sm text-gray-500"
 
@@ -20,10 +23,9 @@ interface ActionButtonsFormProps {
     onRightClick?: (any?) => void,
 }
 
-
 export default function ActionButtonsForm(props: ActionButtonsFormProps) {
-    const navigationBarClassName = "bg-white px-4 py-3 border-t border-gray-200 sm:px-6"
-    let buttonHolderClassName = "p-2 flex"
+    const navigationBarClassName = "bg-white"
+    let buttonHolderClassName = "flex"
 
     if (props.isLeftOn && props.onLeftClick) {
         buttonHolderClassName = buttonHolderClassName + " justify-between"
@@ -74,51 +76,57 @@ export default function ActionButtonsForm(props: ActionButtonsFormProps) {
 
     return (
         <div>
-            <div className={navigationBarClassName}>
-                <div className={buttonHolderClassName}>
-                    {props.isLeftOn && props.onLeftClick && (
-                        <Button
-                            type="button"
-                            onClick={(event) => {
-                                if (props.isForOpenLeft) {
-                                    setIsOpenLeft(true)
-                                } else {
-                                    if (props.onLeftClick) {
-                                        props.onLeftClick(event)
-                                    }
-                                    setIsOpenLeft(false)
-                                }
-                            }}
-                            isLoading={props.isLoading}
-                            isDisabled={props.isLoading}
-                        >
-                            {props.leftButtonText ?? "Voltar"}
-                        </Button>
-                    )}
+            <Form>
+                <FormRow>
+                    <FormRowColumn unit="6">
+                        <div className={navigationBarClassName}>
+                            <div className={buttonHolderClassName}>
+                                {props.isLeftOn && props.onLeftClick && (
+                                    <Button
+                                        type="button"
+                                        onClick={(event) => {
+                                            if (props.isForOpenLeft) {
+                                                setIsOpenLeft(true)
+                                            } else {
+                                                if (props.onLeftClick) {
+                                                    props.onLeftClick(event)
+                                                }
+                                                setIsOpenLeft(false)
+                                            }
+                                        }}
+                                        isLoading={props.isLoading}
+                                        isDisabled={props.isLoading}
+                                    >
+                                        {props.leftButtonText ?? "Voltar"}
+                                    </Button>
+                                )}
 
-                    {props.centerText && (
-                        <span className={subtitle}>{props.centerText}</span>
-                    )}
+                                {props.centerText && (
+                                    <span className={subtitle}>{props.centerText}</span>
+                                )}
 
-                    {props.onRightClick && (
-                        <Button
-                            onClick={(event) => {
-                                if (props.isForOpenRight) {
-                                    setIsOpenRight(true)
-                                } else {
-                                    if (props.onRightClick) {
-                                        props.onRightClick(event)
-                                    }
-                                }
-                            }}
-                            isLoading={props.isLoading}
-                            isDisabled={props.isDisabled || props.isLoading}
-                        >
-                            {props.rightButtonText ?? "Salvar"}
-                        </Button>
-                    )}
-                </div>
-            </div>
+                                {props.onRightClick && (
+                                    <Button
+                                        onClick={(event) => {
+                                            if (props.isForOpenRight) {
+                                                setIsOpenRight(true)
+                                            } else {
+                                                if (props.onRightClick) {
+                                                    props.onRightClick(event)
+                                                }
+                                            }
+                                        }}
+                                        isLoading={props.isLoading}
+                                        isDisabled={props.isDisabled || props.isLoading}
+                                    >
+                                        {props.rightButtonText ?? "Salvar"}
+                                    </Button>
+                                )}
+                            </div>
+                        </div>
+                    </FormRowColumn>
+                </FormRow>
+            </Form>
 
             <WindowModal
                 isOpen={isOpenLeft}

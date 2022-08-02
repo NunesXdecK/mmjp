@@ -13,6 +13,7 @@ export default function Companies() {
     const [companies, setCompanies] = useState<Company[]>([])
     const [companiesForShow, setCompaniesForShow] = useState<Company[]>([])
 
+    const [isFirst, setIsFirst] = useState(true)
     const [isLoading, setIsLoading] = useState(true)
     const [isRegister, setIsRegister] = useState(false)
     const [isFeedbackOpen, setIsFeedbackOpen] = useState(false)
@@ -26,6 +27,7 @@ export default function Companies() {
         setCompanies([])
         setCompaniesForShow([])
         setCompany(defaultCompany)
+        setIsFirst(true)
         setIsLoading(true)
         setIsRegister(false)
         setTitle("Lista de empresas")
@@ -85,10 +87,13 @@ export default function Companies() {
     }
 
     useEffect(() => {
-        if (companies.length === 0) {
+        if (isFirst) {
             fetch("api/companies").then((res) => res.json()).then((res) => {
-                setCompanies(res.list)
-                setCompaniesForShow(res.list)
+                if (res.list.length) {
+                    setCompanies(res.list)
+                    setCompaniesForShow(res.list)
+                }
+                setIsFirst(false)
                 setIsLoading(false)
             })
         }

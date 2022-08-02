@@ -23,13 +23,14 @@ export default async function handler(req, res) {
                     let nowID = data?.id ?? ""
 
                     let clientsDocRefsForDB = []
-                    let immobilesTargetDocRefsForDB = []
-                    let immobilesOriginDocRefsForDB = []
-
-                    if (project.professional && project.professional?.id !== "") {
+                    
+                    if (project.professional?.id && project.professional?.id?.length > 0) {
                         const docRef = doc(professionalCollection, project.professional.id)
                         project = { ...project, professional: docRef }
                     }
+                    {/*
+                    let immobilesTargetDocRefsForDB = []
+                    let immobilesOriginDocRefsForDB = []
                     if (project.immobilesTarget?.length > 0) {
                         project.immobilesTarget?.map((element, index) => {
                             if (element.id) {
@@ -48,6 +49,7 @@ export default async function handler(req, res) {
                         })
                         project = { ...project, immobilesOrigin: immobilesOriginDocRefsForDB }
                     }
+                */}
                     if (project.clients?.length > 0) {
                         project.clients?.map((element, index) => {
                             if ("cpf" in element) {

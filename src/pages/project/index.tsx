@@ -4,10 +4,9 @@ import List from "../../components/list/list"
 import Layout from "../../components/layout/layout"
 import ProjectForm from "../../components/form/projectForm"
 import { handleNewDateToUTC, handleUTCToDateShow } from "../../util/dateUtils"
-import { Company, defaultProfessional, defaultProject, Immobile, Person, Professional, Project, ProjectPayment, ProjectStage } from "../../interfaces/objectInterfaces"
+import { Company, defaultProfessional, defaultProject, Person, Professional, Project } from "../../interfaces/objectInterfaces"
 import FeedbackMessageModal, { defaultFeedbackMessage, FeedbackMessage } from "../../components/modal/feedbackMessageModal"
 import { COMPANY_COLLECTION_NAME, PERSON_COLLECTION_NAME } from "../../db/firebaseDB"
-import { handlePrepareProjectPaymentStageForShow } from "../../util/converterUtil"
 
 export default function Projects() {
     const [title, setTitle] = useState("Lista de projetos")
@@ -15,6 +14,7 @@ export default function Projects() {
     const [projects, setProjects] = useState<Project[]>([])
     const [projectsForShow, setProjectsForShow] = useState<Project[]>([])
 
+    const [isFirst, setIsFirst] = useState(true)
     const [isLoading, setIsLoading] = useState(true)
     const [isRegister, setIsRegister] = useState(false)
     const [isFeedbackOpen, setIsFeedbackOpen] = useState(false)
@@ -28,6 +28,7 @@ export default function Projects() {
         setProjects([])
         setProjectsForShow([])
         setProject(defaultProject)
+        setIsFirst(true)
         setIsLoading(true)
         setIsRegister(false)
         setTitle("Lista de projetos")
@@ -74,17 +75,23 @@ export default function Projects() {
     const handleEditClickOld = async (project) => {
         setIsLoading(true)
         let localProject: Project = await fetch("api/project/" + project.id).then((res) => res.json()).then((res) => res.data)
+        {/*
+let localProjectPayments: ProjectPayment[] = await fetch("api/projectPayments/" + project.id).then((res) => res.json()).then((res) => res.list)
+localProjectPayments = handlePrepareProjectPaymentStageForShow(localProjectPayments)
 
-        let localProjectPayments: ProjectPayment[] = await fetch("api/projectPayments/" + project.id).then((res) => res.json()).then((res) => res.list)
-        localProjectPayments = handlePrepareProjectPaymentStageForShow(localProjectPayments)
+let localProjectStages: ProjectStage[] = await fetch("api/projectStages/" + project.id).then((res) => res.json()).then((res) => res.list)
+localProjectStages = handlePrepareProjectPaymentStageForShow(localProjectStages)
 
-        let localProjectStages: ProjectStage[] = await fetch("api/projectStages/" + project.id).then((res) => res.json()).then((res) => res.list)
-        localProjectStages = handlePrepareProjectPaymentStageForShow(localProjectStages)
+localProject = {
+    ...localProject,
+    projectStages: localProjectStages,
+    projectPayments: localProjectPayments,
+    dateString: handleUTCToDateShow(localProject.date.toString()),
+}
+*/}
 
         localProject = {
             ...localProject,
-            projectStages: localProjectStages,
-            projectPayments: localProjectPayments,
             dateString: handleUTCToDateShow(localProject.date.toString()),
         }
         setIsLoading(false)
@@ -100,31 +107,17 @@ export default function Projects() {
         let localProfessional: Professional = defaultProfessional
         if (localProject.professional && localProject.professional !== "") {
             localProfessional = await fetch("api/professional/" + localProject.professional).then((res) => res.json()).then((res) => res.data)
+        } else {
+            localProfessional = await fetch("api/lastProfessional").then((res) => res.json()).then((res) => res.professional)
         }
+
+        {/*
 
         let localProjectPayments: ProjectPayment[] = await fetch("api/projectPayments/" + localProject.id).then((res) => res.json()).then((res) => res.list)
         localProjectPayments = handlePrepareProjectPaymentStageForShow(localProjectPayments)
 
         let localProjectStages: ProjectStage[] = await fetch("api/projectStages/" + localProject.id).then((res) => res.json()).then((res) => res.list)
         localProjectPayments = handlePrepareProjectPaymentStageForShow(localProjectPayments)
-
-        let localClients = []
-        await Promise.all(
-            localProject.clients.map(async (element, index) => {
-                let array = element.split("/")
-                if (array && array.length > 0) {
-                    let localClient: (Person | Company) = {}
-                    if (array[0].includes(PERSON_COLLECTION_NAME)) {
-                        localClient = await fetch("api/person/" + array[1]).then((res) => res.json()).then((res) => res.data)
-                    } else if (array[0].includes(COMPANY_COLLECTION_NAME)) {
-                        localClient = await fetch("api/company/" + array[1]).then((res) => res.json()).then((res) => res.data)
-                    }
-                    if (localClient.id && localClient.id !== "") {
-                        localClients = [...localClients, localClient]
-                    }
-                }
-            })
-        )
 
         let localImmobileOrigin = []
         await Promise.all(
@@ -150,7 +143,6 @@ export default function Projects() {
             })
         )
 
-
         localProject = {
             ...localProject,
             clients: localClients,
@@ -159,6 +151,34 @@ export default function Projects() {
             immobilesTarget: localImmobileTarget,
             immobilesOrigin: localImmobileOrigin,
             projectPayments: localProjectPayments,
+            dateString: handleUTCToDateShow(localProject.date.toString()),
+        }
+    */}
+
+        let localClients = []
+        if (localProject.clients && localProject.clients.length > 0) {
+            await Promise.all(
+                localProject.clients.map(async (element, index) => {
+                    let array = element.split("/")
+                    if (array && array.length > 0) {
+                        let localClient: (Person | Company) = {}
+                        if (array[0].includes(PERSON_COLLECTION_NAME)) {
+                            localClient = await fetch("api/person/" + array[1]).then((res) => res.json()).then((res) => res.data)
+                        } else if (array[0].includes(COMPANY_COLLECTION_NAME)) {
+                            localClient = await fetch("api/company/" + array[1]).then((res) => res.json()).then((res) => res.data)
+                        }
+                        if (localClient.id && localClient.id !== "") {
+                            localClients = [...localClients, localClient]
+                        }
+                    }
+                })
+            )
+        }
+
+        localProject = {
+            ...localProject,
+            clients: localClients,
+            professional: localProfessional,
             dateString: handleUTCToDateShow(localProject.date.toString()),
         }
         setIsLoading(false)
@@ -184,10 +204,13 @@ export default function Projects() {
     }
 
     useEffect(() => {
-        if (projects.length === 0) {
+        if (isFirst) {
             fetch("api/projects").then((res) => res.json()).then((res) => {
-                setProjects(res.list)
-                setProjectsForShow(res.list)
+                if (res.list.length) {
+                    setProjects(res.list)
+                    setProjectsForShow(res.list)
+                }
+                setIsFirst(false)
                 setIsLoading(false)
             })
         }

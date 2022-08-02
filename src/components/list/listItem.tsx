@@ -35,11 +35,12 @@ export default function ItemList(props: ItemListProps) {
     const [isShowingInfo, setIsShowingInfo] = useState(false)
 
     let className = `
-        bg-white p-4
-        rounded-sm shadow
+        border
+        border-gray-50
+        bg-white p-4 sm:p-8 
         items-center text-left
         transition duration-200
-        hover:shadow-md hover:shadow-indigo-500 hover:bg-indigo-50
+        hover:bg-indigo-50
         active:bg-indigo-50 focus:bg-indigo-50
         active:outline-none focus:outline-none
      `
@@ -51,7 +52,7 @@ export default function ItemList(props: ItemListProps) {
     const handleLoading = () => {
         return (
             <div>
-                <svg className="animate-spin h-4 w-4 text-white"
+                <svg className="border animate-spin h-4 w-4 text-white"
                     xmlns="http://www.w3.org/2000/svg"
                     viewBox="0 0 24 24"
                     fill="none"
@@ -69,11 +70,18 @@ export default function ItemList(props: ItemListProps) {
                 <PlaceholderItemList />
             ) : (
                 <div
-                    onClick={() => {
-                        if (props.onActiveChange) {
-                            props.onActiveChange(props.isActive ? -1 : props.index)
+                    onClick={(event) => {
+                        switch (event.detail) {
+                            case 1:
+                                if (!props.isActive && props.onActiveChange) {
+                                    props.onActiveChange(props.index)
+                                    setIsShowingInfo(false)
+                                }
+                                break
+                            case 2:
+                                setIsShowingInfo(true)
+                                break
                         }
-                        setIsShowingInfo(false)
                     }}
                     className={className}>
                     <div>

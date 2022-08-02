@@ -52,8 +52,6 @@ export default function PersonForm(props: PersonFormProps) {
     const handleSetPersonTelephones = (values) => { setPerson({ ...person, telephones: values }) }
     const handleSetPersonMaritalStatus = (value) => { setPerson({ ...person, maritalStatus: value }) }
 
-
-
     const handleDiference = (): boolean => {
         let hasDiference = false
         Object.keys(personOriginal)?.map((element, index) => {
@@ -148,32 +146,28 @@ export default function PersonForm(props: PersonFormProps) {
                         event.preventDefault()
                     }
                 }}>
-                <FormRow className="p-2">
-                    <FormRowColumn unit="6">
-                        <ActionButtonsForm
-                            isLeftOn
-                            isForBackControl
-                            isDisabled={!isFormValid}
-                            rightWindowText="Deseja confirmar as alterações?"
-                            isForOpenLeft={person.id !== "" && handleDiference()}
-                            isForOpenRight={person.id !== "" && handleDiference()}
-                            rightButtonText={person.id === "" ? "Salvar" : "Editar"}
-                            leftWindowText="Dejesa realmente voltar e descartar as alterações?"
-                            onLeftClick={(event) => {
-                                if (event) {
-                                    event.preventDefault()
-                                }
-                                handleOnBack()
-                            }}
-                            onRightClick={(event) => {
-                                if (event) {
-                                    event.preventDefault()
-                                }
-                                handleSave()
-                            }}
-                        />
-                    </FormRowColumn>
-                </FormRow>
+                <ActionButtonsForm
+                    isLeftOn
+                    isForBackControl
+                    isDisabled={!isFormValid}
+                    rightWindowText="Deseja confirmar as alterações?"
+                    isForOpenLeft={person.id !== "" && handleDiference()}
+                    isForOpenRight={person.id !== "" && handleDiference()}
+                    rightButtonText={person.id === "" ? "Salvar" : "Editar"}
+                    leftWindowText="Dejesa realmente voltar e descartar as alterações?"
+                    onLeftClick={(event) => {
+                        if (event) {
+                            event.preventDefault()
+                        }
+                        handleOnBack()
+                    }}
+                    onRightClick={(event) => {
+                        if (event) {
+                            event.preventDefault()
+                        }
+                        handleSave()
+                    }}
+                />
 
                 <Form
                     title={props.title}
@@ -343,31 +337,27 @@ export default function PersonForm(props: PersonFormProps) {
                     subtitle="Informações sobre o endereço"
                 />
 
-                <FormRow className="p-2">
-                    <FormRowColumn unit="6">
-                        <ActionButtonsForm
-                            isLeftOn
-                            isDisabled={!isFormValid}
-                            rightWindowText="Deseja confirmar as alterações?"
-                            isForOpenLeft={person.id !== "" && handleDiference()}
-                            isForOpenRight={person.id !== "" && handleDiference()}
-                            rightButtonText={person.id === "" ? "Salvar" : "Editar"}
-                            leftWindowText="Dejesa realmente voltar e descartar as alterações?"
-                            onLeftClick={(event) => {
-                                if (event) {
-                                    event.preventDefault()
-                                }
-                                handleOnBack()
-                            }}
-                            onRightClick={(event) => {
-                                if (event) {
-                                    event.preventDefault()
-                                }
-                                handleSave()
-                            }}
-                        />
-                    </FormRowColumn>
-                </FormRow>
+                <ActionButtonsForm
+                    isLeftOn
+                    isDisabled={!isFormValid}
+                    rightWindowText="Deseja confirmar as alterações?"
+                    isForOpenLeft={person.id !== "" && handleDiference()}
+                    isForOpenRight={person.id !== "" && handleDiference()}
+                    rightButtonText={person.id === "" ? "Salvar" : "Editar"}
+                    leftWindowText="Dejesa realmente voltar e descartar as alterações?"
+                    onLeftClick={(event) => {
+                        if (event) {
+                            event.preventDefault()
+                        }
+                        handleOnBack()
+                    }}
+                    onRightClick={(event) => {
+                        if (event) {
+                            event.preventDefault()
+                        }
+                        handleSave()
+                    }}
+                />
             </form>
         </>
     )

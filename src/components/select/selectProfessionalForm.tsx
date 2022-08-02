@@ -8,8 +8,8 @@ import InputText from "../inputText/inputText";
 import FormRowColumn from "../form/formRowColumn";
 import ProfessionalForm from "../form/professionalForm";
 import { FeedbackMessage } from "../modal/feedbackMessageModal";
+import { PencilAltIcon, TrashIcon } from "@heroicons/react/outline";
 import { defaultProfessional, Professional } from "../../interfaces/objectInterfaces";
-import { TrashIcon } from "@heroicons/react/outline";
 
 interface SelectProfessionalFormProps {
     id?: string,
@@ -18,19 +18,27 @@ interface SelectProfessionalFormProps {
     inputTitle?: string,
     validation?: string,
     buttonTitle?: string,
+    formClassName?: string,
     validationMessage?: string,
+    validationMessageButton?: string,
     isLocked?: boolean,
     isLoading?: boolean,
+    validationButton?: boolean,
     isMultipleSelect?: boolean,
     professionals?: Professional[],
+    onValidate?: (any) => boolean,
     onSetLoading?: (any) => void,
     onSetProfessionals?: (array) => void,
     onShowMessage?: (FeedbackMessage) => void,
 }
 
 export default function SelectProfessionalForm(props: SelectProfessionalFormProps) {
+    const [isFirst, setIsFirst] = useState(true)
     const [isOpen, setIsOpen] = useState(false)
+    const [isInvalid, setIsInvalid] = useState(false)
     const [isRegister, setIsRegister] = useState(false)
+
+    const [editIndex, setEditIndex] = useState(-1)
 
     const [professional, setProfessional] = useState<Professional>(defaultProfessional)
 
@@ -49,6 +57,7 @@ export default function SelectProfessionalForm(props: SelectProfessionalFormProp
         setProfessionals([])
         setProfessionalsForShow([])
         setProfessional(defaultProfessional)
+        setIsFirst(true)
         setIsRegister(false)
     }
 
@@ -73,20 +82,31 @@ export default function SelectProfessionalForm(props: SelectProfessionalFormProp
         let localProfessionals = props.professionals
         let canAdd = true
 
-        if (props.isMultipleSelect) {
-            localProfessionals?.map((element, index) => {
-                if (element.creaNumber === professional.creaNumber) {
-                    canAdd = false
-                }
-            })
+        localProfessionals?.map((element, index) => {
+            if (element.creaNumber === professional.creaNumber) {
+                canAdd = false
+            }
+        })
+
+        if (props.onValidate) {
+            canAdd = props.onValidate(professional)
         }
 
         if (canAdd) {
             if (props.isMultipleSelect) {
-                localProfessionals = [...localProfessionals, professional]
+                if (editIndex > -1) {
+                    localProfessionals = [
+                        ...localProfessionals.slice(0, editIndex),
+                        professional,
+                        ...localProfessionals.slice(editIndex + 1, localProfessionals.length),
+                    ]
+                } else {
+                    localProfessionals = [...localProfessionals, professional]
+                }
             } else {
                 localProfessionals = [professional]
             }
+            setEditIndex(-1)
             if (props.onSetProfessionals) {
                 props.onSetProfessionals(localProfessionals)
                 setIsOpen(false)
@@ -116,10 +136,13 @@ export default function SelectProfessionalForm(props: SelectProfessionalFormProp
     }
 
     useEffect(() => {
-        if (professionals.length === 0) {
+        if (isFirst) {
             fetch("api/professionals").then((res) => res.json()).then((res) => {
-                setProfessionals(res.list)
-                setProfessionalsForShow(res.list)
+                if (res.list.length) {
+                    setProfessionals(res.list)
+                    setProfessionalsForShow(res.list)
+                }
+                setIsFirst(false)
                 if (props.onSetLoading) {
                     props.onSetLoading(false)
                 }
@@ -131,18 +154,30 @@ export default function SelectProfessionalForm(props: SelectProfessionalFormProp
         <>
             <Form
                 title={props.title}
-                subtitle={props.subtitle}>
+                subtitle={props.subtitle}
+                className={props.formClassName}
+                >
                 {!props.isLocked && (
                     <FormRow>
-                        <FormRowColumn unit="6" className="justify-self-end">
+                        <FormRowColumn unit="6" className="flex flex-col items-end justify-self-end">
                             <Button
                                 type="submit"
+                                className="w-fit"
                                 isLoading={props.isLoading}
                                 isDisabled={props.isLoading}
-                                onClick={() => setIsOpen(true)}
+                                onClick={() => {
+                                    if (props.validationButton) {
+                                        setIsInvalid(true)
+                                    } else {
+                                        setIsOpen(true)
+                                    }
+                                }}
                             >
                                 {props.buttonTitle}
                             </Button>
+                            {isInvalid && (
+                                <span className="mt-2 text-red-600">{props.validationMessageButton}</span>
+                            )}
                         </FormRowColumn>
                     </FormRow>
                 )}
@@ -151,7 +186,7 @@ export default function SelectProfessionalForm(props: SelectProfessionalFormProp
                     <form key={index + element.dateInsertUTC}
                         onSubmit={(event) => handleRemoveProfessional(event, element)}>
                         <FormRow>
-                            <FormRowColumn unit="3">
+                            <FormRowColumn unit="2">
                                 <InputText
                                     title="Titulo"
                                     isDisabled={true}
@@ -172,8 +207,19 @@ export default function SelectProfessionalForm(props: SelectProfessionalFormProp
                             </FormRowColumn>
 
                             {!props.isLocked && (
-                                <FormRowColumn unit="1"
-                                    className="self-end justify-self-end">
+                                <FormRowColumn unit="2"
+                                    className="flex flex-row gap-2 self-end justify-self-end">
+                                    <Button
+                                        type="button"
+                                        isLoading={props.isLoading}
+                                        isDisabled={props.isLoading}
+                                        onClick={() => {
+                                            setEditIndex(index)
+                                            setIsOpen(true)
+                                        }}
+                                    >
+                                        <PencilAltIcon className="text-white block h-5 w-5" aria-hidden="true" />
+                                    </Button>
                                     <Button
                                         type="submit"
                                         color="red"

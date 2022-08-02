@@ -1,23 +1,19 @@
 import Form from "./form";
 import FormRow from "./formRow";
-import Button from "../button/button";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import FormRowColumn from "./formRowColumn";
 import InputText from "../inputText/inputText";
 import InputCheckbox from "../inputText/inputCheckbox";
-import SelectImmobileForm from "../select/selectImmobileForm";
 import { FeedbackMessage } from "../modal/feedbackMessageModal";
 import { NOT_NULL_MARK } from "../../util/patternValidationUtil";
 import InputTextAutoComplete from "../inputText/inputTextAutocomplete";
 import { handleProjectValidationForDB } from "../../util/validationUtil";
-import { defaultProject, Professional, Project } from "../../interfaces/objectInterfaces";
-import { defaultElementFromBase, ElementFromBase, handlePrepareProjectForDB, handlePrepareProjectPaymentStageForDB, } from "../../util/converterUtil";
+import { defaultProject, Project, Service } from "../../interfaces/objectInterfaces";
+import { defaultElementFromBase, ElementFromBase, handlePrepareProjectForDB, handlePrepareServicePaymentStageForDB, } from "../../util/converterUtil";
 import SelectPersonCompanyForm from "../select/selectPersonCompanyForm";
-import SelectProfessionalForm from "../select/selectProfessionalForm";
-import WindowModal from "../modal/windowModal";
-import ProjectPaymentForm from "./projectPaymentForm";
-import ProjectStageForm from "./projectStageForm";
 import ActionButtonsForm from "./actionButtonsForm";
+import SelectProfessionalForm from "../select/selectProfessionalForm";
+import ServiceForm from "../listForm/serviceForm";
 
 interface ProjectFormProps {
     title?: string,
@@ -44,24 +40,24 @@ export default function ProjectForm(props: ProjectFormProps) {
 
     const [oldData, setOldData] = useState<ElementFromBase>(props?.project?.oldData ?? defaultElementFromBase)
 
+    const [services, setServices] = useState<Service[]>(props?.project?.services ? props.project.services : [])
     const [professionals, setProfessionals] = useState(props?.project?.professional?.id ? [props.project.professional] : [])
 
     const handleSetProjectTitle = (value) => { setProject({ ...project, title: value }) }
-    const handleSetProjectBudget = (value) => { setProject({ ...project, budget: value }) }
     const handleSetProjectNumber = (value) => { setProject({ ...project, number: value }) }
     const handleSetProjectDate = (value) => { setProject({ ...project, dateString: value }) }
-    const handleSetProjectStages = (value) => { setProject({ ...project, projectStages: value }) }
-    const handleSetProjectPayments = (value) => { setProject({ ...project, projectPayments: value }) }
-    const handleSetProjectImmobilesOrigin = (value) => { setProject({ ...project, immobilesOrigin: value }) }
-    const handleSetProjectImmobilesTarget = (value) => { setProject({ ...project, immobilesTarget: value }) }
-    const handleSetProjectClients = (value) => {
+    const handleSetProjectClients = async (value) => {
+        const year = new Date().getFullYear()
         let number = ""
+        number = number + year + "-"
         value.map((element, index) => {
             if ("clientCode" in element && element.clientCode !== "") {
                 number = number + element.clientCode + "-"
             }
         })
-        number = number + new Date().getFullYear() + "-"
+
+        let numberOfProjectsInYear = await fetch("api/projectnumber/" + number).then((res) => res.json()).then((res) => res.data)
+        number = number + numberOfProjectsInYear
         setProject({ ...project, clients: value, number: number })
     }
 
@@ -92,6 +88,8 @@ export default function ProjectForm(props: ProjectFormProps) {
         let projectForDB: Project = { ...project }
         if (professionals?.length > 0) {
             projectForDB = { ...projectForDB, professional: professionals[0] }
+        } else {
+            projectForDB = { ...projectForDB, professional: {} }
         }
         const isValid = handleProjectValidationForDB(projectForDB)
         if (isValid.validation) {
@@ -121,12 +119,12 @@ export default function ProjectForm(props: ProjectFormProps) {
                 setProject({ ...project, id: res.id })
                 projectForDB = { ...projectForDB, id: res.id }
 
+                {/*
                 projectForDB = {
                     ...projectForDB,
                     projectStages: handlePrepareProjectPaymentStageForDB(projectForDB, project.projectStages),
                     projectPayments: handlePrepareProjectPaymentStageForDB(projectForDB, project.projectPayments),
                 }
-
                 try {
                     await Promise.all(
                         projectForDB.projectPayments.map(async (element, index) => {
@@ -147,6 +145,7 @@ export default function ProjectForm(props: ProjectFormProps) {
                     feedbackMessage = { ...feedbackMessage, messages: ["Erro em salvar os pagaments!"], messageType: "ERROR" }
                     console.error("Error adding document: ", e)
                 }
+*/}
 
                 if (isMultiple) {
                     setProject(defaultProject)
@@ -171,83 +170,31 @@ export default function ProjectForm(props: ProjectFormProps) {
         setIsLoading(false)
     }
 
-    const handleValidadeTarget = (immobile) => {
-        let canAdd = true
-        project.immobilesOrigin.map((element, index) => {
-            if (immobile.id === element.id) {
-                canAdd = false
-            }
-        })
-        return canAdd
-    }
-
-    const handleValidadeOrigin = (immobile) => {
-        let canAdd = true
-        project.immobilesTarget.map((element, index) => {
-            if (immobile.id === element.id) {
-                canAdd = false
-            }
-        })
-        return canAdd
-    }
-
     return (
         <>
-            <FormRow className="p-2">
-                <FormRowColumn unit="6">
-                    <ActionButtonsForm
-                        isLeftOn
-                        isForBackControl
-                        isDisabled={!isFormValid}
-                        rightWindowText="Deseja confirmar as alterações?"
-                        isForOpenLeft={project.id !== "" && handleDiference()}
-                        isForOpenRight={project.id !== "" && handleDiference()}
-                        rightButtonText={project.id === "" ? "Salvar" : "Editar"}
-                        leftWindowText="Dejesa realmente voltar e descartar as alterações?"
-                        onLeftClick={(event) => {
-                            if (event) {
-                                event.preventDefault()
-                            }
-                            handleOnBack()
-                        }}
-                        onRightClick={(event) => {
-                            if (event) {
-                                event.preventDefault()
-                            }
-                            handleSave()
-                        }}
-                    />
-                </FormRowColumn>
-            </FormRow>
-
-            {props.canMultiple && (
-                <Form>
-                    <FormRow>
-                        <FormRowColumn unit="6">
-                            <InputCheckbox
-                                id="multiple"
-                                value={isMultiple}
-                                isLoading={isLoading}
-                                onSetText={setIsMultiple}
-                                title="Cadastro multiplo?"
-                                isDisabled={props.isForDisable}
-                            />
-                        </FormRowColumn>
-                    </FormRow>
-                </Form>
-            )}
-
-            <SelectPersonCompanyForm
-                title="Clientes"
-                isLoading={isLoading}
-                isMultipleSelect={false}
-                subtitle="Selecione o cliente"
-                buttonTitle="Adicionar cliente"
-                onShowMessage={props.onShowMessage}
-                personsAndCompanies={project.clients}
-                onSetPersonsAndCompanies={handleSetProjectClients}
-                validationMessage="Esta pessoa, ou empresa já é um cliente"
+            <ActionButtonsForm
+                isLeftOn
+                isForBackControl
+                isDisabled={!isFormValid}
+                rightWindowText="Deseja confirmar as alterações?"
+                isForOpenLeft={project.id !== "" && handleDiference()}
+                isForOpenRight={project.id !== "" && handleDiference()}
+                rightButtonText={project.id === "" ? "Salvar" : "Editar"}
+                leftWindowText="Dejesa realmente voltar e descartar as alterações?"
+                onLeftClick={(event) => {
+                    if (event) {
+                        event.preventDefault()
+                    }
+                    handleOnBack()
+                }}
+                onRightClick={(event) => {
+                    if (event) {
+                        event.preventDefault()
+                    }
+                    handleSave()
+                }}
             />
+
 
             <form
                 onSubmit={(event) => {
@@ -285,18 +232,21 @@ export default function ProjectForm(props: ProjectFormProps) {
                 <Form
                     title={props.title}
                     subtitle={props.subtitle}>
-                    <FormRow>
-                        <FormRowColumn unit="6" className="sm:place-self-left">
-                            <InputCheckbox
-                                id="budget"
-                                title="É orçamento?"
-                                isLoading={isLoading}
-                                value={project.budget}
-                                isDisabled={props.isForDisable}
-                                onSetText={handleSetProjectBudget}
-                            />
-                        </FormRowColumn>
-                    </FormRow>
+
+                    {props.canMultiple && (
+                        <FormRow>
+                            <FormRowColumn unit="6">
+                                <InputCheckbox
+                                    id="multiple"
+                                    value={isMultiple}
+                                    isLoading={isLoading}
+                                    onSetText={setIsMultiple}
+                                    title="Cadastro multiplo?"
+                                    isDisabled={props.isForDisable}
+                                />
+                            </FormRowColumn>
+                        </FormRow>
+                    )}
 
                     <FormRow>
                         <FormRowColumn unit="4">
@@ -354,62 +304,40 @@ export default function ProjectForm(props: ProjectFormProps) {
                 </Form>
             </form>
 
-            <SelectImmobileForm
+            <SelectPersonCompanyForm
+                title="Clientes"
                 isLoading={isLoading}
-                title="Imóveis alvo"
-                buttonTitle="Adicionar imóveis"
-                subtitle="Selecione os imovéis"
-                onValidate={handleValidadeTarget}
+                formClassName="p-1 m-3"
+                subtitle="Selecione o cliente"
+                buttonTitle="Adicionar cliente"
                 onShowMessage={props.onShowMessage}
-                immobiles={project.immobilesTarget}
-                onSetImmobiles={handleSetProjectImmobilesTarget}
-                isMultipleSelect={project.immobilesOrigin?.length < 2}
-                validationMessage="Este imóvel alvo já está selecionado"
+                personsAndCompanies={project.clients}
+                validationButton={project.clients.length === 1}
+                onSetPersonsAndCompanies={handleSetProjectClients}
+                validationMessage="Esta pessoa, ou empresa já é um cliente"
+                validationMessageButton="Você não pode mais adicionar clientes"
             />
 
-            {project.immobilesTarget?.length > 0 && (
-                <SelectImmobileForm
-                    isLoading={isLoading}
-                    title="Imóveis de origem"
-                    buttonTitle="Adicionar imóveis"
-                    subtitle="Selecione os imovéis"
-                    onValidate={handleValidadeOrigin}
-                    onShowMessage={props.onShowMessage}
-                    immobiles={project.immobilesOrigin}
-                    onSetImmobiles={handleSetProjectImmobilesOrigin}
-                    isMultipleSelect={project.immobilesTarget?.length < 2}
-                    validationMessage="Este imóvel de origem já está selecionado"
-                />
-            )}
-
             <SelectProfessionalForm
-                isLoading={isLoading}
                 title="Profissional"
-                isMultipleSelect={false}
+                isLoading={isLoading}
+                formClassName="p-1 m-3"
                 professionals={professionals}
                 subtitle="Selecione o profissional"
                 onShowMessage={props.onShowMessage}
                 buttonTitle="Adicionar profissional"
                 onSetProfessionals={setProfessionals}
+                validationButton={professionals.length === 1}
                 validationMessage="Esta pessoa já é um profissional"
+                validationMessageButton="Você não pode mais adicionar profissionais"
             />
 
-            <ProjectPaymentForm
-                title="Pagamento"
+            <ServiceForm
+                title="Serviços"
+                services={services}
                 isLoading={isLoading}
-                subtitle="Adicione os pagamentos"
-                onShowMessage={props.onShowMessage}
-                projectPayments={project.projectPayments}
-                onSetProjectPayments={handleSetProjectPayments}
-            />
-
-            <ProjectStageForm
-                title="Etapas"
-                isLoading={isLoading}
-                subtitle="Adicione as etapas"
-                onShowMessage={props.onShowMessage}
-                projectStages={project.projectStages}
-                onSetProjectStages={handleSetProjectStages}
+                onSetServices={setServices}
+                subtitle="Adicione os serviços"
             />
 
             <form
@@ -418,31 +346,27 @@ export default function ProjectForm(props: ProjectFormProps) {
                         event.preventDefault()
                     }
                 }}>
-                <FormRow className="p-2">
-                    <FormRowColumn unit="6">
-                        <ActionButtonsForm
-                            isLeftOn
-                            isDisabled={!isFormValid}
-                            rightWindowText="Deseja confirmar as alterações?"
-                            isForOpenLeft={project.id !== "" && handleDiference()}
-                            isForOpenRight={project.id !== "" && handleDiference()}
-                            rightButtonText={project.id === "" ? "Salvar" : "Editar"}
-                            leftWindowText="Dejesa realmente voltar e descartar as alterações?"
-                            onLeftClick={(event) => {
-                                if (event) {
-                                    event.preventDefault()
-                                }
-                                handleOnBack()
-                            }}
-                            onRightClick={(event) => {
-                                if (event) {
-                                    event.preventDefault()
-                                }
-                                handleSave()
-                            }}
-                        />
-                    </FormRowColumn>
-                </FormRow>
+                <ActionButtonsForm
+                    isLeftOn
+                    isDisabled={!isFormValid}
+                    rightWindowText="Deseja confirmar as alterações?"
+                    isForOpenLeft={project.id !== "" && handleDiference()}
+                    isForOpenRight={project.id !== "" && handleDiference()}
+                    rightButtonText={project.id === "" ? "Salvar" : "Editar"}
+                    leftWindowText="Dejesa realmente voltar e descartar as alterações?"
+                    onLeftClick={(event) => {
+                        if (event) {
+                            event.preventDefault()
+                        }
+                        handleOnBack()
+                    }}
+                    onRightClick={(event) => {
+                        if (event) {
+                            event.preventDefault()
+                        }
+                        handleSave()
+                    }}
+                />
             </form>
         </>
     )

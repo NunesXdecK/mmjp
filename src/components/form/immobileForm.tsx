@@ -131,33 +131,28 @@ export default function ImmobileForm(props: ImmobileFormProps) {
                         event.preventDefault()
                     }
                 }}>
-
-                <FormRow className="p-2">
-                    <FormRowColumn unit="6">
-                        <ActionButtonsForm
-                            isLeftOn
-                            isForBackControl
-                            isDisabled={!isFormValid}
-                            rightWindowText="Deseja confirmar as alterações?"
-                            isForOpenLeft={immobile.id !== "" && handleDiference()}
-                            isForOpenRight={immobile.id !== "" && handleDiference()}
-                            rightButtonText={immobile.id === "" ? "Salvar" : "Editar"}
-                            leftWindowText="Dejesa realmente voltar e descartar as alterações?"
-                            onLeftClick={(event) => {
-                                if (event) {
-                                    event.preventDefault()
-                                }
-                                handleOnBack()
-                            }}
-                            onRightClick={(event) => {
-                                if (event) {
-                                    event.preventDefault()
-                                }
-                                handleSave()
-                            }}
-                        />
-                    </FormRowColumn>
-                </FormRow>
+                <ActionButtonsForm
+                    isLeftOn
+                    isForBackControl
+                    isDisabled={!isFormValid}
+                    rightWindowText="Deseja confirmar as alterações?"
+                    isForOpenLeft={immobile.id !== "" && handleDiference()}
+                    isForOpenRight={immobile.id !== "" && handleDiference()}
+                    rightButtonText={immobile.id === "" ? "Salvar" : "Editar"}
+                    leftWindowText="Dejesa realmente voltar e descartar as alterações?"
+                    onLeftClick={(event) => {
+                        if (event) {
+                            event.preventDefault()
+                        }
+                        handleOnBack()
+                    }}
+                    onRightClick={(event) => {
+                        if (event) {
+                            event.preventDefault()
+                        }
+                        handleSave()
+                    }}
+                />
 
                 <Form
                     title={props.title}
@@ -269,6 +264,7 @@ export default function ImmobileForm(props: ImmobileFormProps) {
                 title="Proprietários"
                 isLoading={isLoading}
                 isMultipleSelect={true}
+                formClassName="p-1 m-3"
                 onShowMessage={props.onShowMessage}
                 buttonTitle="Adicionar proprietário"
                 subtitle="Selecione os proprietários"
@@ -299,32 +295,27 @@ export default function ImmobileForm(props: ImmobileFormProps) {
                     subtitle="Informações sobre o endereço"
                 />
 
-
-                <FormRow className="p-2">
-                    <FormRowColumn unit="6">
-                        <ActionButtonsForm
-                            isLeftOn
-                            isDisabled={!isFormValid}
-                            rightWindowText="Deseja confirmar as alterações?"
-                            isForOpenLeft={immobile.id !== "" && handleDiference()}
-                            isForOpenRight={immobile.id !== "" && handleDiference()}
-                            rightButtonText={immobile.id === "" ? "Salvar" : "Editar"}
-                            leftWindowText="Dejesa realmente voltar e descartar as alterações?"
-                            onLeftClick={(event) => {
-                                if (event) {
-                                    event.preventDefault()
-                                }
-                                handleOnBack()
-                            }}
-                            onRightClick={(event) => {
-                                if (event) {
-                                    event.preventDefault()
-                                }
-                                handleSave()
-                            }}
-                        />
-                    </FormRowColumn>
-                </FormRow>
+                <ActionButtonsForm
+                    isLeftOn
+                    isDisabled={!isFormValid}
+                    rightWindowText="Deseja confirmar as alterações?"
+                    isForOpenLeft={immobile.id !== "" && handleDiference()}
+                    isForOpenRight={immobile.id !== "" && handleDiference()}
+                    rightButtonText={immobile.id === "" ? "Salvar" : "Editar"}
+                    leftWindowText="Dejesa realmente voltar e descartar as alterações?"
+                    onLeftClick={(event) => {
+                        if (event) {
+                            event.preventDefault()
+                        }
+                        handleOnBack()
+                    }}
+                    onRightClick={(event) => {
+                        if (event) {
+                            event.preventDefault()
+                        }
+                        handleSave()
+                    }}
+                />
             </form>
         </>
     )

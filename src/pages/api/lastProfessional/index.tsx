@@ -16,12 +16,17 @@ export default async function handler(req, res) {
             try {
                 const queryProject = await query(projectCollection,
                     orderBy("dateInsertUTC", "desc"),
-                    limit(1))
+                    limit(5))
                 const querySnapshotProject = await getDocs(queryProject)
                 querySnapshotProject.forEach((doc) => {
-                    project = doc.data()
+                    const localProject: Project = doc.data()
+                    if ("id" in project.professional && project.professional.id === "") {
+                        if ("id" in localProject.professional && localProject.professional.id !== "") {
+                            project = localProject
+                        }
+                    }
                 })
-                if (project.professional?.id && project.professional.id !== "") {
+                if ("id" in project.professional && project.professional.id !== "") {
                     const docRef = doc(professionalCollection, project.professional.id)
                     professional = (await getDoc(docRef)).data()
                 }

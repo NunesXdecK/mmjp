@@ -88,7 +88,9 @@ export default function InputTextArea(props: InputTextAreaProps) {
                     }
                 }}
             />
-            {!isValid && (<p className="text-red-600">{props.validationMessage}</p>)}
+            {!isValid && (
+                <p className="text-red-600">{props.validationMessage}</p>
+            )}
         </>
     )
 }

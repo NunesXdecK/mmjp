@@ -1,5 +1,6 @@
 import AddressView from "./addressView"
 import { useEffect, useState } from "react"
+import InfoHolderView from "./infoHolderView"
 import PlaceholderItemList from "../list/placeholderItemList"
 import { handleMaskCPF, handleMaskTelephone } from "../../util/maskUtil"
 import { defaultPerson, Person } from "../../interfaces/objectInterfaces"
@@ -7,16 +8,25 @@ import { defaultPerson, Person } from "../../interfaces/objectInterfaces"
 interface PersonViewProps {
     id?: string,
     person?: Person,
+    dataInside?: boolean,
 }
 
 export default function PersonView(props: PersonViewProps) {
+    const [isFirst, setIsFirst] = useState(true)
     const [person, setPerson] = useState<Person>(props.person ?? defaultPerson)
 
+    const handlePutData = () => {
+        return (<AddressView address={person.address} />)
+    }
+
     useEffect(() => {
-        if (props.id && props.id.length !== 0 && person.id?.length === 0) {
-            fetch("api/person/" + props.id).then((res) => res.json()).then((res) => {
-                setPerson(res.data)
-            })
+        if (isFirst) {
+            if (props.id && props.id.length !== 0 && person.id?.length === 0) {
+                fetch("api/person/" + props.id).then((res) => res.json()).then((res) => {
+                    setPerson(res.data)
+                    setIsFirst(false)
+                })
+            }
         }
     })
     return (
@@ -26,9 +36,8 @@ export default function PersonView(props: PersonViewProps) {
                     <PlaceholderItemList />
                 </div>
             ) : (
-                <div className="mt-6 px-4 pt-2 pb-4 border-2 border-indigo-200 rounded-lg">
-                    <span className="text-lg font-semibold absolute bg-indigo-50 px-2 -mt-6">Pessoa</span>
-                    <div className="mt-6">
+                <>
+                    <InfoHolderView title="Dados pessoais">
                         {person.clientCode && (<p><span className="font-semibold">Codigo do cliente:</span> {person.clientCode}</p>)}
                         {person.name && (<p><span className="font-semibold">Nome:</span> {person.name}</p>)}
                         {person.cpf && (<p><span className="font-semibold">CPF:</span> {handleMaskCPF(person.cpf)}</p>)}
@@ -41,9 +50,10 @@ export default function PersonView(props: PersonViewProps) {
                         {person.telephones?.map((element, index) => (
                             <p key={index + element}>{handleMaskTelephone(element)}</p>
                         ))}
-                    </div>
-                    <AddressView address={person.address} />
-                </div>
+                        {!props.dataInside && handlePutData()}
+                    </InfoHolderView>
+                    {props.dataInside && handlePutData()}
+                </>
             )}
         </>
     )

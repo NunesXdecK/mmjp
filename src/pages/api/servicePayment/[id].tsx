@@ -1,12 +1,12 @@
 import { collection, doc, getDoc } from "firebase/firestore"
-import { ProjectPaymentConversor } from "../../../db/converters"
-import { ProjectPayment } from "../../../interfaces/objectInterfaces"
-import { db, PROJECT_PAYMENT_COLLECTION_NAME } from "../../../db/firebaseDB"
+import { ServicePaymentConversor } from "../../../db/converters"
+import { ServicePayment } from "../../../interfaces/objectInterfaces"
+import { db, SERVICE_PAYMENT_COLLECTION_NAME } from "../../../db/firebaseDB"
 
 export default async function handler(req, res) {
     const { query, method } = req
 
-    const projectPaymentCollection = collection(db, PROJECT_PAYMENT_COLLECTION_NAME).withConverter(ProjectPaymentConversor)
+    const servicePaymentCollection = collection(db, SERVICE_PAYMENT_COLLECTION_NAME).withConverter(ServicePaymentConversor)
 
     switch (method) {
         case "GET":
@@ -14,8 +14,8 @@ export default async function handler(req, res) {
             try {
                 const { id } = query
                 if (id) {
-                    const docRef = doc(projectPaymentCollection, id)
-                    let data: ProjectPayment = (await getDoc(docRef)).data()
+                    const docRef = doc(servicePaymentCollection, id)
+                    let data: ServicePayment = (await getDoc(docRef)).data()
                     resGET = { ...resGET, status: "SUCCESS", data: data }
                 } else {
                     resGET = { ...resGET, status: "ERROR", message: "Token invalido!" }

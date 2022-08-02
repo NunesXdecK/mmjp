@@ -23,7 +23,7 @@ export default function FormRowColumn(props: FormRowColumnProps) {
             break
     }
 
-    let className = "py-1 px-2 sm:mt-0 col-span-6 " + colSpanClassName
+    let className = "p-2 col-span-6 " + colSpanClassName
     if (props.className) {
         className = className + " " + props.className
     }

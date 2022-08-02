@@ -14,6 +14,7 @@ export default function Persons() {
     const [persons, setPersons] = useState<Person[]>([])
     const [personsForShow, setPersonsForShow] = useState<Person[]>([])
 
+    const [isFirst, setIsFirst] = useState(true)
     const [isLoading, setIsLoading] = useState(true)
     const [isRegister, setIsRegister] = useState(false)
     const [isFeedbackOpen, setIsFeedbackOpen] = useState(false)
@@ -27,6 +28,7 @@ export default function Persons() {
         setPersons([])
         setPersonsForShow([])
         setPerson(defaultPerson)
+        setIsFirst(true)
         setIsLoading(true)
         setIsRegister(false)
         setTitle("Lista de pessoas")
@@ -85,10 +87,13 @@ export default function Persons() {
     }
 
     useEffect(() => {
-        if (persons.length === 0) {
+        if (isFirst) {
             fetch("api/persons").then((res) => res.json()).then((res) => {
-                setPersons(res.list)
-                setPersonsForShow(res.list)
+                if (res.list.length) {
+                    setPersons(res.list)
+                    setPersonsForShow(res.list)
+                }
+                setIsFirst(false)
                 setIsLoading(false)
             })
         }

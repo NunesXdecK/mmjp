@@ -1,7 +1,7 @@
-import { Professional, ProjectStage } from "../../../interfaces/objectInterfaces"
+import { Professional, ServiceStage } from "../../../interfaces/objectInterfaces"
 import { collection, doc, getDoc, getDocs, query, where } from "firebase/firestore"
-import { ProfessionalConversor, ProjectConversor, ProjectStageConversor } from "../../../db/converters"
-import { db, PROFESSIONAL_COLLECTION_NAME, PROJECT_COLLECTION_NAME, PROJECT_STAGE_COLLECTION_NAME } from "../../../db/firebaseDB"
+import { ProfessionalConversor, ServiceConversor, ServiceStageConversor } from "../../../db/converters"
+import { db, PROFESSIONAL_COLLECTION_NAME, SERVICE_COLLECTION_NAME, SERVICE_STAGE_COLLECTION_NAME } from "../../../db/firebaseDB"
 
 export default async function handler(req, res) {
     const { method } = req
@@ -9,22 +9,22 @@ export default async function handler(req, res) {
     switch (method) {
         case 'GET':
             let resGET = { status: "ERROR", error: {}, message: "", list: [] }
-            const projectCollection = collection(db, PROJECT_COLLECTION_NAME).withConverter(ProjectConversor)
+            const serviceCollection = collection(db, SERVICE_COLLECTION_NAME).withConverter(ServiceConversor)
             const professionalCollection = collection(db, PROFESSIONAL_COLLECTION_NAME).withConverter(ProfessionalConversor)
-            const projectStageCollection = collection(db, PROJECT_STAGE_COLLECTION_NAME).withConverter(ProjectStageConversor)
+            const serviceStageCollection = collection(db, SERVICE_STAGE_COLLECTION_NAME).withConverter(ServiceStageConversor)
             let list = []
             let listLocal = []
             try {
                 const { id } = req.query
-                const projectDocRef = doc(projectCollection, id)
-                const queryProjectStage = query(projectStageCollection, where("project", "==", projectDocRef))
-                const querySnapshot = await getDocs(queryProjectStage)
+                const serviceDocRef = doc(serviceCollection, id)
+                const queryServiceStage = query(serviceStageCollection, where("service", "==", serviceDocRef))
+                const querySnapshot = await getDocs(queryServiceStage)
                 querySnapshot.forEach((doc) => {
                     listLocal = [...listLocal, doc.data()]
                 })
 
                 await Promise.all(
-                    listLocal.map(async (element: ProjectStage, index) => {
+                    listLocal.map(async (element: ServiceStage, index) => {
                         if (element.responsible?.id && element.responsible.id !== "") {
                             const docRef = doc(professionalCollection, element.responsible.id)
                             if (docRef) {
@@ -41,7 +41,7 @@ export default async function handler(req, res) {
                     list = [...listLocal]
                 }
 
-                list = list.sort((elementOne: ProjectStage, elementTwo: ProjectStage) => {
+                list = list.sort((elementOne: ServiceStage, elementTwo: ServiceStage) => {
                     let indexOne = elementOne.index
                     let indexTwo = elementTwo.index
                     return indexOne - indexTwo

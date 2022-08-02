@@ -52,10 +52,10 @@ export default function InputSelect(props: InputSelectProps) {
                         <option
                             key={index + element}
                             value={element}
-
-                        >{element.substring(0, 1).toUpperCase() + element.substring(1, element.length).toLowerCase()}</option>
+                        >
+                            {element.substring(0, 1).toUpperCase() + element.substring(1, element.length).toLowerCase()}
+                        </option>
                     )
-
                 })}
             </select>
         </>

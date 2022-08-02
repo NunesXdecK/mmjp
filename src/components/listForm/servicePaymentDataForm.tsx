@@ -1,17 +1,17 @@
-import FormRow from "./formRow";
 import { useState } from "react";
 import Button from "../button/button";
-import FormRowColumn from "./formRowColumn";
 import InputText from "../inputText/inputText";
 import { TrashIcon } from "@heroicons/react/outline";
 import InputCheckbox from "../inputText/inputCheckbox";
-import { ProjectPayment } from "../../interfaces/objectInterfaces";
+import { ServicePayment } from "../../interfaces/objectInterfaces";
 import InputTextAutoComplete from "../inputText/inputTextAutocomplete";
 import { NOT_NULL_MARK, NUMBER_MARK } from "../../util/patternValidationUtil";
-import { handleProjectPaymentValidationForDB } from "../../util/validationUtil";
+import { handleServicePaymentValidationForDB } from "../../util/validationUtil";
 import WindowModal from "../modal/windowModal";
+import FormRow from "../form/formRow";
+import FormRowColumn from "../form/formRowColumn";
 
-interface ProjectPaymentDataFormProps {
+interface ServicePaymentDataFormProps {
     id?: string,
     title?: string,
     subtitle?: string,
@@ -20,22 +20,22 @@ interface ProjectPaymentDataFormProps {
     isLoading?: boolean,
     isForSelect?: boolean,
     isForDisable?: boolean,
-    projectPayments?: ProjectPayment[],
+    servicePayments?: ServicePayment[],
     onDelete?: (number) => void,
     onSetText?: (any, number) => void,
     onShowMessage?: (FeedbackMessage) => void,
 }
 
-export default function ProjectPaymentDataForm(props: ProjectPaymentDataFormProps) {
+export default function ServicePaymentDataForm(props: ServicePaymentDataFormProps) {
     const [isOpen, setIsOpen] = useState(false)
     const [index, setIndex] = useState(props.index ?? 0)
 
-    const [isFormValid, setIsFormValid] = useState(handleProjectPaymentValidationForDB(props.projectPayments[index]).validation)
+    const [isFormValid, setIsFormValid] = useState(handleServicePaymentValidationForDB(props.servicePayments[index]).validation)
 
-    const handleSetProjectPaymentValue = (value) => { handleSetText({ ...props.projectPayments[index], value: value }) }
-    const handleSetProjectPaymentPayed = (value) => { handleSetText({ ...props.projectPayments[index], payed: value }) }
-    const handleSetProjectPaymentDate = (value) => { handleSetText({ ...props.projectPayments[index], dateString: value }) }
-    const handleSetProjectPaymentDescription = (value) => { handleSetText({ ...props.projectPayments[index], description: value }) }
+    const handleSetServicePaymentValue = (value) => { handleSetText({ ...props.servicePayments[index], value: value }) }
+    const handleSetServicePaymentPayed = (value) => { handleSetText({ ...props.servicePayments[index], payed: value }) }
+    const handleSetServicePaymentDate = (value) => { handleSetText({ ...props.servicePayments[index], dateString: value }) }
+    const handleSetServicePaymentDescription = (value) => { handleSetText({ ...props.servicePayments[index], description: value }) }
 
     const handleSetText = (element) => {
         if (props.onSetText) {
@@ -57,38 +57,7 @@ export default function ProjectPaymentDataForm(props: ProjectPaymentDataFormProp
             </FormRow>
                 */}
             <FormRow>
-                <FormRowColumn unit="4">
-                    <InputText
-                        title="Valor"
-                        mask="currency"
-                        validation={NUMBER_MARK}
-                        isLoading={props.isLoading}
-                        isDisabled={props.isForDisable}
-                        id={"value-" + index + "-" + props.id}
-                        onValidate={handleChangeFormValidation}
-                        onSetText={handleSetProjectPaymentValue}
-                        value={props.projectPayments[index].value}
-                        validationMessage="O titulo da etapa não pode ficar em branco."
-                    />
-                </FormRowColumn>
-
                 <FormRowColumn unit="2">
-                    <InputText
-                        mask="date"
-                        maxLength={10}
-                        title="Vencimento"
-                        isLoading={props.isLoading}
-                        isDisabled={props.isForDisable}
-                        onSetText={handleSetProjectPaymentDate}
-                        onValidate={handleChangeFormValidation}
-                        id={"date-due-" + index + "-" + props.id}
-                        value={props.projectPayments[index].dateString}
-                    />
-                </FormRowColumn>
-            </FormRow>
-
-            <FormRow>
-                <FormRowColumn unit="6">
                     <InputTextAutoComplete
                         title="Descrição"
                         isLoading={props.isLoading}
@@ -97,29 +66,43 @@ export default function ProjectPaymentDataForm(props: ProjectPaymentDataFormProp
                         sugestions={["Entrada", "Parcela"]}
                         onValidate={handleChangeFormValidation}
                         id={"description-" + index + "-" + props.id}
-                        onSetText={handleSetProjectPaymentDescription}
-                        value={props.projectPayments[index].description}
+                        onSetText={handleSetServicePaymentDescription}
+                        value={props.servicePayments[index].description}
                         validationMessage="A descrição não pode ficar em branco."
                     />
                 </FormRowColumn>
-            </FormRow>
 
-            <FormRow>
-                <FormRowColumn unit="6" className="">
-                    <InputCheckbox
-                        title="Pago?"
+                <FormRowColumn unit="2">
+                    <InputText
+                        title="Valor"
+                        mask="currency"
+                        validation={NUMBER_MARK}
                         isLoading={props.isLoading}
                         isDisabled={props.isForDisable}
-                        id={"payed-" + index + "-" + props.id}
-                        onSetText={handleSetProjectPaymentPayed}
-                        value={props.projectPayments[index].payed}
+                        id={"value-" + index + "-" + props.id}
+                        onValidate={handleChangeFormValidation}
+                        onSetText={handleSetServicePaymentValue}
+                        value={props.servicePayments[index].value}
+                        validationMessage="O titulo da etapa não pode ficar em branco."
                     />
                 </FormRowColumn>
-            </FormRow>
 
-            {props.onDelete && (
-                <FormRow>
-                    <FormRowColumn unit="6" className="flex content-end justify-end">
+                <FormRowColumn unit="1">
+                    <InputText
+                        mask="date"
+                        maxLength={10}
+                        title="Vencimento"
+                        isLoading={props.isLoading}
+                        isDisabled={props.isForDisable}
+                        onSetText={handleSetServicePaymentDate}
+                        onValidate={handleChangeFormValidation}
+                        id={"date-due-" + index + "-" + props.id}
+                        value={props.servicePayments[index].dateString}
+                    />
+                </FormRowColumn>
+
+                {props.onDelete && (
+                    <FormRowColumn unit="1" className="place-self-end">
                         <Button
                             color="red"
                             className="mr-2 group"
@@ -130,18 +113,17 @@ export default function ProjectPaymentDataForm(props: ProjectPaymentDataFormProp
                             }}
                         >
                             <div className="flex flex-row">
-                                <span className="mr-2">Excluir</span>
                                 <TrashIcon className="text-white block h-5 w-5" aria-hidden="true" />
                             </div>
                         </Button>
                     </FormRowColumn>
-                </FormRow>
-            )}
+                )}
+            </FormRow>
 
             <WindowModal
                 isOpen={isOpen}
                 setIsOpen={setIsOpen}>
-                <p className="text-center">Deseja realmente deletar?</p>
+                <p className="text-center">Deseja realmente deletar {props.servicePayments[index].description}?</p>
                 <div className="flex mt-10 justify-between content-between">
                     <Button
                         onClick={(event) => {

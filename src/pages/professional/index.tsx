@@ -12,6 +12,7 @@ export default function Professionals() {
     const [professionals, setProfessionals] = useState<Professional[]>([])
     const [professionalsForShow, setProfessionalsForShow] = useState<Professional[]>([])
 
+    const [isFirst, setIsFirst] = useState(true)
     const [isLoading, setIsLoading] = useState(true)
     const [isRegister, setIsRegister] = useState(false)
     const [isFeedbackOpen, setIsFeedbackOpen] = useState(false)
@@ -25,6 +26,7 @@ export default function Professionals() {
         setProfessionals([])
         setProfessionalsForShow([])
         setProfessional(defaultProfessional)
+        setIsFirst(true)
         setIsLoading(true)
         setIsRegister(false)
         setTitle("Lista de profissionais")
@@ -83,10 +85,13 @@ export default function Professionals() {
     }
 
     useEffect(() => {
-        if (professionals.length === 0) {
+        if (isFirst) {
             fetch("api/professionals").then((res) => res.json()).then((res) => {
-                setProfessionals(res.list)
-                setProfessionalsForShow(res.list)
+                if (res.list.length) {
+                    setProfessionals(res.list)
+                    setProfessionalsForShow(res.list)
+                }
+                setIsFirst(false)
                 setIsLoading(false)
             })
         }
@@ -128,18 +133,18 @@ export default function Professionals() {
                 <ProfessionalForm
                     canMultiple
                     isBack={true}
-                    professional={professional}
                     onBack={handleBackClick}
-                    title="Informações do profissional"
+                    professional={professional}
                     onAfterSave={handleAfterSave}
+                    title="Informações do profissional"
                     onShowMessage={handleShowMessage}
                     subtitle="Dados importantes sobre o profissional" />
             )}
 
             <FeedbackMessageModal
                 isOpen={isFeedbackOpen}
-                feedbackMessage={feedbackMessage}
                 setIsOpen={setIsFeedbackOpen}
+                feedbackMessage={feedbackMessage}
             />
         </Layout>
     )

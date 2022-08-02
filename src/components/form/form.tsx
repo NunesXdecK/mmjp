@@ -1,34 +1,42 @@
 interface FormProps {
     title?: string,
     subtitle?: string,
+    className?: string,
     children?: any,
 }
 
 export default function Form(props: FormProps) {
 
-    let classNameHolder = "rounded-lg p-4"
-    let classNameContent = "py-2"
+    let className = "p-4"
+    let classNameHolder = "px-2 py-4 sm:p-4 rounded-lg shadow"
+    let classNameContent = ""
 
-    if (props.title) {
-        classNameHolder = classNameHolder + " md:grid md:grid-cols-3 md:gap-6"
-        classNameContent = classNameContent + " md:col-span-2"
+    if (props.className) {
+        className = props.className
+    }
+
+    if (false && props.title) {
+        classNameHolder = classNameHolder + " md:grid md:grid-cols-4 md:gap-6"
+        classNameContent = classNameContent + " md:col-span-3"
     }
 
     return (
-        <div className={classNameHolder}>
-            {props.title && (
-                <div className="py-2 md:cols-span-1">
-                    <div className="md:px-4 px-0">
-                        <h3 className="text-lg font-medium leading-6 text-gray-900">{props.title}</h3>
-                        <p className="mt-1 text-sm text-gray-600">{props.subtitle}</p>
+        <div className={className}>
+            <div className={classNameHolder}>
+                {props.title && (
+                    <div className="md:cols-span-1">
+                        <div className="pb-4">
+                            <h3 className="text-lg font-medium leading-6 text-gray-900">{props.title}</h3>
+                            <p className="mt-1 text-sm text-gray-600">{props.subtitle}</p>
+                        </div>
                     </div>
-                </div>
-            )}
+                )}
 
-            <div className={classNameContent}>
-                <div className="shadow overflow-hidden md:py-0">
-                    <div className="bg-white pb-2">
-                        {props.children}
+                <div className={classNameContent}>
+                    <div className="overflow-hidden">
+                        <div className="bg-white">
+                            {props.children}
+                        </div>
                     </div>
                 </div>
             </div>

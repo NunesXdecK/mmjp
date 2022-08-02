@@ -1,7 +1,7 @@
 import { collection, getDocs } from "firebase/firestore"
-import { ProjectStageConversor } from "../../../db/converters"
-import { ProjectStage } from "../../../interfaces/objectInterfaces"
-import { db, PROJECT_STAGE_COLLECTION_NAME } from "../../../db/firebaseDB"
+import { ServicePaymentConversor } from "../../../db/converters"
+import { ServicePayment } from "../../../interfaces/objectInterfaces"
+import { db, SERVICE_PAYMENT_COLLECTION_NAME } from "../../../db/firebaseDB"
 
 export default async function handler(req, res) {
     const { method } = req
@@ -9,14 +9,14 @@ export default async function handler(req, res) {
     switch (method) {
         case 'GET':
             let resGET = { status: "ERROR", error: {}, message: "", list: [] }
-            const projectStageCollection = collection(db, PROJECT_STAGE_COLLECTION_NAME).withConverter(ProjectStageConversor)
+            const servicePaymentCollection = collection(db, SERVICE_PAYMENT_COLLECTION_NAME).withConverter(ServicePaymentConversor)
             let list = []
             try {
-                const querySnapshot = await getDocs(projectStageCollection)
+                const querySnapshot = await getDocs(servicePaymentCollection)
                 querySnapshot.forEach((doc) => {
                     list = [...list, doc.data()]
                 })
-                list = list.sort((elementOne: ProjectStage, elementTwo: ProjectStage) => {
+                list = list.sort((elementOne: ServicePayment, elementTwo: ServicePayment) => {
                     let dateOne = elementOne.dateInsertUTC
                     let dateTwo = elementTwo.dateInsertUTC
                     if (elementOne.dateLastUpdateUTC > 0 && elementOne.dateLastUpdateUTC > dateOne) {

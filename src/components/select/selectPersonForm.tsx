@@ -8,9 +8,9 @@ import PersonForm from "../form/personForm";
 import InputText from "../inputText/inputText";
 import FormRowColumn from "../form/formRowColumn";
 import { FeedbackMessage } from "../modal/feedbackMessageModal";
+import { PencilAltIcon, TrashIcon } from "@heroicons/react/outline";
 import { handleMaskCPF, handleRemoveCPFMask } from "../../util/maskUtil";
 import { defaultPerson, Person } from "../../interfaces/objectInterfaces";
-import { TrashIcon } from "@heroicons/react/outline";
 
 interface SelectPersonFormProps {
     id?: string,
@@ -19,19 +19,27 @@ interface SelectPersonFormProps {
     inputTitle?: string,
     validation?: string,
     buttonTitle?: string,
+    formClassName?: string,
     validationMessage?: string,
+    validationMessageButton?: string,
     isLocked?: boolean,
     isLoading?: boolean,
+    validationButton?: boolean,
     isMultipleSelect?: boolean,
     persons?: Person[],
+    onValidate?: (any) => boolean,
     onSetLoading?: (any) => void,
     onSetPersons?: (array) => void,
     onShowMessage?: (FeedbackMessage) => void,
 }
 
 export default function SelectPersonForm(props: SelectPersonFormProps) {
+    const [isFirst, setIsFirst] = useState(true)
     const [isOpen, setIsOpen] = useState(false)
+    const [isInvalid, setIsInvalid] = useState(false)
     const [isRegister, setIsRegister] = useState(false)
+
+    const [editIndex, setEditIndex] = useState(-1)
 
     const [person, setPerson] = useState<Person>(defaultPerson)
 
@@ -50,6 +58,7 @@ export default function SelectPersonForm(props: SelectPersonFormProps) {
         setPersons([])
         setPersonsForShow([])
         setPerson(defaultPerson)
+        setIsFirst(true)
         setIsRegister(false)
     }
 
@@ -73,20 +82,31 @@ export default function SelectPersonForm(props: SelectPersonFormProps) {
     const handleAdd = (person) => {
         let localPersons = props.persons
         let canAdd = true
-        if (props.isMultipleSelect) {
-            localPersons?.map((element, index) => {
-                if (handleRemoveCPFMask(element.cpf) === handleRemoveCPFMask(person.cpf)) {
-                    canAdd = false
-                }
-            })
+        localPersons?.map((element, index) => {
+            if (handleRemoveCPFMask(element.cpf) === handleRemoveCPFMask(person.cpf)) {
+                canAdd = false
+            }
+        })
+
+        if (props.onValidate) {
+            canAdd = props.onValidate(person)
         }
 
         if (canAdd) {
             if (props.isMultipleSelect) {
-                localPersons = [...localPersons, person]
+                if (editIndex > -1) {
+                    localPersons = [
+                        ...localPersons.slice(0, editIndex),
+                        person,
+                        ...localPersons.slice(editIndex + 1, localPersons.length),
+                    ]
+                } else {
+                    localPersons = [...localPersons, person]
+                }
             } else {
                 localPersons = [person]
             }
+            setEditIndex(-1)
             if (props.onSetPersons) {
                 props.onSetPersons(localPersons)
                 setIsOpen(false)
@@ -116,10 +136,13 @@ export default function SelectPersonForm(props: SelectPersonFormProps) {
     }
 
     useEffect(() => {
-        if (persons.length === 0) {
+        if (isFirst) {
             fetch("api/persons").then((res) => res.json()).then((res) => {
-                setPersons(res.list)
-                setPersonsForShow(res.list)
+                if (res.list.length) {
+                    setPersons(res.list)
+                    setPersonsForShow(res.list)
+                }
+                setIsFirst(false)
                 if (props.onSetLoading) {
                     props.onSetLoading(false)
                 }
@@ -131,18 +154,30 @@ export default function SelectPersonForm(props: SelectPersonFormProps) {
         <>
             <Form
                 title={props.title}
-                subtitle={props.subtitle}>
+                subtitle={props.subtitle}
+                className={props.formClassName}
+            >
                 {!props.isLocked && (
                     <FormRow>
-                        <FormRowColumn unit="6" className="justify-self-end">
+                        <FormRowColumn unit="6" className="flex flex-col items-end justify-self-end">
                             <Button
                                 type="submit"
+                                className="w-fit"
                                 isLoading={props.isLoading}
                                 isDisabled={props.isLoading}
-                                onClick={() => setIsOpen(true)}
+                                onClick={() => {
+                                    if (props.validationButton) {
+                                        setIsInvalid(true)
+                                    } else {
+                                        setIsOpen(true)
+                                    }
+                                }}
                             >
                                 {props.buttonTitle}
                             </Button>
+                            {isInvalid && (
+                                <span className="mt-2 text-red-600">{props.validationMessageButton}</span>
+                            )}
                         </FormRowColumn>
                     </FormRow>
                 )}
@@ -151,7 +186,7 @@ export default function SelectPersonForm(props: SelectPersonFormProps) {
                     <form key={index + element.dateInsertUTC + element.cpf}
                         onSubmit={(event) => handleRemovePerson(event, element)}>
                         <FormRow>
-                            <FormRowColumn unit="3">
+                            <FormRowColumn unit="2">
                                 <InputText
                                     title="Nome"
                                     isDisabled={true}
@@ -173,8 +208,19 @@ export default function SelectPersonForm(props: SelectPersonFormProps) {
                             </FormRowColumn>
 
                             {!props.isLocked && (
-                                <FormRowColumn unit="1"
-                                    className="self-end justify-self-end">
+                                <FormRowColumn unit="2"
+                                    className="flex flex-row gap-2 self-end justify-self-end">
+                                    <Button
+                                        type="button"
+                                        isLoading={props.isLoading}
+                                        isDisabled={props.isLoading}
+                                        onClick={() => {
+                                            setEditIndex(index)
+                                            setIsOpen(true)
+                                        }}
+                                    >
+                                        <PencilAltIcon className="text-white block h-5 w-5" aria-hidden="true" />
+                                    </Button>
                                     <Button
                                         type="submit"
                                         color="red"
@@ -192,6 +238,7 @@ export default function SelectPersonForm(props: SelectPersonFormProps) {
 
             <IOSModal
                 onClose={() => {
+                    setIsOpen(false)
                     setIsRegister(false)
                 }}
                 isOpen={isOpen}

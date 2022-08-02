@@ -21,12 +21,14 @@ export default async function handler(req, res) {
                     const docRef = doc(projectCollection, id)
                     let project: Project = (await getDoc(docRef)).data()
 
-                    if (project.professional.id && project.professional.id !== "") {
+                    if (project.professional?.id && project.professional?.id !== "") {
                         const docRef = doc(professionalCollection, project.professional.id)
                         const data: Professional = (await getDoc(docRef)).data()
                         project = { ...project, professional: data }
                     }
 
+                    {/*
+                    
                     let immobilesOrigin = []
                     await Promise.all(project.immobilesOrigin.map(async (element, index) => {
                         const docRef = doc(immobileCollection, element.id)
@@ -37,7 +39,7 @@ export default async function handler(req, res) {
                             }
                         }
                     }))
-
+                    
                     let immobilesTarget = []
                     await Promise.all(project.immobilesTarget.map(async (element, index) => {
                         const docRef = doc(immobileCollection, element.id)
@@ -48,29 +50,33 @@ export default async function handler(req, res) {
                             }
                         }
                     }))
-                    
-                    let clients = []
-                    await Promise.all(project.clients?.map(async (element, index) => {
-                        if (element.path.includes(PERSON_COLLECTION_NAME)) {
-                            const docRef = doc(personCollection, element.id)
-                            if (docRef) {
-                                const data: Person = (await getDoc(docRef)).data()
-                                if (data) {
-                                    clients = [...clients, data]
-                                }
-                            }
-                        } else if (element.path.includes(COMPANY_COLLECTION_NAME)) {
-                            const docRef = doc(companyCollection, element.id)
-                            if (docRef) {
-                                const data: Company = (await getDoc(docRef)).data()
-                                if (data) {
-                                    clients = [...clients, data]
-                                }
-                            }
-                        }
-                    }))
+                */}
 
-                    project = { ...project, clients: clients, immobilesOrigin: immobilesOrigin, immobilesTarget: immobilesTarget }
+                    let clients = []
+                    if (project.clients && project.clients?.length > 0) {
+                        await Promise.all(project.clients?.map(async (element, index) => {
+                            if (element.path.includes(PERSON_COLLECTION_NAME)) {
+                                const docRef = doc(personCollection, element.id)
+                                if (docRef) {
+                                    const data: Person = (await getDoc(docRef)).data()
+                                    if (data) {
+                                        clients = [...clients, data]
+                                    }
+                                }
+                            } else if (element.path.includes(COMPANY_COLLECTION_NAME)) {
+                                const docRef = doc(companyCollection, element.id)
+                                if (docRef) {
+                                    const data: Company = (await getDoc(docRef)).data()
+                                    if (data) {
+                                        clients = [...clients, data]
+                                    }
+                                }
+                            }
+                        }))
+                    }
+
+
+                    project = { ...project, clients: clients }
                     resGET = { ...resGET, status: "SUCCESS", data: project }
                 } else {
                     resGET = { ...resGET, status: "ERROR", message: "ID invalido!" }

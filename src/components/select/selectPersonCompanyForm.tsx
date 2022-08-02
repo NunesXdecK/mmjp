@@ -9,10 +9,10 @@ import CompanyForm from "../form/companyForm";
 import InputText from "../inputText/inputText";
 import FormRowColumn from "../form/formRowColumn";
 import { FeedbackMessage } from "../modal/feedbackMessageModal";
-import { handleMaskCNPJ, handleMaskCPF, handleRemoveCNPJMask, handleRemoveCPFMask } from "../../util/maskUtil";
+import { PencilAltIcon, TrashIcon } from "@heroicons/react/outline";
 import { Company, defaultCompany, defaultPerson, Person } from "../../interfaces/objectInterfaces";
+import { handleMaskCNPJ, handleMaskCPF, handleRemoveCNPJMask, handleRemoveCPFMask } from "../../util/maskUtil";
 import { handleValidationOnlyNumbersNotNull, handleValidationOnlyTextNotNull } from "../../util/validationUtil";
-import { TrashIcon } from "@heroicons/react/outline";
 
 interface SelectPersonCompanyFormProps {
     id?: string,
@@ -21,20 +21,28 @@ interface SelectPersonCompanyFormProps {
     inputTitle?: string,
     validation?: string,
     buttonTitle?: string,
+    formClassName?: string,
     validationMessage?: string,
+    validationMessageButton?: string,
     isLocked?: boolean,
     isLoading?: boolean,
+    validationButton?: boolean,
     isMultipleSelect?: boolean,
     personsAndCompanies?: Person[],
+    onValidate?: (any) => boolean,
     onSetLoading?: (any) => void,
     onShowMessage?: (FeedbackMessage) => void,
     onSetPersonsAndCompanies?: (array) => void,
 }
 
 export default function SelectPersonCompanyForm(props: SelectPersonCompanyFormProps) {
+    const [isFirst, setIsFirst] = useState(true)
     const [isOpen, setIsOpen] = useState(false)
+    const [isInvalid, setIsInvalid] = useState(false)
     const [isRegisterPerson, setIsRegisterPerson] = useState(false)
     const [isRegisterCompany, setIsRegisterCompany] = useState(false)
+
+    const [editIndex, setEditIndex] = useState(-1)
 
     const [person, setPerson] = useState<Person>(defaultPerson)
     const [company, setCompany] = useState<Person>(defaultCompany)
@@ -62,6 +70,7 @@ export default function SelectPersonCompanyForm(props: SelectPersonCompanyFormPr
         setPersonsAndCompaniesForShow([])
         setPerson(defaultPerson)
         setCompany(defaultCompany)
+        setIsFirst(true)
         setIsRegisterPerson(false)
         setIsRegisterCompany(false)
     }
@@ -102,26 +111,37 @@ export default function SelectPersonCompanyForm(props: SelectPersonCompanyFormPr
         let localPersonsAndCompanies = props.personsAndCompanies
         let canAdd = true
 
-        if (props.isMultipleSelect) {
-            localPersonsAndCompanies?.map((element: (Person | Company), index) => {
-                if ("cpf" in element && "cpf" in personOrCompany) {
-                    if (handleRemoveCPFMask(element.cpf) === handleRemoveCPFMask(personOrCompany.cpf)) {
-                        canAdd = false
-                    }
-                } else if ("cnpj" in element && "cnpj" in personOrCompany) {
-                    if (handleRemoveCNPJMask(element.cnpj) === handleRemoveCNPJMask(personOrCompany.cnpj)) {
-                        canAdd = false
-                    }
+        localPersonsAndCompanies?.map((element: (Person | Company), index) => {
+            if ("cpf" in element && "cpf" in personOrCompany) {
+                if (handleRemoveCPFMask(element.cpf) === handleRemoveCPFMask(personOrCompany.cpf)) {
+                    canAdd = false
                 }
-            })
+            } else if ("cnpj" in element && "cnpj" in personOrCompany) {
+                if (handleRemoveCNPJMask(element.cnpj) === handleRemoveCNPJMask(personOrCompany.cnpj)) {
+                    canAdd = false
+                }
+            }
+        })
+
+        if (props.onValidate) {
+            canAdd = props.onValidate(personOrCompany)
         }
 
         if (canAdd) {
             if (props.isMultipleSelect) {
-                localPersonsAndCompanies = [...localPersonsAndCompanies, personOrCompany]
+                if (editIndex > -1) {
+                    localPersonsAndCompanies = [
+                        ...localPersonsAndCompanies.slice(0, editIndex),
+                        personOrCompany,
+                        ...localPersonsAndCompanies.slice(editIndex + 1, localPersonsAndCompanies.length),
+                    ]
+                } else {
+                    localPersonsAndCompanies = [...localPersonsAndCompanies, personOrCompany]
+                }
             } else {
                 localPersonsAndCompanies = [personOrCompany]
             }
+            setEditIndex(-1)
             if (props.onSetPersonsAndCompanies) {
                 props.onSetPersonsAndCompanies(localPersonsAndCompanies)
                 setIsOpen(false)
@@ -151,10 +171,13 @@ export default function SelectPersonCompanyForm(props: SelectPersonCompanyFormPr
     }
 
     useEffect(() => {
-        if (personsAndCompanies.length === 0) {
+        if (isFirst) {
             fetch("api/personsAndCompanies").then((res) => res.json()).then((res) => {
-                setPersonsAndCompanies(res.list)
-                setPersonsAndCompaniesForShow(res.list)
+                if (res.list.length) {
+                    setPersonsAndCompanies(res.list)
+                    setPersonsAndCompaniesForShow(res.list)
+                }
+                setIsFirst(false)
                 if (props.onSetLoading) {
                     props.onSetLoading(false)
                 }
@@ -166,19 +189,31 @@ export default function SelectPersonCompanyForm(props: SelectPersonCompanyFormPr
         <>
             <Form
                 title={props.title}
-                subtitle={props.subtitle}>
+                subtitle={props.subtitle}
+                className={props.formClassName}
+            >
 
                 {!props.isLocked && (
                     <FormRow>
-                        <FormRowColumn unit="6" className="justify-self-end">
+                        <FormRowColumn unit="6" className="flex flex-col items-end justify-self-end">
                             <Button
                                 type="submit"
+                                className="w-fit"
                                 isLoading={props.isLoading}
                                 isDisabled={props.isLoading}
-                                onClick={() => setIsOpen(true)}
+                                onClick={() => {
+                                    if (props.validationButton) {
+                                        setIsInvalid(true)
+                                    } else {
+                                        setIsOpen(true)
+                                    }
+                                }}
                             >
                                 {props.buttonTitle}
                             </Button>
+                            {isInvalid && (
+                                <span className="mt-2 text-red-600">{props.validationMessageButton}</span>
+                            )}
                         </FormRowColumn>
                     </FormRow>
                 )}
@@ -187,8 +222,7 @@ export default function SelectPersonCompanyForm(props: SelectPersonCompanyFormPr
                     <form key={index + element.dateInsertUTC}
                         onSubmit={(event) => handleRemove(event, element)}>
                         <FormRow>
-
-                            <FormRowColumn unit="3">
+                            <FormRowColumn unit="2">
                                 <InputText
                                     title="Nome"
                                     isDisabled={true}
@@ -197,7 +231,6 @@ export default function SelectPersonCompanyForm(props: SelectPersonCompanyFormPr
                                     id={"person-company-name-" + index}
                                 />
                             </FormRowColumn>
-
                             {"cpf" in element && (
                                 <FormRowColumn unit="2">
                                     <InputText
@@ -210,7 +243,6 @@ export default function SelectPersonCompanyForm(props: SelectPersonCompanyFormPr
                                     />
                                 </FormRowColumn>
                             )}
-
                             {"cnpj" in element && (
                                 <FormRowColumn unit="2">
                                     <InputText
@@ -223,10 +255,20 @@ export default function SelectPersonCompanyForm(props: SelectPersonCompanyFormPr
                                     />
                                 </FormRowColumn>
                             )}
-
                             {!props.isLocked && (
-                                <FormRowColumn unit="1"
-                                    className="self-end justify-self-end">
+                                <FormRowColumn unit="2"
+                                    className="flex flex-row gap-2 self-end justify-self-end">
+                                    <Button
+                                        type="button"
+                                        isLoading={props.isLoading}
+                                        isDisabled={props.isLoading}
+                                        onClick={() => {
+                                            setEditIndex(index)
+                                            setIsOpen(true)
+                                        }}
+                                    >
+                                        <PencilAltIcon className="text-white block h-5 w-5" aria-hidden="true" />
+                                    </Button>
                                     <Button
                                         type="submit"
                                         color="red"
@@ -237,7 +279,6 @@ export default function SelectPersonCompanyForm(props: SelectPersonCompanyFormPr
                                     </Button>
                                 </FormRowColumn>
                             )}
-
                         </FormRow>
                     </form>
                 ))}

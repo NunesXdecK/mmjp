@@ -8,8 +8,8 @@ import InputText from "../inputText/inputText";
 import ImmobileForm from "../form/immobileForm";
 import FormRowColumn from "../form/formRowColumn";
 import { FeedbackMessage } from "../modal/feedbackMessageModal";
+import { PencilAltIcon, TrashIcon } from "@heroicons/react/outline";
 import { defaultImmobile, Immobile } from "../../interfaces/objectInterfaces";
-import { TrashIcon } from "@heroicons/react/outline";
 
 interface SelectImmobileFormProps {
     id?: string,
@@ -18,9 +18,12 @@ interface SelectImmobileFormProps {
     inputTitle?: string,
     validation?: string,
     buttonTitle?: string,
+    formClassName?: string,
     validationMessage?: string,
+    validationMessageButton?: string,
     isLocked?: boolean,
     isLoading?: boolean,
+    validationButton?: boolean,
     isMultipleSelect?: boolean,
     immobiles?: Immobile[],
     onValidate?: (any) => boolean,
@@ -30,8 +33,12 @@ interface SelectImmobileFormProps {
 }
 
 export default function SelectImmobileForm(props: SelectImmobileFormProps) {
+    const [isFirst, setIsFirst] = useState(true)
     const [isOpen, setIsOpen] = useState(false)
+    const [isInvalid, setIsInvalid] = useState(false)
     const [isRegister, setIsRegister] = useState(false)
+
+    const [editIndex, setEditIndex] = useState(-1)
 
     const [immobile, setImmobile] = useState<Immobile>(defaultImmobile)
 
@@ -50,6 +57,7 @@ export default function SelectImmobileForm(props: SelectImmobileFormProps) {
         setImmobiles([])
         setImmobilesForShow([])
         setImmobile(defaultImmobile)
+        setIsFirst(true)
         setIsRegister(false)
     }
 
@@ -74,13 +82,11 @@ export default function SelectImmobileForm(props: SelectImmobileFormProps) {
         let localImmobiles = props.immobiles
         let canAdd = true
 
-        if (props.isMultipleSelect) {
-            localImmobiles?.map((element, index) => {
-                if (element.name === immobile.name) {
-                    canAdd = false
-                }
-            })
-        }
+        localImmobiles?.map((element, index) => {
+            if (element.name === immobile.name) {
+                canAdd = false
+            }
+        })
 
         if (props.onValidate) {
             canAdd = props.onValidate(immobile)
@@ -88,10 +94,19 @@ export default function SelectImmobileForm(props: SelectImmobileFormProps) {
 
         if (canAdd) {
             if (props.isMultipleSelect) {
-                localImmobiles = [...localImmobiles, immobile]
+                if (editIndex > -1) {
+                    localImmobiles = [
+                        ...localImmobiles.slice(0, editIndex),
+                        immobile,
+                        ...localImmobiles.slice(editIndex + 1, localImmobiles.length),
+                    ]
+                } else {
+                    localImmobiles = [...localImmobiles, immobile]
+                }
             } else {
                 localImmobiles = [immobile]
             }
+            setEditIndex(-1)
             if (props.onSetImmobiles) {
                 props.onSetImmobiles(localImmobiles)
                 setIsOpen(false)
@@ -121,10 +136,13 @@ export default function SelectImmobileForm(props: SelectImmobileFormProps) {
     }
 
     useEffect(() => {
-        if (immobiles.length === 0) {
+        if (isFirst) {
             fetch("api/immobiles").then((res) => res.json()).then((res) => {
-                setImmobiles(res.list)
-                setImmobilesForShow(res.list)
+                if (res.list.length) {
+                    setImmobiles(res.list)
+                    setImmobilesForShow(res.list)
+                }
+                setIsFirst(false)
                 if (props.onSetLoading) {
                     props.onSetLoading(false)
                 }
@@ -136,19 +154,31 @@ export default function SelectImmobileForm(props: SelectImmobileFormProps) {
         <>
             <Form
                 title={props.title}
-                subtitle={props.subtitle}>
+                subtitle={props.subtitle}
+                className={props.formClassName}
+            >
 
                 {!props.isLocked && (
                     <FormRow>
-                        <FormRowColumn unit="6" className="justify-self-end">
+                        <FormRowColumn unit="6" className="flex flex-col items-end justify-self-end">
                             <Button
                                 type="submit"
+                                className="w-fit"
                                 isLoading={props.isLoading}
                                 isDisabled={props.isLoading}
-                                onClick={() => setIsOpen(true)}
+                                onClick={() => {
+                                    if (props.validationButton) {
+                                        setIsInvalid(true)
+                                    } else {
+                                        setIsOpen(true)
+                                    }
+                                }}
                             >
                                 {props.buttonTitle}
                             </Button>
+                            {isInvalid && (
+                                <span className="mt-2 text-red-600">{props.validationMessageButton}</span>
+                            )}
                         </FormRowColumn>
                     </FormRow>
                 )}
@@ -169,7 +199,18 @@ export default function SelectImmobileForm(props: SelectImmobileFormProps) {
 
                             {!props.isLocked && (
                                 <FormRowColumn unit="2"
-                                    className="self-end justify-self-end">
+                                    className="flex flex-row gap-2 self-end justify-self-end">
+                                    <Button
+                                        type="button"
+                                        isLoading={props.isLoading}
+                                        isDisabled={props.isLoading}
+                                        onClick={() => {
+                                            setEditIndex(index)
+                                            setIsOpen(true)
+                                        }}
+                                    >
+                                        <PencilAltIcon className="text-white block h-5 w-5" aria-hidden="true" />
+                                    </Button>
                                     <Button
                                         type="submit"
                                         color="red"

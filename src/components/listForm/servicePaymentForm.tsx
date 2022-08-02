@@ -1,44 +1,45 @@
-import Form from "./form";
-import FormRow from "./formRow";
 import Button from "../button/button";
-import FormRowColumn from "./formRowColumn";
-import ProjectStageDataForm from "./projectStageDataForm";
-import { defaultProjectStage, ProjectStage } from "../../interfaces/objectInterfaces";
+import ServicePaymentDataForm from "./servicePaymentDataForm";
+import { defaultServicePayment, ServicePayment } from "../../interfaces/objectInterfaces";
 import { handleNewDateToUTC, handleUTCToDateShow } from "../../util/dateUtils";
 import { FeedbackMessage } from "../modal/feedbackMessageModal";
+import Form from "../form/form";
+import FormRow from "../form/formRow";
+import FormRowColumn from "../form/formRowColumn";
 
-interface ProjectStageFormProps {
+interface ServicePaymentFormProps {
     id?: string,
     title?: string,
     subtitle?: string,
+    formClassName?: string,
     isBack?: boolean,
     isLoading?: boolean,
-    projectStages?: ProjectStage[],
-    onSetProjectStages?: (any) => void,
+    servicePayments?: ServicePayment[],
+    onSetServicePayments?: (any) => void,
     onShowMessage?: (FeedbackMessage) => void,
 }
 
-export default function ProjectStageForm(props: ProjectStageFormProps) {
+export default function ServicePaymentForm(props: ServicePaymentFormProps) {
     const handleSetText = (object, index) => {
-        if (props.onSetProjectStages) {
-            props.onSetProjectStages([
-                ...props.projectStages.slice(0, index),
+        if (props.onSetServicePayments) {
+            props.onSetServicePayments([
+                ...props.servicePayments.slice(0, index),
                 object,
-                ...props.projectStages.slice(index + 1, props.projectStages.length),
+                ...props.servicePayments.slice(index + 1, props.servicePayments.length),
             ])
         }
     }
 
     const handeOnDelete = async (index: number) => {
         let feedbackMessage: FeedbackMessage = { messages: ["Algo deu errado"], messageType: "ERROR" }
-        let localProjectStages = [...props.projectStages]
-        let localProjectStage = localProjectStages[index]
+        let localServicePayments = [...props.servicePayments]
+        let localServicePayment = localServicePayments[index]
         let canDelete = true
 
-        if (localProjectStage.id && localProjectStage.id !== "") {
-            const res = await fetch("api/projectStage", {
+        if (localServicePayment.id && localServicePayment.id !== "") {
+            const res = await fetch("api/servicePayment", {
                 method: "DELETE",
-                body: JSON.stringify({ token: "tokenbemseguro", id: localProjectStage.id }),
+                body: JSON.stringify({ token: "tokenbemseguro", id: localServicePayment.id }),
             }).then((res) => res.json())
 
             if (res.status !== "SUCCESS") {
@@ -49,9 +50,9 @@ export default function ProjectStageForm(props: ProjectStageFormProps) {
 
         if (canDelete) {
             feedbackMessage = { messages: ["Removido com sucesso!"], messageType: "SUCCESS" }
-            localProjectStages.splice(index, 1)
-            if (props.onSetProjectStages) {
-                props.onSetProjectStages(localProjectStages)
+            localServicePayments.splice(index, 1)
+            if (props.onSetServicePayments) {
+                props.onSetServicePayments(localServicePayments)
             }
         }
 
@@ -64,6 +65,7 @@ export default function ProjectStageForm(props: ProjectStageFormProps) {
         <Form
             title={props.title}
             subtitle={props.subtitle}
+            className={props.formClassName}
         >
             <FormRow>
                 <FormRowColumn unit="6" className="flex justify-end">
@@ -71,23 +73,23 @@ export default function ProjectStageForm(props: ProjectStageFormProps) {
                         isLoading={props.isLoading}
                         isDisabled={props.isLoading}
                         onClick={() => {
-                            if (props.onSetProjectStages) {
-                                props.onSetProjectStages([...props.projectStages, { ...defaultProjectStage, dateString: handleUTCToDateShow(handleNewDateToUTC() + ""), index: props.projectStages?.length }])
+                            if (props.onSetServicePayments) {
+                                props.onSetServicePayments([...props.servicePayments, { ...defaultServicePayment, dateString: handleUTCToDateShow(handleNewDateToUTC() + ""), index: props.servicePayments?.length }])
                             }
                         }}>
-                        Adicionar etapa
+                        Adicionar pagamento
                     </Button>
                 </FormRowColumn>
             </FormRow>
 
-            {props?.projectStages?.map((element, index) => (
-                <ProjectStageDataForm
+            {props?.servicePayments?.map((element, index) => (
+                <ServicePaymentDataForm
                     key={index}
                     index={index}
                     onDelete={handeOnDelete}
                     onSetText={handleSetText}
                     isLoading={props.isLoading}
-                    projectStages={props.projectStages}
+                    servicePayments={props.servicePayments}
                 />
             ))}
 

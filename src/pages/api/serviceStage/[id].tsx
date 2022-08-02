@@ -1,13 +1,13 @@
 import { collection, doc, getDoc } from "firebase/firestore"
-import { ProfessionalConversor, ProjectStageConversor } from "../../../db/converters"
-import { Professional, ProjectStage } from "../../../interfaces/objectInterfaces"
-import { db, PROFESSIONAL_COLLECTION_NAME, PROJECT_STAGE_COLLECTION_NAME } from "../../../db/firebaseDB"
+import { ProfessionalConversor, ServiceStageConversor } from "../../../db/converters"
+import { Professional, ServiceStage } from "../../../interfaces/objectInterfaces"
+import { db, PROFESSIONAL_COLLECTION_NAME, SERVICE_STAGE_COLLECTION_NAME } from "../../../db/firebaseDB"
 
 export default async function handler(req, res) {
     const { query, method } = req
 
     const professionalCollection = collection(db, PROFESSIONAL_COLLECTION_NAME).withConverter(ProfessionalConversor)
-    const projectStageCollection = collection(db, PROJECT_STAGE_COLLECTION_NAME).withConverter(ProjectStageConversor)
+    const serviceStageCollection = collection(db, SERVICE_STAGE_COLLECTION_NAME).withConverter(ServiceStageConversor)
 
     switch (method) {
         case "GET":
@@ -15,8 +15,8 @@ export default async function handler(req, res) {
             try {
                 const { id } = query
                 if (id) {
-                    const docRef = doc(projectStageCollection, id)
-                    let data: ProjectStage = (await getDoc(docRef)).data()
+                    const docRef = doc(serviceStageCollection, id)
+                    let data: ServiceStage = (await getDoc(docRef)).data()
                     if (data.responsible?.id !== "") {
                         const professionalDocRef = doc(professionalCollection, data.responsible?.id)
                         let professional: Professional = (await getDoc(professionalDocRef)).data()

@@ -5,47 +5,54 @@ import { useEffect, useState } from "react"
 import FormRow from "../components/form/formRow"
 import Layout from "../components/layout/layout"
 import FormRowColumn from "../components/form/formRowColumn"
-import { ProjectPayment, ProjectStage } from "../interfaces/objectInterfaces"
+import ServiceForm from "../components/listForm/serviceForm"
+import { ServicePayment, ServiceStage } from "../interfaces/objectInterfaces"
 
 export default function Index() {
+    const [isFirst, setIsFirst] = useState(true)
     const [isLoading, setIsLoading] = useState(true)
-    const [projectStages, setProjectStages] = useState<ProjectStage[]>([])
-    const [projectStagesForShow, setProjectStagesForShow] = useState<ProjectStage[]>([])
+    const [serviceStages, setServiceStages] = useState<ServiceStage[]>([])
+    const [serviceStagesForShow, setServiceStagesForShow] = useState<ServiceStage[]>([])
 
-    const [projectPayments, setProjectPayments] = useState<ProjectPayment[]>([])
-    const [projectPaymentsForShow, setProjectPaymentsForShow] = useState<ProjectPayment[]>([])
+    const [servicePayments, setServicePayments] = useState<ServicePayment[]>([])
+    const [servicePaymentsForShow, setServicePaymentsForShow] = useState<ServicePayment[]>([])
+
+    const [clients, setClients] = useState([])
 
     const handleFilterStagesList = (string) => {
-        let listItems = [...projectStages]
-        let listItemsFiltered: ProjectStage[] = []
-        listItemsFiltered = listItems.filter((element: ProjectStage, index) => {
+        let listItems = [...serviceStages]
+        let listItemsFiltered: ServiceStage[] = []
+        listItemsFiltered = listItems.filter((element: ServiceStage, index) => {
             return element.description.toLowerCase().includes(string.toLowerCase())
         })
-        setProjectStagesForShow((old) => listItemsFiltered)
+        setServiceStagesForShow((old) => listItemsFiltered)
     }
 
     const handleFilterPaymentsList = (string) => {
-        let listItems = [...projectPayments]
-        let listItemsFiltered: ProjectPayment[] = []
-        listItemsFiltered = listItems.filter((element: ProjectPayment, index) => {
+        let listItems = [...servicePayments]
+        let listItemsFiltered: ServicePayment[] = []
+        listItemsFiltered = listItems.filter((element: ServicePayment, index) => {
             return element.description.toLowerCase().includes(string.toLowerCase())
         })
-        setProjectPaymentsForShow((old) => listItemsFiltered)
+        setServicePaymentsForShow((old) => listItemsFiltered)
     }
 
     useEffect(() => {
-        if (projectStages.length === 0) {
-            fetch("api/projectStages").then((res) => res.json()).then((res) => {
-                setProjectStages(res.list)
-                setProjectStagesForShow(res.list)
+        if (isFirst) {
+            fetch("api/serviceStages").then((res) => res.json()).then((res) => {
+                if (res.list.length) {
+                    setServiceStages(res.list)
+                    setServiceStagesForShow(res.list)
+                }
+                setIsFirst(false)
                 setIsLoading(false)
             })
-        }
-
-        if (projectPayments.length === 0) {
-            fetch("api/projectPayments").then((res) => res.json()).then((res) => {
-                setProjectPayments(res.list)
-                setProjectPaymentsForShow(res.list)
+            fetch("api/servicePayments").then((res) => res.json()).then((res) => {
+                if (res.list.length) {
+                    setServicePayments(res.list)
+                    setServicePaymentsForShow(res.list)
+                }
+                setIsFirst(false)
                 setIsLoading(false)
             })
         }
@@ -67,31 +74,30 @@ export default function Index() {
                             canSeeInfo
                             title="Etapas"
                             isLoading={isLoading}
-                            list={projectStagesForShow}
+                            list={serviceStagesForShow}
                             onFilterList={handleFilterStagesList}
-                            onTitle={(element: ProjectStage) => {
+                            onTitle={(element: ServiceStage) => {
                                 return (<p>{element.description}</p>)
                             }}
-                            onInfo={(element: ProjectStage) => {
+                            onInfo={(element: ServiceStage) => {
                                 return (<p>{element.description}</p>)
                             }}
                         />
                     </FormRowColumn>
-
-                    <FormRowColumn unit="2"></FormRowColumn>
-                    
+                    <FormRowColumn unit="2">
+                    </FormRowColumn>
                     <FormRowColumn unit="2">
                         <List
                             autoSearch
                             canSeeInfo
                             title="Pagamentos"
                             isLoading={isLoading}
-                            list={projectPaymentsForShow}
+                            list={servicePaymentsForShow}
                             onFilterList={handleFilterPaymentsList}
-                            onTitle={(element: ProjectPayment) => {
+                            onTitle={(element: ServicePayment) => {
                                 return (<p>{element.description}</p>)
                             }}
-                            onInfo={(element: ProjectPayment) => {
+                            onInfo={(element: ServicePayment) => {
                                 return (<p>{element.description}</p>)
                             }}
                         />

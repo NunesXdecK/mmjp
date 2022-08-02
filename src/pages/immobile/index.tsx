@@ -12,6 +12,7 @@ export default function Immobiles() {
     const [immobiles, setImmobiles] = useState<Immobile[]>([])
     const [immobilesForShow, setImmobilesForShow] = useState<Immobile[]>([])
 
+    const [isFirst, setIsFirst] = useState(true)
     const [isLoading, setIsLoading] = useState(true)
     const [isRegister, setIsRegister] = useState(false)
     const [isFeedbackOpen, setIsFeedbackOpen] = useState(false)
@@ -25,6 +26,7 @@ export default function Immobiles() {
         setImmobiles([])
         setImmobilesForShow([])
         setImmobile(defaultImmobile)
+        setIsFirst(true)
         setIsLoading(true)
         setIsRegister(false)
         setTitle("Lista de imóveis")
@@ -83,10 +85,13 @@ export default function Immobiles() {
     }
 
     useEffect(() => {
-        if (immobiles.length === 0) {
+        if (isFirst) {
             fetch("api/immobiles").then((res) => res.json()).then((res) => {
-                setImmobiles(res.list)
-                setImmobilesForShow(res.list)
+                if (res.list.length) {
+                    setImmobiles(res.list)
+                    setImmobilesForShow(res.list)
+                }
+                setIsFirst(false)
                 setIsLoading(false)
             })
         }

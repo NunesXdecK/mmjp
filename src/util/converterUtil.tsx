@@ -1,5 +1,5 @@
 import { handleNewDateToUTC, handleUTCToDateShow } from "./dateUtils"
-import { defaultPerson, defaultAddress, defaultProfessional, defaultImmobile, Person, Address, Professional, Immobile, Company, defaultCompany, Project, ProjectStage, ProjectPayment } from "../interfaces/objectInterfaces"
+import { defaultPerson, defaultAddress, defaultProfessional, defaultImmobile, Person, Address, Professional, Immobile, Company, defaultCompany, Project, ServiceStage, ServicePayment, Service } from "../interfaces/objectInterfaces"
 import { handleMaskCNPJ, handleMaskCPF, handleMaskTelephone, handleMountMask, handleRemoveCEPMask, handleRemoveCNPJMask, handleRemoveCPFMask, handleRemoveDateMask, handleRemoveTelephoneMask } from "./maskUtil"
 
 export interface ElementFromBase {
@@ -240,9 +240,15 @@ export const handlePrepareProjectForDB = (project: Project) => {
     if (project.date === 0) {
         project = { ...project, date: handleNewDateToUTC() }
     }
-
-    let projectPayments = handlePrepareProjectPaymentStageForDB(project, project.projectPayments)
-    let projectStages = handlePrepareProjectPaymentStageForDB(project, project.projectPayments)
+    {/*
+let projectPayments = handlePrepareProjectPaymentStageForDB(project, project.projectPayments)
+let projectStages = handlePrepareProjectPaymentStageForDB(project, project.projectPayments)
+project = {
+    ...project,
+    projectPayments: projectPayments,
+    projectStages: projectStages,
+}
+*/}
 
     if (project.dateString) {
         delete project.dateString
@@ -254,15 +260,13 @@ export const handlePrepareProjectForDB = (project: Project) => {
 
     project = {
         ...project,
-        projectPayments: projectPayments,
-        projectStages: projectStages,
     }
     return project
 }
 
-export const handlePrepareProjectPaymentStageForDB = (project: Project, list: (ProjectPayment | ProjectStage)[]) => {
+export const handlePrepareServicePaymentStageForDB = (service: Service, list: (ServicePayment | ServiceStage)[]) => {
     let elements = []
-    list.map((element: (ProjectPayment | ProjectStage), index) => {
+    list.map((element: (ServicePayment | ServiceStage), index) => {
         if ("title" in element) {
             element = { ...element, title: element.title?.trim() }
         }
@@ -284,32 +288,32 @@ export const handlePrepareProjectPaymentStageForDB = (project: Project, list: (P
                 delete element.dateString
             }
         }
-        elements = [...elements, { ...element, project: project, description: element.description?.trim(), index: index }]
+        elements = [...elements, { ...element, service: service, description: element.description?.trim(), index: index }]
     })
     return elements
 }
 
-export const handlePrepareProjectPaymentStageForShow = (list: (ProjectPayment | ProjectStage)[]) => {
+export const handlePrepareServicePaymentStageForShow = (list: (ServicePayment | ServiceStage)[]) => {
     let localList = []
-    list.map((element: (ProjectPayment | ProjectStage), index) => {
+    list.map((element: (ServicePayment | ServiceStage), index) => {
         localList = [...localList, { ...element, dateString: handleUTCToDateShow(element.dateDue.toString()) }]
     })
     return localList
 }
 
-export const handlePrepareProjectStageForDB = (projectStage: ProjectStage) => {
-    if (projectStage.dateInsertUTC === 0) {
-        projectStage = { ...projectStage, dateInsertUTC: handleNewDateToUTC() }
+export const handlePrepareServiceStageForDB = (serviceStage: ServiceStage) => {
+    if (serviceStage.dateInsertUTC === 0) {
+        serviceStage = { ...serviceStage, dateInsertUTC: handleNewDateToUTC() }
     }
 
-    if (projectStage.id !== "") {
-        projectStage = { ...projectStage, dateLastUpdateUTC: handleNewDateToUTC() }
+    if (serviceStage.id !== "") {
+        serviceStage = { ...serviceStage, dateLastUpdateUTC: handleNewDateToUTC() }
     }
 
-    projectStage = {
-        ...projectStage
+    serviceStage = {
+        ...serviceStage
     }
-    return projectStage
+    return serviceStage
 }
 
 export const extratePersonAddress = (element: ElementFromBase) => {

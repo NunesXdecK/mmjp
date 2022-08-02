@@ -1,6 +1,7 @@
 import { useState } from "react"
+import InfoHolderView from "./infoHolderView"
+import { handleMaskCEP } from "../../util/maskUtil"
 import { defaultAddress, Address } from "../../interfaces/objectInterfaces"
-import { handleMaskCEP, handleMaskCPF, handleMaskTelephone } from "../../util/maskUtil"
 
 interface AddressViewProps {
     id?: string,
@@ -12,17 +13,14 @@ export default function AddressView(props: AddressViewProps) {
     return (
         <>
             {address?.cep?.length !== 0 && (
-                <div className="mt-6 px-4 pt-2 pb-4 border-2 border-indigo-200 rounded-lg">
-                    <span className="text-lg font-semibold absolute bg-indigo-50 px-2 -mt-6">Endereço</span>
-                    <div className="mt-6">
-                        {address.cep && (<p><span className="font-semibold">CEP:</span> {handleMaskCEP(address.cep)}</p>)}
-                        {address.publicPlace && (<p><span className="font-semibold">Logradouro:</span> {address.publicPlace}</p>)}
-                        {address.number && (<p><span className="font-semibold">Número:</span> {address.number}</p>)}
-                        {address.district && (<p><span className="font-semibold">Bairro:</span> {address.district}</p>)}
-                        {address.county && (<p><span className="font-semibold">Cidade:</span> {address.county}</p>)}
-                        {address.complement && (<p><span className="font-semibold">Complemento:</span> {address.complement}</p>)}
-                    </div>
-                </div>
+                <InfoHolderView title="Endereço">
+                    {address.cep && (<p><span className="font-semibold">CEP:</span> {handleMaskCEP(address.cep)}</p>)}
+                    {address.publicPlace && (<p><span className="font-semibold">Logradouro:</span> {address.publicPlace}</p>)}
+                    {address.number && (<p><span className="font-semibold">Número:</span> {address.number}</p>)}
+                    {address.district && (<p><span className="font-semibold">Bairro:</span> {address.district}</p>)}
+                    {address.county && (<p><span className="font-semibold">Cidade:</span> {address.county}</p>)}
+                    {address.complement && (<p><span className="font-semibold">Complemento:</span> {address.complement}</p>)}
+                </InfoHolderView>
             )}
         </>
     )

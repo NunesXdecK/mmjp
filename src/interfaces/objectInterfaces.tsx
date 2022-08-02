@@ -85,17 +85,32 @@ export interface Project {
     date?: number,
     dateInsertUTC?: number,
     dateLastUpdateUTC?: number,
-    budget?: boolean,
-    professional?: any,
     oldData?: any,
+    professional?: any,
     clients?: any[],
-    projectStages?: any[],
-    projectPayments?: any[],
+    services?: Service[],
+}
+
+export interface Service {
+    id?: string,
+    title?: string,
+    value?: string,
+    status?: string,
+    quantity?: string,
+    dateString?: string,
+    description?: string,
+    date?: number,
+    dateInsertUTC?: number,
+    dateLastUpdateUTC?: number,
+    project?: any,
+    professional?: any,
+    serviceStages?: any[],
+    servicePayments?: any[],
     immobilesOrigin?: any[],
     immobilesTarget?: any[],
 }
 
-export interface ProjectStage {
+export interface ServiceStage {
     id?: string,
     title?: string,
     status?: string,
@@ -105,21 +120,12 @@ export interface ProjectStage {
     dateDue?: number,
     dateInsertUTC?: number,
     dateLastUpdateUTC?: number,
-    finished?: boolean,
-    project?: any,
+    service?: any,
     responsible?: any,
     updates?: [],
 }
 
-export interface ProjectStageUpdate {
-    dateString?: string,
-    description?: string,
-    dateInsertUTC?: number,
-    dateLastUpdateUTC?: number,
-    user?: any,
-}
-
-export interface ProjectPayment {
+export interface ServicePayment {
     id?: string,
     value?: string,
     dateString?: string,
@@ -128,8 +134,15 @@ export interface ProjectPayment {
     dateDue?: number,
     dateInsertUTC?: number,
     dateLastUpdateUTC?: number,
-    payed?: boolean,
-    project?: any,
+    service?: any,
+}
+
+export interface Update {
+    dateString?: string,
+    description?: string,
+    dateInsertUTC?: number,
+    dateLastUpdateUTC?: number,
+    user?: any,
 }
 
 export const defaultAddress: Address = {
@@ -214,21 +227,35 @@ export const defaultProject: Project = {
     title: "",
     number: "",
     dateString: "",
+    status: "ORÇAMENTO",
+    date: 0,
+    dateInsertUTC: 0,
+    dateLastUpdateUTC: 0,
+    oldData: {},
+    professional: defaultProfessional,
+    clients: [],
+}
+
+export const defaultService: Service = {
+    id: "",
+    title: "",
+    value: "0", 
+    quantity: "1",
+    dateString: "",
+    description: "",
     status: "NORMAL",
     date: 0,
     dateInsertUTC: 0,
     dateLastUpdateUTC: 0,
-    budget: true,
-    clients: [],
-    oldData: {},
-    projectStages: [],
-    projectPayments: [],
-    immobilesOrigin: [],
-    immobilesTarget: [],
+    project: defaultProject,
     professional: defaultProfessional,
+    serviceStages: [],
+    servicePayments: [],
+    immobilesOrigin: [],
+    immobilesTarget: [], 
 }
 
-export const defaultProjectStage: ProjectStage = {
+export const defaultServiceStage: ServiceStage = {
     id: "",
     title: "",
     dateString: "",
@@ -236,13 +263,12 @@ export const defaultProjectStage: ProjectStage = {
     status: "NORMAL",
     dateInsertUTC: 0,
     dateLastUpdateUTC: 0,
-    finished: false,
-    project: defaultProject,
+    service: defaultService,
     responsible: defaultProfessional,
     updates: [],
 }
 
-export const defaultProjectPayment: ProjectPayment = {
+export const defaultServicePayment: ServicePayment = {
     id: "",
     value: "",
     dateString: "",
@@ -251,6 +277,5 @@ export const defaultProjectPayment: ProjectPayment = {
     dateDue: 0,
     dateInsertUTC: 0,
     dateLastUpdateUTC: 0,
-    payed: false,
-    project: defaultProject,
+    service: defaultService,
 }

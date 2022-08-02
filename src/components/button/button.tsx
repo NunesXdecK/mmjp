@@ -6,6 +6,7 @@ interface ButtonProps {
     color?: "red",
     children?: any,
     isLink?: boolean,
+    isLight?: boolean,
     isHidden?: boolean,
     isLoading?: boolean,
     isDisabled?: boolean,
@@ -14,15 +15,22 @@ interface ButtonProps {
 }
 
 export default function Button(props: ButtonProps) {
-    let colorClassName = "bg-indigo-600 hover:bg-indigo-700 focus:border-indigo-500 focus:ring-indigo-500"
+    let colorClassName = ""
+    let className = ""
 
-    switch (props.color) {
-        case "red":
-            colorClassName = "bg-red-600 hover:bg-red-700 focus:border-red-500 focus:ring-red-500"
-            break
-    }
-
-    let className = `
+    if (props.isLight) {
+        colorClassName = "bg-white hover:bg-gray-300  focus:ring-gray-300"
+        className = `
+                        p-2 
+                        shadow-sm 
+                        justify-center 
+                        text-sm font-medium rounded-full text-white 
+                        disabled:opacity-40
+                        focus:outline-none
+                    `
+    } else {
+        colorClassName = "bg-indigo-600 hover:bg-indigo-700 focus:border-indigo-500 focus:ring-indigo-500"
+        className = `
                         py-2 px-4 
                         shadow-sm 
                         justify-center 
@@ -31,6 +39,13 @@ export default function Button(props: ButtonProps) {
                         text-sm font-medium rounded-md text-white 
                         focus:outline-none focus:ring-2 focus:ring-offset-2 
                     `
+    }
+
+    switch (props.color) {
+        case "red":
+            colorClassName = "bg-red-600 hover:bg-red-700 focus:border-red-500 focus:ring-red-500"
+            break
+    }
     if (props.isLoading) {
         className = className + " " + STYLE_FOR_INPUT_LOADING_TRANSPARENT
     }

@@ -69,6 +69,8 @@ export default function ProfessionalForm(props: ProfessionalFormProps) {
         let professionalForDB = { ...professional }
         if (persons.length > 0) {
             professionalForDB = { ...professionalForDB, person: persons[0] }
+        } else {
+            professionalForDB = { ...professionalForDB, person: {} }
         }
         const isValid = handleProfessionalValidationForDB(professionalForDB)
         if (isValid.validation) {
@@ -130,32 +132,28 @@ export default function ProfessionalForm(props: ProfessionalFormProps) {
                     }
                 }}>
 
-                <FormRow className="p-2">
-                    <FormRowColumn unit="6">
-                        <ActionButtonsForm
-                            isLeftOn
-                            isForBackControl
-                            isDisabled={!isFormValid}
-                            rightWindowText="Deseja confirmar as alterações?"
-                            isForOpenLeft={professional.id !== "" && handleDiference()}
-                            isForOpenRight={professional.id !== "" && handleDiference()}
-                            rightButtonText={professional.id === "" ? "Salvar" : "Editar"}
-                            leftWindowText="Dejesa realmente voltar e descartar as alterações?"
-                            onLeftClick={(event) => {
-                                if (event) {
-                                    event.preventDefault()
-                                }
-                                handleOnBack()
-                            }}
-                            onRightClick={(event) => {
-                                if (event) {
-                                    event.preventDefault()
-                                }
-                                handleSave()
-                            }}
-                        />
-                    </FormRowColumn>
-                </FormRow>
+                <ActionButtonsForm
+                    isLeftOn
+                    isForBackControl
+                    isDisabled={!isFormValid}
+                    rightWindowText="Deseja confirmar as alterações?"
+                    isForOpenLeft={professional.id !== "" && handleDiference()}
+                    isForOpenRight={professional.id !== "" && handleDiference()}
+                    rightButtonText={professional.id === "" ? "Salvar" : "Editar"}
+                    leftWindowText="Dejesa realmente voltar e descartar as alterações?"
+                    onLeftClick={(event) => {
+                        if (event) {
+                            event.preventDefault()
+                        }
+                        handleOnBack()
+                    }}
+                    onRightClick={(event) => {
+                        if (event) {
+                            event.preventDefault()
+                        }
+                        handleSave()
+                    }}
+                />
 
                 <Form
                     title={props.title}
@@ -226,12 +224,14 @@ export default function ProfessionalForm(props: ProfessionalFormProps) {
                 persons={persons}
                 isLoading={isLoading}
                 title="Dados pessoais"
-                isMultipleSelect={false}
+                formClassName="p-1 m-3"
                 onSetPersons={setPersons}
                 subtitle="Selecione a pessoa"
                 buttonTitle="Adicionar pessoa"
                 onShowMessage={props.onShowMessage}
+                validationButton={persons.length === 1}
                 validationMessage="Esta pessoa já é um proprietário"
+                validationMessageButton="Você não pode mais adicionar pessoas"
             />
 
             <form
@@ -240,31 +240,27 @@ export default function ProfessionalForm(props: ProfessionalFormProps) {
                         event.preventDefault()
                     }
                 }}>
-                <FormRow className="p-2">
-                    <FormRowColumn unit="6">
-                        <ActionButtonsForm
-                            isLeftOn
-                            isDisabled={!isFormValid}
-                            rightWindowText="Deseja confirmar as alterações?"
-                            isForOpenLeft={professional.id !== "" && handleDiference()}
-                            isForOpenRight={professional.id !== "" && handleDiference()}
-                            rightButtonText={professional.id === "" ? "Salvar" : "Editar"}
-                            leftWindowText="Dejesa realmente voltar e descartar as alterações?"
-                            onLeftClick={(event) => {
-                                if (event) {
-                                    event.preventDefault()
-                                }
-                                handleOnBack()
-                            }}
-                            onRightClick={(event) => {
-                                if (event) {
-                                    event.preventDefault()
-                                }
-                                handleSave()
-                            }}
-                        />
-                    </FormRowColumn>
-                </FormRow>
+                <ActionButtonsForm
+                    isLeftOn
+                    isDisabled={!isFormValid}
+                    rightWindowText="Deseja confirmar as alterações?"
+                    isForOpenLeft={professional.id !== "" && handleDiference()}
+                    isForOpenRight={professional.id !== "" && handleDiference()}
+                    rightButtonText={professional.id === "" ? "Salvar" : "Editar"}
+                    leftWindowText="Dejesa realmente voltar e descartar as alterações?"
+                    onLeftClick={(event) => {
+                        if (event) {
+                            event.preventDefault()
+                        }
+                        handleOnBack()
+                    }}
+                    onRightClick={(event) => {
+                        if (event) {
+                            event.preventDefault()
+                        }
+                        handleSave()
+                    }}
+                />
             </form>
         </>
     )

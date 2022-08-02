@@ -1,14 +1,13 @@
-import { ProfessionalConversor, ProjectConversor, ProjectStageConversor } from "../../../db/converters"
+import { ServiceConversor, ServicePaymentConversor } from "../../../db/converters"
 import { addDoc, collection, deleteDoc, doc, updateDoc } from "firebase/firestore"
-import { db, HISTORY_COLLECTION_NAME, PROFESSIONAL_COLLECTION_NAME, PROJECT_COLLECTION_NAME, PROJECT_STAGE_COLLECTION_NAME } from "../../../db/firebaseDB"
+import { db, HISTORY_COLLECTION_NAME, SERVICE_COLLECTION_NAME, SERVICE_PAYMENT_COLLECTION_NAME } from "../../../db/firebaseDB"
 
 export default async function handler(req, res) {
     const { method, body } = req
 
     const historyCollection = collection(db, HISTORY_COLLECTION_NAME)
-    const projectCollection = collection(db, PROJECT_COLLECTION_NAME).withConverter(ProjectConversor)
-    const professionalCollection = collection(db, PROFESSIONAL_COLLECTION_NAME).withConverter(ProfessionalConversor)
-    const projectStageCollection = collection(db, PROJECT_STAGE_COLLECTION_NAME).withConverter(ProjectStageConversor)
+    const serviceCollection = collection(db, SERVICE_COLLECTION_NAME).withConverter(ServiceConversor)
+    const servicePaymentCollection = collection(db, SERVICE_PAYMENT_COLLECTION_NAME).withConverter(ServicePaymentConversor)
 
     switch (method) {
         case "POST":
@@ -18,22 +17,18 @@ export default async function handler(req, res) {
                 if (token === "tokenbemseguro") {
                     let nowID = data?.id ?? ""
                     const isSave = nowID === ""
-                    if (data.project?.id && data.project.id !== "") {
-                        const projectDocRef = doc(projectCollection, data.project.id)
-                        if (projectDocRef) {
-                            if (data.responsible && data.responsible?.id !== "") {
-                                const docRef = doc(professionalCollection, data.responsible.id)
-                                data = { ...data, responsible: docRef }
-                            }
-                            data = { ...data, project: projectDocRef }
+                    if (data.service?.id && data.service.id !== "") {
+                        const serviceDocRef = doc(serviceCollection, data.service.id)
+                        if (serviceDocRef) {
+                            data = { ...data, service: serviceDocRef }
                             if (isSave) {
-                                const docRef = await addDoc(projectStageCollection, ProjectStageConversor.toFirestore(data))
+                                const docRef = await addDoc(servicePaymentCollection, ServicePaymentConversor.toFirestore(data))
                                 nowID = docRef.id
                             } else {
-                                const docRef = doc(projectStageCollection, nowID)
-                                await updateDoc(docRef, ProjectStageConversor.toFirestore(data))
+                                const docRef = doc(servicePaymentCollection, nowID)
+                                await updateDoc(docRef, ServicePaymentConversor.toFirestore(data))
                             }
-                            const dataForHistory = { ...ProjectStageConversor.toFirestore(data), databaseid: nowID, databasename: PROJECT_STAGE_COLLECTION_NAME }
+                            const dataForHistory = { ...ServicePaymentConversor.toFirestore(data), databaseid: nowID, databasename: SERVICE_PAYMENT_COLLECTION_NAME }
                             await addDoc(historyCollection, dataForHistory)
                             resPOST = { ...resPOST, status: "SUCCESS", id: nowID }
                         } else {
@@ -56,7 +51,7 @@ export default async function handler(req, res) {
             try {
                 const { token, id } = JSON.parse(body)
                 if (token === "tokenbemseguro") {
-                    const docRef = doc(projectStageCollection, id)
+                    const docRef = doc(servicePaymentCollection, id)
                     await deleteDoc(docRef)
                     resDELETE = { ...resDELETE, status: "SUCCESS" }
                 } else {

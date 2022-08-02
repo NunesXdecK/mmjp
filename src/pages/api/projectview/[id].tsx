@@ -16,24 +16,24 @@ export default async function handler(req, res) {
                 if (id) {
                     const docRef = doc(projectCollection, id)
                     let project: Project = (await getDoc(docRef)).data()
-
-                    if (project.professional.id && project.professional.id !== "") {
-                        project = { ...project, professional: project.professional.id }
+                    let professionalId = ""
+                    if ("id" in project.professional && project.professional?.id !== "") {
+                        professionalId = project.professional.id
                     }
-
-                    let immobilesOrigin = []
-                    project.immobilesOrigin.map((element, index) => {
-                        immobilesOrigin = [...immobilesOrigin, element.id]
-                    })
-
-                    let immobilesTarget = []
-                    project.immobilesTarget.map((element, index) => {
-                        immobilesTarget = [...immobilesTarget, element.id]
-                    })
 
                     let clients = []
                     project.clients.map((element, index) => {
                         clients = [...clients, element.path]
+                    })
+                    {/*
+let immobilesOrigin = []
+project.immobilesOrigin.map((element, index) => {
+                        immobilesOrigin = [...immobilesOrigin, element.id]
+                    })
+                    
+                    let immobilesTarget = []
+                    project.immobilesTarget.map((element, index) => {
+                        immobilesTarget = [...immobilesTarget, element.id]
                     })
 
                     project = {
@@ -41,6 +41,12 @@ export default async function handler(req, res) {
                         clients: clients,
                         immobilesOrigin: immobilesOrigin,
                         immobilesTarget: immobilesTarget
+                    }
+                */}
+                    project = {
+                        ...project,
+                        clients: clients,
+                        professional: professionalId,
                     }
                     resGET = { ...resGET, status: "SUCCESS", data: project }
                 } else {

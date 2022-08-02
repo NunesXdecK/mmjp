@@ -1,4 +1,4 @@
-import { Company, Person, Professional, Project, ProjectPayment, ProjectStage, Immobile } from "../interfaces/objectInterfaces"
+import { Company, Person, Professional, Project, ServicePayment, ServiceStage, Immobile, Service } from "../interfaces/objectInterfaces"
 import { handleRemoveCNPJMask } from "./maskUtil"
 import { CNPJ_PATTERN, CPF_PATTERN, ONLY_CHARACTERS_PATTERN, ONLY_CHARACTERS_PATTERN_TWO, ONLY_SPECIAL_FOR_NUMBER_PATTERN } from "./patternValidationUtil"
 
@@ -146,11 +146,8 @@ export const handleProjectValidationForDB = (project: Project) => {
     let validation: ValidationReturn = { validation: false, messages: [] }
     let nameCheck = handleValidationNotNull(project.title)
     let clientsCheck = project?.clients?.length > 0 ?? false
-    let immobilesTargetCheck = project?.immobilesTarget?.length > 0 ?? false
     let professionalCheck = project?.professional?.id?.length > 0 ?? false
     let clientsOnBaseCheck = true
-    let immobilesOriginOnBaseCheck = true
-    let immobilesTargetOnBaseCheck = true
 
     if (!nameCheck) {
         validation = { ...validation, messages: [...validation.messages, "O campo titulo está em branco."] }
@@ -164,9 +161,6 @@ export const handleProjectValidationForDB = (project: Project) => {
         validation = { ...validation, messages: [...validation.messages, "O projeto precisa de ao menos um cliente."] }
     }
 
-    if (!immobilesTargetCheck) {
-        validation = { ...validation, messages: [...validation.messages, "O projeto precisa de ao menos um imóvel alvo."] }
-    }
 
     project.clients.map((element, index) => {
         if (!handleValidationNotNull(element.id)) {
@@ -174,28 +168,35 @@ export const handleProjectValidationForDB = (project: Project) => {
             validation = { ...validation, messages: [...validation.messages, "O cliente não está cadastrado na base."] }
         }
     })
-
+    {/*
+    let immobilesTargetCheck = project?.immobilesTarget?.length > 0 ?? false
+    let immobilesOriginOnBaseCheck = true
+    let immobilesTargetOnBaseCheck = true
+    if (!immobilesTargetCheck) {
+        validation = { ...validation, messages: [...validation.messages, "O projeto precisa de ao menos um imóvel alvo."] }
+    }
     project.immobilesTarget.map((element, index) => {
         if (!handleValidationNotNull(element.id)) {
             immobilesTargetOnBaseCheck = false
             validation = { ...validation, messages: [...validation.messages, "O imóvel alvo " + element.name + " não está cadastrado na base."] }
         }
     })
-
+    
     project.immobilesOrigin.map((element, index) => {
         if (!handleValidationNotNull(element.id)) {
             immobilesOriginOnBaseCheck = false
             validation = { ...validation, messages: [...validation.messages, "O imóvel de origem " + element.name + " não está cadastrado na base."] }
         }
     })
+*/}
 
-    validation = { ...validation, validation: nameCheck && clientsCheck && clientsOnBaseCheck && immobilesTargetCheck }
+    validation = { ...validation, validation: nameCheck && clientsCheck && clientsOnBaseCheck }
     return validation
 }
 
-export const handleProjectStageValidationForDB = (projectStage: ProjectStage) => {
+export const handleServiceValidationForDB = (service: Service) => {
     let validation: ValidationReturn = { validation: false, messages: [] }
-    let titleCheck = handleValidationNotNull(projectStage.title)
+    let titleCheck = handleValidationNotNull(service.title)
 
     if (!titleCheck) {
         validation = { ...validation, messages: [...validation.messages, "O campo titulo está em branco."] }
@@ -205,11 +206,23 @@ export const handleProjectStageValidationForDB = (projectStage: ProjectStage) =>
     return validation
 }
 
-export const handleProjectPaymentValidationForDB = (projectPayment: ProjectPayment) => {
+export const handleServiceStageValidationForDB = (serviceStage: ServiceStage) => {
     let validation: ValidationReturn = { validation: false, messages: [] }
-    let valueCheck = handleValidationNotNull(projectPayment.value)
-    let descriptionCheck = handleValidationNotNull(projectPayment.description)
-    let projectCheck = projectPayment?.project?.id?.length > 0 ?? false
+    let titleCheck = handleValidationNotNull(serviceStage.title)
+
+    if (!titleCheck) {
+        validation = { ...validation, messages: [...validation.messages, "O campo titulo está em branco."] }
+    }
+
+    validation = { ...validation, validation: titleCheck }
+    return validation
+}
+
+export const handleServicePaymentValidationForDB = (servicePayment: ServicePayment) => {
+    let validation: ValidationReturn = { validation: false, messages: [] }
+    let valueCheck = handleValidationNotNull(servicePayment.value)
+    let descriptionCheck = handleValidationNotNull(servicePayment.description)
+    let serviceCheck = servicePayment?.service?.id?.length > 0 ?? false
 
     if (!valueCheck) {
         validation = { ...validation, messages: [...validation.messages, "O valor está em branco."] }
@@ -219,10 +232,10 @@ export const handleProjectPaymentValidationForDB = (projectPayment: ProjectPayme
         validation = { ...validation, messages: [...validation.messages, "O campo descrição está em branco."] }
     }
 
-    if (!projectCheck) {
+    if (!serviceCheck) {
         validation = { ...validation, messages: [...validation.messages, "O pagamento precisa de um projeto referente."] }
     }
 
-    validation = { ...validation, validation: descriptionCheck && valueCheck && projectCheck }
+    validation = { ...validation, validation: descriptionCheck && valueCheck && serviceCheck }
     return validation
 }

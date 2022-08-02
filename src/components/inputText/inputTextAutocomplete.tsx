@@ -121,7 +121,10 @@ export default function InputTextAutoComplete(props: InputTextAutoCompleteProps)
                     ))}
                 </div>
             )}
-            {!isValid && (<p className="text-red-600">{props.validationMessage}</p>)}
+
+            {!isValid && (
+                <span className="text-sm whitespace-nowrap text-red-600">{props.validationMessage}</span>
+            )}
         </>
     )
 }

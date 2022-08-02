@@ -131,37 +131,33 @@ export default function CompanyForm(props: CompanyFormProps) {
                         event.preventDefault()
                     }
                 }}>
-                <FormRow className="p-2">
-                    <FormRowColumn unit="6">
-                        <ActionButtonsForm
-                            isLeftOn
-                            isForBackControl
-                            isDisabled={!isFormValid}
-                            rightWindowText="Deseja confirmar as alterações?"
-                            isForOpenLeft={company.id !== "" && handleDiference()}
-                            isForOpenRight={company.id !== "" && handleDiference()}
-                            rightButtonText={company.id === "" ? "Salvar" : "Editar"}
-                            leftWindowText="Dejesa realmente voltar e descartar as alterações?"
-                            onLeftClick={(event) => {
-                                if (event) {
-                                    event.preventDefault()
-                                }
-                                handleOnBack()
-                            }}
-                            onRightClick={(event) => {
-                                if (event) {
-                                    event.preventDefault()
-                                }
-                                handleSave()
-                            }}
-                        />
-                    </FormRowColumn>
-                </FormRow>
+
+                <ActionButtonsForm
+                    isLeftOn
+                    isForBackControl
+                    isDisabled={!isFormValid}
+                    rightWindowText="Deseja confirmar as alterações?"
+                    isForOpenLeft={company.id !== "" && handleDiference()}
+                    isForOpenRight={company.id !== "" && handleDiference()}
+                    rightButtonText={company.id === "" ? "Salvar" : "Editar"}
+                    leftWindowText="Dejesa realmente voltar e descartar as alterações?"
+                    onLeftClick={(event) => {
+                        if (event) {
+                            event.preventDefault()
+                        }
+                        handleOnBack()
+                    }}
+                    onRightClick={(event) => {
+                        if (event) {
+                            event.preventDefault()
+                        }
+                        handleSave()
+                    }}
+                />
 
                 <Form
                     title={props.title}
                     subtitle={props.subtitle}>
-
                     {props.canMultiple && (
                         <FormRow>
                             <FormRowColumn unit="6">
@@ -242,6 +238,7 @@ export default function CompanyForm(props: CompanyFormProps) {
                 isLoading={isLoading}
                 isMultipleSelect={true}
                 persons={company.owners}
+                formClassName="p-1 m-3"
                 onSetLoading={setIsLoading}
                 onShowMessage={props.onShowMessage}
                 buttonTitle="Adicionar proprietário"
@@ -265,31 +262,27 @@ export default function CompanyForm(props: CompanyFormProps) {
                     subtitle="Informações sobre o endereço"
                 />
 
-                <FormRow className="p-2">
-                    <FormRowColumn unit="6">
-                        <ActionButtonsForm
-                            isLeftOn
-                            isDisabled={!isFormValid}
-                            rightWindowText="Deseja confirmar as alterações?"
-                            isForOpenLeft={company.id !== "" && handleDiference()}
-                            isForOpenRight={company.id !== "" && handleDiference()}
-                            rightButtonText={company.id === "" ? "Salvar" : "Editar"}
-                            leftWindowText="Dejesa realmente voltar e descartar as alterações?"
-                            onLeftClick={(event) => {
-                                if (event) {
-                                    event.preventDefault()
-                                }
-                                handleOnBack()
-                            }}
-                            onRightClick={(event) => {
-                                if (event) {
-                                    event.preventDefault()
-                                }
-                                handleSave()
-                            }}
-                        />
-                    </FormRowColumn>
-                </FormRow>
+                <ActionButtonsForm
+                    isLeftOn
+                    isDisabled={!isFormValid}
+                    rightWindowText="Deseja confirmar as alterações?"
+                    isForOpenLeft={company.id !== "" && handleDiference()}
+                    isForOpenRight={company.id !== "" && handleDiference()}
+                    rightButtonText={company.id === "" ? "Salvar" : "Editar"}
+                    leftWindowText="Dejesa realmente voltar e descartar as alterações?"
+                    onLeftClick={(event) => {
+                        if (event) {
+                            event.preventDefault()
+                        }
+                        handleOnBack()
+                    }}
+                    onRightClick={(event) => {
+                        if (event) {
+                            event.preventDefault()
+                        }
+                        handleSave()
+                    }}
+                />
             </form>
         </>
     )
