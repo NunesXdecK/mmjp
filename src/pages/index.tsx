@@ -5,7 +5,6 @@ import { useEffect, useState } from "react"
 import FormRow from "../components/form/formRow"
 import Layout from "../components/layout/layout"
 import FormRowColumn from "../components/form/formRowColumn"
-import ServiceForm from "../components/listForm/serviceForm"
 import { ServicePayment, ServiceStage } from "../interfaces/objectInterfaces"
 
 export default function Index() {
@@ -16,8 +15,6 @@ export default function Index() {
 
     const [servicePayments, setServicePayments] = useState<ServicePayment[]>([])
     const [servicePaymentsForShow, setServicePaymentsForShow] = useState<ServicePayment[]>([])
-
-    const [clients, setClients] = useState([])
 
     const handleFilterStagesList = (string) => {
         let listItems = [...serviceStages]

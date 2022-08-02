@@ -3,17 +3,17 @@ import FormRow from "./formRow";
 import { useState } from "react";
 import FormRowColumn from "./formRowColumn";
 import InputText from "../inputText/inputText";
+import ServiceForm from "../listForm/serviceForm";
+import ActionButtonsForm from "./actionButtonsForm";
 import InputCheckbox from "../inputText/inputCheckbox";
 import { FeedbackMessage } from "../modal/feedbackMessageModal";
 import { NOT_NULL_MARK } from "../../util/patternValidationUtil";
+import SelectProfessionalForm from "../select/selectProfessionalForm";
 import InputTextAutoComplete from "../inputText/inputTextAutocomplete";
+import SelectPersonCompanyForm from "../select/selectPersonCompanyForm";
 import { handleProjectValidationForDB } from "../../util/validationUtil";
 import { defaultProject, Project, Service } from "../../interfaces/objectInterfaces";
 import { defaultElementFromBase, ElementFromBase, handlePrepareProjectForDB, handlePrepareServicePaymentStageForDB, } from "../../util/converterUtil";
-import SelectPersonCompanyForm from "../select/selectPersonCompanyForm";
-import ActionButtonsForm from "./actionButtonsForm";
-import SelectProfessionalForm from "../select/selectProfessionalForm";
-import ServiceForm from "../listForm/serviceForm";
 
 interface ProjectFormProps {
     title?: string,
@@ -195,7 +195,6 @@ export default function ProjectForm(props: ProjectFormProps) {
                 }}
             />
 
-
             <form
                 onSubmit={(event) => {
                     if (event) {
@@ -249,7 +248,7 @@ export default function ProjectForm(props: ProjectFormProps) {
                     )}
 
                     <FormRow>
-                        <FormRowColumn unit="4">
+                        <FormRowColumn unit="3">
                             <InputTextAutoComplete
                                 id="title"
                                 isLoading={isLoading}
@@ -264,40 +263,38 @@ export default function ProjectForm(props: ProjectFormProps) {
                             />
                         </FormRowColumn>
 
-                        <FormRowColumn unit="2">
-                            <InputText
-                                id="status"
-                                isDisabled={true}
-                                value={project.status}
-                                title="Status do projeto"
-                            />
-                        </FormRowColumn>
-                    </FormRow>
-
-                    <FormRow>
-                        <FormRowColumn unit="4">
+                        <FormRowColumn unit="1">
                             <InputText
                                 id="number"
                                 isLoading={isLoading}
                                 value={project.number}
-                                title="Numero do projeto"
+                                title="Numero"
                                 isDisabled={props.isForDisable}
                                 onSetText={handleSetProjectNumber}
                                 onValidate={handleChangeFormValidation}
                             />
                         </FormRowColumn>
 
-                        <FormRowColumn unit="2">
+                        <FormRowColumn unit="1">
                             <InputText
                                 mask="date"
+                                title="Data"
                                 maxLength={10}
                                 id="project-date"
                                 isLoading={isLoading}
-                                title="Data do projeto"
                                 value={project.dateString}
                                 isDisabled={props.isForDisable}
                                 onSetText={handleSetProjectDate}
                                 onValidate={handleChangeFormValidation}
+                            />
+                        </FormRowColumn>
+
+                        <FormRowColumn unit="1">
+                            <InputText
+                                id="status"
+                                title="Status"
+                                isDisabled={true}
+                                value={project.status}
                             />
                         </FormRowColumn>
                     </FormRow>
