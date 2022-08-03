@@ -14,9 +14,9 @@ import SelectProfessionalForm from "../select/selectProfessionalForm";
 import InputTextAutoComplete from "../inputText/inputTextAutocomplete";
 import { handleServiceValidationForDB } from "../../util/validationUtil";
 import { NOT_NULL_MARK, NUMBER_MARK } from "../../util/patternValidationUtil";
+import { handleNewDateToUTC, handleUTCToDateShow } from "../../util/dateUtils";
 import { ChevronDownIcon, ChevronRightIcon, TrashIcon } from "@heroicons/react/outline";
 import { defaultServicePayment, Service, ServicePayment, ServiceStage } from "../../interfaces/objectInterfaces";
-import { handleNewDateToUTC, handleUTCToDateShow } from "../../util/dateUtils";
 
 interface ServiceDataFormProps {
     id?: string,
@@ -28,14 +28,9 @@ interface ServiceDataFormProps {
     isForSelect?: boolean,
     isForDisable?: boolean,
     services?: Service[],
-    serviceStages?: ServiceStage[],
-    servicePayments?: ServicePayment[],
     onDelete?: (number) => void,
     onSetText?: (any, number) => void,
-    onSetTotalChange?: (any, number?) => void,
     onShowMessage?: (FeedbackMessage) => void,
-    onSetServiceStages?: (any, number) => void,
-    onSetServicePayments?: (any, number) => void,
 }
 
 export default function ServiceDataForm(props: ServiceDataFormProps) {
@@ -54,11 +49,7 @@ export default function ServiceDataForm(props: ServiceDataFormProps) {
     const handleSetServiceDescription = (value) => { handleSetText({ ...props.services[index], description: value }) }
     const handleSetServiceImmobilesTarget = (value) => { handleSetText({ ...props.services[index], immobilesTarget: value }) }
     const handleSetServiceImmobilesOrigin = (value) => { handleSetText({ ...props.services[index], immobilesOrigin: value }) }
-    const handleSetServicePayments = (value) => {
-        if (props.onSetServicePayments) {
-            props.onSetServicePayments(value, index)
-        }
-    }
+    const handleSetServicePayments = (value) => { handleSetText({ ...props.services[index], servicePayments: value }) }
 
     const handleSetServiceProfessional = (value) => {
         setProfessionals(value)
@@ -66,20 +57,19 @@ export default function ServiceDataForm(props: ServiceDataFormProps) {
     }
 
     const handleSetServiceValue = (value) => {
-        const valueTotal = handleCalculateTotal(value, props.services[index].quantity)
-        handlePutPayment(valueTotal)
-        if (props.onSetTotalChange) {
-            props.onSetTotalChange(valueTotal, index)
-        }
-        handleSetText({ ...props.services[index], value: value })
+        const total = handleCalculateTotal(value, props.services[index].quantity)
+        const totalFormated = handleMountNumberCurrency(total.toString(), ".", ",", 3, 2)
+        const list = handlePutPayment(total)
+        setValueTotal(totalFormated)
+        handleSetText({ ...props.services[index], value: value, servicePayments: list })
     }
 
     const handleSetServiceQuantity = (value) => {
-        const valueTotal = handleCalculateTotal(props.services[index].value, value)
-        if (props.onSetTotalChange) {
-            props.onSetTotalChange(valueTotal, index)
-        }
-        handleSetText({ ...props.services[index], quantity: value })
+        const total = handleCalculateTotal(props.services[index].value, value)
+        const totalFormated = handleMountNumberCurrency(total.toString(), ".", ",", 3, 2)
+        const list = handlePutPayment(total)
+        setValueTotal(totalFormated)
+        handleSetText({ ...props.services[index], quantity: value, servicePayments: list })
     }
 
     const handleCalculateTotal = (value: string, quantity: string) => {
@@ -96,15 +86,12 @@ export default function ServiceDataForm(props: ServiceDataFormProps) {
         } catch (err) {
             console.error(err)
         }
-        const total = valueFinal * quantityFinal
-        const totalFormated = handleMountNumberCurrency(total.toString(), ".", ",", 3, 2)
-        setValueTotal(totalFormated)
-        return total
+        return valueFinal * quantityFinal
     }
 
     const handlePutPayment = (valueTotal) => {
         if (valueTotal > -1) {
-            let list = [
+            return [
                 {
                     ...defaultServicePayment,
                     index: 0,
@@ -120,7 +107,6 @@ export default function ServiceDataForm(props: ServiceDataFormProps) {
                     value: handleMountNumberCurrency((valueTotal / 2).toString(), ".", ",", 3, 2),
                 },
             ]
-            handleSetServicePayments(list)
         }
     }
 
@@ -381,8 +367,8 @@ export default function ServiceDataForm(props: ServiceDataFormProps) {
                     isLoading={props.isLoading}
                     subtitle="Adicione os pagamentos"
                     onShowMessage={props.onShowMessage}
-                    servicePayments={props.servicePayments}
                     onSetServicePayments={handleSetServicePayments}
+                    servicePayments={props.services[index].servicePayments}
                 />
             </ScrollDownTransition>
             {/*

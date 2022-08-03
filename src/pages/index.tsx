@@ -5,9 +5,10 @@ import { useEffect, useState } from "react"
 import FormRow from "../components/form/formRow"
 import Layout from "../components/layout/layout"
 import FormRowColumn from "../components/form/formRowColumn"
-import { Service, ServicePayment, ServiceStage } from "../interfaces/objectInterfaces"
+import { defaultService, defaultServicePayment, defaultServiceStage, Service, ServicePayment, ServiceStage } from "../interfaces/objectInterfaces"
 import ServiceForm from "../components/listForm/serviceForm"
 import { defaultFeedbackMessage, FeedbackMessage } from "../components/modal/feedbackMessageModal"
+import Button from "../components/button/button"
 
 export default function Index() {
     const [isFirst, setIsFirst] = useState(true)
@@ -15,7 +16,10 @@ export default function Index() {
     const [isFeedbackOpen, setIsFeedbackOpen] = useState(false)
     const [serviceStages, setServiceStages] = useState<ServiceStage[]>([])
     const [serviceStagesForShow, setServiceStagesForShow] = useState<ServiceStage[]>([])
-    const [services, setServices] = useState<Service[]>([])
+    const [services, setServices] = useState<Service[]>([
+        { ...defaultService, servicePayments: [defaultServicePayment, defaultServicePayment], serviceStages: [defaultServiceStage, defaultServiceStage] },
+        { ...defaultService, servicePayments: [defaultServicePayment, defaultServicePayment], serviceStages: [defaultServiceStage, defaultServiceStage] },
+    ])
 
     const [feedbackMessage, setFeedbackMessage] = useState<FeedbackMessage>(defaultFeedbackMessage)
     const [servicePayments, setServicePayments] = useState<ServicePayment[]>([])
@@ -87,6 +91,12 @@ export default function Index() {
                 subtitle="Adicione os serviços"
                 onShowMessage={handleShowMessage}
             />
+            <Button onClick={() => console.log(services)}>Teste</Button>
+
+            {services.map((element, index) => (
+                <p className="break-before-auto" key={index}>{JSON.stringify(element)}</p>
+            ))}
+
             {/*
             <Form>
                 <FormRow>

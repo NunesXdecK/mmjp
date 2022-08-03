@@ -1,13 +1,11 @@
-import Button from "../button/button";
-import ServiceDataForm from "./serviceDataForm";
-import { FeedbackMessage } from "../modal/feedbackMessageModal";
-import { defaultService, defaultServicePayment, Service, ServicePayment, ServiceStage } from "../../interfaces/objectInterfaces";
-import { handleNewDateToUTC, handleUTCToDateShow } from "../../util/dateUtils";
 import Form from "../form/form";
+import Button from "../button/button";
 import FormRow from "../form/formRow";
+import ServiceDataForm from "./serviceDataForm";
 import FormRowColumn from "../form/formRowColumn";
-import { handleMountNumberCurrency } from "../../util/maskUtil";
-import { useState } from "react";
+import { FeedbackMessage } from "../modal/feedbackMessageModal";
+import { defaultService, Service } from "../../interfaces/objectInterfaces";
+import { handleNewDateToUTC, handleUTCToDateShow } from "../../util/dateUtils";
 
 interface ServiceFormProps {
     id?: string,
@@ -21,41 +19,11 @@ interface ServiceFormProps {
 }
 
 export default function ServiceForm(props: ServiceFormProps) {
-    const [localService, setLocalService] = useState<Service>({})
-    const handlePutPayment = (valueTotal, index) => {
-        if (valueTotal > -1) {
-            let list = [
-                {
-                    ...defaultServicePayment,
-                    index: 0,
-                    description: "Entrada",
-                    dateString: handleUTCToDateShow(handleNewDateToUTC().toString()),
-                    value: handleMountNumberCurrency((valueTotal / 2).toString(), ".", ",", 3, 2,),
-                },
-                {
-                    ...defaultServicePayment,
-                    index: 1,
-                    description: "Entrega",
-                    dateString: handleUTCToDateShow(handleNewDateToUTC().toString()),
-                    value: handleMountNumberCurrency((valueTotal / 2).toString(), ".", ",", 3, 2),
-                },
-            ]
-            const localService: Service = { ...props.services[index], servicePayments: list }
-            setLocalService((old) => localService)
-            handleSetText(localService, index, true)
-        }
-    }
-
-    const handleSetText = (object, index, isUpdate?) => {
-        let localObject = object
-        if (isUpdate) {
-            localObject = localService
-        }
-        console.log("oi", localObject)
+    const handleSetText = (object, index) => {
         if (props.onSetServices) {
             props.onSetServices([
                 ...props.services.slice(0, index),
-                localObject,
+                object,
                 ...props.services.slice(index + 1, props.services.length),
             ])
         }
@@ -126,7 +94,6 @@ export default function ServiceForm(props: ServiceFormProps) {
                     onSetText={handleSetText}
                     services={props.services}
                     isLoading={props.isLoading}
-                    onSetTotalChange={handlePutPayment}
                     onShowMessage={props.onShowMessage}
                 />
             ))}

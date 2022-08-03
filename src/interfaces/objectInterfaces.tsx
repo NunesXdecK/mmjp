@@ -239,7 +239,7 @@ export const defaultProject: Project = {
 export const defaultService: Service = {
     id: "",
     title: "",
-    value: "0", 
+    value: "0",
     quantity: "1",
     dateString: "",
     description: "",
@@ -252,7 +252,7 @@ export const defaultService: Service = {
     serviceStages: [],
     servicePayments: [],
     immobilesOrigin: [],
-    immobilesTarget: [], 
+    immobilesTarget: [],
 }
 
 export const defaultServiceStage: ServiceStage = {
