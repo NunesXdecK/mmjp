@@ -8,11 +8,12 @@ import { useEffect, useState } from "react";
 import CompanyForm from "../form/companyForm";
 import InputText from "../inputText/inputText";
 import FormRowColumn from "../form/formRowColumn";
-import { FeedbackMessage } from "../modal/feedbackMessageModal";
+import { defaultFeedbackMessage, FeedbackMessage } from "../modal/feedbackMessageModal";
 import { PencilAltIcon, TrashIcon } from "@heroicons/react/outline";
 import { Company, defaultCompany, defaultPerson, Person } from "../../interfaces/objectInterfaces";
 import { handleMaskCNPJ, handleMaskCPF, handleRemoveCNPJMask, handleRemoveCPFMask } from "../../util/maskUtil";
 import { handleValidationOnlyNumbersNotNull, handleValidationOnlyTextNotNull } from "../../util/validationUtil";
+import FeedbackMessageText from "../modal/feedbackMessageText";
 
 interface SelectPersonCompanyFormProps {
     id?: string,
@@ -171,7 +172,7 @@ export default function SelectPersonCompanyForm(props: SelectPersonCompanyFormPr
     }
 
     useEffect(() => {
-        if (isFirst) {
+        if (isOpen && isFirst) {
             fetch("api/personsAndCompanies").then((res) => res.json()).then((res) => {
                 if (res.list.length) {
                     setPersonsAndCompanies(res.list)
@@ -204,6 +205,7 @@ export default function SelectPersonCompanyForm(props: SelectPersonCompanyFormPr
                                 onClick={() => {
                                     if (props.validationButton) {
                                         setIsInvalid(true)
+                                        setTimeout(() => setIsInvalid((old) => false), 2000)
                                     } else {
                                         setIsOpen(true)
                                     }
@@ -211,9 +213,15 @@ export default function SelectPersonCompanyForm(props: SelectPersonCompanyFormPr
                             >
                                 {props.buttonTitle}
                             </Button>
-                            {isInvalid && (
-                                <span className="mt-2 text-red-600">{props.validationMessageButton}</span>
-                            )}
+                            <FeedbackMessageText
+                                isOpen={isInvalid}
+                                setIsOpen={setIsInvalid}
+                                feedbackMessage={
+                                    {
+                                        ...defaultFeedbackMessage,
+                                        messages: [props.validationMessageButton],
+                                        messageType: "ERROR"
+                                    }} />
                         </FormRowColumn>
                     </FormRow>
                 )}
@@ -222,7 +230,7 @@ export default function SelectPersonCompanyForm(props: SelectPersonCompanyFormPr
                     <form key={index + element.dateInsertUTC}
                         onSubmit={(event) => handleRemove(event, element)}>
                         <FormRow>
-                            <FormRowColumn unit="2">
+                            <FormRowColumn unit="3">
                                 <InputText
                                     title="Nome"
                                     isDisabled={true}
@@ -231,54 +239,57 @@ export default function SelectPersonCompanyForm(props: SelectPersonCompanyFormPr
                                     id={"person-company-name-" + index}
                                 />
                             </FormRowColumn>
-                            {"cpf" in element && (
-                                <FormRowColumn unit="2">
-                                    <InputText
-                                        mask="cpf"
-                                        title="CPF"
-                                        isDisabled={true}
-                                        isLoading={props.isLoading}
-                                        id={"person-company-cpf-" + index}
-                                        value={handleMaskCPF(element.cpf)}
-                                    />
-                                </FormRowColumn>
-                            )}
-                            {"cnpj" in element && (
-                                <FormRowColumn unit="2">
-                                    <InputText
-                                        mask="cnpj"
-                                        title="CNPJ"
-                                        isDisabled={true}
-                                        isLoading={props.isLoading}
-                                        id={"person-company-cnpj-" + index}
-                                        value={handleMaskCNPJ(element.cnpj)}
-                                    />
-                                </FormRowColumn>
-                            )}
-                            {!props.isLocked && (
-                                <FormRowColumn unit="2"
-                                    className="flex flex-row gap-2 self-end justify-self-end">
-                                    <Button
-                                        type="button"
-                                        isLoading={props.isLoading}
-                                        isDisabled={props.isLoading}
-                                        onClick={() => {
-                                            setEditIndex(index)
-                                            setIsOpen(true)
-                                        }}
-                                    >
-                                        <PencilAltIcon className="text-white block h-5 w-5" aria-hidden="true" />
-                                    </Button>
-                                    <Button
-                                        type="submit"
-                                        color="red"
-                                        isLoading={props.isLoading}
-                                        isDisabled={props.isLoading}
-                                    >
-                                        <TrashIcon className="text-white block h-5 w-5" aria-hidden="true" />
-                                    </Button>
-                                </FormRowColumn>
-                            )}
+                            <FormRowColumn unit="3" className="flex flex-row">
+                                {"cpf" in element && (
+                                    <>
+                                        <InputText
+                                            mask="cpf"
+                                            title="CPF"
+                                            isDisabled={true}
+                                            isLoading={props.isLoading}
+                                            id={"person-company-cpf-" + index}
+                                            value={handleMaskCPF(element.cpf)}
+                                        />
+                                    </>
+                                )}
+                                {"cnpj" in element && (
+                                    <>
+                                        <InputText
+                                            mask="cnpj"
+                                            title="CNPJ"
+                                            isDisabled={true}
+                                            isLoading={props.isLoading}
+                                            id={"person-company-cnpj-" + index}
+                                            value={handleMaskCNPJ(element.cnpj)}
+                                        />
+                                    </>
+                                )}
+                                {!props.isLocked && (
+                                    <>
+                                        <Button
+                                            type="button"
+                                            isLoading={props.isLoading}
+                                            isDisabled={props.isLoading}
+                                            className="ml-2 h-fit self-end"
+                                            onClick={() => {
+                                                setEditIndex(index)
+                                                setIsOpen(true)
+                                            }}
+                                        >
+                                            <PencilAltIcon className="text-white block h-5 w-5" aria-hidden="true" />
+                                        </Button>
+                                        <Button
+                                            type="submit"
+                                            color="red"
+                                            isLoading={props.isLoading}
+                                            isDisabled={props.isLoading}
+                                            className="ml-2 h-fit self-end"
+                                        >
+                                            <TrashIcon className="text-white block h-5 w-5" aria-hidden="true" />
+                                        </Button>
+                                    </>
+                                )}
+                            </FormRowColumn>
                         </FormRow>
                     </form>
                 ))}
@@ -291,64 +302,70 @@ export default function SelectPersonCompanyForm(props: SelectPersonCompanyFormPr
                 }}
                 isOpen={isOpen}
                 setIsOpen={setIsOpen}>
-                {!isRegisterPerson && !isRegisterCompany && (
-                    <List
-                        canSelect
-                        autoSearch
-                        onSelectClick={handleAdd}
-                        isLoading={props.isLoading}
-                        onFilterList={handleFilterList}
-                        list={personsAndCompaniesForShow}
-                        title={"Lista de pessoas e empresas"}
-                        onCustomNewButton={() => {
-                            return (
-                                <div className="self-center text-right">
-                                    <Button
-                                        isLoading={props.isLoading}
-                                        isDisabled={props.isLoading}
-                                        onClick={handleNewClickPerson}>
-                                        Nova pessoa
-                                    </Button>
-                                    <Button
-                                        className="mt-2"
-                                        isLoading={props.isLoading}
-                                        isDisabled={props.isLoading}
-                                        onClick={handleNewClickCompany}>
-                                        Nova empresa
-                                    </Button>
-                                </div>)
-                        }}
-                        onTitle={(element: (Person | Company)) => {
-                            return (<p>{element.name}</p>)
-                        }}
-                        onInfo={(element: (Person | Company)) => {
-                            return (<p>{element.name}</p>)
-                        }}
-                        onShowMessage={props.onShowMessage}
-                    />
-                )}
-                {isRegisterPerson && (
-                    <PersonForm
-                        isBack={true}
-                        person={person}
-                        canMultiple={false}
-                        onBack={handleBackClick}
-                        title="Informações pessoais"
-                        onAfterSave={handleAfterSave}
-                        onShowMessage={props.onShowMessage}
-                        subtitle="Dados importantes sobre a pessoa" />
-                )}
-                {isRegisterCompany && (
-                    <CompanyForm
-                        isBack={true}
-                        company={company}
-                        canMultiple={false}
-                        onBack={handleBackClick}
-                        title="Informações pessoais"
-                        onAfterSave={handleAfterSave}
-                        onShowMessage={props.onShowMessage}
-                        subtitle="Dados importantes sobre a pessoa" />
-                )}
+                <>
+                    {isOpen && (
+                        <>
+                            {!isRegisterPerson && !isRegisterCompany && (
+                                <List
+                                    canSelect
+                                    autoSearch
+                                    onSelectClick={handleAdd}
+                                    isLoading={props.isLoading}
+                                    onFilterList={handleFilterList}
+                                    list={personsAndCompaniesForShow}
+                                    title={"Lista de pessoas e empresas"}
+                                    onCustomNewButton={() => {
+                                        return (
+                                            <div className="self-center text-right">
+                                                <Button
+                                                    isLoading={props.isLoading}
+                                                    isDisabled={props.isLoading}
+                                                    onClick={handleNewClickPerson}>
+                                                    Nova pessoa
+                                                </Button>
+                                                <Button
+                                                    className="mt-2"
+                                                    isLoading={props.isLoading}
+                                                    isDisabled={props.isLoading}
+                                                    onClick={handleNewClickCompany}>
+                                                    Nova empresa
+                                                </Button>
+                                            </div>)
+                                    }}
+                                    onTitle={(element: (Person | Company)) => {
+                                        return (<p>{element.name}</p>)
+                                    }}
+                                    onInfo={(element: (Person | Company)) => {
+                                        return (<p>{element.name}</p>)
+                                    }}
+                                    onShowMessage={props.onShowMessage}
+                                />
+                            )}
+                            {isRegisterPerson && (
+                                <PersonForm
+                                    isBack={true}
+                                    person={person}
+                                    canMultiple={false}
+                                    onBack={handleBackClick}
+                                    title="Informações pessoais"
+                                    onAfterSave={handleAfterSave}
+                                    onShowMessage={props.onShowMessage}
+                                    subtitle="Dados importantes sobre a pessoa" />
+                            )}
+                            {isRegisterCompany && (
+                                <CompanyForm
+                                    isBack={true}
+                                    company={company}
+                                    canMultiple={false}
+                                    onBack={handleBackClick}
+                                    title="Informações pessoais"
+                                    onAfterSave={handleAfterSave}
+                                    onShowMessage={props.onShowMessage}
+                                    subtitle="Dados importantes sobre a pessoa" />
+                            )}
+                        </>
+                    )}
+                </>
             </IOSModal>
         </>
     )

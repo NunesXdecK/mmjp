@@ -6,6 +6,7 @@ import { FeedbackMessage } from "../modal/feedbackMessageModal";
 import Form from "../form/form";
 import FormRow from "../form/formRow";
 import FormRowColumn from "../form/formRowColumn";
+import { handleMountNumberCurrency } from "../../util/maskUtil";
 
 interface ServicePaymentFormProps {
     id?: string,
@@ -29,6 +30,7 @@ export default function ServicePaymentForm(props: ServicePaymentFormProps) {
             ])
         }
     }
+
 
     const handeOnDelete = async (index: number) => {
         let feedbackMessage: FeedbackMessage = { messages: ["Algo deu errado"], messageType: "ERROR" }

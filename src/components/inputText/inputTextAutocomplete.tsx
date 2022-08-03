@@ -7,6 +7,7 @@ interface InputTextAutoCompleteProps {
     value?: string,
     title?: string,
     validation?: string,
+    holderClassName?: string,
     validationMessage?: string,
     maxLength?: number,
     isLoading?: boolean,
@@ -73,7 +74,7 @@ export default function InputTextAutoComplete(props: InputTextAutoCompleteProps)
     }
 
     return (
-        <>
+        <div className={props.holderClassName}>
             <label
                 htmlFor={props.id}
                 className={classNameLabel}>
@@ -105,7 +106,7 @@ export default function InputTextAutoComplete(props: InputTextAutoCompleteProps)
             {sugestions.length > 0 && (
                 <div
                     ref={divRef}
-                    className="absolute bg-white shadow-md mt-2">
+                    className="absolute bg-white shadow-md mt-2 z-20">
                     {sugestions.map((element, index) => (
                         <div key={index + element}>
                             <button
@@ -125,6 +126,6 @@ export default function InputTextAutoComplete(props: InputTextAutoCompleteProps)
             {!isValid && (
                 <span className="text-sm whitespace-nowrap text-red-600">{props.validationMessage}</span>
             )}
-        </>
+        </div>
     )
 }

@@ -102,11 +102,17 @@ export default function ProjectForm(props: ProjectFormProps) {
             } else {
                 feedbackMessage = { ...feedbackMessage, messages: ["Atualizado com sucesso!"], messageType: "SUCCESS" }
             }
+
+            console.log(projectForDB)
+            console.log(services)
+
             try {
+                {/*
                 res = await fetch("api/project", {
                     method: "POST",
                     body: JSON.stringify({ token: "tokenbemseguro", data: projectForDB }),
                 }).then((res) => res.json())
+            */}
             } catch (e) {
                 if (isSave) {
                     feedbackMessage = { ...feedbackMessage, messages: ["Erro em salvar!"], messageType: "ERROR" }
@@ -263,7 +269,7 @@ export default function ProjectForm(props: ProjectFormProps) {
                             />
                         </FormRowColumn>
 
-                        <FormRowColumn unit="1">
+                        <FormRowColumn unit="2">
                             <InputText
                                 id="number"
                                 isLoading={isLoading}
@@ -288,8 +294,9 @@ export default function ProjectForm(props: ProjectFormProps) {
                                 onValidate={handleChangeFormValidation}
                             />
                         </FormRowColumn>
-
-                        <FormRowColumn unit="1">
+                    </FormRow>
+                    <FormRow>
+                        <FormRowColumn unit="2">
                             <InputText
                                 id="status"
                                 title="Status"
@@ -335,6 +342,7 @@ export default function ProjectForm(props: ProjectFormProps) {
                 isLoading={isLoading}
                 onSetServices={setServices}
                 subtitle="Adicione os serviços"
+                onShowMessage={props.onShowMessage}
             />
 
             <form

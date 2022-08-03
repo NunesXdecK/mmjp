@@ -7,9 +7,10 @@ import { useEffect, useState } from "react";
 import InputText from "../inputText/inputText";
 import FormRowColumn from "../form/formRowColumn";
 import ProfessionalForm from "../form/professionalForm";
-import { FeedbackMessage } from "../modal/feedbackMessageModal";
+import { defaultFeedbackMessage, FeedbackMessage } from "../modal/feedbackMessageModal";
 import { PencilAltIcon, TrashIcon } from "@heroicons/react/outline";
 import { defaultProfessional, Professional } from "../../interfaces/objectInterfaces";
+import FeedbackMessageText from "../modal/feedbackMessageText";
 
 interface SelectProfessionalFormProps {
     id?: string,
@@ -136,8 +137,9 @@ export default function SelectProfessionalForm(props: SelectProfessionalFormProp
     }
 
     useEffect(() => {
-        if (isFirst) {
+        if (isOpen && isFirst) {
             fetch("api/professionals").then((res) => res.json()).then((res) => {
+                console.log("entrou")
                 if (res.list.length) {
                     setProfessionals(res.list)
                     setProfessionalsForShow(res.list)
@@ -156,7 +158,7 @@ export default function SelectProfessionalForm(props: SelectProfessionalFormProp
                 title={props.title}
                 subtitle={props.subtitle}
                 className={props.formClassName}
-                >
+            >
                 {!props.isLocked && (
                     <FormRow>
                         <FormRowColumn unit="6" className="flex flex-col items-end justify-self-end">
@@ -168,6 +170,7 @@ export default function SelectProfessionalForm(props: SelectProfessionalFormProp
                                 onClick={() => {
                                     if (props.validationButton) {
                                         setIsInvalid(true)
+                                        setTimeout(() => setIsInvalid((old) => false), 2000)
                                     } else {
                                         setIsOpen(true)
                                     }
@@ -175,9 +178,15 @@ export default function SelectProfessionalForm(props: SelectProfessionalFormProp
                             >
                                 {props.buttonTitle}
                             </Button>
-                            {isInvalid && (
-                                <span className="mt-2 text-red-600">{props.validationMessageButton}</span>
-                            )}
+                            <FeedbackMessageText
+                                isOpen={isInvalid}
+                                setIsOpen={setIsInvalid}
+                                feedbackMessage={
+                                    {
+                                        ...defaultFeedbackMessage,
+                                        messages: [props.validationMessageButton],
+                                        messageType: "ERROR"
+                                    }} />
                         </FormRowColumn>
                     </FormRow>
                 )}
@@ -186,7 +195,7 @@ export default function SelectProfessionalForm(props: SelectProfessionalFormProp
                     <form key={index + element.dateInsertUTC}
                         onSubmit={(event) => handleRemoveProfessional(event, element)}>
                         <FormRow>
-                            <FormRowColumn unit="2">
+                            <FormRowColumn unit="3">
                                 <InputText
                                     title="Titulo"
                                     isDisabled={true}
@@ -196,40 +205,41 @@ export default function SelectProfessionalForm(props: SelectProfessionalFormProp
                                 />
                             </FormRowColumn>
 
-                            <FormRowColumn unit="2">
+                            <FormRowColumn unit="3" className="flex flex-row">
                                 <InputText
-                                    title="Número do CREA"
                                     isDisabled={true}
+                                    title="Número do CREA"
                                     isLoading={props.isLoading}
-                                    id={"professional-crea-number-" + index}
                                     value={element.creaNumber}
+                                    id={"professional-crea-number-" + index}
                                 />
-                            </FormRowColumn>
 
-                            {!props.isLocked && (
-                                <FormRowColumn unit="2"
-                                    className="flex flex-row gap-2 self-end justify-self-end">
-                                    <Button
-                                        type="button"
-                                        isLoading={props.isLoading}
-                                        isDisabled={props.isLoading}
-                                        onClick={() => {
-                                            setEditIndex(index)
-                                            setIsOpen(true)
-                                        }}
-                                    >
-                                        <PencilAltIcon className="text-white block h-5 w-5" aria-hidden="true" />
-                                    </Button>
-                                    <Button
-                                        type="submit"
-                                        color="red"
-                                        isLoading={props.isLoading}
-                                        isDisabled={props.isLoading}
-                                    >
-                                        <TrashIcon className="text-white block h-5 w-5" aria-hidden="true" />
-                                    </Button>
-                                </FormRowColumn>
-                            )}
+                                {!props.isLocked && (
+                                    <>
+                                        <Button
+                                            type="button"
+                                            isLoading={props.isLoading}
+                                            isDisabled={props.isLoading}
+                                            className="ml-2 h-fit self-end"
+                                            onClick={() => {
+                                                setEditIndex(index)
+                                                setIsOpen(true)
+                                            }}
+                                        >
+                                            <PencilAltIcon className="text-white block h-5 w-5" aria-hidden="true" />
+                                        </Button>
+                                        <Button
+                                            type="submit"
+                                            color="red"
+                                            isLoading={props.isLoading}
+                                            isDisabled={props.isLoading}
+                                            className="ml-2 h-fit self-end"
+                                        >
+                                            <TrashIcon className="text-white block h-5 w-5" aria-hidden="true" />
+                                        </Button>
+                                    </>
+                                )}
+                            </FormRowColumn>
                         </FormRow>
                     </form>
                 ))}
@@ -239,35 +249,39 @@ export default function SelectProfessionalForm(props: SelectProfessionalFormProp
                 isOpen={isOpen}
                 setIsOpen={setIsOpen}>
                 <>
-                    {!isRegister ? (
-                        <List
-                            haveNew
-                            canSelect
-                            autoSearch
-                            onSelectClick={handleAdd}
-                            isLoading={props.isLoading}
-                            onNewClick={handleNewClick}
-                            list={professionalsForShow}
-                            onFilterList={handleFilterList}
-                            title={"Lista de profissionais"}
-                            onTitle={(element: Professional) => {
-                                return (<p>{element.title}</p>)
-                            }}
-                            onInfo={(element: Professional) => {
-                                return (<p>{element.title}</p>)
-                            }}
-                            onShowMessage={props.onShowMessage}
-                        />
-                    ) : (
-                        <ProfessionalForm
-                            isBack={true}
-                            canMultiple={false}
-                            onBack={handleBackClick}
-                            professional={professional}
-                            onAfterSave={handleAfterSave}
-                            title="Informações do profisisonal"
-                            onShowMessage={props.onShowMessage}
-                            subtitle="Dados importantes sobre o profissional" />
+                    {isOpen && (
+                        <>
+                            {!isRegister ? (
+                                <List
+                                    haveNew
+                                    canSelect
+                                    autoSearch
+                                    onSelectClick={handleAdd}
+                                    isLoading={props.isLoading}
+                                    onNewClick={handleNewClick}
+                                    list={professionalsForShow}
+                                    onFilterList={handleFilterList}
+                                    title={"Lista de profissionais"}
+                                    onTitle={(element: Professional) => {
+                                        return (<p>{element.title}</p>)
+                                    }}
+                                    onInfo={(element: Professional) => {
+                                        return (<p>{element.title}</p>)
+                                    }}
+                                    onShowMessage={props.onShowMessage}
+                                />
+                            ) : (
+                                <ProfessionalForm
+                                    isBack={true}
+                                    canMultiple={false}
+                                    onBack={handleBackClick}
+                                    professional={professional}
+                                    onAfterSave={handleAfterSave}
+                                    title="Informações do profisisonal"
+                                    onShowMessage={props.onShowMessage}
+                                    subtitle="Dados importantes sobre o profissional" />
+                            )}
+                        </>
                     )}
                 </>
             </IOSModal>

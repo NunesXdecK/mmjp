@@ -67,9 +67,10 @@ export default function ServiceStageDataForm(props: ServiceStageDataFormProps) {
             </FormRow>
                 */}
             <FormRow className="py-2">
-                <FormRowColumn unit="1" className="mt-0 sm:mt-6">
+                <FormRowColumn unit="4" className="flex flex-col sm:flex-row">
                     <Button
                         isLight
+                        className="mr-2 sm:mt-auto"
                         isLoading={props.isLoading}
                         isDisabled={props.isForDisable}
                         onClick={() => {
@@ -82,10 +83,9 @@ export default function ServiceStageDataForm(props: ServiceStageDataFormProps) {
                             <ChevronRightIcon className="text-gray-600 block h-5 w-5" aria-hidden="true" />
                         )}
                     </Button>
-                </FormRowColumn>
-                <FormRowColumn unit="3">
                     <InputTextAutoComplete
                         title="Titulo"
+                        holderClassName="w-full"
                         validation={NOT_NULL_MARK}
                         isLoading={props.isLoading}
                         isDisabled={props.isForDisable}
@@ -97,11 +97,11 @@ export default function ServiceStageDataForm(props: ServiceStageDataFormProps) {
                         validationMessage="O titulo não pode ficar em branco."
                     />
                 </FormRowColumn>
-                <FormRowColumn unit="1">
+                <FormRowColumn unit="2" className="flex flex-col sm:flex-row">
                     <InputText
                         mask="date"
                         maxLength={10}
-                        title="Prazo final"
+                        title="Prazo"
                         isLoading={props.isLoading}
                         isDisabled={props.isForDisable}
                         onSetText={handleSetServiceStageDate}
@@ -109,14 +109,12 @@ export default function ServiceStageDataForm(props: ServiceStageDataFormProps) {
                         id={"date-due-" + index + "-" + props.id}
                         value={props.serviceStages[index].dateString}
                     />
-                </FormRowColumn>
 
-                {props.onDelete && (
-                    <FormRowColumn unit="1" className="mt-0 sm:mt-6 justify-self-end">
+                    {props.onDelete && (
                         <Button
                             color="red"
-                            className="mr-2 group"
                             isLoading={props.isLoading}
+                            className="ml-2 mt-2 sm:mt-0 h-fit self-end"
                             isDisabled={props.isForDisable}
                             onClick={() => {
                                 setIsOpen(true)
@@ -124,19 +122,19 @@ export default function ServiceStageDataForm(props: ServiceStageDataFormProps) {
                         >
                             <TrashIcon className="text-white block h-5 w-5" aria-hidden="true" />
                         </Button>
-                    </FormRowColumn>
-                )}
+                    )}
+                </FormRowColumn>
             </FormRow>
             <ScrollDownTransition
                 isOpen={isFormOpen}>
                 <>
                     <FormRow>
-                        <FormRowColumn unit="1">
+                        <FormRowColumn unit="2">
                             <InputText
                                 id="status"
                                 isDisabled={true}
                                 value={props.serviceStages[index].status}
-                                title="Status da etapa"
+                                title="Status"
                             />
                         </FormRowColumn>
                     </FormRow>
@@ -144,7 +142,7 @@ export default function ServiceStageDataForm(props: ServiceStageDataFormProps) {
                     <FormRow>
                         <FormRowColumn unit="6" className="">
                             <InputTextArea
-                                title="Descrição da etapa"
+                                title="Descrição"
                                 isLoading={props.isLoading}
                                 isDisabled={props.isForDisable}
                                 onSetText={handleSetServiceStageDescription}

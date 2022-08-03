@@ -7,10 +7,11 @@ import { useEffect, useState } from "react";
 import PersonForm from "../form/personForm";
 import InputText from "../inputText/inputText";
 import FormRowColumn from "../form/formRowColumn";
-import { FeedbackMessage } from "../modal/feedbackMessageModal";
+import { defaultFeedbackMessage, FeedbackMessage } from "../modal/feedbackMessageModal";
 import { PencilAltIcon, TrashIcon } from "@heroicons/react/outline";
 import { handleMaskCPF, handleRemoveCPFMask } from "../../util/maskUtil";
 import { defaultPerson, Person } from "../../interfaces/objectInterfaces";
+import FeedbackMessageText from "../modal/feedbackMessageText";
 
 interface SelectPersonFormProps {
     id?: string,
@@ -136,7 +137,7 @@ export default function SelectPersonForm(props: SelectPersonFormProps) {
     }
 
     useEffect(() => {
-        if (isFirst) {
+        if (isOpen && isFirst) {
             fetch("api/persons").then((res) => res.json()).then((res) => {
                 if (res.list.length) {
                     setPersons(res.list)
@@ -168,6 +169,7 @@ export default function SelectPersonForm(props: SelectPersonFormProps) {
                                 onClick={() => {
                                     if (props.validationButton) {
                                         setIsInvalid(true)
+                                        setTimeout(() => setIsInvalid((old) => false), 2000)
                                     } else {
                                         setIsOpen(true)
                                     }
@@ -175,9 +177,15 @@ export default function SelectPersonForm(props: SelectPersonFormProps) {
                             >
                                 {props.buttonTitle}
                             </Button>
-                            {isInvalid && (
-                                <span className="mt-2 text-red-600">{props.validationMessageButton}</span>
-                            )}
+                            <FeedbackMessageText
+                                isOpen={isInvalid}
+                                setIsOpen={setIsInvalid}
+                                feedbackMessage={
+                                    {
+                                        ...defaultFeedbackMessage,
+                                        messages: [props.validationMessageButton],
+                                        messageType: "ERROR"
+                                    }} />
                         </FormRowColumn>
                     </FormRow>
                 )}
@@ -186,7 +194,7 @@ export default function SelectPersonForm(props: SelectPersonFormProps) {
                     <form key={index + element.dateInsertUTC + element.cpf}
                         onSubmit={(event) => handleRemovePerson(event, element)}>
                         <FormRow>
-                            <FormRowColumn unit="2">
+                            <FormRowColumn unit="3">
                                 <InputText
                                     title="Nome"
                                     isDisabled={true}
@@ -196,7 +204,7 @@ export default function SelectPersonForm(props: SelectPersonFormProps) {
                                 />
                             </FormRowColumn>
 
-                            <FormRowColumn unit="2">
+                            <FormRowColumn unit="3" className="flex flex-row">
                                 <InputText
                                     mask="cpf"
                                     title="CPF"
@@ -205,32 +213,33 @@ export default function SelectPersonForm(props: SelectPersonFormProps) {
                                     id={"person-cpf-" + element.cpf}
                                     value={handleMaskCPF(element.cpf)}
                                 />
-                            </FormRowColumn>
 
-                            {!props.isLocked && (
-                                <FormRowColumn unit="2"
-                                    className="flex flex-row gap-2 self-end justify-self-end">
-                                    <Button
-                                        type="button"
-                                        isLoading={props.isLoading}
-                                        isDisabled={props.isLoading}
-                                        onClick={() => {
-                                            setEditIndex(index)
-                                            setIsOpen(true)
-                                        }}
-                                    >
-                                        <PencilAltIcon className="text-white block h-5 w-5" aria-hidden="true" />
-                                    </Button>
-                                    <Button
-                                        type="submit"
-                                        color="red"
-                                        isLoading={props.isLoading}
-                                        isDisabled={props.isLoading}
-                                    >
-                                        <TrashIcon className="text-white block h-5 w-5" aria-hidden="true" />
-                                    </Button>
-                                </FormRowColumn>
-                            )}
+                                {!props.isLocked && (
+                                    <>
+                                        <Button
+                                            type="button"
+                                            isLoading={props.isLoading}
+                                            isDisabled={props.isLoading}
+                                            className="ml-2 h-fit self-end"
+                                            onClick={() => {
+                                                setEditIndex(index)
+                                                setIsOpen(true)
+                                            }}
+                                        >
+                                            <PencilAltIcon className="text-white block h-5 w-5" aria-hidden="true" />
+                                        </Button>
+                                        <Button
+                                            type="submit"
+                                            color="red"
+                                            isLoading={props.isLoading}
+                                            isDisabled={props.isLoading}
+                                            className="ml-2 h-fit self-end"
+                                        >
+                                            <TrashIcon className="text-white block h-5 w-5" aria-hidden="true" />
+                                        </Button>
+                                    </>
+                                )}
+                            </FormRowColumn>
                         </FormRow>
                     </form>
                 ))}
@@ -244,35 +253,39 @@ export default function SelectPersonForm(props: SelectPersonFormProps) {
                 isOpen={isOpen}
                 setIsOpen={setIsOpen}>
                 <>
-                    {!isRegister ? (
-                        <List
-                            haveNew
-                            canSelect
-                            autoSearch
-                            list={personsForShow}
-                            onSelectClick={handleAdd}
-                            title={"Lista de pessoas"}
-                            isLoading={props.isLoading}
-                            onNewClick={handleNewClick}
-                            onFilterList={handleFilterList}
-                            onTitle={(element: Person) => {
-                                return (<p>{element.name}</p>)
-                            }}
-                            onInfo={(element: Person) => {
-                                return (<p>{element.name}</p>)
-                            }}
-                            onShowMessage={props.onShowMessage}
-                        />
-                    ) : (
-                        <PersonForm
-                            isBack={true}
-                            person={person}
-                            canMultiple={false}
-                            onBack={handleBackClick}
-                            title="Informações pessoais"
-                            onAfterSave={handleAfterSave}
-                            onShowMessage={props.onShowMessage}
-                            subtitle="Dados importantes sobre a pessoa" />
+                    {isOpen && (
+                        <>
+                            {!isRegister ? (
+                                <List
+                                    haveNew
+                                    canSelect
+                                    autoSearch
+                                    list={personsForShow}
+                                    onSelectClick={handleAdd}
+                                    title={"Lista de pessoas"}
+                                    isLoading={props.isLoading}
+                                    onNewClick={handleNewClick}
+                                    onFilterList={handleFilterList}
+                                    onTitle={(element: Person) => {
+                                        return (<p>{element.name}</p>)
+                                    }}
+                                    onInfo={(element: Person) => {
+                                        return (<p>{element.name}</p>)
+                                    }}
+                                    onShowMessage={props.onShowMessage}
+                                />
+                            ) : (
+                                <PersonForm
+                                    isBack={true}
+                                    person={person}
+                                    canMultiple={false}
+                                    onBack={handleBackClick}
+                                    title="Informações pessoais"
+                                    onAfterSave={handleAfterSave}
+                                    onShowMessage={props.onShowMessage}
+                                    subtitle="Dados importantes sobre a pessoa" />
+                            )}
+                        </>
                     )}
                 </>
             </IOSModal>

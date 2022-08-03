@@ -5,14 +5,19 @@ import { useEffect, useState } from "react"
 import FormRow from "../components/form/formRow"
 import Layout from "../components/layout/layout"
 import FormRowColumn from "../components/form/formRowColumn"
-import { ServicePayment, ServiceStage } from "../interfaces/objectInterfaces"
+import { Service, ServicePayment, ServiceStage } from "../interfaces/objectInterfaces"
+import ServiceForm from "../components/listForm/serviceForm"
+import { defaultFeedbackMessage, FeedbackMessage } from "../components/modal/feedbackMessageModal"
 
 export default function Index() {
     const [isFirst, setIsFirst] = useState(true)
     const [isLoading, setIsLoading] = useState(true)
+    const [isFeedbackOpen, setIsFeedbackOpen] = useState(false)
     const [serviceStages, setServiceStages] = useState<ServiceStage[]>([])
     const [serviceStagesForShow, setServiceStagesForShow] = useState<ServiceStage[]>([])
+    const [services, setServices] = useState<Service[]>([])
 
+    const [feedbackMessage, setFeedbackMessage] = useState<FeedbackMessage>(defaultFeedbackMessage)
     const [servicePayments, setServicePayments] = useState<ServicePayment[]>([])
     const [servicePaymentsForShow, setServicePaymentsForShow] = useState<ServicePayment[]>([])
 
@@ -34,9 +39,19 @@ export default function Index() {
         setServicePaymentsForShow((old) => listItemsFiltered)
     }
 
+    const handleShowMessage = (feedbackMessage: FeedbackMessage) => {
+        if (isFeedbackOpen === false) {
+            setFeedbackMessage(feedbackMessage)
+            setIsFeedbackOpen((isFeedbackOpen) => true)
+            setTimeout(() => setIsFeedbackOpen((isFeedbackOpen) => false), 2000)
+        }
+    }
+
     useEffect(() => {
+        {/*
         if (isFirst) {
             fetch("api/serviceStages").then((res) => res.json()).then((res) => {
+                console.log("entrou aqui etapas")
                 if (res.list.length) {
                     setServiceStages(res.list)
                     setServiceStagesForShow(res.list)
@@ -45,6 +60,7 @@ export default function Index() {
                 setIsLoading(false)
             })
             fetch("api/servicePayments").then((res) => res.json()).then((res) => {
+                console.log("entrou aqui pagamentos")
                 if (res.list.length) {
                     setServicePayments(res.list)
                     setServicePaymentsForShow(res.list)
@@ -53,6 +69,7 @@ export default function Index() {
                 setIsLoading(false)
             })
         }
+    */}
     })
     return (
         <Layout
@@ -63,6 +80,14 @@ export default function Index() {
                 <link rel="icon" href="/favicon.ico" />
             </Head>
 
+            <ServiceForm
+                title="Serviços"
+                services={services}
+                onSetServices={setServices}
+                subtitle="Adicione os serviços"
+                onShowMessage={handleShowMessage}
+            />
+            {/*
             <Form>
                 <FormRow>
                     <FormRowColumn unit="2">
@@ -102,6 +127,7 @@ export default function Index() {
                     </FormRowColumn>
                 </FormRow>
             </Form>
+                */}
         </Layout>
     )
 }

@@ -11,6 +11,7 @@ interface InputTextProps {
     validation?: string,
     classNameInput?: string,
     classNameLabel?: string,
+    holderClassName?: string,
     validationMessage?: string,
     maxLength?: number,
     isLoading?: boolean,
@@ -207,7 +208,7 @@ export default function InputText(props: InputTextProps) {
     }
 
     return (
-        <>
+        <div className={props.holderClassName}>
             <label htmlFor={props.id}
                 className={classNameLabelLocal}>
                 {props.title}
@@ -234,6 +235,6 @@ export default function InputText(props: InputTextProps) {
             {!isValid && (
                 <p className="text-red-600">{props.validationMessage}</p>
             )}
-        </>
+        </div>
     )
 }

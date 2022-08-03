@@ -33,7 +33,6 @@ export default function ServicePaymentDataForm(props: ServicePaymentDataFormProp
     const [isFormValid, setIsFormValid] = useState(handleServicePaymentValidationForDB(props.servicePayments[index]).validation)
 
     const handleSetServicePaymentValue = (value) => { handleSetText({ ...props.servicePayments[index], value: value }) }
-    const handleSetServicePaymentPayed = (value) => { handleSetText({ ...props.servicePayments[index], payed: value }) }
     const handleSetServicePaymentDate = (value) => { handleSetText({ ...props.servicePayments[index], dateString: value }) }
     const handleSetServicePaymentDescription = (value) => { handleSetText({ ...props.servicePayments[index], description: value }) }
 
@@ -87,7 +86,7 @@ export default function ServicePaymentDataForm(props: ServicePaymentDataFormProp
                     />
                 </FormRowColumn>
 
-                <FormRowColumn unit="1">
+                <FormRowColumn unit="2" className="flex flex-col sm:flex-row">
                     <InputText
                         mask="date"
                         maxLength={10}
@@ -99,13 +98,11 @@ export default function ServicePaymentDataForm(props: ServicePaymentDataFormProp
                         id={"date-due-" + index + "-" + props.id}
                         value={props.servicePayments[index].dateString}
                     />
-                </FormRowColumn>
 
-                {props.onDelete && (
-                    <FormRowColumn unit="1" className="place-self-end">
+                    {props.onDelete && (
                         <Button
                             color="red"
-                            className="mr-2 group"
+                            className="ml-2 mt-2 sm:mt-0 h-fit self-end"
                             isLoading={props.isLoading}
                             isDisabled={props.isForDisable}
                             onClick={() => {
@@ -116,8 +113,8 @@ export default function ServicePaymentDataForm(props: ServicePaymentDataFormProp
                                 <TrashIcon className="text-white block h-5 w-5" aria-hidden="true" />
                             </div>
                         </Button>
-                    </FormRowColumn>
-                )}
+                    )}
+                </FormRowColumn>
             </FormRow>
 
             <WindowModal
