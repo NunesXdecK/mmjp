@@ -46,7 +46,7 @@ export default function ServiceForm(props: ServiceFormProps) {
         }
     }
 
-    const handleSetText = (object, index, isUpdate) => {
+    const handleSetText = (object, index, isUpdate?) => {
         let localObject = object
         if (isUpdate) {
             localObject = localService
