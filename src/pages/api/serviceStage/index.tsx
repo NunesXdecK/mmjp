@@ -21,7 +21,7 @@ export default async function handler(req, res) {
                     if (data.service?.id && data.service.id !== "") {
                         const serviceDocRef = doc(serviceCollection, data.service.id)
                         if (serviceDocRef) {
-                            if (data.responsible && data.responsible?.id !== "") {
+                            if ("id" in data.responsible && data.responsible?.id !== "") {
                                 const docRef = doc(professionalCollection, data.responsible.id)
                                 data = { ...data, responsible: docRef }
                             }
