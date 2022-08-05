@@ -36,10 +36,10 @@ interface ServiceDataFormProps {
 export default function ServiceDataForm(props: ServiceDataFormProps) {
     const [isOpen, setIsOpen] = useState(false)
     const [isFormOpen, setIsFormOpen] = useState(false)
+    const [isFormValid, setIsFormValid] = useState(false)
     const [index, setIndex] = useState(props.index ?? 0)
 
     const [valueTotal, setValueTotal] = useState("0")
-    const [isFormValid, setIsFormValid] = useState(handleServiceValidationForDB(props.services[index]).validation)
 
     const [professionals, setProfessionals] = useState(props.services[index]?.id ? [props.services[index]] : [])
 

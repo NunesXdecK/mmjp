@@ -100,6 +100,7 @@ export interface Service {
     dateString?: string,
     description?: string,
     date?: number,
+    index?: number,
     dateInsertUTC?: number,
     dateLastUpdateUTC?: number,
     project?: any,
@@ -122,12 +123,12 @@ export interface ServiceStage {
     dateLastUpdateUTC?: number,
     service?: any,
     responsible?: any,
-    updates?: [],
 }
 
 export interface ServicePayment {
     id?: string,
     value?: string,
+    status?: string,
     dateString?: string,
     description?: string,
     index?: number,
@@ -243,8 +244,9 @@ export const defaultService: Service = {
     quantity: "1",
     dateString: "",
     description: "",
-    status: "NORMAL",
+    status: "ORÇAMENTO",
     date: 0,
+    index: 0,
     dateInsertUTC: 0,
     dateLastUpdateUTC: 0,
     project: defaultProject,
@@ -260,12 +262,11 @@ export const defaultServiceStage: ServiceStage = {
     title: "",
     dateString: "",
     description: "",
-    status: "NORMAL",
+    status: "ORÇAMENTO",
     dateInsertUTC: 0,
     dateLastUpdateUTC: 0,
     service: defaultService,
     responsible: defaultProfessional,
-    updates: [],
 }
 
 export const defaultServicePayment: ServicePayment = {
@@ -273,6 +274,7 @@ export const defaultServicePayment: ServicePayment = {
     value: "",
     dateString: "",
     description: "",
+    status: "ORÇAMENTO",
     index: -1,
     dateDue: 0,
     dateInsertUTC: 0,

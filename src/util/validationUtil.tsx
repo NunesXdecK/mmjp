@@ -161,81 +161,160 @@ export const handleProjectValidationForDB = (project: Project) => {
         validation = { ...validation, messages: [...validation.messages, "O projeto precisa de ao menos um cliente."] }
     }
 
-
     project.clients.map((element, index) => {
         if (!handleValidationNotNull(element.id)) {
             clientsOnBaseCheck = false
             validation = { ...validation, messages: [...validation.messages, "O cliente não está cadastrado na base."] }
         }
     })
-    {/*
-    let immobilesTargetCheck = project?.immobilesTarget?.length > 0 ?? false
-    let immobilesOriginOnBaseCheck = true
-    let immobilesTargetOnBaseCheck = true
-    if (!immobilesTargetCheck) {
-        validation = { ...validation, messages: [...validation.messages, "O projeto precisa de ao menos um imóvel alvo."] }
-    }
-    project.immobilesTarget.map((element, index) => {
-        if (!handleValidationNotNull(element.id)) {
-            immobilesTargetOnBaseCheck = false
-            validation = { ...validation, messages: [...validation.messages, "O imóvel alvo " + element.name + " não está cadastrado na base."] }
-        }
-    })
-    
-    project.immobilesOrigin.map((element, index) => {
-        if (!handleValidationNotNull(element.id)) {
-            immobilesOriginOnBaseCheck = false
-            validation = { ...validation, messages: [...validation.messages, "O imóvel de origem " + element.name + " não está cadastrado na base."] }
-        }
-    })
-*/}
 
     validation = { ...validation, validation: nameCheck && clientsCheck && clientsOnBaseCheck }
     return validation
 }
 
-export const handleServiceValidationForDB = (service: Service) => {
+export const handleServiceValidationForDB = (service: Service, isForValidateImmobile?, isForValidPaymentStage?) => {
     let validation: ValidationReturn = { validation: false, messages: [] }
     let titleCheck = handleValidationNotNull(service.title)
+    let stagesCheck = true
+    let paymentsCheck = true
+    let immobilesTargetCheck = true
+    let immobilesOriginOnBaseCheck = true
+    let immobilesTargetOnBaseCheck = true
 
     if (!titleCheck) {
         validation = { ...validation, messages: [...validation.messages, "O campo titulo está em branco."] }
     }
 
-    validation = { ...validation, validation: titleCheck }
+    let validationStages = handleServiceStagesValidationForDB(service.serviceStages, isForValidPaymentStage)
+    if (stagesCheck) {
+        stagesCheck = validationStages.validation
+    }
+
+    let validationPayments = handleServicePaymentsValidationForDB(service.servicePayments, isForValidPaymentStage)
+    if (paymentsCheck) {
+        paymentsCheck = validationPayments.validation
+    }
+
+    if (isForValidateImmobile) {
+        immobilesTargetCheck = service?.immobilesTarget?.length > 0 ?? false
+        if (!immobilesTargetCheck) {
+            validation = { ...validation, messages: [...validation.messages, "O serviço precisa de ao menos um imóvel alvo."] }
+        }
+
+        service.immobilesTarget.map((element, index) => {
+            if (!handleValidationNotNull(element.id)) {
+                immobilesTargetOnBaseCheck = false
+                validation = { ...validation, messages: [...validation.messages, "O imóvel alvo " + element.name + " não está cadastrado na base."] }
+            }
+        })
+
+        service.immobilesOrigin.map((element, index) => {
+            if (!handleValidationNotNull(element.id)) {
+                immobilesOriginOnBaseCheck = false
+                validation = { ...validation, messages: [...validation.messages, "O imóvel de origem " + element.name + " não está cadastrado na base."] }
+            }
+        })
+    }
+
+    validation = {
+        ...validation,
+        validation: titleCheck && stagesCheck && paymentsCheck && immobilesTargetCheck && immobilesOriginOnBaseCheck && immobilesTargetOnBaseCheck,
+        messages: [...validation.messages, ...validationStages.messages, ...validationPayments.messages]
+    }
     return validation
 }
 
-export const handleServiceStageValidationForDB = (serviceStage: ServiceStage) => {
+export const handleServicesValidationForDB = (services: Service[], isForValidImmobile, isForValidService) => {
+    let validation: ValidationReturn = { validation: false, messages: [] }
+    let servicesCheck = true
+    services.map((element, index) => {
+        let validationService = handleServiceValidationForDB(element, isForValidImmobile, isForValidService)
+        validation = { ...validation, messages: [...validation.messages, ...validationService.messages] }
+        if (servicesCheck) {
+            servicesCheck = validationService.validation
+        }
+    })
+    validation = {
+        ...validation,
+        validation: servicesCheck,
+    }
+    return validation
+}
+
+export const handleServiceStagesValidationForDB = (serviceStages: ServiceStage[], isForValidService?) => {
+    let validation: ValidationReturn = { validation: false, messages: [] }
+    let stagesCheck = true
+    serviceStages.map((element, index) => {
+        let validationService = handleServiceStageValidationForDB(element, isForValidService)
+        validation = { ...validation, messages: [...validation.messages, ...validationService.messages] }
+        if (stagesCheck) {
+            stagesCheck = validationService.validation
+        }
+    })
+    validation = {
+        ...validation,
+        validation: stagesCheck,
+    }
+    return validation
+}
+
+export const handleServicePaymentsValidationForDB = (servicePayments: ServicePayment[], isForValidService?) => {
+    let validation: ValidationReturn = { validation: false, messages: [] }
+    let paymentsCheck = true
+    servicePayments.map((element, index) => {
+        let validationPayment = handleServicePaymentValidationForDB(element, isForValidService)
+        validation = { ...validation, messages: [...validation.messages, ...validationPayment.messages] }
+        if (paymentsCheck) {
+            paymentsCheck = validationPayment.validation
+        }
+    })
+    validation = {
+        ...validation,
+        validation: paymentsCheck,
+    }
+    return validation
+}
+
+export const handleServiceStageValidationForDB = (serviceStage: ServiceStage, isForValidService?) => {
     let validation: ValidationReturn = { validation: false, messages: [] }
     let titleCheck = handleValidationNotNull(serviceStage.title)
+    let serviceCheck = true
 
     if (!titleCheck) {
-        validation = { ...validation, messages: [...validation.messages, "O campo titulo está em branco."] }
+        validation = { ...validation, messages: [...validation.messages, "A etapa " + (serviceStage.index + 1) + " está com o titulo em branco."] }
     }
 
-    validation = { ...validation, validation: titleCheck }
+    if (isForValidService) {
+        serviceCheck = serviceStage?.service?.id?.length > 0 ?? false
+        if (!serviceCheck) {
+            validation = { ...validation, messages: [...validation.messages, "A etapa " + (serviceStage.index + 1) + " precisa de um serviço referente."] }
+        }
+    }
+    validation = { ...validation, validation: titleCheck && serviceCheck }
     return validation
 }
 
-export const handleServicePaymentValidationForDB = (servicePayment: ServicePayment) => {
+export const handleServicePaymentValidationForDB = (servicePayment: ServicePayment, isForValidService?) => {
     let validation: ValidationReturn = { validation: false, messages: [] }
     let valueCheck = handleValidationNotNull(servicePayment.value)
     let descriptionCheck = handleValidationNotNull(servicePayment.description)
-    let serviceCheck = servicePayment?.service?.id?.length > 0 ?? false
+    let serviceCheck = true
 
     if (!valueCheck) {
-        validation = { ...validation, messages: [...validation.messages, "O valor está em branco."] }
+        validation = { ...validation, messages: [...validation.messages, "O pagamento " + (servicePayment.index + 1) + " está com o valor em branco."] }
     }
 
     if (!descriptionCheck) {
-        validation = { ...validation, messages: [...validation.messages, "O campo descrição está em branco."] }
+        validation
+            = { ...validation, messages: [...validation.messages, "O pagamento " + (servicePayment.index + 1) + " está com a descrição em branco."] }
     }
 
-    if (!serviceCheck) {
-        validation = { ...validation, messages: [...validation.messages, "O pagamento precisa de um projeto referente."] }
+    if (isForValidService) {
+        serviceCheck = servicePayment?.service?.id?.length > 0 ?? false
+        if (!serviceCheck) {
+            validation = { ...validation, messages: [...validation.messages, "O pagamento " + (servicePayment.index + 1) + " precisa de um serviço referente."] }
+        }
     }
-
     validation = { ...validation, validation: descriptionCheck && valueCheck && serviceCheck }
     return validation
 }

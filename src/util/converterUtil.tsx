@@ -1,6 +1,6 @@
 import { handleNewDateToUTC, handleUTCToDateShow } from "./dateUtils"
 import { defaultPerson, defaultAddress, defaultProfessional, defaultImmobile, Person, Address, Professional, Immobile, Company, defaultCompany, Project, ServiceStage, ServicePayment, Service } from "../interfaces/objectInterfaces"
-import { handleMaskCNPJ, handleMaskCPF, handleMaskTelephone, handleMountMask, handleRemoveCEPMask, handleRemoveCNPJMask, handleRemoveCPFMask, handleRemoveDateMask, handleRemoveTelephoneMask } from "./maskUtil"
+import { handleMaskCNPJ, handleMaskCPF, handleMaskTelephone, handleMountMask, handleRemoveCEPMask, handleRemoveCNPJMask, handleRemoveCPFMask, handleRemoveCurrencyMask, handleRemoveDateMask, handleRemoveTelephoneMask } from "./maskUtil"
 
 export interface ElementFromBase {
     "Nome Prop."?: string,
@@ -170,14 +170,22 @@ export const handlePrepareCompanyForDB = (company: Company) => {
         telephonesWithNoMask = [...telephonesWithNoMask, handleRemoveTelephoneMask(element)]
     })
 
+    let owners = []
+    company.owners.map((element, index) => {
+        if ("id" in element && element.id.length) {
+            owners = [...owners, { id: element.id }]
+        }
+    })
+
     if (company.oldData) {
         delete company.oldData
     }
 
     company = {
-        ...company
-        , cnpj: handleRemoveCNPJMask(company.cnpj)
-        , telephones: telephonesWithNoMask
+        ...company,
+        owners: owners,
+        telephones: telephonesWithNoMask,
+        cnpj: handleRemoveCNPJMask(company.cnpj),
     }
     return company
 }
@@ -189,6 +197,12 @@ export const handlePrepareProfessionalForDB = (professional: Professional) => {
 
     if (professional.id !== "") {
         professional = { ...professional, dateLastUpdateUTC: handleNewDateToUTC() }
+    }
+
+    if (professional.person?.id?.length) {
+        professional = { ...professional, person: { id: professional.person.id } }
+    } else {
+        professional = { ...professional, person: {} }
     }
 
     if (professional.oldData) {
@@ -209,10 +223,20 @@ export const handlePrepareImmobileForDB = (immobile: Immobile) => {
     if (immobile.oldData) {
         delete immobile.oldData
     }
-
+    let owners = []
+    immobile.owners.map((element, index) => {
+        if ("id" in element && element.id.length) {
+            if ("cpf" in element) {
+                owners = [...owners, { id: element.id, cpf: "" }]
+            } else if ("cnpj" in element) {
+                owners = [...owners, { id: element.id, cnpj: "" }]
+            }
+        }
+    })
     immobile = {
-        ...immobile
-        , address: { ...immobile.address, cep: handleRemoveCEPMask(immobile.address.cep) }
+        ...immobile,
+        owners: owners,
+        address: { ...immobile.address, cep: handleRemoveCEPMask(immobile.address.cep) }
     }
     return immobile
 }
@@ -221,11 +245,9 @@ export const handlePrepareProjectForDB = (project: Project) => {
     if (project.dateInsertUTC === 0) {
         project = { ...project, dateInsertUTC: handleNewDateToUTC() }
     }
-
     if (project.id !== "") {
         project = { ...project, dateLastUpdateUTC: handleNewDateToUTC() }
     }
-
     if (project.dateString?.length === 10) {
         const dateText = handleRemoveDateMask(project.dateString)
         if (dateText.length === 8) {
@@ -236,32 +258,180 @@ export const handlePrepareProjectForDB = (project: Project) => {
             project = { ...project, date: Date.parse(utcString) }
         }
     }
-
     if (project.date === 0) {
         project = { ...project, date: handleNewDateToUTC() }
     }
-    {/*
-let projectPayments = handlePrepareProjectPaymentStageForDB(project, project.projectPayments)
-let projectStages = handlePrepareProjectPaymentStageForDB(project, project.projectPayments)
-project = {
-    ...project,
-    projectPayments: projectPayments,
-    projectStages: projectStages,
-}
-*/}
-
+    if (project.professional?.id?.length) {
+        project = { ...project, professional: { id: project.professional.id } }
+    } else {
+        project = { ...project, professional: {} }
+    }
+    let clients = []
+    project.clients.map((element, index) => {
+        if ("id" in element && element.id.length) {
+            if ("cpf" in element) {
+                clients = [...clients, { id: element.id, cpf: "" }]
+            } else if ("cnpj" in element) {
+                clients = [...clients, { id: element.id, cnpj: "" }]
+            }
+        }
+    })
     if (project.dateString) {
         delete project.dateString
     }
-
     if (project.oldData) {
         delete project.oldData
     }
-
     project = {
         ...project,
+        clients: clients,
     }
     return project
+}
+
+export const handlePrepareServiceForDB = (service: Service) => {
+    if (service.title.length) {
+        service = { ...service, title: service.title?.trim() }
+    }
+    if (service.value.length) {
+        service = { ...service, value: handleRemoveCurrencyMask(service.value) }
+    }
+    if (service.description.length) {
+        service = { ...service, description: service.description?.trim() }
+    }
+    if (service.dateInsertUTC === 0) {
+        service = { ...service, dateInsertUTC: handleNewDateToUTC() }
+    } else {
+        service = { ...service, dateLastUpdateUTC: handleNewDateToUTC() }
+    }
+    if (service.dateString?.length === 10) {
+        const dateText = handleRemoveDateMask(service.dateString)
+        if (dateText.length === 8) {
+            const day = dateText.substring(0, 2)
+            const month = dateText.substring(2, 4)
+            const year = dateText.substring(4, dateText.length)
+            const utcString = new Date(month + " " + day + " " + year).toUTCString()
+            service = { ...service, date: Date.parse(utcString) }
+            delete service.dateString
+        }
+    }
+    if (service.responsible?.id?.length) {
+        service = { ...service, responsible: { id: service.responsible.id } }
+    } else {
+        service = { ...service, responsible: {} }
+    }
+    if (service.project?.id?.length) {
+        service = { ...service, project: { id: service.project.id } }
+    } else {
+        service = { ...service, project: {} }
+    }
+    let serviceStages = []
+    service.serviceStages.map((element, index) => {
+        if ("id" in element && element.id.length) {
+            serviceStages = [...serviceStages, { id: element.id }]
+        }
+    })
+    let servicePayments = []
+    service.servicePayments.map((element, index) => {
+        if ("id" in element && element.id.length) {
+            servicePayments = [...servicePayments, { id: element.id }]
+        }
+    })
+    let immobilesTarget = []
+    service.immobilesTarget.map((element, index) => {
+        if ("id" in element && element.id.length) {
+            immobilesTarget = [...immobilesTarget, { id: element.id }]
+        }
+    })
+    let immobilesOrigin = []
+    service.immobilesOrigin.map((element, index) => {
+        if ("id" in element && element.id.length) {
+            immobilesOrigin = [...immobilesOrigin, { id: element.id }]
+        }
+    })
+    if (service.serviceStages) {
+        delete service.serviceStages
+    }
+    if (service.servicePayments) {
+        delete service.servicePayments
+    }
+
+    service = {
+        ...service,
+        serviceStages: serviceStages,
+        servicePayments: servicePayments,
+        immobilesTarget: immobilesTarget,
+        immobilesOrigin: immobilesOrigin,
+    }
+
+    return service
+}
+
+export const handlePrepareServiceStageForDB = (serviceStage: ServiceStage) => {
+    if (serviceStage.title.length) {
+        serviceStage = { ...serviceStage, title: serviceStage.title?.trim() }
+    }
+    if (serviceStage.description.length) {
+        serviceStage = { ...serviceStage, description: serviceStage.description?.trim() }
+    }
+    if (serviceStage.dateInsertUTC === 0) {
+        serviceStage = { ...serviceStage, dateInsertUTC: handleNewDateToUTC() }
+    } else {
+        serviceStage = { ...serviceStage, dateLastUpdateUTC: handleNewDateToUTC() }
+    }
+    if (serviceStage.dateString?.length === 10) {
+        const dateText = handleRemoveDateMask(serviceStage.dateString)
+        if (dateText.length === 8) {
+            const day = dateText.substring(0, 2)
+            const month = dateText.substring(2, 4)
+            const year = dateText.substring(4, dateText.length)
+            const utcString = new Date(month + " " + day + " " + year).toUTCString()
+            serviceStage = { ...serviceStage, dateDue: Date.parse(utcString) }
+            delete serviceStage.dateString
+        }
+    }
+    if (serviceStage.responsible?.id?.length) {
+        serviceStage = { ...serviceStage, responsible: { id: serviceStage.responsible.id } }
+    } else {
+        serviceStage = { ...serviceStage, responsible: {} }
+    }
+    if (serviceStage.service?.id?.length) {
+        serviceStage = { ...serviceStage, service: { id: serviceStage.service.id } }
+    } else {
+        serviceStage = { ...serviceStage, service: {} }
+    }
+    return serviceStage
+}
+
+export const handlePrepareServicePaymentForDB = (servicePayment: ServicePayment) => {
+    if (servicePayment.value.length) {
+        servicePayment = { ...servicePayment, value: handleRemoveCurrencyMask(servicePayment.value) }
+    }
+    if (servicePayment.description.length) {
+        servicePayment = { ...servicePayment, description: servicePayment.description?.trim() }
+    }
+    if (servicePayment.dateInsertUTC === 0) {
+        servicePayment = { ...servicePayment, dateInsertUTC: handleNewDateToUTC() }
+    } else {
+        servicePayment = { ...servicePayment, dateLastUpdateUTC: handleNewDateToUTC() }
+    }
+    if (servicePayment.dateString?.length === 10) {
+        const dateText = handleRemoveDateMask(servicePayment.dateString)
+        if (dateText.length === 8) {
+            const day = dateText.substring(0, 2)
+            const month = dateText.substring(2, 4)
+            const year = dateText.substring(4, dateText.length)
+            const utcString = new Date(month + " " + day + " " + year).toUTCString()
+            servicePayment = { ...servicePayment, dateDue: Date.parse(utcString) }
+            delete servicePayment.dateString
+        }
+    }
+    if (servicePayment.service?.id?.length) {
+        servicePayment = { ...servicePayment, service: { id: servicePayment.service.id } }
+    } else {
+        servicePayment = { ...servicePayment, service: {} }
+    }
+    return servicePayment
 }
 
 export const handlePrepareServicePaymentStageForDB = (service: Service, list: (ServicePayment | ServiceStage)[]) => {
@@ -299,21 +469,6 @@ export const handlePrepareServicePaymentStageForShow = (list: (ServicePayment | 
         localList = [...localList, { ...element, dateString: handleUTCToDateShow(element.dateDue.toString()) }]
     })
     return localList
-}
-
-export const handlePrepareServiceStageForDB = (serviceStage: ServiceStage) => {
-    if (serviceStage.dateInsertUTC === 0) {
-        serviceStage = { ...serviceStage, dateInsertUTC: handleNewDateToUTC() }
-    }
-
-    if (serviceStage.id !== "") {
-        serviceStage = { ...serviceStage, dateLastUpdateUTC: handleNewDateToUTC() }
-    }
-
-    serviceStage = {
-        ...serviceStage
-    }
-    return serviceStage
 }
 
 export const extratePersonAddress = (element: ElementFromBase) => {

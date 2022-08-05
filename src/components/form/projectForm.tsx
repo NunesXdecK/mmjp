@@ -13,7 +13,7 @@ import InputTextAutoComplete from "../inputText/inputTextAutocomplete";
 import SelectPersonCompanyForm from "../select/selectPersonCompanyForm";
 import { handleProjectValidationForDB } from "../../util/validationUtil";
 import { defaultProject, Project, Service } from "../../interfaces/objectInterfaces";
-import { defaultElementFromBase, ElementFromBase, handlePrepareProjectForDB, handlePrepareServicePaymentStageForDB, } from "../../util/converterUtil";
+import { defaultElementFromBase, ElementFromBase, handlePrepareProjectForDB } from "../../util/converterUtil";
 
 interface ProjectFormProps {
     title?: string,
@@ -103,16 +103,11 @@ export default function ProjectForm(props: ProjectFormProps) {
                 feedbackMessage = { ...feedbackMessage, messages: ["Atualizado com sucesso!"], messageType: "SUCCESS" }
             }
 
-            console.log(projectForDB)
-            console.log(services)
-
             try {
-                {/*
                 res = await fetch("api/project", {
                     method: "POST",
                     body: JSON.stringify({ token: "tokenbemseguro", data: projectForDB }),
                 }).then((res) => res.json())
-            */}
             } catch (e) {
                 if (isSave) {
                     feedbackMessage = { ...feedbackMessage, messages: ["Erro em salvar!"], messageType: "ERROR" }

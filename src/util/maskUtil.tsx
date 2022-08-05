@@ -284,6 +284,14 @@ export const handleRemoveCEPMask = (text: string) => {
     return text
 }
 
+export const handleRemoveCurrencyMask = (text: string) => {
+    if (text) {
+        text = text.replaceAll(".", "").replaceAll(",", "")
+        text = text.replace(new RegExp(ONLY_NUMBERS_PATTERN_TWO), "")
+    }
+    return text
+}
+
 export const handleRemoveTelephoneMask = (text: string) => {
     if (text) {
         text = text.replaceAll(" ", "").replaceAll("(", "").replaceAll(")", "").replaceAll("-", "")

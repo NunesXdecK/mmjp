@@ -147,7 +147,7 @@ export const ProjectConversor = {
             id: snapshot?.id ?? "",
             title: data.title ?? "",
             number: data.number ?? "",
-            status: data.status ?? "NORMAL",
+            status: data.status ?? "ORÇAMENTO",
             date: data.date ?? 0,
             dateInsertUTC: data.dateInsertUTC ?? 0,
             dateLastUpdateUTC: data.dateLastUpdateUTC ?? 0,
@@ -163,16 +163,13 @@ export const ServiceConversor = {
             date: data.date,
             title: data.title,
             value: data.value,
+            index: data.index,
             status: data.status,
             project: data.project,
             quantity: data.quantity,
             description: data.description,
-            responsible: data.professional,
-            serviceStages: data.serviceStages,
+            responsible: data.responsible,
             dateInsertUTC: data.dateInsertUTC,
-            servicePayments: data.servicePayments,
-            immobilesOrigin: data.immobilesOrigin,
-            immobilesTarget: data.immobilesTarget,
             dateLastUpdateUTC: data.dateLastUpdateUTC,
         }
     },
@@ -183,18 +180,14 @@ export const ServiceConversor = {
             title: data.title ?? "",
             value: data.value ?? "",
             quantity: data.quantity ?? "1",
-            status: data.status ?? "NORMAL",
+            status: data.status ?? "ORÇAMENTO",
             description: data.description ?? "",
             date: data.date ?? 0,
+            index: data.index ?? 0,
             dateInsertUTC: data.dateInsertUTC ?? 0,
             dateLastUpdateUTC: data.dateLastUpdateUTC ?? 0,
             project: data.project ?? defaultProject,
             responsible: data.responsible ?? defaultProfessional,
-            clients: data.clients ?? [],
-            serviceStages: data.serviceStages ?? [],
-            servicePayments: data.servicePayments ?? [],
-            immobilesOrigin: data.immobilesOrigin ?? [],
-            immobilesTarget: data.immobilesTarget ?? [],
         }
     }
 }
@@ -206,7 +199,6 @@ export const ServiceStageConversor = {
             index: data.index,
             status: data.status,
             service: data.service,
-            updates: data.updates,
             dateDue: data.dateDue,
             responsible: data.responsible,
             description: data.description,
@@ -219,7 +211,7 @@ export const ServiceStageConversor = {
         return {
             id: snapshot?.id ?? "",
             title: data.title ?? "",
-            status: data.status ?? "NORMAL",
+            status: data.status ?? "ORÇAMENTO",
             description: data.description ?? "",
             index: data.index ?? 0,
             dateDue: data.dateDue ?? 0,
@@ -227,7 +219,6 @@ export const ServiceStageConversor = {
             dateLastUpdateUTC: data.dateLastUpdateUTC ?? 0,
             service: data.service ?? defaultService,
             responsible: data.responsible ?? defaultProfessional,
-            updates: data.updates ?? [],
         }
     }
 }
@@ -237,6 +228,7 @@ export const ServicePaymentConversor = {
         return {
             value: data.value,
             index: data.index,
+            status: data.status,
             service: data.service,
             dateDue: data.dateDue,
             description: data.description,
@@ -249,6 +241,7 @@ export const ServicePaymentConversor = {
         return {
             id: snapshot?.id ?? "",
             value: data.value ?? "",
+            status: data.status ?? "ORÇAMENTO",
             description: data.description ?? "",
             index: data.index ?? 0,
             dateDue: data.dateDue ?? 0,
