@@ -13,8 +13,8 @@ import { handleServicePaymentsValidationForDB, handleServiceStagesValidationForD
 import { handlePrepareServiceForDB, handlePrepareServicePaymentForDB, handlePrepareServiceStageForDB } from "../util/converterUtil"
 
 export default function Index() {
-    const [isFirst, setIsFirst] = useState(true)
-    const [isLoading, setIsLoading] = useState(true)
+    const [isFirst, setIsFirst] = useState(false)
+    const [isLoading, setIsLoading] = useState(false)
     const [isFeedbackOpen, setIsFeedbackOpen] = useState(false)
     const [serviceStages, setServiceStages] = useState<ServiceStage[]>([])
     const [serviceStagesForShow, setServiceStagesForShow] = useState<ServiceStage[]>([])
@@ -54,7 +54,6 @@ export default function Index() {
         {/*
         if (isFirst) {
             fetch("api/serviceStages").then((res) => res.json()).then((res) => {
-                console.log("entrou aqui etapas")
                 if (res.list.length) {
                     setServiceStages(res.list)
                     setServiceStagesForShow(res.list)
@@ -63,7 +62,6 @@ export default function Index() {
                 setIsLoading(false)
             })
             fetch("api/servicePayments").then((res) => res.json()).then((res) => {
-                console.log("entrou aqui pagamentos")
                 if (res.list.length) {
                     setServicePayments(res.list)
                     setServicePaymentsForShow(res.list)
@@ -76,6 +74,7 @@ export default function Index() {
     })
 
     const handleServiceSave = async () => {
+        setIsLoading(true)
         let feedbackMessage: FeedbackMessage = { messages: ["Algo estranho aconteceu"], messageType: "WARNING" }
         let localServices = []
         if (services.length === 0) {
@@ -115,107 +114,26 @@ export default function Index() {
             handleShowMessage(feedbackMessage)
             return
         }
-        let localServiceStages = []
-        let localServicePayments = []
-        localServiceWithId.map((element: Service, index) => {
-            element.serviceStages.map((elementStage: ServiceStage, index) => {
-                let localServiceStage = { ...elementStage, service: element }
-                localServiceStages = [...localServiceStages, localServiceStage]
-            })
-            element.servicePayments.map((elementPayment: ServicePayment, index) => {
-                let localServicePayment = { ...elementPayment, service: element }
-                localServicePayments = [...localServicePayments, localServicePayment]
-            })
-        })
-        let validationStages = handleServiceStagesValidationForDB(localServiceStages, true)
-        let validationPayments = handleServicePaymentsValidationForDB(localServicePayments, true)
-        validation = {
-            validation: validationStages.validation && validationPayments.validation,
-            messages: [...validationStages.messages, ...validationPayments.messages]
-        }
-        if (!validation.validation) {
-            feedbackMessage = { ...feedbackMessage, messageType: "ERROR", messages: validation.messages }
-            handleShowMessage(feedbackMessage)
-            return
-        }
-        let localServiceStagesWithId = []
-        let localServicePaymentsWithId = []
-        if (localServiceStages.length) {
-            await Promise.all(localServiceStages.map(async (element: ServiceStage, index) => {
-                let serviceStageForDB = handlePrepareServiceStageForDB(element)
-                res = await fetch("api/serviceStage", {
-                    method: "POST",
-                    body: JSON.stringify({ token: "tokenbemseguro", data: serviceStageForDB }),
-                }).then((res) => res.json())
-                if (res.status === "ERROR") {
-                    feedbackMessage = { ...feedbackMessage, messageType: "ERROR", messages: ["Erro ao adicionar"] }
-                    handleShowMessage(feedbackMessage)
-                    return
-                }
-                localServiceStagesWithId = [...localServiceStagesWithId, { ...element, id: res.id }]
-            }))
-        }
-        if (res.status === "ERROR") {
-            feedbackMessage = { ...feedbackMessage, messageType: "ERROR", messages: ["Erro ao adicionar"] }
-            handleShowMessage(feedbackMessage)
-            return
-        }
-        if (localServicePayments.length) {
-            await Promise.all(localServicePayments.map(async (element: ServicePayment, index) => {
-                let serviceStageForDB = handlePrepareServicePaymentForDB(element)
-                res = await fetch("api/servicePayment", {
-                    method: "POST",
-                    body: JSON.stringify({ token: "tokenbemseguro", data: serviceStageForDB }),
-                }).then((res) => res.json())
-                if (res.status === "ERROR") {
-                    feedbackMessage = { ...feedbackMessage, messageType: "ERROR", messages: ["Erro ao adicionar"] }
-                    handleShowMessage(feedbackMessage)
-                    return
-                }
-                localServicePaymentsWithId = [...localServicePaymentsWithId, { ...element, id: res.id }]
-            }))
-        }
-        if (res.status === "ERROR") {
-            feedbackMessage = { ...feedbackMessage, messageType: "ERROR", messages: ["Erro ao adicionar"] }
-            handleShowMessage(feedbackMessage)
-            return
-        }
-        let localServiceFinal = []
-        localServiceWithId.map((element, index) => {
-            let serviceStages = []
-            let servicePayments = []
-            localServiceStagesWithId.map((elementStages, index) => {
-                if (element.id === elementStages.service.id) {
-                    serviceStages = [...serviceStages, elementStages]
-                }
-            })
-            localServicePaymentsWithId.map((elementPayments, index) => {
-                if (element.id === elementPayments.service.id) {
-                    servicePayments = [...servicePayments, elementPayments]
-                }
-            })
-            element = { ...element, serviceStages: serviceStages, servicePayments: servicePayments }
-            localServiceFinal = [...localServiceFinal, element]
-        })
-        setServices(localServiceFinal.sort((elementOne: Service, elementTwo: Service) => {
-            return elementOne.index - elementTwo.index
-        }))
+
+        setServices([])
+        setIsLoading(false)
         feedbackMessage = { ...feedbackMessage, messageType: "SUCCESS", messages: ["Deu tudo certo"] }
         handleShowMessage(feedbackMessage)
     }
 
     return (
         <Layout
-            title="Dashboard">
+            title="Testes">
             <Head>
-                <title>Dashboard</title>
-                <meta name="description" content="Dashboard" />
+                <title>Testes</title>
+                <meta name="description" content="Testes" />
                 <link rel="icon" href="/favicon.ico" />
             </Head>
 
             <ServiceForm
                 title="Serviços"
                 services={services}
+                isLoading={isLoading}
                 onSetServices={setServices}
                 subtitle="Adicione os serviços"
                 onShowMessage={handleShowMessage}

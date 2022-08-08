@@ -13,7 +13,7 @@ export interface LayoutMenuItem {
 }
 
 const menus: LayoutMenuItem[] = [
-    { name: "Dashboard", href: "/", current: false, disabled: false },
+    { name: "Testes", href: "/", current: false, disabled: false },
     {
         name: "Cadastros", current: false, disabled: false,
         subMenus:
@@ -22,7 +22,7 @@ const menus: LayoutMenuItem[] = [
                 { name: "Empresas", href: "/company", current: false, disabled: false },
                 { name: "Profissionais", href: "/professional", current: false, disabled: false },
                 { name: "Imóveis", href: "/immobile", current: false, disabled: false },
-                
+
             ]
     },
     {

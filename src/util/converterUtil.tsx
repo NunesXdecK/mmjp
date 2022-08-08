@@ -325,18 +325,6 @@ export const handlePrepareServiceForDB = (service: Service) => {
     } else {
         service = { ...service, project: {} }
     }
-    let serviceStages = []
-    service.serviceStages.map((element, index) => {
-        if ("id" in element && element.id.length) {
-            serviceStages = [...serviceStages, { id: element.id }]
-        }
-    })
-    let servicePayments = []
-    service.servicePayments.map((element, index) => {
-        if ("id" in element && element.id.length) {
-            servicePayments = [...servicePayments, { id: element.id }]
-        }
-    })
     let immobilesTarget = []
     service.immobilesTarget.map((element, index) => {
         if ("id" in element && element.id.length) {
@@ -349,12 +337,42 @@ export const handlePrepareServiceForDB = (service: Service) => {
             immobilesOrigin = [...immobilesOrigin, { id: element.id }]
         }
     })
+    let serviceStages = []
+    service.serviceStages.map((element, index) => {
+        let serviceStage: ServiceStage = handlePrepareServiceStageForDB(element)
+        if ("id" in serviceStage && serviceStage.id.length) {
+            serviceStage = { ...serviceStage, id: serviceStage.id }
+        }
+        serviceStages = [...serviceStages, serviceStage]
+    })
+    let servicePayments = []
+    service.servicePayments.map((element, index) => {
+        let servicePayment: ServicePayment = handlePrepareServicePaymentForDB(element)
+        if ("id" in servicePayment && servicePayment.id.length) {
+            servicePayment = { ...servicePayment, id: servicePayment.id }
+        }
+        servicePayments = [...servicePayments, servicePayment]
+    })
+    {/*
+    let serviceStages = []
+    service.serviceStages.map((element, index) => {
+        if ("id" in element && element.id.length) {
+            serviceStages = [...serviceStages, { id: element.id }]
+        }
+    })
+    let servicePayments = []
+    service.servicePayments.map((element, index) => {
+        if ("id" in element && element.id.length) {
+            servicePayments = [...servicePayments, { id: element.id }]
+        }
+    })
     if (service.serviceStages) {
         delete service.serviceStages
     }
     if (service.servicePayments) {
         delete service.servicePayments
     }
+*/}
 
     service = {
         ...service,
