@@ -11,9 +11,9 @@ import { NOT_NULL_MARK } from "../../util/patternValidationUtil";
 import SelectProfessionalForm from "../select/selectProfessionalForm";
 import InputTextAutoComplete from "../inputText/inputTextAutocomplete";
 import SelectPersonCompanyForm from "../select/selectPersonCompanyForm";
-import { handleProjectValidationForDB } from "../../util/validationUtil";
+import { handleProjectValidationForDB, handleServicesValidationForDB } from "../../util/validationUtil";
 import { defaultProject, Project, Service } from "../../interfaces/objectInterfaces";
-import { defaultElementFromBase, ElementFromBase, handlePrepareProjectForDB } from "../../util/converterUtil";
+import { defaultElementFromBase, ElementFromBase, handlePrepareProjectForDB, handlePrepareServiceForDB } from "../../util/converterUtil";
 
 interface ProjectFormProps {
     title?: string,
@@ -92,7 +92,8 @@ export default function ProjectForm(props: ProjectFormProps) {
             projectForDB = { ...projectForDB, professional: {} }
         }
         const isValid = handleProjectValidationForDB(projectForDB)
-        if (isValid.validation) {
+        const servicesValidation = handleServicesValidationForDB(services, false, false)
+        if (isValid.validation && servicesValidation.validation) {
             projectForDB = handlePrepareProjectForDB(projectForDB)
             let nowID = projectForDB?.id ?? ""
             const isSave = nowID === ""
@@ -117,53 +118,58 @@ export default function ProjectForm(props: ProjectFormProps) {
                 console.error("Error adding document: ", e)
             }
             if (res.status === "SUCCESS") {
-                setProject({ ...project, id: res.id })
-                projectForDB = { ...projectForDB, id: res.id }
+                let serviceValidation = true
+                if (services.length && services.length > 0) {
+                    let localServices = []
+                    services.map((element: Service, index) => {
+                        localServices = [...localServices, {
+                            ...element,
+                            project: { ...defaultProject, id: nowID }
+                        }]
+                    })
 
-                {/*
-                projectForDB = {
-                    ...projectForDB,
-                    projectStages: handlePrepareProjectPaymentStageForDB(projectForDB, project.projectStages),
-                    projectPayments: handlePrepareProjectPaymentStageForDB(projectForDB, project.projectPayments),
-                }
-                try {
-                    await Promise.all(
-                        projectForDB.projectPayments.map(async (element, index) => {
-                            await fetch("api/projectPayment", {
+                    let localServiceWithId = []
+                    try {
+                        await Promise.all(localServices.map(async (element: Service, index) => {
+                            let serviceForDB = handlePrepareServiceForDB(element)
+                            res = await fetch("api/service", {
                                 method: "POST",
-                                body: JSON.stringify({ token: "tokenbemseguro", data: element }),
+                                body: JSON.stringify({ token: "tokenbemseguro", data: serviceForDB }),
                             }).then((res) => res.json())
+                            if (res.status === "ERROR") {
+                                serviceValidation = false
+                                feedbackMessage = { ...feedbackMessage, messageType: "ERROR", messages: ["Erro ao adicionar um serviço"] }
+                            }
+                            localServiceWithId = [...localServiceWithId, { ...element, id: res.id }]
                         }))
-
-                    await Promise.all(
-                        projectForDB.projectStages.map(async (element, index) => {
-                            await fetch("api/projectStage", {
-                                method: "POST",
-                                body: JSON.stringify({ token: "tokenbemseguro", data: element }),
-                            }).then((res) => res.json())
-                        }))
-                } catch (e) {
-                    feedbackMessage = { ...feedbackMessage, messages: ["Erro em salvar os pagaments!"], messageType: "ERROR" }
-                    console.error("Error adding document: ", e)
-                }
-*/}
-
-                if (isMultiple) {
-                    setProject(defaultProject)
+                    } catch (e) {
+                        serviceValidation = false
+                        feedbackMessage = { ...feedbackMessage, messageType: "ERROR", messages: ["Erro ao adicionar um serviço"] }
+                        console.error("Error adding document: ", e)
+                    }
                 }
 
-                if (!isMultiple && props.onAfterSave) {
-                    props.onAfterSave(feedbackMessage, projectForDB)
+                if (serviceValidation) {
+                    setProject({ ...project, id: res.id })
+                    projectForDB = { ...projectForDB, id: res.id }
+
+                    if (isMultiple) {
+                        setProject(defaultProject)
+                    }
+
+                    if (!isMultiple && props.onAfterSave) {
+                        props.onAfterSave(feedbackMessage, projectForDB)
+                    }
                 }
             } else {
-                feedbackMessage = { ...feedbackMessage, messages: ["Erro!"], messageType: "ERROR" }
+                feedbackMessage = { ...feedbackMessage, messages: ["Erro ao adicionar o projeto!"], messageType: "ERROR" }
             }
 
             if (props.onShowMessage) {
                 props.onShowMessage(feedbackMessage)
             }
         } else {
-            feedbackMessage = { ...feedbackMessage, messages: isValid.messages, messageType: "ERROR" }
+            feedbackMessage = { ...feedbackMessage, messages: [...isValid.messages, ...servicesValidation.messages], messageType: "ERROR" }
             if (props.onShowMessage) {
                 props.onShowMessage(feedbackMessage)
             }

@@ -4,9 +4,10 @@ import List from "../../components/list/list"
 import Layout from "../../components/layout/layout"
 import ProjectForm from "../../components/form/projectForm"
 import { handleNewDateToUTC, handleUTCToDateShow } from "../../util/dateUtils"
-import { Company, defaultProfessional, defaultProject, Person, Professional, Project } from "../../interfaces/objectInterfaces"
+import { Company, defaultProfessional, defaultProject, Person, Professional, Project, Service } from "../../interfaces/objectInterfaces"
 import FeedbackMessageModal, { defaultFeedbackMessage, FeedbackMessage } from "../../components/modal/feedbackMessageModal"
 import { COMPANY_COLLECTION_NAME, PERSON_COLLECTION_NAME } from "../../db/firebaseDB"
+import { handlePrepareServiceForShow } from "../../util/converterUtil"
 
 export default function Projects() {
     const [title, setTitle] = useState("Lista de projetos")
@@ -54,7 +55,7 @@ export default function Projects() {
         setIsLoading(true)
         let newProject = { ...defaultProject, dateString: handleUTCToDateShow(handleNewDateToUTC().toString()) }
         const lastProfessional = await fetch("api/lastProfessional").then((res) => res.json()).then((res) => res.professional)
-        if (lastProfessional.id && lastProfessional.id !== "") {
+        if ("id" in lastProfessional && lastProfessional.id.length) {
             newProject = { ...newProject, professional: lastProfessional }
         }
         setProject(newProject)
@@ -110,53 +111,27 @@ localProject = {
         } else {
             localProfessional = await fetch("api/lastProfessional").then((res) => res.json()).then((res) => res.professional)
         }
-
-        {/*
-
-        let localProjectPayments: ProjectPayment[] = await fetch("api/projectPayments/" + localProject.id).then((res) => res.json()).then((res) => res.list)
-        localProjectPayments = handlePrepareProjectPaymentStageForShow(localProjectPayments)
-
-        let localProjectStages: ProjectStage[] = await fetch("api/projectStages/" + localProject.id).then((res) => res.json()).then((res) => res.list)
-        localProjectPayments = handlePrepareProjectPaymentStageForShow(localProjectPayments)
-
-        let localImmobileOrigin = []
-        await Promise.all(
-            localProject.immobilesOrigin.map(async (element, index) => {
-                if (element && element !== "") {
-                    let localImmbobile: Immobile = await fetch("api/immobile/" + element).then((res) => res.json()).then((res) => res.data)
-                    if (localImmbobile.id && localImmbobile.id !== "") {
-                        localImmobileOrigin = [...localImmobileOrigin, localImmbobile]
-                    }
-                }
-            })
-        )
-
-        let localImmobileTarget = []
-        await Promise.all(
-            localProject.immobilesTarget.map(async (element, index) => {
-                if (element && element !== "") {
-                    let localImmbobile: Immobile = await fetch("api/immobile/" + element).then((res) => res.json()).then((res) => res.data)
-                    if (localImmbobile.id && localImmbobile.id !== "") {
-                        localImmobileTarget = [...localImmobileTarget, localImmbobile]
-                    }
-                }
-            })
-        )
-
-        localProject = {
-            ...localProject,
-            clients: localClients,
-            professional: localProfessional,
-            projectStages: localProjectStages,
-            immobilesTarget: localImmobileTarget,
-            immobilesOrigin: localImmobileOrigin,
-            projectPayments: localProjectPayments,
-            dateString: handleUTCToDateShow(localProject.date.toString()),
+        let localServices: Service[] = []
+        try {
+            let localServicesByProject = await fetch("api/services/" + localProject.id).then((res) => res.json()).then((res) => res.list)
+            if (localServicesByProject && localServicesByProject?.length > 0) {
+                await Promise.all(
+                    localServicesByProject.map(async (element, index) => {
+                        if ("id" in element && element.id.length) {
+                            let service: Service = await fetch("api/service/" + element.id).then((res) => res.json()).then((res) => res.data)
+                            if ("id" in service && service.id.length) {
+                                localServices = [...localServices, handlePrepareServiceForShow(service)]
+                            }
+                        }
+                    })
+                )
+            }
+        } catch (err) {
+            console.error(err)
         }
-    */}
 
         let localClients = []
-        if (localProject.clients && localProject.clients.length > 0) {
+        if (localProject.clients && localProject.clients?.length > 0) {
             await Promise.all(
                 localProject.clients.map(async (element, index) => {
                     let array = element.split("/")
@@ -167,7 +142,7 @@ localProject = {
                         } else if (array[0].includes(COMPANY_COLLECTION_NAME)) {
                             localClient = await fetch("api/company/" + array[1]).then((res) => res.json()).then((res) => res.data)
                         }
-                        if (localClient.id && localClient.id !== "") {
+                        if ("id" in localClient && localClient.id.length) {
                             localClients = [...localClients, localClient]
                         }
                     }
@@ -178,6 +153,7 @@ localProject = {
         localProject = {
             ...localProject,
             clients: localClients,
+            services: localServices,
             professional: localProfessional,
             dateString: handleUTCToDateShow(localProject.date.toString()),
         }
@@ -258,8 +234,8 @@ localProject = {
                     isBack={true}
                     project={project}
                     onBack={handleBackClick}
-                    title="Informações do projeto"
                     onAfterSave={handleAfterSave}
+                    title="Informações do projeto"
                     onShowMessage={handleShowMessage}
                     subtitle="Dados importantes sobre o projeto" />
             )}

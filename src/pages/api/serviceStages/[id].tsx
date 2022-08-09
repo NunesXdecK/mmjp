@@ -5,13 +5,13 @@ import { db, PROFESSIONAL_COLLECTION_NAME, SERVICE_COLLECTION_NAME, SERVICE_STAG
 
 export default async function handler(req, res) {
     const { method } = req
+    const serviceCollection = collection(db, SERVICE_COLLECTION_NAME).withConverter(ServiceConversor)
+    const professionalCollection = collection(db, PROFESSIONAL_COLLECTION_NAME).withConverter(ProfessionalConversor)
+    const serviceStageCollection = collection(db, SERVICE_STAGE_COLLECTION_NAME).withConverter(ServiceStageConversor)
 
     switch (method) {
         case 'GET':
             let resGET = { status: "ERROR", error: {}, message: "", list: [] }
-            const serviceCollection = collection(db, SERVICE_COLLECTION_NAME).withConverter(ServiceConversor)
-            const professionalCollection = collection(db, PROFESSIONAL_COLLECTION_NAME).withConverter(ProfessionalConversor)
-            const serviceStageCollection = collection(db, SERVICE_STAGE_COLLECTION_NAME).withConverter(ServiceStageConversor)
             let list = []
             let listLocal = []
             try {
@@ -25,7 +25,7 @@ export default async function handler(req, res) {
 
                 await Promise.all(
                     listLocal.map(async (element: ServiceStage, index) => {
-                        if (element.responsible?.id && element.responsible.id !== "") {
+                        if ("id" in element.responsible && element.responsible.id.length) {
                             const docRef = doc(professionalCollection, element.responsible.id)
                             if (docRef) {
                                 const data: Professional = (await getDoc(docRef)).data()

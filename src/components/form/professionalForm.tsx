@@ -37,7 +37,7 @@ export default function ProfessionalForm(props: ProfessionalFormProps) {
 
     const [oldData, setOldData] = useState<ElementFromBase>(props?.professional?.oldData ?? defaultElementFromBase)
 
-    const [persons, setPersons] = useState(props?.professional?.person?.id !== "" ? [props.professional.person] : [])
+    const [persons, setPersons] = useState(("id" in props?.professional?.person && props?.professional?.person.id.length) ? [props.professional.person] : [])
 
     const handleSetProfessionalTitle = (value) => { setProfessional({ ...professional, title: value }) }
     const handleSetProfessionalCreaNumber = (value) => { setProfessional({ ...professional, creaNumber: value }) }

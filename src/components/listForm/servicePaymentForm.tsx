@@ -38,7 +38,7 @@ export default function ServicePaymentForm(props: ServicePaymentFormProps) {
         let localServicePayment = localServicePayments[index]
         let canDelete = true
 
-        if (localServicePayment.id && localServicePayment.id !== "") {
+        if ("id" in localServicePayment && localServicePayment.id.length) {
             const res = await fetch("api/servicePayment", {
                 method: "DELETE",
                 body: JSON.stringify({ token: "tokenbemseguro", id: localServicePayment.id }),

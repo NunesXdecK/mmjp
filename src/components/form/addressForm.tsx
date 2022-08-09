@@ -35,7 +35,7 @@ export default function AddressForm(props: AddressFormProps) {
     const handleOnChangeCep = async (value: string) => {
         let cep = handleRemoveCEPMask(value)
         let address = props.address
-        if (value && value.length === 9) {
+        if (value && value?.length === 9) {
             const url = `https://viacep.com.br/ws/${cep}/json/`
             setIsSearching(true)
             try {

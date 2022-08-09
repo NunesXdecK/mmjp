@@ -36,7 +36,7 @@ export default function ServiceStageForm(props: ServiceStageFormProps) {
         let localServiceStage = localServiceStages[index]
         let canDelete = true
 
-        if (localServiceStage.id && localServiceStage.id !== "") {
+        if ("id" in localServiceStage && localServiceStage.id.length) {
             const res = await fetch("api/serviceStage", {
                 method: "DELETE",
                 body: JSON.stringify({ token: "tokenbemseguro", id: localServiceStage.id }),

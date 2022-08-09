@@ -1,12 +1,12 @@
 import { ServicePayment } from "../../../interfaces/objectInterfaces"
 import { collection, doc, getDocs, query, where } from "firebase/firestore"
-import { ServiceConversor, ServicePaymentConversor } from "../../../db/converters"
-import { db, SERVICE_COLLECTION_NAME, SERVICE_PAYMENT_COLLECTION_NAME } from "../../../db/firebaseDB"
+import { ProjectConversor, ServiceConversor, ServicePaymentConversor } from "../../../db/converters"
+import { db, PROJECT_COLLECTION_NAME, SERVICE_COLLECTION_NAME, SERVICE_PAYMENT_COLLECTION_NAME } from "../../../db/firebaseDB"
 
 export default async function handler(req, res) {
     const { method } = req
     const serviceCollection = collection(db, SERVICE_COLLECTION_NAME).withConverter(ServiceConversor)
-    const servicePaymentCollection = collection(db, SERVICE_PAYMENT_COLLECTION_NAME).withConverter(ServicePaymentConversor)
+    const projectCollection = collection(db, PROJECT_COLLECTION_NAME).withConverter(ProjectConversor)
 
     switch (method) {
         case 'GET':
@@ -14,9 +14,9 @@ export default async function handler(req, res) {
             let list = []
             try {
                 const { id } = req.query
-                const serviceDocRef = doc(serviceCollection, id)
-                const queryServicePayment = query(servicePaymentCollection, where("service", "==", serviceDocRef))
-                const querySnapshot = await getDocs(queryServicePayment)
+                const projectDocRef = doc(projectCollection, id)
+                const queryService = query(serviceCollection, where("project", "==", projectDocRef))
+                const querySnapshot = await getDocs(queryService)
                 querySnapshot.forEach((doc) => {
                     list = [...list, doc.data()]
                 })

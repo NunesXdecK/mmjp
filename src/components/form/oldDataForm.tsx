@@ -17,7 +17,7 @@ export function OldDataForm(props: OldDataProps) {
     let values = []
     if (props?.oldData) {
         const keysArray = Object.keys(props.oldData)
-        const length = keysArray.length
+        const length = keysArray?.length
         let valuesArray = []
         keysArray.map((element, index) => {
             const value = { name: element, value: props.oldData[element] ?? "" }

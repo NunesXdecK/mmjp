@@ -20,38 +20,11 @@ export default async function handler(req, res) {
                 if (id) {
                     const docRef = doc(projectCollection, id)
                     let project: Project = (await getDoc(docRef)).data()
-
-                    if (project.professional?.id && project.professional?.id !== "") {
+                    if ("id" in project.professional && project.professional?.id.length) {
                         const docRef = doc(professionalCollection, project.professional.id)
                         const data: Professional = (await getDoc(docRef)).data()
                         project = { ...project, professional: data }
                     }
-
-                    {/*
-                    
-                    let immobilesOrigin = []
-                    await Promise.all(project.immobilesOrigin.map(async (element, index) => {
-                        const docRef = doc(immobileCollection, element.id)
-                        if (docRef) {
-                            const data: Immobile = (await getDoc(docRef)).data()
-                            if (data) {
-                                immobilesOrigin = [...immobilesOrigin, data]
-                            }
-                        }
-                    }))
-                    
-                    let immobilesTarget = []
-                    await Promise.all(project.immobilesTarget.map(async (element, index) => {
-                        const docRef = doc(immobileCollection, element.id)
-                        if (docRef) {
-                            const data: Immobile = (await getDoc(docRef)).data()
-                            if (data) {
-                                immobilesTarget = [...immobilesTarget, data]
-                            }
-                        }
-                    }))
-                */}
-
                     let clients = []
                     if (project.clients && project.clients?.length > 0) {
                         await Promise.all(project.clients?.map(async (element, index) => {
@@ -74,8 +47,6 @@ export default async function handler(req, res) {
                             }
                         }))
                     }
-
-
                     project = { ...project, clients: clients }
                     resGET = { ...resGET, status: "SUCCESS", data: project }
                 } else {

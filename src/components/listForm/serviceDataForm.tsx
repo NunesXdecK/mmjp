@@ -39,7 +39,7 @@ export default function ServiceDataForm(props: ServiceDataFormProps) {
     const [isFormValid, setIsFormValid] = useState(false)
     const [index, setIndex] = useState(props.index ?? 0)
 
-    const [valueTotal, setValueTotal] = useState("0")
+    const [valueTotal, setValueTotal] = useState(props.services[index].total ?? "0")
 
     const [professionals, setProfessionals] = useState(props.services[index]?.id ? [props.services[index]] : [])
 
@@ -91,30 +91,40 @@ export default function ServiceDataForm(props: ServiceDataFormProps) {
 
     const handlePutPayment = (valueTotal) => {
         if (valueTotal > -1) {
-            return [
-                {
-                    ...defaultServicePayment,
-                    index: 0,
-                    description: "Entrada",
-                    dateString: handleUTCToDateShow(handleNewDateToUTC().toString()),
-                    value: handleMountNumberCurrency((valueTotal / 2).toString(), ".", ",", 3, 2,),
-                },
-                {
-                    ...defaultServicePayment,
-                    index: 1,
-                    description: "Entrega",
-                    dateString: handleUTCToDateShow(handleNewDateToUTC().toString()),
-                    value: handleMountNumberCurrency((valueTotal / 2).toString(), ".", ",", 3, 2),
-                },
-            ]
+            const actualList = props.services[index].servicePayments
+            if (actualList.length && actualList.length > 0) {
+                let returnList = []
+                const value = valueTotal / actualList.length
+                actualList.map((element, index) => {
+                    returnList = [...returnList, { ...element, value: handleMountNumberCurrency(value.toString(), ".", ",", 3, 2) }]
+                })
+                return returnList
+            } else {
+                return [
+                    {
+                        ...defaultServicePayment,
+                        index: 0,
+                        description: "Entrada",
+                        dateString: handleUTCToDateShow(handleNewDateToUTC().toString()),
+                        value: handleMountNumberCurrency((valueTotal / 2).toString(), ".", ",", 3, 2),
+                    },
+                    {
+                        ...defaultServicePayment,
+                        index: 1,
+                        description: "Entrega",
+                        dateString: handleUTCToDateShow(handleNewDateToUTC().toString()),
+                        value: handleMountNumberCurrency((valueTotal / 2).toString(), ".", ",", 3, 2),
+                    },
+                ]
+            }
         }
     }
 
     const handleValidadeTargetForAddButton = () => {
         let canAdd = true
         try {
-            const targetLenght = props.services[index].immobilesTarget.length
-            const originLenght = props.services[index].immobilesOrigin.length
+            const targetLenght = props.services[index].immobilesTarget?.length ?? 0
+            const originLenght = props.services[index].immobilesOrigin?.length ?? 0
             canAdd = targetLenght > 0 && originLenght > 1
         } catch (err) {
             console.error(err)
@@ -135,8 +145,8 @@ export default function ServiceDataForm(props: ServiceDataFormProps) {
     const handleValidadeOriginForAddButton = () => {
         let canAdd = true
         try {
-            const targetLenght = props.services[index].immobilesTarget.length
-            const originLenght = props.services[index].immobilesOrigin.length
+            const targetLenght = props.services[index].immobilesTarget?.length ?? 0
+            const originLenght = props.services[index].immobilesOrigin?.length ?? 0
             canAdd = originLenght > 0 && targetLenght > 1
         } catch (err) {
             console.error(err)

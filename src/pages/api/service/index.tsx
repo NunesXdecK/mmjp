@@ -1,7 +1,7 @@
 import { Service } from "../../../interfaces/objectInterfaces"
 import { addDoc, collection, deleteDoc, doc, updateDoc } from "firebase/firestore"
-import { ProfessionalConversor, ProjectConversor, ServiceConversor, ServicePaymentConversor, ServiceStageConversor } from "../../../db/converters"
-import { db, HISTORY_COLLECTION_NAME, SERVICE_COLLECTION_NAME, PROFESSIONAL_COLLECTION_NAME, PROJECT_COLLECTION_NAME, SERVICE_PAYMENT_COLLECTION_NAME, SERVICE_STAGE_COLLECTION_NAME } from "../../../db/firebaseDB"
+import { ImmobileConversor, ProfessionalConversor, ProjectConversor, ServiceConversor, ServicePaymentConversor, ServiceStageConversor } from "../../../db/converters"
+import { db, HISTORY_COLLECTION_NAME, SERVICE_COLLECTION_NAME, PROFESSIONAL_COLLECTION_NAME, PROJECT_COLLECTION_NAME, SERVICE_PAYMENT_COLLECTION_NAME, SERVICE_STAGE_COLLECTION_NAME, IMMOBILE_COLLECTION_NAME } from "../../../db/firebaseDB"
 
 export default async function handler(req, res) {
     const { method, body } = req
@@ -9,6 +9,7 @@ export default async function handler(req, res) {
     const historyCollection = collection(db, HISTORY_COLLECTION_NAME)
     const serviceCollection = collection(db, SERVICE_COLLECTION_NAME).withConverter(ServiceConversor)
     const projectCollection = collection(db, PROJECT_COLLECTION_NAME).withConverter(ProjectConversor)
+    const immobileCollection = collection(db, IMMOBILE_COLLECTION_NAME).withConverter(ImmobileConversor)
     const professionalCollection = collection(db, PROFESSIONAL_COLLECTION_NAME).withConverter(ProfessionalConversor)
     const serviceStageCollection = collection(db, SERVICE_STAGE_COLLECTION_NAME).withConverter(ServiceStageConversor)
     const servicePaymentCollection = collection(db, SERVICE_PAYMENT_COLLECTION_NAME).withConverter(ServicePaymentConversor)
@@ -23,17 +24,37 @@ export default async function handler(req, res) {
                 service = data
                 serviceNowID = data?.id ?? ""
                 if (token === "tokenbemseguro") {
-                    if (service.responsible?.id && service.responsible?.id?.length) {
+                    if ("id" in service && service.responsible?.id?.length) {
                         const docRef = doc(professionalCollection, service.responsible.id)
                         service = { ...service, responsible: docRef }
                     } else {
                         service = { ...service, responsible: {} }
                     }
-                    if (service.project?.id && service.project?.id?.length) {
+                    if ("id" in service && service.project?.id?.length) {
                         const docRef = doc(projectCollection, service.project.id)
                         service = { ...service, project: docRef }
                     } else {
                         service = { ...service, project: {} }
+                    }
+                    let immobilesTargetDocRefsForDB = []
+                    let immobilesOriginDocRefsForDB = []
+                    if (service.immobilesTarget?.length > 0) {
+                        service.immobilesTarget?.map((element, index) => {
+                            if (element.id) {
+                                const docRef = doc(immobileCollection, element.id)
+                                immobilesTargetDocRefsForDB = [...immobilesTargetDocRefsForDB, docRef]
+                            }
+                        })
+                        service = { ...service, immobilesTarget: immobilesTargetDocRefsForDB }
+                    }
+                    if (service.immobilesOrigin?.length > 0) {
+                        service.immobilesOrigin?.map((element, index) => {
+                            if (element.id) {
+                                const docRef = doc(immobileCollection, element.id)
+                                immobilesOriginDocRefsForDB = [...immobilesOriginDocRefsForDB, docRef]
+                            }
+                        })
+                        service = { ...service, immobilesOrigin: immobilesOriginDocRefsForDB }
                     }
                     const isSave = serviceNowID === ""
                     if (isSave) {
@@ -61,7 +82,7 @@ export default async function handler(req, res) {
                                     let serviceStageNowID = serviceStage?.id ?? ""
                                     const isSave = serviceStageNowID === ""
                                     serviceStage = { ...serviceStage, service: serviceDocRef }
-                                    if ("id" in serviceStage.responsible && serviceStage.responsible?.id !== "") {
+                                    if ("id" in serviceStage.responsible && serviceStage.responsible?.id.length) {
                                         const docRef = doc(professionalCollection, serviceStage.responsible.id)
                                         serviceStage = { ...serviceStage, responsible: docRef }
                                     }

@@ -1,6 +1,6 @@
 import { handleNewDateToUTC, handleUTCToDateShow } from "./dateUtils"
 import { defaultPerson, defaultAddress, defaultProfessional, defaultImmobile, Person, Address, Professional, Immobile, Company, defaultCompany, Project, ServiceStage, ServicePayment, Service } from "../interfaces/objectInterfaces"
-import { handleMaskCNPJ, handleMaskCPF, handleMaskTelephone, handleMountMask, handleRemoveCEPMask, handleRemoveCNPJMask, handleRemoveCPFMask, handleRemoveCurrencyMask, handleRemoveDateMask, handleRemoveTelephoneMask } from "./maskUtil"
+import { handleMaskCNPJ, handleMaskCPF, handleMaskTelephone, handleMountMask, handleMountNumberCurrency, handleRemoveCEPMask, handleRemoveCNPJMask, handleRemoveCPFMask, handleRemoveCurrencyMask, handleRemoveDateMask, handleRemoveTelephoneMask, handleValueStringToFloat } from "./maskUtil"
 
 export interface ElementFromBase {
     "Nome Prop."?: string,
@@ -107,7 +107,7 @@ export const handlePreparePersonForDB = (person: Person) => {
         person = { ...person, dateInsertUTC: handleNewDateToUTC() }
     }
 
-    if (person.id !== "") {
+    if ("id" in person && person.id.length) {
         person = { ...person, dateLastUpdateUTC: handleNewDateToUTC() }
     }
 
@@ -161,7 +161,7 @@ export const handlePrepareCompanyForDB = (company: Company) => {
         company = { ...company, dateInsertUTC: handleNewDateToUTC() }
     }
 
-    if (company.id !== "") {
+    if ("id" in company && company.id.length) {
         company = { ...company, dateLastUpdateUTC: handleNewDateToUTC() }
     }
 
@@ -195,7 +195,7 @@ export const handlePrepareProfessionalForDB = (professional: Professional) => {
         professional = { ...professional, dateInsertUTC: handleNewDateToUTC() }
     }
 
-    if (professional.id !== "") {
+    if ("id" in professional && professional.id.length) {
         professional = { ...professional, dateLastUpdateUTC: handleNewDateToUTC() }
     }
 
@@ -216,7 +216,7 @@ export const handlePrepareImmobileForDB = (immobile: Immobile) => {
         immobile = { ...immobile, dateInsertUTC: handleNewDateToUTC() }
     }
 
-    if (immobile.id !== "") {
+    if ("id" in immobile && immobile.id.length) {
         immobile = { ...immobile, dateLastUpdateUTC: handleNewDateToUTC() }
     }
 
@@ -245,7 +245,7 @@ export const handlePrepareProjectForDB = (project: Project) => {
     if (project.dateInsertUTC === 0) {
         project = { ...project, dateInsertUTC: handleNewDateToUTC() }
     }
-    if (project.id !== "") {
+    if ("id" in project && project.id.length) {
         project = { ...project, dateLastUpdateUTC: handleNewDateToUTC() }
     }
     if (project.dateString?.length === 10) {
@@ -481,11 +481,29 @@ export const handlePrepareServicePaymentStageForDB = (service: Service, list: (S
     return elements
 }
 
+export const handlePrepareServiceForShow = (service: Service) => {
+    return {
+        ...service,
+        total: handleMountNumberCurrency((handleValueStringToFloat(service.value) * parseInt(service.quantity)).toString(), ".", ",", 3, 2),
+        value: handleMountNumberCurrency((service.value).toString(), ".", ",", 3, 2),
+        serviceStage: handlePrepareServicePaymentStageForShow(service.serviceStages),
+        servicePayments: handlePrepareServicePaymentStageForShow(service.servicePayments),
+    }
+}
+
 export const handlePrepareServicePaymentStageForShow = (list: (ServicePayment | ServiceStage)[]) => {
     let localList = []
-    list.map((element: (ServicePayment | ServiceStage), index) => {
-        localList = [...localList, { ...element, dateString: handleUTCToDateShow(element.dateDue.toString()) }]
-    })
+    if (list && list.length > 0) {
+        list.map((element: (ServicePayment | ServiceStage), index) => {
+            if ("value" in element) {
+                element = { ...element, value: handleMountNumberCurrency((element.value).toString(), ".", ",", 3, 2) }
+            }
+            localList = [...localList, {
+                ...element,
+                dateString: handleUTCToDateShow(element.dateDue.toString())
+            }]
+        })
+    }
     return localList
 }
 

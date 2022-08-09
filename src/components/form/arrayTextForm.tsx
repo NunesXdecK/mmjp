@@ -55,7 +55,7 @@ export default function ArrayTextForm(props: ArrayTextFormProps) {
     const handleRemoveText = (event, text) => {
         event.preventDefault()
         let localTexts = [...props.texts]
-        if (localTexts.length > -1) {
+        if (localTexts?.length > -1) {
             const index = localTexts.indexOf(text)
             localTexts.splice(index, 1)
             if (props.onSetTexts) {

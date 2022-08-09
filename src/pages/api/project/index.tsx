@@ -28,28 +28,6 @@ export default async function handler(req, res) {
                         const docRef = doc(professionalCollection, project.professional.id)
                         project = { ...project, professional: docRef }
                     }
-                    {/*
-                    let immobilesTargetDocRefsForDB = []
-                    let immobilesOriginDocRefsForDB = []
-                    if (project.immobilesTarget?.length > 0) {
-                        project.immobilesTarget?.map((element, index) => {
-                            if (element.id) {
-                                const docRef = doc(immobileCollection, element.id)
-                                immobilesTargetDocRefsForDB = [...immobilesTargetDocRefsForDB, docRef]
-                            }
-                        })
-                        project = { ...project, immobilesTarget: immobilesTargetDocRefsForDB }
-                    }
-                    if (project.immobilesOrigin?.length > 0) {
-                        project.immobilesOrigin?.map((element, index) => {
-                            if (element.id) {
-                                const docRef = doc(immobileCollection, element.id)
-                                immobilesOriginDocRefsForDB = [...immobilesOriginDocRefsForDB, docRef]
-                            }
-                        })
-                        project = { ...project, immobilesOrigin: immobilesOriginDocRefsForDB }
-                    }
-                */}
                     if (project.clients?.length > 0) {
                         project.clients?.map((element, index) => {
                             if ("cpf" in element) {

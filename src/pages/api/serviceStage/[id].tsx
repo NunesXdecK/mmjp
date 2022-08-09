@@ -17,10 +17,10 @@ export default async function handler(req, res) {
                 if (id) {
                     const docRef = doc(serviceStageCollection, id)
                     let data: ServiceStage = (await getDoc(docRef)).data()
-                    if (data.responsible?.id !== "") {
+                    if ("id" in data.responsible && data.responsible.id.length) {
                         const professionalDocRef = doc(professionalCollection, data.responsible?.id)
                         let professional: Professional = (await getDoc(professionalDocRef)).data()
-                        if (professional?.id !== "") {
+                        if ("id" in professional && professional?.id.length) {
                             data = { ...data, responsible: professional }
                         }
                     }
