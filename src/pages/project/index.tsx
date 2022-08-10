@@ -105,7 +105,7 @@ localProject = {
         setIsLoading(true)
         let localProject: Project = await fetch("api/projectview/" + project.id).then((res) => res.json()).then((res) => res.data)
         let localProfessional: Professional = defaultProfessional
-        if (localProject.professional && localProject.professional !== "") {
+        if (localProject.professional && localProject.professional.length) {
             localProfessional = await fetch("api/professional/" + localProject.professional).then((res) => res.json()).then((res) => res.data)
         } else {
             localProfessional = await fetch("api/lastProfessional").then((res) => res.json()).then((res) => res.professional)
@@ -205,7 +205,6 @@ localProject = {
 
             {!isRegister ? (
                 <List
-                    haveNew
                     canEdit
                     canDelete
                     canSeeInfo
