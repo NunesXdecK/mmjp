@@ -45,7 +45,7 @@ export default function Professionals() {
             feedbackMessage = { messages: ["Algo deu errado"], messageType: "ERROR" }
         }
         handleShowMessage(feedbackMessage)
-        setProfessionals([])
+        handleBackClick()
     }
 
     const handleNewClick = () => {

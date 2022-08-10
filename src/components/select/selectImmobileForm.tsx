@@ -11,6 +11,7 @@ import { defaultFeedbackMessage, FeedbackMessage } from "../modal/feedbackMessag
 import { PencilAltIcon, TrashIcon } from "@heroicons/react/outline";
 import { defaultImmobile, Immobile } from "../../interfaces/objectInterfaces";
 import FeedbackMessageText from "../modal/feedbackMessageText";
+import WindowModal from "../modal/windowModal";
 
 interface SelectImmobileFormProps {
     id?: string,
@@ -36,6 +37,7 @@ interface SelectImmobileFormProps {
 export default function SelectImmobileForm(props: SelectImmobileFormProps) {
     const [isFirst, setIsFirst] = useState(true)
     const [isOpen, setIsOpen] = useState(false)
+    const [isOpenDelete, setIsOpenDelete] = useState(false)
     const [isRegister, setIsRegister] = useState(false)
     const [isInvalid, setIsInvalid] = useState(props.validationButton)
 
@@ -120,8 +122,7 @@ export default function SelectImmobileForm(props: SelectImmobileFormProps) {
         }
     }
 
-    const handleRemoveImmobile = (event, immobile) => {
-        event.preventDefault()
+    const handleRemoveImmobile = () => {
         if (!props.isMultipleSelect) {
             props.onSetImmobiles([])
         } else {
@@ -134,6 +135,7 @@ export default function SelectImmobileForm(props: SelectImmobileFormProps) {
                 }
             }
         }
+        setImmobile(defaultImmobile)
     }
 
     useEffect(() => {
@@ -163,11 +165,12 @@ export default function SelectImmobileForm(props: SelectImmobileFormProps) {
                     <FormRow className="">
                         <FormRowColumn unit="6" className="flex flex-col items-end justify-self-end">
                             <Button
-                                type="submit"
+                                type="button"
                                 className="w-fit"
                                 isLoading={props.isLoading}
                                 isDisabled={props.isLoading}
-                                onClick={() => {
+                                onClick={(event) => {
+                                    event.preventDefault()
                                     if (props.validationButton) {
                                         setIsInvalid(true)
                                         setTimeout(() => setIsInvalid((old) => false), 2000)
@@ -193,9 +196,13 @@ export default function SelectImmobileForm(props: SelectImmobileFormProps) {
 
                 {props.immobiles?.map((element, index) => (
                     <form key={index + element.dateInsertUTC}
-                        onSubmit={(event) => handleRemoveImmobile(event, element)}>
+                        onSubmit={(event) => {
+                            event.preventDefault()
+                            setImmobile(element)
+                            setIsOpenDelete(true)
+                        }}>
                         <FormRow>
-                            <FormRowColumn unit="6" className="flex flex-row">
+                            <FormRowColumn unit="6" className="flex flex-col sm:flex-row">
                                 <InputText
                                     title="Nome"
                                     isDisabled={true}
@@ -206,13 +213,14 @@ export default function SelectImmobileForm(props: SelectImmobileFormProps) {
                                 />
 
                                 {!props.isLocked && (
-                                    <>
+                                    <div className="min-w-fit flex-col mt-4 sm:mt-0 self-end">
                                         <Button
                                             type="button"
                                             isLoading={props.isLoading}
                                             isDisabled={props.isLoading}
                                             className="ml-2 h-fit self-end"
-                                            onClick={() => {
+                                            onClick={(event) => {
+                                                event.preventDefault()
                                                 setEditIndex(index)
                                                 setIsOpen(true)
                                             }}
@@ -228,7 +236,7 @@ export default function SelectImmobileForm(props: SelectImmobileFormProps) {
                                         >
                                             <TrashIcon className="text-white block h-5 w-5" aria-hidden="true" />
                                         </Button>
-                                    </>
+                                    </div>
                                 )}
                             </FormRowColumn>
                         </FormRow>
@@ -276,6 +284,33 @@ export default function SelectImmobileForm(props: SelectImmobileFormProps) {
                     )}
                 </>
             </IOSModal>
+
+            <WindowModal
+                isOpen={isOpenDelete}
+                setIsOpen={setIsOpenDelete}>
+                <p className="text-center">Deseja realmente deletar {immobile.name}?</p>
+                <div className="flex mt-10 justify-between content-between">
+                    <Button
+                        onClick={(event) => {
+                            event.preventDefault()
+                            setIsOpenDelete(false)
+                        }}
+                    >
+                        Voltar
+                    </Button>
+                    <Button
+                        color="red"
+                        type="submit"
+                        onClick={(event) => {
+                            event.preventDefault()
+                            handleRemoveImmobile()
+                            setIsOpenDelete(false)
+                        }}
+                    >
+                        Excluir
+                    </Button>
+                </div>
+            </WindowModal>
         </>
     )
 }

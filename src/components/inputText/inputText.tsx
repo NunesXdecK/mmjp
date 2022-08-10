@@ -86,6 +86,7 @@ export default function InputText(props: InputTextProps) {
                             focus:ring-indigo-500 focus:border-indigo-500 
                         `
     let classNameLabelLocal = "block text-sm font-medium text-gray-700"
+    let classNameHolder = "w-full"
 
     if (props.isDisabled) {
         classNameInputLocal = classNameInputLocal + " opacity-60"
@@ -103,6 +104,10 @@ export default function InputText(props: InputTextProps) {
 
     if (props.classNameInput) {
         classNameInputLocal = classNameInputLocal + " " + props.classNameInput
+    }
+
+    if (props.holderClassName) {
+        classNameHolder = classNameHolder + " " + props.holderClassName
     }
 
     if (!isValid) {
@@ -208,7 +213,7 @@ export default function InputText(props: InputTextProps) {
     }
 
     return (
-        <div className={props.holderClassName}>
+        <div className={classNameHolder}>
             <label htmlFor={props.id}
                 className={classNameLabelLocal}>
                 {props.title}

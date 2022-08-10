@@ -46,7 +46,7 @@ export default function Companies() {
             feedbackMessage = { messages: ["Algo deu errado"], messageType: "ERROR" }
         }
         handleShowMessage(feedbackMessage)
-        setCompanies([])
+        handleBackClick()
     }
 
     const handleNewClick = () => {

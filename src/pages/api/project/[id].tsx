@@ -1,6 +1,6 @@
 import { collection, doc, getDoc } from "firebase/firestore"
-import { Company, Immobile, Person, Professional, Project } from "../../../interfaces/objectInterfaces"
-import { CompanyConversor, ImmobileConversor, PersonConversor, ProfessionalConversor, ProjectConversor } from "../../../db/converters"
+import { Company, Person, Professional, Project } from "../../../interfaces/objectInterfaces"
+import { CompanyConversor, PersonConversor, ProfessionalConversor, ProjectConversor } from "../../../db/converters"
 import { db, COMPANY_COLLECTION_NAME, PERSON_COLLECTION_NAME, PROJECT_COLLECTION_NAME, IMMOBILE_COLLECTION_NAME, PROFESSIONAL_COLLECTION_NAME } from "../../../db/firebaseDB"
 
 export default async function handler(req, res) {
@@ -9,7 +9,6 @@ export default async function handler(req, res) {
     const personCollection = collection(db, PERSON_COLLECTION_NAME).withConverter(PersonConversor)
     const projectCollection = collection(db, PROJECT_COLLECTION_NAME).withConverter(ProjectConversor)
     const companyCollection = collection(db, COMPANY_COLLECTION_NAME).withConverter(CompanyConversor)
-    const immobileCollection = collection(db, IMMOBILE_COLLECTION_NAME).withConverter(ImmobileConversor)
     const professionalCollection = collection(db, PROFESSIONAL_COLLECTION_NAME).withConverter(ProfessionalConversor)
 
     switch (method) {

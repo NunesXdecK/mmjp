@@ -10,7 +10,7 @@ import { COMPANY_COLLECTION_NAME, PERSON_COLLECTION_NAME } from "../../db/fireba
 import { handlePrepareServiceForShow } from "../../util/converterUtil"
 
 export default function Projects() {
-    const [title, setTitle] = useState("Lista de projetos")
+    const [title, setTitle] = useState("Lista de orçamentos")
     const [project, setProject] = useState<Project>(defaultProject)
     const [projects, setProjects] = useState<Project[]>([])
     const [projectsForShow, setProjectsForShow] = useState<Project[]>([])
@@ -32,7 +32,7 @@ export default function Projects() {
         setIsFirst(true)
         setIsLoading(true)
         setIsRegister(false)
-        setTitle("Lista de projetos")
+        setTitle("Lista de orçamentos")
     }
 
     const handleDeleteClick = async (project) => {
@@ -61,7 +61,7 @@ export default function Projects() {
         setProject(newProject)
         setIsRegister(true)
         setIsLoading(false)
-        setTitle("Novo projeto")
+        setTitle("Novo orçamento")
     }
 
     const handleFilterList = (string) => {
@@ -98,14 +98,14 @@ localProject = {
         setIsLoading(false)
         setIsRegister(true)
         setProject({ ...defaultProject, ...localProject })
-        setTitle("Editar projeto")
+        setTitle("Editar orçamento")
     }
 
     const handleEditClick = async (project) => {
         setIsLoading(true)
         let localProject: Project = await fetch("api/projectview/" + project.id).then((res) => res.json()).then((res) => res.data)
         let localProfessional: Professional = defaultProfessional
-        if (localProject.professional && localProject.professional !== "") {
+        if ("id" in localProject.professional && localProject.professional.id.length) {
             localProfessional = await fetch("api/professional/" + localProject.professional).then((res) => res.json()).then((res) => res.data)
         } else {
             localProfessional = await fetch("api/lastProfessional").then((res) => res.json()).then((res) => res.professional)
@@ -162,7 +162,7 @@ localProject = {
         setIsLoading(false)
         setIsRegister(true)
         setProject({ ...defaultProject, ...localProject })
-        setTitle("Editar projeto")
+        setTitle("Editar orçamento")
     }
 
     const handleAfterSave = (feedbackMessage: FeedbackMessage) => {
@@ -183,7 +183,7 @@ localProject = {
 
     useEffect(() => {
         if (isFirst) {
-            fetch("api/projects").then((res) => res.json()).then((res) => {
+            fetch("api/budgets").then((res) => res.json()).then((res) => {
                 if (res.list.length) {
                     setProjects(res.list)
                     setProjectsForShow(res.list)
@@ -222,7 +222,7 @@ localProject = {
                     onTitle={(element: Project) => {
                         return (<>
                             <p>{element.title}</p>
-                            <p>Data do projeto: {handleUTCToDateShow(element.date.toString())}</p>
+                            <p>Data do orçamento: {handleUTCToDateShow(element.date.toString())}</p>
                         </>
                         )
                     }}
@@ -237,9 +237,9 @@ localProject = {
                     project={project}
                     onBack={handleBackClick}
                     onAfterSave={handleAfterSave}
-                    title="Informações do projeto"
+                    title="Informações do orçamento"
                     onShowMessage={handleShowMessage}
-                    subtitle="Dados importantes sobre o projeto" />
+                    subtitle="Dados importantes sobre o orçamento" />
             )}
 
             <FeedbackMessageModal

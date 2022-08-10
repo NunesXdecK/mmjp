@@ -8,6 +8,7 @@ interface InputTextAreaProps {
     value?: string,
     title?: string,
     validation?: string,
+    holderClassName?: string,
     validationMessage?: string,
     maxLength?: number,
     isLoading?: boolean,
@@ -34,6 +35,11 @@ export default function InputTextArea(props: InputTextAreaProps) {
                             focus:ring-indigo-500 focus:border-indigo-500 
                         `
     let classNameLabel = "block text-sm font-medium text-gray-700"
+    let classNameHolder = "w-full"
+
+    if (props.holderClassName) {
+        classNameHolder = classNameHolder + " " + props.holderClassName
+    }
 
     if (props.isLoading) {
         classNameInput = classNameInput + STYLE_FOR_INPUT_LOADING
@@ -64,7 +70,7 @@ export default function InputTextArea(props: InputTextAreaProps) {
     }
 
     return (
-        <>
+        <div className={classNameHolder}>
             <label htmlFor={props.id}
                 className={classNameLabel}>
                 {props.title}
@@ -91,6 +97,6 @@ export default function InputTextArea(props: InputTextAreaProps) {
             {!isValid && (
                 <p className="text-red-600">{props.validationMessage}</p>
             )}
-        </>
+        </div>
     )
 }

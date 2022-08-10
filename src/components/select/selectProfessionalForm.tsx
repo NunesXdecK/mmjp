@@ -11,6 +11,7 @@ import { defaultFeedbackMessage, FeedbackMessage } from "../modal/feedbackMessag
 import { PencilAltIcon, TrashIcon } from "@heroicons/react/outline";
 import { defaultProfessional, Professional } from "../../interfaces/objectInterfaces";
 import FeedbackMessageText from "../modal/feedbackMessageText";
+import WindowModal from "../modal/windowModal";
 
 interface SelectProfessionalFormProps {
     id?: string,
@@ -36,6 +37,7 @@ interface SelectProfessionalFormProps {
 export default function SelectProfessionalForm(props: SelectProfessionalFormProps) {
     const [isFirst, setIsFirst] = useState(true)
     const [isOpen, setIsOpen] = useState(false)
+    const [isOpenDelete, setIsOpenDelete] = useState(false)
     const [isInvalid, setIsInvalid] = useState(false)
     const [isRegister, setIsRegister] = useState(false)
 
@@ -120,8 +122,7 @@ export default function SelectProfessionalForm(props: SelectProfessionalFormProp
         }
     }
 
-    const handleRemoveProfessional = (event, professional) => {
-        event.preventDefault()
+    const handleRemoveProfessional = () => {
         if (!props.isMultipleSelect) {
             props.onSetProfessionals([])
         } else {
@@ -134,6 +135,7 @@ export default function SelectProfessionalForm(props: SelectProfessionalFormProp
                 }
             }
         }
+        setProfessional(defaultProfessional)
     }
 
     useEffect(() => {
@@ -192,7 +194,11 @@ export default function SelectProfessionalForm(props: SelectProfessionalFormProp
 
                 {props.professionals?.map((element, index) => (
                     <form key={index + element.dateInsertUTC}
-                        onSubmit={(event) => handleRemoveProfessional(event, element)}>
+                        onSubmit={(event) => {
+                            event.preventDefault()
+                            setProfessional(element)
+                            setIsOpenDelete(true)
+                        }}>
                         <FormRow>
                             <FormRowColumn unit="3">
                                 <InputText
@@ -204,7 +210,7 @@ export default function SelectProfessionalForm(props: SelectProfessionalFormProp
                                 />
                             </FormRowColumn>
 
-                            <FormRowColumn unit="3" className="flex flex-row">
+                            <FormRowColumn unit="3" className="flex flex-col sm:flex-row">
                                 <InputText
                                     isDisabled={true}
                                     title="Número do CREA"
@@ -214,13 +220,14 @@ export default function SelectProfessionalForm(props: SelectProfessionalFormProp
                                 />
 
                                 {!props.isLocked && (
-                                    <>
+                                    <div className="min-w-fit flex-col mt-4 sm:mt-0 self-end">
                                         <Button
                                             type="button"
                                             isLoading={props.isLoading}
                                             isDisabled={props.isLoading}
                                             className="ml-2 h-fit self-end"
-                                            onClick={() => {
+                                            onClick={(event) => {
+                                                event.preventDefault()
                                                 setEditIndex(index)
                                                 setIsOpen(true)
                                             }}
@@ -236,7 +243,7 @@ export default function SelectProfessionalForm(props: SelectProfessionalFormProp
                                         >
                                             <TrashIcon className="text-white block h-5 w-5" aria-hidden="true" />
                                         </Button>
-                                    </>
+                                    </div>
                                 )}
                             </FormRowColumn>
                         </FormRow>
@@ -284,6 +291,33 @@ export default function SelectProfessionalForm(props: SelectProfessionalFormProp
                     )}
                 </>
             </IOSModal>
+
+            <WindowModal
+                isOpen={isOpenDelete}
+                setIsOpen={setIsOpenDelete}>
+                <p className="text-center">Deseja realmente deletar {professional.title}?</p>
+                <div className="flex mt-10 justify-between content-between">
+                    <Button
+                        onClick={(event) => {
+                            event.preventDefault()
+                            setIsOpenDelete(false)
+                        }}
+                    >
+                        Voltar
+                    </Button>
+                    <Button
+                        color="red"
+                        type="submit"
+                        onClick={(event) => {
+                            event.preventDefault()
+                            handleRemoveProfessional()
+                            setIsOpenDelete(false)
+                        }}
+                    >
+                        Excluir
+                    </Button>
+                </div>
+            </WindowModal>
         </>
     )
 }

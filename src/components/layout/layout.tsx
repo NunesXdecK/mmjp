@@ -26,6 +26,9 @@ const menus: LayoutMenuItem[] = [
             ]
     },
     {
+        name: "Orçamentos", href: "/budget", current: false, disabled: false,
+    },
+    {
         name: "Projetos", href: "/project", current: false, disabled: false,
     },
 ]

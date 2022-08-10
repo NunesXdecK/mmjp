@@ -36,6 +36,11 @@ export default function InputTextAutoComplete(props: InputTextAutoCompleteProps)
                             focus:ring-indigo-500 focus:border-indigo-500 
                         `
     let classNameLabel = "block text-sm font-medium text-gray-700"
+    let classNameHolder = "w-full"
+
+    if (props.holderClassName) {
+        classNameHolder = classNameHolder + " " + props.holderClassName
+    }
 
     if (props.isLoading) {
         classNameInput = classNameInput + STYLE_FOR_INPUT_LOADING
@@ -74,7 +79,7 @@ export default function InputTextAutoComplete(props: InputTextAutoCompleteProps)
     }
 
     return (
-        <div className={props.holderClassName}>
+        <div className={classNameHolder}>
             <label
                 htmlFor={props.id}
                 className={classNameLabel}>

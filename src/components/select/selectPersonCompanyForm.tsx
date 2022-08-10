@@ -14,6 +14,7 @@ import { Company, defaultCompany, defaultPerson, Person } from "../../interfaces
 import { handleMaskCNPJ, handleMaskCPF, handleRemoveCNPJMask, handleRemoveCPFMask } from "../../util/maskUtil";
 import { handleValidationOnlyNumbersNotNull, handleValidationOnlyTextNotNull } from "../../util/validationUtil";
 import FeedbackMessageText from "../modal/feedbackMessageText";
+import WindowModal from "../modal/windowModal";
 
 interface SelectPersonCompanyFormProps {
     id?: string,
@@ -39,12 +40,14 @@ interface SelectPersonCompanyFormProps {
 export default function SelectPersonCompanyForm(props: SelectPersonCompanyFormProps) {
     const [isFirst, setIsFirst] = useState(true)
     const [isOpen, setIsOpen] = useState(false)
+    const [isOpenDelete, setIsOpenDelete] = useState(false)
     const [isInvalid, setIsInvalid] = useState(false)
     const [isRegisterPerson, setIsRegisterPerson] = useState(false)
     const [isRegisterCompany, setIsRegisterCompany] = useState(false)
 
     const [editIndex, setEditIndex] = useState(-1)
 
+    const [element, setElement] = useState<Person | Company>({ name: "" })
     const [person, setPerson] = useState<Person>(defaultPerson)
     const [company, setCompany] = useState<Person>(defaultCompany)
 
@@ -155,8 +158,7 @@ export default function SelectPersonCompanyForm(props: SelectPersonCompanyFormPr
         }
     }
 
-    const handleRemove = (event, element) => {
-        event.preventDefault()
+    const handleRemove = () => {
         if (!props.isMultipleSelect) {
             props.onSetPersonsAndCompanies([])
         } else {
@@ -169,6 +171,7 @@ export default function SelectPersonCompanyForm(props: SelectPersonCompanyFormPr
                 }
             }
         }
+        setElement({ name: "" })
     }
 
     useEffect(() => {
@@ -202,7 +205,8 @@ export default function SelectPersonCompanyForm(props: SelectPersonCompanyFormPr
                                 className="w-fit"
                                 isLoading={props.isLoading}
                                 isDisabled={props.isLoading}
-                                onClick={() => {
+                                onClick={(event) => {
+                                    event.preventDefault()
                                     if (props.validationButton) {
                                         setIsInvalid(true)
                                         setTimeout(() => setIsInvalid((old) => false), 2000)
@@ -228,7 +232,11 @@ export default function SelectPersonCompanyForm(props: SelectPersonCompanyFormPr
 
                 {props.personsAndCompanies?.map((element: Person | Company, index) => (
                     <form key={index + element.dateInsertUTC}
-                        onSubmit={(event) => handleRemove(event, element)}>
+                        onSubmit={(event) => {
+                            event.preventDefault()
+                            setElement(element)
+                            setIsOpenDelete(true)
+                        }}>
                         <FormRow>
                             <FormRowColumn unit="3">
                                 <InputText
@@ -239,7 +247,7 @@ export default function SelectPersonCompanyForm(props: SelectPersonCompanyFormPr
                                     id={"person-company-name-" + index}
                                 />
                             </FormRowColumn>
-                            <FormRowColumn unit="3" className="flex flex-row">
+                            <FormRowColumn unit="3" className="flex flex-col sm:flex-row">
                                 {"cpf" in element && (
                                     <>
                                         <InputText
@@ -265,13 +273,14 @@ export default function SelectPersonCompanyForm(props: SelectPersonCompanyFormPr
                                     </>
                                 )}
                                 {!props.isLocked && (
-                                    <>
+                                    <div className="min-w-fit flex-col mt-4 sm:mt-0 self-end">
                                         <Button
                                             type="button"
                                             isLoading={props.isLoading}
                                             isDisabled={props.isLoading}
                                             className="ml-2 h-fit self-end"
-                                            onClick={() => {
+                                            onClick={(event) => {
+                                                event.preventDefault()
                                                 setEditIndex(index)
                                                 setIsOpen(true)
                                             }}
@@ -287,7 +296,7 @@ export default function SelectPersonCompanyForm(props: SelectPersonCompanyFormPr
                                         >
                                             <TrashIcon className="text-white block h-5 w-5" aria-hidden="true" />
                                         </Button>
-                                    </>
+                                    </div>
                                 )}
                             </FormRowColumn>
                         </FormRow>
@@ -367,6 +376,34 @@ export default function SelectPersonCompanyForm(props: SelectPersonCompanyFormPr
                     )}
                 </>
             </IOSModal>
+
+
+            <WindowModal
+                isOpen={isOpenDelete}
+                setIsOpen={setIsOpenDelete}>
+                <p className="text-center">Deseja realmente deletar {element.name}?</p>
+                <div className="flex mt-10 justify-between content-between">
+                    <Button
+                        onClick={(event) => {
+                            event.preventDefault()
+                            setIsOpenDelete(false)
+                        }}
+                    >
+                        Voltar
+                    </Button>
+                    <Button
+                        color="red"
+                        type="submit"
+                        onClick={(event) => {
+                            event.preventDefault()
+                            handleRemove()
+                            setIsOpenDelete(false)
+                        }}
+                    >
+                        Excluir
+                    </Button>
+                </div>
+            </WindowModal>
         </>
     )
 }

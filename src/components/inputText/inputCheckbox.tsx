@@ -2,8 +2,9 @@ import { STYLE_FOR_INPUT_LOADING, STYLE_FOR_INPUT_LOADING_TRANSPARENT } from "..
 
 interface InputCheckboxProps {
     id?: string,
-    value?: boolean,
     title?: string,
+    holderClassName?: string,
+    value?: boolean,
     isLoading?: boolean,
     isDisabled?: boolean,
     onSetText?: (string) => void,
@@ -17,13 +18,19 @@ export default function InputCheckbox(props: InputCheckboxProps) {
                     border-gray-300 rounded 
                         `
     let classNameLabel = "font-medium text-gray-700"
+    let classNameHolder = "w-full"
+
+    if (props.holderClassName) {
+        classNameHolder = classNameHolder + " " + props.holderClassName
+    }
+
     if (props.isLoading) {
         classNameInput = classNameInput + STYLE_FOR_INPUT_LOADING
         classNameLabel = classNameLabel + STYLE_FOR_INPUT_LOADING_TRANSPARENT
     }
 
     return (
-        <>
+        <div className={classNameHolder}>
             <div className="flex items-start">
                 <div className="flex items-center h-5">
                     <input
@@ -42,7 +49,7 @@ export default function InputCheckbox(props: InputCheckboxProps) {
                     <label htmlFor={props.id} className={classNameLabel}>{props.title}</label>
                 </div>
             </div>
-        </>
+        </div>
     )
 }
 

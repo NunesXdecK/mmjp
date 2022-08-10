@@ -5,12 +5,12 @@ import { db, PROFESSIONAL_COLLECTION_NAME, PROJECT_COLLECTION_NAME } from "../..
 
 export default async function handler(req, res) {
     const { method } = req
+    const projectCollection = collection(db, PROJECT_COLLECTION_NAME).withConverter(ProjectConversor)
+    const professionalCollection = collection(db, PROFESSIONAL_COLLECTION_NAME).withConverter(ProfessionalConversor)
 
     switch (method) {
         case 'GET':
             let resGET = { status: "ERROR", error: {}, message: "", professional: {} }
-            const projectCollection = collection(db, PROJECT_COLLECTION_NAME).withConverter(ProjectConversor)
-            const professionalCollection = collection(db, PROFESSIONAL_COLLECTION_NAME).withConverter(ProfessionalConversor)
             let professional: Professional = defaultProfessional
             let project: Project = defaultProject
             try {
@@ -20,10 +20,8 @@ export default async function handler(req, res) {
                 const querySnapshotProject = await getDocs(queryProject)
                 querySnapshotProject.forEach((doc) => {
                     const localProject: Project = doc.data()
-                    if ("id" in project.professional && project.professional.id.length) {
-                        if ("id" in localProject.professional && localProject.professional.id.length) {
-                            project = localProject
-                        }
+                    if ("id" in localProject.professional && localProject.professional.id.length) {
+                        project = localProject
                     }
                 })
                 if ("id" in project.professional && project.professional.id.length) {

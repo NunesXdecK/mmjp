@@ -47,7 +47,7 @@ export default function Persons() {
             feedbackMessage = { messages: ["Algo deu errado"], messageType: "ERROR" }
         }
         handleShowMessage(feedbackMessage)
-        setPersons([])
+        handleBackClick()
     }
 
     const handleNewClick = () => {

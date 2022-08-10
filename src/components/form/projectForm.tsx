@@ -14,6 +14,7 @@ import SelectPersonCompanyForm from "../select/selectPersonCompanyForm";
 import { handleProjectValidationForDB, handleServicesValidationForDB } from "../../util/validationUtil";
 import { defaultProject, Project, Service } from "../../interfaces/objectInterfaces";
 import { defaultElementFromBase, ElementFromBase, handlePrepareProjectForDB, handlePrepareServiceForDB } from "../../util/converterUtil";
+import { handleNewDateToUTC, handleUTCToDateShow } from "../../util/dateUtils";
 
 interface ProjectFormProps {
     title?: string,
@@ -109,6 +110,7 @@ export default function ProjectForm(props: ProjectFormProps) {
                     method: "POST",
                     body: JSON.stringify({ token: "tokenbemseguro", data: projectForDB }),
                 }).then((res) => res.json())
+                nowID = res.id
             } catch (e) {
                 if (isSave) {
                     feedbackMessage = { ...feedbackMessage, messages: ["Erro em salvar!"], messageType: "ERROR" }
@@ -154,7 +156,8 @@ export default function ProjectForm(props: ProjectFormProps) {
                     projectForDB = { ...projectForDB, id: res.id }
 
                     if (isMultiple) {
-                        setProject(defaultProject)
+                        setServices([])
+                        setProject({ ...defaultProject, dateString: handleUTCToDateShow(handleNewDateToUTC().toString()) })
                     }
 
                     if (!isMultiple && props.onAfterSave) {

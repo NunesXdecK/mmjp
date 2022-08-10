@@ -7,8 +7,8 @@ import InputTextArea from "./inputTextArea"
 import FormRowColumn from "../form/formRowColumn"
 import { handleJSONcheck } from "../../util/validationUtil"
 import { JSON_MARK } from "../../util/patternValidationUtil"
-import { defaultImmobilePoint, ImmobilePoint } from "../../interfaces/objectInterfaces"
 import { handleNewDateToUTC, handleUTCToDateShow } from "../../util/dateUtils"
+import { defaultImmobilePoint, ImmobilePoint } from "../../interfaces/objectInterfaces"
 
 interface InputImmobilePointsProps {
     id?: string,

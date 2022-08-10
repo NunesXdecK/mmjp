@@ -5,14 +5,14 @@ import { db, PROJECT_COLLECTION_NAME } from "../../../db/firebaseDB"
 
 export default async function handler(req, res) {
     const { method } = req
+    const projectCollection = collection(db, PROJECT_COLLECTION_NAME).withConverter(ProjectConversor)
 
     switch (method) {
         case 'GET':
             let resGET = { status: "ERROR", error: {}, message: "", list: [] }
-            const projectCollection = collection(db, PROJECT_COLLECTION_NAME).withConverter(ProjectConversor)
             let list = []
             try {
-                const queryProjects = query(projectCollection, where("status", "==", "NORMAL"))
+                const queryProjects = query(projectCollection, where("status", "==", "ORÇAMENTO"))
                 const querySnapshot = await getDocs(queryProjects)
                 querySnapshot.forEach((doc) => {
                     list = [...list, doc.data()]

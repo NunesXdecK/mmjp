@@ -213,9 +213,9 @@ export default function ServiceDataForm(props: ServiceDataFormProps) {
                         isDisabled={props.isForDisable}
                         onSetText={handleSetServiceTitle}
                         value={props.services[index].title}
-                        id={"title-" + index + "-" + props.id}
-                        onValidate={handleChangeFormValidation}
                         validationMessage="Titulo em branco."
+                        onValidate={handleChangeFormValidation}
+                        id={"title-service-" + index + "-" + props.id}
                         sugestions={["Ambiental", "Desmembramento", "Georeferenciamento", "União", "Licenciamento"]}
                     />
                 </FormRowColumn>
@@ -228,7 +228,7 @@ export default function ServiceDataForm(props: ServiceDataFormProps) {
                         isDisabled={props.isForDisable}
                         onSetText={handleSetServiceValue}
                         value={props.services[index].value}
-                        id={"value-" + index + "-" + props.id}
+                        id={"value-service-" + index + "-" + props.id}
                         onValidate={handleChangeFormValidation}
                     />
                 </FormRowColumn>
@@ -241,7 +241,7 @@ export default function ServiceDataForm(props: ServiceDataFormProps) {
                         onSetText={handleSetServiceQuantity}
                         value={props.services[index].quantity}
                         onValidate={handleChangeFormValidation}
-                        id={"quantity-" + index + "-" + props.id}
+                        id={"quantity-service-" + index + "-" + props.id}
                     />
                 </FormRowColumn>
                 <FormRowColumn unit="2" className="flex flex-col sm:flex-row">
@@ -253,7 +253,7 @@ export default function ServiceDataForm(props: ServiceDataFormProps) {
                         validation={NUMBER_MARK}
                         onSetText={setValueTotal}
                         isLoading={props.isLoading}
-                        id={"total-" + index + "-" + props.id}
+                        id={"total-service-" + index + "-" + props.id}
                     />
 
                     {props.onDelete && (
@@ -286,14 +286,14 @@ export default function ServiceDataForm(props: ServiceDataFormProps) {
                                 isDisabled={props.isForDisable}
                                 onSetText={handleSetServiceDate}
                                 onValidate={handleChangeFormValidation}
-                                id={"date-due-" + index + "-" + props.id}
+                                id={"date-due-service-" + index + "-" + props.id}
                                 value={props.services[index].dateString}
                             />
                         </FormRowColumn>
 
                         <FormRowColumn unit="2">
                             <InputText
-                                id="status"
+                                id="status-service"
                                 isDisabled={true}
                                 value={props.services[index].status}
                                 title="Status"
@@ -308,7 +308,7 @@ export default function ServiceDataForm(props: ServiceDataFormProps) {
                                 isLoading={props.isLoading}
                                 isDisabled={props.isForDisable}
                                 onSetText={handleSetServiceDescription}
-                                id={"description-" + index + "-" + props.id}
+                                id={"description-service-" + index + "-" + props.id}
                                 value={props.services[index].description}
                             />
                         </FormRowColumn>
@@ -328,8 +328,10 @@ export default function ServiceDataForm(props: ServiceDataFormProps) {
                     subtitle="Adicione o profissional"
                     onShowMessage={props.onShowMessage}
                     buttonTitle="Adicionar profissional"
+                    validationButton={professionals.length === 1}
                     onSetProfessionals={handleSetServiceProfessional}
                     validationMessage="Esta pessoa já é um profissional"
+                    validationMessageButton="Você não pode mais adicionar profissionais"
                 />
 
                 <SelectImmobileForm

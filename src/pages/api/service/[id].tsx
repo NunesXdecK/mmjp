@@ -1,5 +1,5 @@
 import { collection, doc, getDoc, getDocs, query, where } from "firebase/firestore"
-import { Immobile, Professional, Service } from "../../../interfaces/objectInterfaces"
+import { Immobile, Professional, Service, ServiceStage } from "../../../interfaces/objectInterfaces"
 import { ImmobileConversor, ProfessionalConversor, ServiceConversor, ServicePaymentConversor, ServiceStageConversor } from "../../../db/converters"
 import { db, SERVICE_COLLECTION_NAME, PROFESSIONAL_COLLECTION_NAME, IMMOBILE_COLLECTION_NAME, SERVICE_PAYMENT_COLLECTION_NAME, SERVICE_STAGE_COLLECTION_NAME } from "../../../db/firebaseDB"
 
@@ -28,11 +28,26 @@ export default async function handler(req, res) {
                     let listServiceStage = []
                     const queryServiceStage = query(serviceStageCollection, where("service", "==", docRef))
                     const queryServiceStageSnapshot = await getDocs(queryServiceStage)
-                    queryServiceStageSnapshot.forEach((doc) => {
-                        listServiceStage = [...listServiceStage, doc.data()]
+                    queryServiceStageSnapshot.forEach(async (docRef) => {
+                        listServiceStage = [...listServiceStage, docRef.data()]
                     })
                     if (listServiceStage && listServiceStage?.length > 0) {
-                        service = { ...service, serviceStages: listServiceStage }
+                        let listServiceWithResp = []
+                        await Promise.all(
+                            listServiceStage.map(async (element, index) => {
+                                let data: ServiceStage = element
+                                if ("id" in data.responsible && data.responsible.id.length) {
+                                    const professionalDocRef = doc(professionalCollection, data.responsible?.id)
+                                    let professional: Professional = (await getDoc(professionalDocRef)).data()
+                                    if ("id" in professional && professional?.id.length) {
+                                        data = { ...data, responsible: professional }
+                                    }
+                                }
+                                listServiceWithResp = [...listServiceWithResp, data]
+                            })
+
+                        )
+                        service = { ...service, serviceStages: listServiceWithResp }
                     }
                     let listServicePayment = []
                     const queryServicePayment = query(servicePaymentCollection, where("service", "==", docRef))

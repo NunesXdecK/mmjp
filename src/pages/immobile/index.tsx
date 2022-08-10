@@ -45,7 +45,7 @@ export default function Immobiles() {
             feedbackMessage = { messages: ["Algo deu errado"], messageType: "ERROR" }
         }
         handleShowMessage(feedbackMessage)
-        setImmobiles([])
+        handleBackClick()
     }
 
     const handleNewClick = () => {

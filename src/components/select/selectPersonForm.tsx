@@ -12,6 +12,7 @@ import { PencilAltIcon, TrashIcon } from "@heroicons/react/outline";
 import { handleMaskCPF, handleRemoveCPFMask } from "../../util/maskUtil";
 import { defaultPerson, Person } from "../../interfaces/objectInterfaces";
 import FeedbackMessageText from "../modal/feedbackMessageText";
+import WindowModal from "../modal/windowModal";
 
 interface SelectPersonFormProps {
     id?: string,
@@ -37,6 +38,7 @@ interface SelectPersonFormProps {
 export default function SelectPersonForm(props: SelectPersonFormProps) {
     const [isFirst, setIsFirst] = useState(true)
     const [isOpen, setIsOpen] = useState(false)
+    const [isOpenDelete, setIsOpenDelete] = useState(false)
     const [isInvalid, setIsInvalid] = useState(false)
     const [isRegister, setIsRegister] = useState(false)
 
@@ -120,8 +122,7 @@ export default function SelectPersonForm(props: SelectPersonFormProps) {
         }
     }
 
-    const handleRemovePerson = (event, person) => {
-        event.preventDefault()
+    const handleRemovePerson = () => {
         if (!props.isMultipleSelect) {
             props.onSetPersons([])
         } else {
@@ -134,6 +135,7 @@ export default function SelectPersonForm(props: SelectPersonFormProps) {
                 }
             }
         }
+        setPerson(defaultPerson)
     }
 
     useEffect(() => {
@@ -162,11 +164,12 @@ export default function SelectPersonForm(props: SelectPersonFormProps) {
                     <FormRow>
                         <FormRowColumn unit="6" className="flex flex-col items-end justify-self-end">
                             <Button
-                                type="submit"
+                                type="button"
                                 className="w-fit"
                                 isLoading={props.isLoading}
                                 isDisabled={props.isLoading}
-                                onClick={() => {
+                                onClick={(event) => {
+                                    event.preventDefault()
                                     if (props.validationButton) {
                                         setIsInvalid(true)
                                         setTimeout(() => setIsInvalid((old) => false), 2000)
@@ -192,7 +195,11 @@ export default function SelectPersonForm(props: SelectPersonFormProps) {
 
                 {props.persons?.map((element, index) => (
                     <form key={index + element.dateInsertUTC + element.cpf}
-                        onSubmit={(event) => handleRemovePerson(event, element)}>
+                        onSubmit={(event) => {
+                            event.preventDefault()
+                            setPerson(element)
+                            setIsOpenDelete(true)
+                        }}>
                         <FormRow>
                             <FormRowColumn unit="3">
                                 <InputText
@@ -204,7 +211,7 @@ export default function SelectPersonForm(props: SelectPersonFormProps) {
                                 />
                             </FormRowColumn>
 
-                            <FormRowColumn unit="3" className="flex flex-row">
+                            <FormRowColumn unit="3" className="flex flex-col sm:flex-row">
                                 <InputText
                                     mask="cpf"
                                     title="CPF"
@@ -215,13 +222,14 @@ export default function SelectPersonForm(props: SelectPersonFormProps) {
                                 />
 
                                 {!props.isLocked && (
-                                    <>
+                                    <div className="min-w-fit flex-col mt-4 sm:mt-0 self-end">
                                         <Button
                                             type="button"
                                             isLoading={props.isLoading}
                                             isDisabled={props.isLoading}
                                             className="ml-2 h-fit self-end"
-                                            onClick={() => {
+                                            onClick={(event) => {
+                                                event.preventDefault()
                                                 setEditIndex(index)
                                                 setIsOpen(true)
                                             }}
@@ -237,7 +245,7 @@ export default function SelectPersonForm(props: SelectPersonFormProps) {
                                         >
                                             <TrashIcon className="text-white block h-5 w-5" aria-hidden="true" />
                                         </Button>
-                                    </>
+                                    </div>
                                 )}
                             </FormRowColumn>
                         </FormRow>
@@ -289,6 +297,33 @@ export default function SelectPersonForm(props: SelectPersonFormProps) {
                     )}
                 </>
             </IOSModal>
+
+            <WindowModal
+                isOpen={isOpenDelete}
+                setIsOpen={setIsOpenDelete}>
+                <p className="text-center">Deseja realmente deletar {person.name}?</p>
+                <div className="flex mt-10 justify-between content-between">
+                    <Button
+                        onClick={(event) => {
+                            event.preventDefault()
+                            setIsOpenDelete(false)
+                        }}
+                    >
+                        Voltar
+                    </Button>
+                    <Button
+                        color="red"
+                        type="submit"
+                        onClick={(event) => {
+                            event.preventDefault()
+                            handleRemovePerson()
+                            setIsOpenDelete(false)
+                        }}
+                    >
+                        Excluir
+                    </Button>
+                </div>
+            </WindowModal>
         </>
     )
 }

@@ -1,18 +1,17 @@
 import { useState } from "react";
 import Button from "../button/button";
+import FormRow from "../form/formRow";
 import InputText from "../inputText/inputText";
 import WindowModal from "../modal/windowModal";
-import { ChevronDownIcon, ChevronRightIcon, TrashIcon } from "@heroicons/react/outline";
-import InputCheckbox from "../inputText/inputCheckbox";
+import FormRowColumn from "../form/formRowColumn";
 import InputTextArea from "../inputText/inputTextArea";
 import { NOT_NULL_MARK } from "../../util/patternValidationUtil";
 import { ServiceStage } from "../../interfaces/objectInterfaces";
+import ScrollDownTransition from "../animation/scrollDownTransition";
 import SelectProfessionalForm from "../select/selectProfessionalForm";
 import InputTextAutoComplete from "../inputText/inputTextAutocomplete";
 import { handleServiceStageValidationForDB } from "../../util/validationUtil";
-import FormRow from "../form/formRow";
-import FormRowColumn from "../form/formRowColumn";
-import ScrollDownTransition from "../animation/scrollDownTransition";
+import { ChevronDownIcon, ChevronRightIcon, TrashIcon } from "@heroicons/react/outline";
 
 interface ServiceStageDataFormProps {
     id?: string,
@@ -106,7 +105,7 @@ export default function ServiceStageDataForm(props: ServiceStageDataFormProps) {
                         isDisabled={props.isForDisable}
                         onSetText={handleSetServiceStageDate}
                         onValidate={handleChangeFormValidation}
-                        id={"date-due-" + index + "-" + props.id}
+                        id={"date-due-stages-" + index + "-" + props.id}
                         value={props.serviceStages[index].dateString}
                     />
 
@@ -131,7 +130,7 @@ export default function ServiceStageDataForm(props: ServiceStageDataFormProps) {
                     <FormRow>
                         <FormRowColumn unit="2">
                             <InputText
-                                id="status"
+                                id="status-stages"
                                 isDisabled={true}
                                 value={props.serviceStages[index].status}
                                 title="Status"
@@ -146,7 +145,7 @@ export default function ServiceStageDataForm(props: ServiceStageDataFormProps) {
                                 isLoading={props.isLoading}
                                 isDisabled={props.isForDisable}
                                 onSetText={handleSetServiceStageDescription}
-                                id={"description-" + index + "-" + props.id}
+                                id={"description-stages-" + index + "-" + props.id}
                                 value={props.serviceStages[index].description}
                             />
                         </FormRowColumn>
@@ -164,8 +163,10 @@ export default function ServiceStageDataForm(props: ServiceStageDataFormProps) {
                     professionals={professionals}
                     onShowMessage={props.onShowMessage}
                     buttonTitle="Adicionar profissional"
+                    validationButton={professionals.length === 1}
                     validationMessage="Esta pessoa já é um profissional"
                     onSetProfessionals={handleSetServiceStageProfessional}
+                    validationMessageButton="Você não pode mais adicionar profissionais"
                 />
             </ScrollDownTransition>
 

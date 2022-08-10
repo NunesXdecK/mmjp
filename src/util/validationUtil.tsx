@@ -168,7 +168,7 @@ export const handleProjectValidationForDB = (project: Project) => {
         }
     })
 
-    validation = { ...validation, validation: nameCheck && clientsCheck && clientsOnBaseCheck }
+    validation = { ...validation, validation: nameCheck && professionalCheck && clientsCheck && clientsOnBaseCheck }
     return validation
 }
 

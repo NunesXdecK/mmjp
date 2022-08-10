@@ -64,7 +64,7 @@ export default function ServicePaymentDataForm(props: ServicePaymentDataFormProp
                         isDisabled={props.isForDisable}
                         sugestions={["Entrada", "Parcela"]}
                         onValidate={handleChangeFormValidation}
-                        id={"description-" + index + "-" + props.id}
+                        id={"description-payment" + index + "-" + props.id}
                         onSetText={handleSetServicePaymentDescription}
                         value={props.servicePayments[index].description}
                         validationMessage="A descrição não pode ficar em branco."
@@ -78,7 +78,7 @@ export default function ServicePaymentDataForm(props: ServicePaymentDataFormProp
                         validation={NUMBER_MARK}
                         isLoading={props.isLoading}
                         isDisabled={props.isForDisable}
-                        id={"value-" + index + "-" + props.id}
+                        id={"value-payment-" + index + "-" + props.id}
                         onValidate={handleChangeFormValidation}
                         onSetText={handleSetServicePaymentValue}
                         value={props.servicePayments[index].value}
@@ -95,7 +95,7 @@ export default function ServicePaymentDataForm(props: ServicePaymentDataFormProp
                         isDisabled={props.isForDisable}
                         onSetText={handleSetServicePaymentDate}
                         onValidate={handleChangeFormValidation}
-                        id={"date-due-" + index + "-" + props.id}
+                        id={"date-due-payment-" + index + "-" + props.id}
                         value={props.servicePayments[index].dateString}
                     />
 

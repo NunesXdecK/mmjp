@@ -510,7 +510,7 @@ export const handlePrepareServiceForShow = (service: Service) => {
         ...service,
         total: handleMountNumberCurrency((handleValueStringToFloat(service.value) * parseInt(service.quantity)).toString(), ".", ",", 3, 2),
         value: handleMountNumberCurrency((service.value).toString(), ".", ",", 3, 2),
-        serviceStage: handlePrepareServicePaymentStageForShow(service.serviceStages),
+        serviceStages: handlePrepareServicePaymentStageForShow(service.serviceStages),
         servicePayments: handlePrepareServicePaymentStageForShow(service.servicePayments),
     }
 }

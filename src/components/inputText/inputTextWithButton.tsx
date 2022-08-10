@@ -7,6 +7,7 @@ interface InputTextWithButtonProps {
     id?: string,
     title?: string,
     value?: string,
+    holderClassName?: string,
     index?: number,
     children?: any,
     isLoading?: boolean,
@@ -29,13 +30,19 @@ export default function InputTextWithButton(props: InputTextWithButtonProps) {
                             inline-flex items-center 
                             border border-l-0 border-gray-300
                         `
+    let classNameHolder = "w-full"
+
+    if (props.holderClassName) {
+        classNameHolder = classNameHolder + " " + props.holderClassName
+    }
+
     if (props.isLoading) {
         classNameInput = classNameInput + STYLE_FOR_INPUT_LOADING
         classNameButton = classNameButton + STYLE_FOR_INPUT_LOADING_TRANSPARENT
     }
 
     return (
-        <form onSubmit={(event) => {
+        <form className={classNameHolder} onSubmit={(event) => {
             props.onClick(event, text)
         }}>
             <FormRow>
