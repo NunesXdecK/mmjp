@@ -86,9 +86,11 @@ export const handlePreparePersonForShow = (person: Person) => {
     }
 
     let telephonesWithMask = []
-    person?.telephones?.map((element, index) => {
-        telephonesWithMask = [...telephonesWithMask, handleMaskTelephone(element)]
-    })
+    if (person.telephones && person.telephones.length) {
+        person?.telephones?.map((element, index) => {
+            telephonesWithMask = [...telephonesWithMask, handleMaskTelephone(element)]
+        })
+    }
 
     person = {
         ...person
@@ -112,10 +114,11 @@ export const handlePreparePersonForDB = (person: Person) => {
     }
 
     let telephonesWithNoMask = []
-    person.telephones?.map((element, index) => {
-        telephonesWithNoMask = [...telephonesWithNoMask, handleRemoveTelephoneMask(element)]
-    })
-
+    if (person.telephones && person.telephones.length) {
+        person.telephones?.map((element, index) => {
+            telephonesWithNoMask = [...telephonesWithNoMask, handleRemoveTelephoneMask(element)]
+        })
+    }
     if (person.oldData) {
         delete person.oldData
     }
@@ -134,15 +137,18 @@ export const handlePrepareCompanyForShow = (company: Company) => {
     }
 
     let telephonesWithMask = []
-    company.telephones?.map((element, index) => {
-        telephonesWithMask = [...telephonesWithMask, handleMaskTelephone(element)]
-    })
+    if (company.telephones && company.telephones.length) {
+        company.telephones?.map((element, index) => {
+            telephonesWithMask = [...telephonesWithMask, handleMaskTelephone(element)]
+        })
+    }
 
     let personsWithMask = []
-    company.owners?.map((element, index) => {
-        personsWithMask = [...personsWithMask, handlePreparePersonForShow(element)]
-    })
-
+    if (company.owners && company.owners.length) {
+        company.owners?.map((element, index) => {
+            personsWithMask = [...personsWithMask, handlePreparePersonForShow(element)]
+        })
+    }
     company = {
         ...company
         , cnpj: handleMaskCNPJ(company.cnpj)
@@ -166,16 +172,20 @@ export const handlePrepareCompanyForDB = (company: Company) => {
     }
 
     let telephonesWithNoMask = []
-    company.telephones?.map((element, index) => {
-        telephonesWithNoMask = [...telephonesWithNoMask, handleRemoveTelephoneMask(element)]
-    })
+    if (company.telephones && company.telephones.length) {
+        company.telephones?.map((element, index) => {
+            telephonesWithNoMask = [...telephonesWithNoMask, handleRemoveTelephoneMask(element)]
+        })
+    }
 
     let owners = []
-    company.owners.map((element, index) => {
-        if ("id" in element && element.id.length) {
-            owners = [...owners, { id: element.id }]
-        }
-    })
+    if (company.owners && company.owners.length) {
+        company.owners?.map((element, index) => {
+            if ("id" in element && element.id.length) {
+                owners = [...owners, { id: element.id }]
+            }
+        })
+    }
 
     if (company.oldData) {
         delete company.oldData
@@ -224,15 +234,17 @@ export const handlePrepareImmobileForDB = (immobile: Immobile) => {
         delete immobile.oldData
     }
     let owners = []
-    immobile.owners.map((element, index) => {
-        if ("id" in element && element.id.length) {
-            if ("cpf" in element) {
-                owners = [...owners, { id: element.id, cpf: "" }]
-            } else if ("cnpj" in element) {
-                owners = [...owners, { id: element.id, cnpj: "" }]
+    if (immobile.owners && immobile.owners.length) {
+        immobile.owners?.map((element, index) => {
+            if ("id" in element && element.id.length) {
+                if ("cpf" in element) {
+                    owners = [...owners, { id: element.id, cpf: "" }]
+                } else if ("cnpj" in element) {
+                    owners = [...owners, { id: element.id, cnpj: "" }]
+                }
             }
-        }
-    })
+        })
+    }
     immobile = {
         ...immobile,
         owners: owners,
@@ -267,15 +279,17 @@ export const handlePrepareProjectForDB = (project: Project) => {
         project = { ...project, professional: {} }
     }
     let clients = []
-    project.clients.map((element, index) => {
-        if ("id" in element && element.id.length) {
-            if ("cpf" in element) {
-                clients = [...clients, { id: element.id, cpf: "" }]
-            } else if ("cnpj" in element) {
-                clients = [...clients, { id: element.id, cnpj: "" }]
+    if (project.clients && project.clients.length) {
+        project.clients?.map((element, index) => {
+            if ("id" in element && element.id.length) {
+                if ("cpf" in element) {
+                    clients = [...clients, { id: element.id, cpf: "" }]
+                } else if ("cnpj" in element) {
+                    clients = [...clients, { id: element.id, cnpj: "" }]
+                }
             }
-        }
-    })
+        })
+    }
     if (project.dateString) {
         delete project.dateString
     }
@@ -326,33 +340,41 @@ export const handlePrepareServiceForDB = (service: Service) => {
         service = { ...service, project: {} }
     }
     let immobilesTarget = []
-    service.immobilesTarget.map((element, index) => {
-        if ("id" in element && element.id.length) {
-            immobilesTarget = [...immobilesTarget, { id: element.id }]
-        }
-    })
+    if (service.immobilesTarget && service.immobilesTarget.length) {
+        service.immobilesTarget?.map((element, index) => {
+            if ("id" in element && element.id.length) {
+                immobilesTarget = [...immobilesTarget, { id: element.id }]
+            }
+        })
+    }
     let immobilesOrigin = []
-    service.immobilesOrigin.map((element, index) => {
-        if ("id" in element && element.id.length) {
-            immobilesOrigin = [...immobilesOrigin, { id: element.id }]
-        }
-    })
+    if (service.immobilesOrigin && service.immobilesOrigin.length) {
+        service.immobilesOrigin?.map((element, index) => {
+            if ("id" in element && element.id.length) {
+                immobilesOrigin = [...immobilesOrigin, { id: element.id }]
+            }
+        })
+    }
     let serviceStages = []
-    service.serviceStages.map((element, index) => {
-        let serviceStage: ServiceStage = handlePrepareServiceStageForDB(element)
-        if ("id" in serviceStage && serviceStage.id.length) {
-            serviceStage = { ...serviceStage, id: serviceStage.id }
-        }
-        serviceStages = [...serviceStages, serviceStage]
-    })
+    if (service.serviceStages && service.serviceStages.length) {
+        service.serviceStages?.map((element, index) => {
+            let serviceStage: ServiceStage = handlePrepareServiceStageForDB(element)
+            if ("id" in serviceStage && serviceStage.id.length) {
+                serviceStage = { ...serviceStage, id: serviceStage.id }
+            }
+            serviceStages = [...serviceStages, serviceStage]
+        })
+    }
     let servicePayments = []
-    service.servicePayments.map((element, index) => {
-        let servicePayment: ServicePayment = handlePrepareServicePaymentForDB(element)
-        if ("id" in servicePayment && servicePayment.id.length) {
-            servicePayment = { ...servicePayment, id: servicePayment.id }
-        }
-        servicePayments = [...servicePayments, servicePayment]
-    })
+    if (service.servicePayments && service.servicePayments.length) {
+        service.servicePayments?.map((element, index) => {
+            let servicePayment: ServicePayment = handlePrepareServicePaymentForDB(element)
+            if ("id" in servicePayment && servicePayment.id.length) {
+                servicePayment = { ...servicePayment, id: servicePayment.id }
+            }
+            servicePayments = [...servicePayments, servicePayment]
+        })
+    }
     {/*
     let serviceStages = []
     service.serviceStages.map((element, index) => {
@@ -454,30 +476,32 @@ export const handlePrepareServicePaymentForDB = (servicePayment: ServicePayment)
 
 export const handlePrepareServicePaymentStageForDB = (service: Service, list: (ServicePayment | ServiceStage)[]) => {
     let elements = []
-    list.map((element: (ServicePayment | ServiceStage), index) => {
-        if ("title" in element) {
-            element = { ...element, title: element.title?.trim() }
-        }
-
-        if (element.dateInsertUTC === 0) {
-            element = { ...element, dateInsertUTC: handleNewDateToUTC() }
-        } else {
-            element = { ...element, dateLastUpdateUTC: handleNewDateToUTC() }
-        }
-
-        if (element.dateString?.length === 10) {
-            const dateText = handleRemoveDateMask(element.dateString)
-            if (dateText.length === 8) {
-                const day = dateText.substring(0, 2)
-                const month = dateText.substring(2, 4)
-                const year = dateText.substring(4, dateText.length)
-                const utcString = new Date(month + " " + day + " " + year).toUTCString()
-                element = { ...element, dateDue: Date.parse(utcString) }
-                delete element.dateString
+    if (list && list.length) {
+        list?.map((element: (ServicePayment | ServiceStage), index) => {
+            if ("title" in element) {
+                element = { ...element, title: element.title?.trim() }
             }
-        }
-        elements = [...elements, { ...element, service: service, description: element.description?.trim(), index: index }]
-    })
+
+            if (element.dateInsertUTC === 0) {
+                element = { ...element, dateInsertUTC: handleNewDateToUTC() }
+            } else {
+                element = { ...element, dateLastUpdateUTC: handleNewDateToUTC() }
+            }
+
+            if (element.dateString?.length === 10) {
+                const dateText = handleRemoveDateMask(element.dateString)
+                if (dateText.length === 8) {
+                    const day = dateText.substring(0, 2)
+                    const month = dateText.substring(2, 4)
+                    const year = dateText.substring(4, dateText.length)
+                    const utcString = new Date(month + " " + day + " " + year).toUTCString()
+                    element = { ...element, dateDue: Date.parse(utcString) }
+                    delete element.dateString
+                }
+            }
+            elements = [...elements, { ...element, service: service, description: element.description?.trim(), index: index }]
+        })
+    }
     return elements
 }
 
@@ -494,7 +518,7 @@ export const handlePrepareServiceForShow = (service: Service) => {
 export const handlePrepareServicePaymentStageForShow = (list: (ServicePayment | ServiceStage)[]) => {
     let localList = []
     if (list && list.length > 0) {
-        list.map((element: (ServicePayment | ServiceStage), index) => {
+        list?.map((element: (ServicePayment | ServiceStage), index) => {
             if ("value" in element) {
                 element = { ...element, value: handleMountNumberCurrency((element.value).toString(), ".", ",", 3, 2) }
             }

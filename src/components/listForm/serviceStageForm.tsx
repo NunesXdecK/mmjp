@@ -74,7 +74,7 @@ export default function ServiceStageForm(props: ServiceStageFormProps) {
                         isDisabled={props.isLoading}
                         onClick={() => {
                             if (props.onSetServiceStages) {
-                                props.onSetServiceStages([...props.serviceStages, { ...defaultServiceStage, dateString: handleUTCToDateShow(handleNewDateToUTC() + ""), index: props.serviceStages?.length }])
+                                props.onSetServiceStages([...props.serviceStages ?? [], { ...defaultServiceStage, dateString: handleUTCToDateShow(handleNewDateToUTC() + ""), index: props.serviceStages?.length }])
                             }
                         }}>
                         Adicionar etapa

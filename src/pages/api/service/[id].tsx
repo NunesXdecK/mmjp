@@ -54,6 +54,7 @@ export default async function handler(req, res) {
                                 }
                             }
                         }))
+                        service = { ...service, immobilesOrigin: immobilesOrigin }
                     }
                     if (service.immobilesTarget && service.immobilesTarget?.length > 0) {
                         let immobilesTarget = []
@@ -66,6 +67,7 @@ export default async function handler(req, res) {
                                 }
                             }
                         }))
+                        service = { ...service, immobilesTarget: immobilesTarget }
                     }
                     resGET = { ...resGET, status: "SUCCESS", data: service }
                 } else {

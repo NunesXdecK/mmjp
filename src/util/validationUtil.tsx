@@ -244,13 +244,15 @@ export const handleServicesValidationForDB = (services: Service[], isForValidImm
 export const handleServiceStagesValidationForDB = (serviceStages: ServiceStage[], isForValidService?) => {
     let validation: ValidationReturn = { validation: false, messages: [] }
     let stagesCheck = true
-    serviceStages.map((element, index) => {
-        let validationService = handleServiceStageValidationForDB(element, isForValidService)
-        validation = { ...validation, messages: [...validation.messages, ...validationService.messages] }
-        if (stagesCheck) {
-            stagesCheck = validationService.validation
-        }
-    })
+    if (serviceStages && serviceStages.length) {
+        serviceStages.map((element, index) => {
+            let validationService = handleServiceStageValidationForDB(element, isForValidService)
+            validation = { ...validation, messages: [...validation.messages, ...validationService.messages] }
+            if (stagesCheck) {
+                stagesCheck = validationService.validation
+            }
+        })
+    }
     validation = {
         ...validation,
         validation: stagesCheck,

@@ -4,7 +4,7 @@ import List from "../../components/list/list"
 import Layout from "../../components/layout/layout"
 import ProjectForm from "../../components/form/projectForm"
 import { handleNewDateToUTC, handleUTCToDateShow } from "../../util/dateUtils"
-import { Company, defaultProfessional, defaultProject, Person, Professional, Project, Service } from "../../interfaces/objectInterfaces"
+import { Company, defaultProfessional, defaultProject, defaultService, Person, Professional, Project, Service } from "../../interfaces/objectInterfaces"
 import FeedbackMessageModal, { defaultFeedbackMessage, FeedbackMessage } from "../../components/modal/feedbackMessageModal"
 import { COMPANY_COLLECTION_NAME, PERSON_COLLECTION_NAME } from "../../db/firebaseDB"
 import { handlePrepareServiceForShow } from "../../util/converterUtil"
@@ -120,12 +120,17 @@ localProject = {
                         if ("id" in element && element.id.length) {
                             let service: Service = await fetch("api/service/" + element.id).then((res) => res.json()).then((res) => res.data)
                             if ("id" in service && service.id.length) {
-                                localServices = [...localServices, handlePrepareServiceForShow(service)]
+                                localServices = [...localServices, { ...defaultService, ...handlePrepareServiceForShow(service) }]
                             }
                         }
                     })
                 )
             }
+            localServices = localServices.sort((elementOne: Service, elementTwo: Service) => {
+                let indexOne = elementOne.index
+                let indexTwo = elementTwo.index
+                return indexOne - indexTwo
+            })
         } catch (err) {
             console.error(err)
         }

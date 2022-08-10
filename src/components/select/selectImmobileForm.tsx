@@ -80,7 +80,7 @@ export default function SelectImmobileForm(props: SelectImmobileFormProps) {
     }
 
     const handleAdd = (immobile) => {
-        let localImmobiles = props.immobiles
+        let localImmobiles = props.immobiles ?? []
         let canAdd = true
 
         localImmobiles?.map((element, index) => {

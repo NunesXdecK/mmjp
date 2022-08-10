@@ -260,11 +260,10 @@ export const handleValueStringToFloat = (text: string) => {
         text = text.replaceAll(".", "")
         if (text.includes(",")) {
             text = text.replaceAll(",", ".")
-        } else if (text.substring(text.length - 2, text.length) !== "00") {
+        } else if (text.length > 2 && text.substring(text.length - 2, text.length) !== "00") {
             text = text.substring(0, text.length - 2) + "." + text.substring(text.length - 2, text.length)
         }
         returnFloat = parseFloat(text)
-        //returnFloat = (Math.round(returnFloat * 100) / 100).toFixed(2)
     }
     return returnFloat
 }

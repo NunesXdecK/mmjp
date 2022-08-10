@@ -8,7 +8,7 @@ import ServiceStageForm from "./serviceStageForm";
 import ServicePaymentForm from "./servicePaymentForm";
 import InputTextArea from "../inputText/inputTextArea";
 import SelectImmobileForm from "../select/selectImmobileForm";
-import { handleMountNumberCurrency } from "../../util/maskUtil";
+import { handleMountNumberCurrency, handleValueStringToFloat } from "../../util/maskUtil";
 import ScrollDownTransition from "../animation/scrollDownTransition";
 import SelectProfessionalForm from "../select/selectProfessionalForm";
 import InputTextAutoComplete from "../inputText/inputTextAutocomplete";
@@ -17,6 +17,7 @@ import { NOT_NULL_MARK, NUMBER_MARK } from "../../util/patternValidationUtil";
 import { handleNewDateToUTC, handleUTCToDateShow } from "../../util/dateUtils";
 import { ChevronDownIcon, ChevronRightIcon, TrashIcon } from "@heroicons/react/outline";
 import { defaultServicePayment, Service, ServicePayment, ServiceStage } from "../../interfaces/objectInterfaces";
+import { version } from "process";
 
 interface ServiceDataFormProps {
     id?: string,
@@ -38,10 +39,10 @@ export default function ServiceDataForm(props: ServiceDataFormProps) {
     const [isFormOpen, setIsFormOpen] = useState(false)
     const [isFormValid, setIsFormValid] = useState(false)
     const [index, setIndex] = useState(props.index ?? 0)
-
     const [valueTotal, setValueTotal] = useState(props.services[index].total ?? "0")
 
-    const [professionals, setProfessionals] = useState(props.services[index]?.id ? [props.services[index]] : [])
+    const [professionals, setProfessionals] = useState(("id" in props.services[index]?.responsible
+        && props.services[index].responsible.id.length) ? [props.services[index].responsible] : [])
 
     const handleSetServiceTitle = (value) => { handleSetText({ ...props.services[index], title: value }) }
     const handleSetServiceDate = (value) => { handleSetText({ ...props.services[index], dateString: value }) }
@@ -77,8 +78,11 @@ export default function ServiceDataForm(props: ServiceDataFormProps) {
         let quantityFinal = 0
         try {
             if (value.length) {
-                const valueString = value.replaceAll(".", "").replaceAll(",", "")
+                /*
+                const valueString = handleValueStringToFloat(value)
                 valueFinal = parseInt(valueString)
+                */
+                valueFinal = handleValueStringToFloat(value)
             }
             if (quantity.length) {
                 quantityFinal = parseInt(quantity)
@@ -86,7 +90,8 @@ export default function ServiceDataForm(props: ServiceDataFormProps) {
         } catch (err) {
             console.error(err)
         }
-        return valueFinal * quantityFinal
+        const v = (valueFinal * quantityFinal).toFixed(2)
+        return v
     }
 
     const handlePutPayment = (valueTotal) => {
@@ -94,7 +99,7 @@ export default function ServiceDataForm(props: ServiceDataFormProps) {
             const actualList = props.services[index].servicePayments
             if (actualList.length && actualList.length > 0) {
                 let returnList = []
-                const value = valueTotal / actualList.length
+                const value = (valueTotal / actualList.length).toFixed(2)
                 actualList.map((element, index) => {
                     returnList = [...returnList, { ...element, value: handleMountNumberCurrency(value.toString(), ".", ",", 3, 2) }]
                 })
@@ -106,14 +111,14 @@ export default function ServiceDataForm(props: ServiceDataFormProps) {
                         index: 0,
                         description: "Entrada",
                         dateString: handleUTCToDateShow(handleNewDateToUTC().toString()),
-                        value: handleMountNumberCurrency((valueTotal / 2).toString(), ".", ",", 3, 2),
+                        value: handleMountNumberCurrency(((valueTotal / 2).toFixed(2)).toString(), ".", ",", 3, 2),
                     },
                     {
                         ...defaultServicePayment,
                         index: 1,
                         description: "Entrega",
                         dateString: handleUTCToDateShow(handleNewDateToUTC().toString()),
-                        value: handleMountNumberCurrency((valueTotal / 2).toString(), ".", ",", 3, 2),
+                        value: handleMountNumberCurrency(((valueTotal / 2).toFixed(2)).toString(), ".", ",", 3, 2),
                     },
                 ]
             }
@@ -134,7 +139,7 @@ export default function ServiceDataForm(props: ServiceDataFormProps) {
 
     const handleValidadeTarget = (immobile) => {
         let canAdd = true
-        props.services[index].immobilesOrigin.map((element, index) => {
+        props.services[index]?.immobilesOrigin?.map((element, index) => {
             if (immobile.id === element.id) {
                 canAdd = false
             }

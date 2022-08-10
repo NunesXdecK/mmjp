@@ -171,6 +171,8 @@ export const ServiceConversor = {
             responsible: data.responsible,
             dateInsertUTC: data.dateInsertUTC,
             dateLastUpdateUTC: data.dateLastUpdateUTC,
+            immobilesOrigin: data.immobilesOrigin,
+            immobilesTarget: data.immobilesTarget,
         }
     },
     fromFirestore(snapshot, options) {
@@ -188,6 +190,8 @@ export const ServiceConversor = {
             dateLastUpdateUTC: data.dateLastUpdateUTC ?? 0,
             project: data.project ?? defaultProject,
             responsible: data.responsible ?? defaultProfessional,
+            immobilesOrigin: data.immobilesOrigin ?? [],
+            immobilesTarget: data.immobilesTarget ?? [],
         }
     }
 }
