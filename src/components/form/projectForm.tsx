@@ -114,19 +114,21 @@ export default function ProjectForm(props: ProjectFormProps) {
                 </Button>
 
                 <div className="flex flex-col gap-1">
-                    <Button
-                        type="button"
-                        isLoading={isLoading}
-                        isDisabled={!isFormValid}
-                        onClick={(event) => {
-                            if (event) {
-                                event.preventDefault()
-                            }
-                            setIsPrint(true)
-                        }}
-                    >
-                        Imprimir orçamento
-                    </Button>
+                    {project.status === "ORÇAMENTO" && (
+                        <Button
+                            type="button"
+                            isLoading={isLoading}
+                            isDisabled={!isFormValid}
+                            onClick={(event) => {
+                                if (event) {
+                                    event.preventDefault()
+                                }
+                                setIsPrint(true)
+                            }}
+                        >
+                            Imprimir orçamento
+                        </Button>
+                    )}
                     <Button
                         type="button"
                         isLoading={isLoading}
@@ -141,24 +143,44 @@ export default function ProjectForm(props: ProjectFormProps) {
                         Imprimir contrato
                     </Button>
                 </div>
-
-                <Button
-                    type="button"
-                    onClick={(event) => {
-                        event.preventDefault()
-                        if (project.id.length) {
-                            setWindowText("Deseja realmente iniciar o projeto " + project.title + "?")
-                            setProjectStatus("NORMAL")
-                            setIsOpen(true)
-                        } else {
-                            handleSave("NORMAL")
-                        }
-                    }}
-                    isLoading={isLoading}
-                    isDisabled={!isFormValid}
-                >
-                    Iniciar projeto
-                </Button>
+                {project.status === "ORÇAMENTO" && (
+                    <Button
+                        type="button"
+                        onClick={(event) => {
+                            event.preventDefault()
+                            if (project.id.length) {
+                                setWindowText("Deseja realmente iniciar o projeto " + project.title + "?")
+                                setProjectStatus("NORMAL")
+                                setIsOpen(true)
+                            } else {
+                                handleSave("NORMAL")
+                            }
+                        }}
+                        isLoading={isLoading}
+                        isDisabled={!isFormValid}
+                    >
+                        Iniciar projeto
+                    </Button>
+                )}
+                {project.status === "NORMAL" && (
+                    <Button
+                        type="button"
+                        onClick={(event) => {
+                            event.preventDefault()
+                            if (project.id.length) {
+                                setWindowText("Deseja realmente finalizar o projeto " + project.title + "?")
+                                setProjectStatus("FINALIZADO")
+                                setIsOpen(true)
+                            } else {
+                                handleSave("FINALIZADO")
+                            }
+                        }}
+                        isLoading={isLoading}
+                        isDisabled={!isFormValid}
+                    >
+                        Finalizar projeto
+                    </Button>
+                )}
             </div>
         )
     }
