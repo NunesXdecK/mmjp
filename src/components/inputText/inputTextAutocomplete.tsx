@@ -111,7 +111,7 @@ export default function InputTextAutoComplete(props: InputTextAutoCompleteProps)
             {sugestions.length > 0 && (
                 <div
                     ref={divRef}
-                    className="absolute bg-white shadow-md mt-2 z-20">
+                    className="absolute bg-slate-50 shadow-md mt-2 z-20">
                     {sugestions.map((element, index) => (
                         <div key={index + element}>
                             <button

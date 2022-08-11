@@ -5,25 +5,26 @@ import { Company, defaultProject, Person, Project, Service } from "../../interfa
 import { handleUTCToDateShow } from "../../util/dateUtils"
 import { COMPANY_COLLECTION_NAME, PERSON_COLLECTION_NAME } from "../../db/firebaseDB"
 import PersonView from "./personView"
+import ServicesView from "./servicesView"
 
 interface BudgetPrintViewProps {
     id?: string,
     dataInside?: boolean,
+    client?: Person | Company,
     project?: Project,
+    services?: Service[],
 }
 
 export default function BudgetPrintView(props: BudgetPrintViewProps) {
     const [isFirst, setIsFirst] = useState(true)
     const [project, setProject] = useState<Project>(props.project ?? defaultProject)
-    const [services, setServices] = useState<Service[]>([])
-    const [client, setClient] = useState<Person | Company>({})
+    const [services, setServices] = useState<Service[]>(props.services ?? [])
+    const [client, setClient] = useState<Person | Company>(props.client ?? {})
+
 
     const handlePutData = () => {
         return (
             <>
-                {services.map((element, index) => (
-                    <>{element.title}</>
-                ))}
                 {client && "cpf" in client && (
                     <PersonView
                         person={client}
@@ -32,6 +33,9 @@ export default function BudgetPrintView(props: BudgetPrintViewProps) {
                         classNameTitle="bg-slate-50"
                     />
                 )}
+                <ServicesView
+                    classNameTitle="bg-slate-50"
+                    services={services} />
             </>
         )
     }
@@ -46,10 +50,14 @@ export default function BudgetPrintView(props: BudgetPrintViewProps) {
                         if (array && array.length > 0) {
                             if (array[0].includes(PERSON_COLLECTION_NAME)) {
                                 fetch("../api/person/" + array[1]).then((res) => res.json())
-                                    .then((res) => setClient(res.data))
+                                    .then((res) => {
+                                        setClient(res.data)
+                                    })
                             } else if (array[0].includes(COMPANY_COLLECTION_NAME)) {
                                 fetch("../api/company/" + array[1]).then((res) => res.json())
-                                    .then((res) => setClient(res.data))
+                                    .then((res) => {
+                                        setClient(res.data)
+                                    })
                             }
                         }
                     }
@@ -65,8 +73,8 @@ export default function BudgetPrintView(props: BudgetPrintViewProps) {
     })
 
     return (
-        <div className="p-4">
-            {project.id?.length === 0 ? (
+        <div className="p-2">
+            {project.title?.length === 0 ? (
                 <div className="mt-6">
                     <PlaceholderItemList />
                 </div>
@@ -74,10 +82,11 @@ export default function BudgetPrintView(props: BudgetPrintViewProps) {
                 <>
                     <InfoHolderView
                         classNameTitle="bg-slate-50"
-                        title="Dados básicos do projeto">
-                        {project.number && (<p><span className="font-semibold">Codigo do projeto:</span> {project.number}</p>)}
+                        title="Dados do orçamento">
+                        {project.number && (<p><span className="font-semibold">Codigo:</span> {project.number}</p>)}
                         {project.title && (<p><span className="font-semibold">Titulo:</span> {project.title}</p>)}
-                        {project.date && (<p><span className="font-semibold">Data:</span> {handleUTCToDateShow(project.date.toString())}</p>)}
+                        {project.date === 0 && project.dateString?.length && (<p><span className="font-semibold">Data:</span> {project.dateString}</p>)}
+                        {project.date > 0 && (<p><span className="font-semibold">Data:</span> {handleUTCToDateShow(project.date.toString())}</p>)}
                         {props.dataInside && handlePutData()}
                     </InfoHolderView>
                     {!props.dataInside && handlePutData()}

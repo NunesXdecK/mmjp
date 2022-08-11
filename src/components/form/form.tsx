@@ -8,7 +8,7 @@ interface FormProps {
 export default function Form(props: FormProps) {
 
     let className = "p-4"
-    let classNameHolder = "px-2 py-4 sm:p-4 rounded-lg shadow"
+    let classNameHolder = "px-2 py-4 sm:p-4 rounded-lg shadow print:shadow-none"
     let classNameContent = ""
 
     if (props.className) {
@@ -34,7 +34,7 @@ export default function Form(props: FormProps) {
 
                 <div className={classNameContent}>
                     <div className="overflow-hidden">
-                        <div className="bg-white">
+                        <div className="bg-slate-50">
                             {props.children}
                         </div>
                     </div>

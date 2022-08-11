@@ -37,7 +37,7 @@ export default function ItemList(props: ItemListProps) {
     let className = `
         border
         border-gray-50
-        bg-white p-4 sm:p-8 
+        bg-slate-50 p-4 sm:p-8 
         items-center text-left
         transition duration-200
         hover:bg-indigo-50

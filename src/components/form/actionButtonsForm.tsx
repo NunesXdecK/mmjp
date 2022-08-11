@@ -25,7 +25,7 @@ interface ActionButtonsFormProps {
 }
 
 export default function ActionButtonsForm(props: ActionButtonsFormProps) {
-    const navigationBarClassName = "bg-white"
+    const navigationBarClassName = "bg-slate-50"
     let buttonHolderClassName = "flex"
 
     if (props.isLeftOn && props.onLeftClick) {
@@ -76,7 +76,7 @@ export default function ActionButtonsForm(props: ActionButtonsFormProps) {
     })
 
     return (
-        <div>
+        <div className="print:hidden">
             <Form>
                 <FormRow>
                     <FormRowColumn unit="6">

@@ -100,7 +100,7 @@ export default function List(props: ListProps) {
         return pagesArray[page] ?? []
     }
 
-    let classNavigationBar = "bg-white px-4 py-3 flex items-center justify-between border-t border-gray-200 sm:px-6"
+    let classNavigationBar = "bg-slate-50 px-4 py-3 flex items-center justify-between border-t border-gray-200 sm:px-6"
 
     if (props.list && Math.ceil(props.list.length / perPage) < 2) {
         classNavigationBar = classNavigationBar + " hidden"
@@ -112,7 +112,7 @@ export default function List(props: ListProps) {
     })
 
     return (
-        <div className="bg-white shadow overflow-hidden rounded-lg">
+        <div className="bg-slate-50 shadow overflow-hidden rounded-lg">
             <div className="bg-gray-100 border-gray-200 px-4 py-5 sm:px-6">
                 <div className="flex w-full">
                     <div className="w-full">
@@ -165,7 +165,7 @@ export default function List(props: ListProps) {
 
             </div>
 
-            <div className="bg-white">
+            <div className="bg-slate-50">
 
                 {props.isLoading && (
                     <>

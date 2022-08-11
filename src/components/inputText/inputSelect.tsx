@@ -23,7 +23,7 @@ export default function InputSelect(props: InputSelectProps) {
                             py-2 px-3 
                             sm:text-sm
                             focus:outline-none 
-                            border-gray-300 bg-white 
+                            border-gray-300 bg-slate-50
                             rounded-md shadow-sm border 
                             focus:ring-indigo-500 focus:border-indigo-500 
                         `

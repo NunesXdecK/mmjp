@@ -46,7 +46,7 @@ export default function WindowModal(props: WindowModalProps) {
 
                             <Dialog.Panel className={`
                                 relative inline-block align-bottom
-                                bg-white rounded-lg text-left 
+                                bg-slate-50 rounded-lg text-left 
                                 overflow-hidden shadow-xl 
                                 transform transition-all 
                                 sm:my-8 sm:align-middle sm:max-w-lg sm:w-full

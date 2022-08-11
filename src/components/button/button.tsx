@@ -20,7 +20,7 @@ export default function Button(props: ButtonProps) {
     let className = ""
 
     if (props.isLight) {
-        colorClassName = "bg-white hover:bg-gray-300  focus:ring-gray-300"
+        colorClassName = "bg-slate-50 hover:bg-gray-300  focus:ring-gray-300"
         className = `
                         text-center
                         h-min

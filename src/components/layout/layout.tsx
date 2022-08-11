@@ -79,7 +79,7 @@ export default function Layout(props) {
                 <div className="hidden">
                     <span className="animate-pulse">hidden</span>
                 </div>
-                <Disclosure as="nav" className="bg-gray-800">
+                <Disclosure as="nav" className="bg-gray-800 print:hidden">
                     {({ open }) => (
                         <>
                             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -149,7 +149,7 @@ export default function Layout(props) {
                                                     leaveFrom="transform opacity-100 scale-100"
                                                     leaveTo="transform opacity-0 scale-95"
                                                 >
-                                                    <Menu.Items className="origin-top-right absolute right-0 mt-2 w-48 rounded-md shadow-lg py-1 bg-white ring-1 ring-black ring-opacity-5 focus:outline-none">
+                                                    <Menu.Items className="origin-top-right absolute right-0 mt-2 w-48 rounded-md shadow-lg py-1 bg-slate-50 ring-1 ring-black ring-opacity-5 focus:outline-none">
                                                         {userNavigation.map((item) => (
                                                             <Menu.Item key={item.name}>
                                                                 {({ active }) => (
@@ -256,7 +256,7 @@ export default function Layout(props) {
                 <main>
                     <div className="max-w-7xl -mt-36 mx-auto py-6 px-6 lg:px-8">
                         {/* Replace with your content */}
-                        <div className="bg-white shadow-md rounded-lg sm:px-0 z-50">
+                        <div className="bg-slate-50 shadow-md rounded-lg sm:px-0 z-50 print:shadow-none">
                             {props.children}
                             {/*
                             <div className="border-4 border-dashed border-gray-200 rounded-lg h-96">

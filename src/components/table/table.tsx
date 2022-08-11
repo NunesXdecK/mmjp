@@ -12,7 +12,7 @@ let lineTest = { codigo: "1PCN", codiNome: "Fazenda Arraial", cliente: "Conde Do
 
 const headerClassName = "px-4 py-5 text-md leading-6 font-medium text-gray-900"
 const rowClassName = "mt-1 text-sm text-gray-900 px-4 py-5"
-const pagesLineClassName = "z-10 bg-indigo-50 bg-white border-gray-300 text-gray-500 hover:bg-gray-50relative inline-flex items-center px-4 py-2 border text-sm font-medium"
+const pagesLineClassName = "z-10 bg-indigo-50 bg-slate-50 border-gray-300 text-gray-500 hover:bg-gray-50relative inline-flex items-center px-4 py-2 border text-sm font-medium"
 const pagesLineCurrentClassName = "z-10 bg-indigo-50 border-indigo-500 text-indigo-600 relative inline-flex items-center px-4 py-2 border text-sm font-medium"
 
 
@@ -57,7 +57,7 @@ export default function Table() {
     ))
 
     return (
-        <div className="bg-white shadow overflow-hidden">
+        <div className="bg-slate-50 shadow overflow-hidden">
 
             <div className="bg-gray-100 border-t border-gray-200">
                 <div className="px-4 py-5 sm:px-6">
@@ -73,7 +73,7 @@ export default function Table() {
                         </tr>
                     </thead>
 
-                    <tbody className="text-center bg-white">
+                    <tbody className="text-center bg-slate-50">
                         {tableItens}
                     </tbody>
                 </table>
@@ -83,13 +83,13 @@ export default function Table() {
                 <div className="flex-1 flex justify-between sm:hidden">
                     <a
                         href="#"
-                        className="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50"
+                        className="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-slate-50 hover:bg-gray-50"
                     >
                         Previous
                     </a>
                     <a
                         href="#"
-                        className="ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50"
+                        className="ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-slate-50 hover:bg-gray-50"
                     >
                         Next
                     </a>
@@ -103,21 +103,21 @@ export default function Table() {
                         <nav className="relative z-0 inline-flex rounded-md shadow-sm -space-x-px" aria-label="Pagination">
                             <a
                                 href="#"
-                                className="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50"
+                                className="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-slate-50 text-sm font-medium text-gray-500 hover:bg-gray-50"
                             >
                                 <span className="sr-only">Previous</span>
                                 <ChevronLeftIcon className="h-5 w-5" aria-hidden="true" />
                             </a>
-                            {/* Current: "z-10 bg-indigo-50 border-indigo-500 text-indigo-600", Default: "bg-white border-gray-300 text-gray-500 hover:bg-gray-50" */}
+                            {/* Current: "z-10 bg-indigo-50 border-indigo-500 text-indigo-600", Default: "bg-slate-50 border-gray-300 text-gray-500 hover:bg-gray-50" */}
 
                             {pagesLines()}
-                            <span className="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-700">
+                            <span className="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-slate-50 text-sm font-medium text-gray-700">
                                 ...
                             </span>
                             
                             <a
                                 href="#"
-                                className="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50"
+                                className="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-slate-50 text-sm font-medium text-gray-500 hover:bg-gray-50"
                             >
                                 <span className="sr-only">Next</span>
                                 <ChevronRightIcon className="h-5 w-5" aria-hidden="true" />

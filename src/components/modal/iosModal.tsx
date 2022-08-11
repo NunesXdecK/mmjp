@@ -49,7 +49,7 @@ export default function IOSModal(props: IOSModalProps) {
                         <Dialog.Panel className={`
                                 overflow-auto
                                 z-0 flex flex-col h-full
-                                bg-white rounded-t-lg shadow-xl
+                                bg-slate-50 rounded-t-lg shadow-xl
                                 `}>
                             <Transition.Child
                                 enter="ease-out duration-300"
