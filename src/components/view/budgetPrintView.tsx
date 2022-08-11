@@ -8,8 +8,8 @@ import PersonView from "./personView"
 
 interface BudgetPrintViewProps {
     id?: string,
-    project?: Project,
     dataInside?: boolean,
+    project?: Project,
 }
 
 export default function BudgetPrintView(props: BudgetPrintViewProps) {
@@ -20,7 +20,19 @@ export default function BudgetPrintView(props: BudgetPrintViewProps) {
 
     const handlePutData = () => {
         return (
-            <span>kaka</span>
+            <>
+                {services.map((element, index) => (
+                    <>{element.title}</>
+                ))}
+                {client && "cpf" in client && (
+                    <PersonView
+                        person={client}
+                        title="Dados do cliente"
+                        dataInside id={client.id}
+                        classNameTitle="bg-slate-50"
+                    />
+                )}
+            </>
         )
     }
 
@@ -69,12 +81,7 @@ export default function BudgetPrintView(props: BudgetPrintViewProps) {
                         {props.dataInside && handlePutData()}
                     </InfoHolderView>
                     {!props.dataInside && handlePutData()}
-                    {services.map((element, index) => (
-                        <>{element.title}</>
-                    ))}
-                    {client && "cpf" in client && (
-                        <PersonView dataInside id={client.id} person={client} />
-                    )}
+
                 </>
             )}
         </div>

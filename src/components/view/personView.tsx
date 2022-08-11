@@ -7,8 +7,13 @@ import { defaultPerson, Person } from "../../interfaces/objectInterfaces"
 
 interface PersonViewProps {
     id?: string,
-    person?: Person,
+    title?: string,
+    classNameTitle?: string,
+    classNameHolder?: string,
+    classNameContentHolder?: string,
     dataInside?: boolean,
+    hideBorder?: boolean,
+    person?: Person,
 }
 
 export default function PersonView(props: PersonViewProps) {
@@ -16,7 +21,14 @@ export default function PersonView(props: PersonViewProps) {
     const [person, setPerson] = useState<Person>(props.person ?? defaultPerson)
 
     const handlePutData = () => {
-        return (<AddressView address={person.address} />)
+        return (
+            <AddressView
+                address={person.address}
+                classNameTitle={props.classNameTitle}
+                classNameHolder={props.classNameHolder + " w-full"}
+                classNameContentHolder={props.classNameContentHolder}
+            />
+        )
     }
 
     useEffect(() => {
@@ -37,7 +49,13 @@ export default function PersonView(props: PersonViewProps) {
                 </div>
             ) : (
                 <>
-                    <InfoHolderView title="Dados pessoais">
+                    <InfoHolderView
+                        hideBorder={props.hideBorder}
+                        classNameTitle={props.classNameTitle}
+                        title={props.title ?? "Dados pessoais"}
+                        classNameHolder={props.classNameHolder}
+                        classNameContentHolder={props.classNameContentHolder}
+                    >
                         {person.clientCode && (<p><span className="font-semibold">Codigo do cliente:</span> {person.clientCode}</p>)}
                         {person.name && (<p><span className="font-semibold">Nome:</span> {person.name}</p>)}
                         {person.cpf && (<p><span className="font-semibold">CPF:</span> {handleMaskCPF(person.cpf)}</p>)}

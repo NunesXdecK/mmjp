@@ -5,6 +5,11 @@ import { defaultAddress, Address } from "../../interfaces/objectInterfaces"
 
 interface AddressViewProps {
     id?: string,
+    title?: string,
+    classNameTitle?: string,
+    classNameHolder?: string,
+    classNameContentHolder?: string,
+    hideBorder?: boolean,
     address?: Address,
 }
 
@@ -13,7 +18,13 @@ export default function AddressView(props: AddressViewProps) {
     return (
         <>
             {address?.cep?.length !== 0 && (
-                <InfoHolderView title="Endereço">
+                <InfoHolderView
+                    hideBorder={props.hideBorder}
+                    title={props.title ?? "Endereço"}
+                    classNameTitle={props.classNameTitle}
+                    classNameHolder={props.classNameHolder}
+                    classNameContentHolder={props.classNameContentHolder}
+                >
                     {address.cep && (<p><span className="font-semibold">CEP:</span> {handleMaskCEP(address.cep)}</p>)}
                     {address.publicPlace && (<p><span className="font-semibold">Logradouro:</span> {address.publicPlace}</p>)}
                     {address.number && (<p><span className="font-semibold">Número:</span> {address.number}</p>)}
