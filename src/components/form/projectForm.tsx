@@ -12,9 +12,11 @@ import SelectProfessionalForm from "../select/selectProfessionalForm";
 import InputTextAutoComplete from "../inputText/inputTextAutocomplete";
 import SelectPersonCompanyForm from "../select/selectPersonCompanyForm";
 import { handleProjectValidationForDB, handleServicesValidationForDB } from "../../util/validationUtil";
-import { defaultProject, Project, Service } from "../../interfaces/objectInterfaces";
+import { defaultProject, Project, Service, ServicePayment, ServiceStage } from "../../interfaces/objectInterfaces";
 import { defaultElementFromBase, ElementFromBase, handlePrepareProjectForDB, handlePrepareServiceForDB } from "../../util/converterUtil";
 import { handleNewDateToUTC, handleUTCToDateShow } from "../../util/dateUtils";
+import Button from "../button/button";
+import WindowModal from "../modal/windowModal";
 
 interface ProjectFormProps {
     title?: string,
@@ -36,6 +38,9 @@ export default function ProjectForm(props: ProjectFormProps) {
     const [project, setProject] = useState<Project>(props?.project ?? defaultProject)
     const [isFormValid, setIsFormValid] = useState(handleProjectValidationForDB(project).validation)
 
+    const [windowText, setWindowText] = useState("")
+    const [projectStatus, setProjectStatus] = useState<"ORÇAMENTO" | "NORMAL" | "ARQUIVADO" | "FINALIZADO">("ORÇAMENTO")
+    const [isOpen, setIsOpen] = useState(false)
     const [isLoading, setIsLoading] = useState(false)
     const [isMultiple, setIsMultiple] = useState(false)
 
@@ -82,18 +87,94 @@ export default function ProjectForm(props: ProjectFormProps) {
         setIsFormValid(isValid)
     }
 
+    const handleCenterActionsButtons = () => {
+        return (
+            <div className="px-2 w-full flex flex-row gap-2 justify-end">
+                <Button
+                    type="button"
+                    onClick={(event) => {
+                        event.preventDefault()
+                        if (project.id.length) {
+                            setWindowText("Deseja realmente arquivar o projeto " + project.title + "?")
+                            setProjectStatus("ARQUIVADO")
+                            setIsOpen(true)
+                        } else {
+                            handleSave("ARQUIVADO")
+                        }
+                    }}
+                    isLoading={isLoading}
+                    isDisabled={!isFormValid}
+                >
+                    Arquivar
+                </Button>
 
-    const handleSave = async () => {
+                <div className="flex flex-col gap-1">
+                    <Button
+                        isLink
+                        newTab
+                        type="button"
+                        isLoading={isLoading}
+                        isDisabled={!isFormValid}
+                        href={"/budgetprint/" + project.id}
+                    >
+                        Imprimir orçamento
+                    </Button>
+                </div>
+
+                <Button
+                    type="button"
+                    onClick={(event) => {
+                        event.preventDefault()
+                        if (project.id.length) {
+                            setWindowText("Deseja realmente iniciar o projeto " + project.title + "?")
+                            setProjectStatus("NORMAL")
+                            setIsOpen(true)
+                        } else {
+                            handleSave("NORMAL")
+                        }
+                    }}
+                    isLoading={isLoading}
+                    isDisabled={!isFormValid}
+                >
+                    Iniciar projeto
+                </Button>
+            </div>
+        )
+    }
+
+    const handleSave = async (status?: "ORÇAMENTO" | "NORMAL" | "ARQUIVADO" | "FINALIZADO") => {
         setIsLoading(true)
         let feedbackMessage: FeedbackMessage = { messages: ["Algo estranho aconteceu"], messageType: "WARNING" }
         let projectForDB: Project = { ...project }
+        let localServicesForDB = []
         if (professionals?.length > 0) {
             projectForDB = { ...projectForDB, professional: professionals[0] }
         } else {
             projectForDB = { ...projectForDB, professional: {} }
         }
+        if (status && status.length) {
+            projectForDB = { ...projectForDB, status: status }
+            let localServiceStages: ServiceStage[] = []
+            let localServicePayments: ServicePayment[] = []
+            services?.map((element, index) => {
+                element.serviceStages?.map((elementStages, index) => {
+                    localServiceStages = [...localServiceStages, { ...elementStages, status: status }]
+                })
+                element.servicePayments?.map((elementPayments, index) => {
+                    localServicePayments = [...localServicePayments, { ...elementPayments, status: status }]
+                })
+                localServicesForDB = [...localServicesForDB, {
+                    ...element,
+                    status: status,
+                    serviceStages: localServiceStages,
+                    servicePayments: localServicePayments,
+                }]
+            })
+        } else {
+            localServicesForDB = [...services]
+        }
         const isValid = handleProjectValidationForDB(projectForDB)
-        const servicesValidation = handleServicesValidationForDB(services, false, false)
+        const servicesValidation = handleServicesValidationForDB(localServicesForDB, false, false)
         if (isValid.validation && servicesValidation.validation) {
             projectForDB = handlePrepareProjectForDB(projectForDB)
             let nowID = projectForDB?.id ?? ""
@@ -121,9 +202,9 @@ export default function ProjectForm(props: ProjectFormProps) {
             }
             if (res.status === "SUCCESS") {
                 let serviceValidation = true
-                if (services.length && services.length > 0) {
-                    let localServices = []
-                    services.map((element: Service, index) => {
+                let localServices = []
+                if (localServicesForDB.length && localServicesForDB.length > 0) {
+                    localServicesForDB.map((element: Service, index) => {
                         localServices = [...localServices, {
                             ...element,
                             project: { ...defaultProject, id: nowID }
@@ -185,7 +266,9 @@ export default function ProjectForm(props: ProjectFormProps) {
             <ActionButtonsForm
                 isLeftOn
                 isForBackControl
+                isLoading={isLoading}
                 isDisabled={!isFormValid}
+                centerChild={handleCenterActionsButtons}
                 rightWindowText="Deseja confirmar as alterações?"
                 isForOpenLeft={project.id !== "" && handleDiference()}
                 isForOpenRight={project.id !== "" && handleDiference()}
@@ -357,7 +440,9 @@ export default function ProjectForm(props: ProjectFormProps) {
                 }}>
                 <ActionButtonsForm
                     isLeftOn
+                    isLoading={isLoading}
                     isDisabled={!isFormValid}
+                    centerChild={handleCenterActionsButtons}
                     rightWindowText="Deseja confirmar as alterações?"
                     isForOpenLeft={project.id !== "" && handleDiference()}
                     isForOpenRight={project.id !== "" && handleDiference()}
@@ -377,6 +462,28 @@ export default function ProjectForm(props: ProjectFormProps) {
                     }}
                 />
             </form>
+
+            <WindowModal
+                isOpen={isOpen}
+                setIsOpen={setIsOpen}>
+                <p className="text-center">{windowText}</p>
+                <div className="flex mt-10 justify-between content-between">
+                    <Button
+                        onClick={() => setIsOpen(false)}
+                    >
+                        Voltar
+                    </Button>
+                    <Button
+                        color="red"
+                        onClick={(event) => {
+                            handleSave(projectStatus)
+                            setIsOpen(false)
+                        }}
+                    >
+                        Confirmar
+                    </Button>
+                </div>
+            </WindowModal>
         </>
     )
 }

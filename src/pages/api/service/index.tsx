@@ -1,5 +1,5 @@
 import { Service } from "../../../interfaces/objectInterfaces"
-import { addDoc, collection, deleteDoc, doc, updateDoc } from "firebase/firestore"
+import { addDoc, collection, deleteDoc, doc, getDocs, query, updateDoc, where } from "firebase/firestore"
 import { ImmobileConversor, ProfessionalConversor, ProjectConversor, ServiceConversor, ServicePaymentConversor, ServiceStageConversor } from "../../../db/converters"
 import { db, HISTORY_COLLECTION_NAME, SERVICE_COLLECTION_NAME, PROFESSIONAL_COLLECTION_NAME, PROJECT_COLLECTION_NAME, SERVICE_PAYMENT_COLLECTION_NAME, SERVICE_STAGE_COLLECTION_NAME, IMMOBILE_COLLECTION_NAME } from "../../../db/firebaseDB"
 
@@ -135,8 +135,36 @@ export default async function handler(req, res) {
             try {
                 const { token, id } = JSON.parse(body)
                 if (token === "tokenbemseguro") {
-                    const docRef = doc(serviceCollection, id)
-                    await deleteDoc(docRef)
+                    const serviceDocRef = doc(serviceCollection, id)
+                    let listStages = []
+                    let listPayments = []
+                    const queryStages = query(serviceStageCollection, where("service", "==", serviceDocRef))
+                    const queryStagesSnapshot = await getDocs(queryStages)
+                    queryStagesSnapshot.forEach((doc) => {
+                        listStages = [...listStages, doc.data()]
+                    })
+                    const queryPayments = query(servicePaymentCollection, where("service", "==", serviceDocRef))
+                    const queryPaymentsSnapshot = await getDocs(queryPayments)
+                    queryPaymentsSnapshot.forEach((doc) => {
+                        listPayments = [...listPayments, doc.data()]
+                    })
+                    if (listStages.length) {
+                        await Promise.all(
+                            listStages.map(async (elementStage, index) => {
+                                const stageDocRef = doc(serviceStageCollection, elementStage.id)
+                                await deleteDoc(stageDocRef)
+                            })
+                        )
+                    }
+                    if (listPayments.length) {
+                        await Promise.all(
+                            listPayments.map(async (elementPayment, index) => {
+                                const paymentDocRef = doc(servicePaymentCollection, elementPayment.id)
+                                await deleteDoc(paymentDocRef)
+                            })
+                        )
+                    }
+                    await deleteDoc(serviceDocRef)
                     resDELETE = { ...resDELETE, status: "SUCCESS" }
                 } else {
                     resDELETE = { ...resDELETE, status: "ERROR", message: "Token invalido!" }

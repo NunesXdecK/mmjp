@@ -9,7 +9,7 @@ import FeedbackMessageModal, { defaultFeedbackMessage, FeedbackMessage } from ".
 import { COMPANY_COLLECTION_NAME, PERSON_COLLECTION_NAME } from "../../db/firebaseDB"
 import { handlePrepareServiceForShow } from "../../util/converterUtil"
 
-export default function Projects() {
+export default function Budget() {
     const [title, setTitle] = useState("Lista de orçamentos")
     const [project, setProject] = useState<Project>(defaultProject)
     const [projects, setProjects] = useState<Project[]>([])
@@ -55,7 +55,7 @@ export default function Projects() {
         setIsLoading(true)
         let newProject = { ...defaultProject, dateString: handleUTCToDateShow(handleNewDateToUTC().toString()) }
         const lastProfessional = await fetch("api/lastProfessional").then((res) => res.json()).then((res) => res.professional)
-        if ("id" in lastProfessional && lastProfessional.id.length) {
+        if (lastProfessional && "id" in lastProfessional && lastProfessional.id.length) {
             newProject = { ...newProject, professional: lastProfessional }
         }
         setProject(newProject)

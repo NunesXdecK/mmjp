@@ -5,6 +5,7 @@ interface ButtonProps {
     className?: string,
     color?: "red",
     children?: any,
+    newTab?: boolean,
     isLink?: boolean,
     isLight?: boolean,
     isHidden?: boolean,
@@ -46,7 +47,7 @@ export default function Button(props: ButtonProps) {
             colorClassName = "bg-red-600 hover:bg-red-700 focus:border-red-500 focus:ring-red-500"
             break
     }
-    
+
     if (props.isLoading) {
         className = className + " " + STYLE_FOR_INPUT_LOADING_TRANSPARENT
     }
@@ -64,6 +65,7 @@ export default function Button(props: ButtonProps) {
         <>
             {props.isLink ? (
                 <a
+                    target={props.newTab && "_blank"}
                     href={props.href}
                     className={className}>
                     {props.children}

@@ -19,6 +19,7 @@ interface ActionButtonsFormProps {
     isForOpenLeft?: boolean,
     isForOpenRight?: boolean,
     isForBackControl?: boolean,
+    centerChild?: () => any,
     onLeftClick?: (any?) => void,
     onRightClick?: (any?) => void,
 }
@@ -101,6 +102,8 @@ export default function ActionButtonsForm(props: ActionButtonsFormProps) {
                                     </Button>
                                 )}
 
+                                {props.centerChild && props.centerChild()}
+
                                 {props.centerText && (
                                     <span className={subtitle}>{props.centerText}</span>
                                 )}
@@ -175,6 +178,6 @@ export default function ActionButtonsForm(props: ActionButtonsFormProps) {
                     </Button>
                 </div>
             </WindowModal>
-        </div >
+        </div>
     )
 }

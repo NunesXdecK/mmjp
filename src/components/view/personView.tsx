@@ -50,9 +50,9 @@ export default function PersonView(props: PersonViewProps) {
                         {person.telephones?.map((element, index) => (
                             <p key={index + element}>{handleMaskTelephone(element)}</p>
                         ))}
-                        {!props.dataInside && handlePutData()}
+                        {props.dataInside && handlePutData()}
                     </InfoHolderView>
-                    {props.dataInside && handlePutData()}
+                    {!props.dataInside && handlePutData()}
                 </>
             )}
         </>
