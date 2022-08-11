@@ -89,7 +89,7 @@ export default function ProjectForm(props: ProjectFormProps) {
 
     const handleCenterActionsButtons = () => {
         return (
-            <div className="px-2 w-full flex flex-row gap-2 justify-end">
+            <div className="px-2 w-full flex flex-col sm:flex-row gap-2 justify-end">
                 <Button
                     type="button"
                     onClick={(event) => {

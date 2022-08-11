@@ -22,6 +22,8 @@ export default function Button(props: ButtonProps) {
     if (props.isLight) {
         colorClassName = "bg-white hover:bg-gray-300  focus:ring-gray-300"
         className = `
+                        text-center
+                        h-min
                         p-2 
                         shadow-sm 
                         justify-center 
@@ -32,6 +34,8 @@ export default function Button(props: ButtonProps) {
     } else {
         colorClassName = "bg-indigo-600 hover:bg-indigo-700 focus:border-indigo-500 focus:ring-indigo-500"
         className = `
+                        text-center
+                        h-min
                         py-2 px-4 
                         shadow-sm 
                         justify-center 

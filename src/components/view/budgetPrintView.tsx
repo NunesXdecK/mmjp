@@ -1,8 +1,10 @@
 import { useEffect, useState } from "react"
 import InfoHolderView from "./infoHolderView"
 import PlaceholderItemList from "../list/placeholderItemList"
-import { defaultProject, Project } from "../../interfaces/objectInterfaces"
+import { Company, defaultProject, Person, Project, Service } from "../../interfaces/objectInterfaces"
 import { handleUTCToDateShow } from "../../util/dateUtils"
+import { COMPANY_COLLECTION_NAME, PERSON_COLLECTION_NAME } from "../../db/firebaseDB"
+import PersonView from "./personView"
 
 interface BudgetPrintViewProps {
     id?: string,
@@ -13,6 +15,8 @@ interface BudgetPrintViewProps {
 export default function BudgetPrintView(props: BudgetPrintViewProps) {
     const [isFirst, setIsFirst] = useState(true)
     const [project, setProject] = useState<Project>(props.project ?? defaultProject)
+    const [services, setServices] = useState<Service[]>([])
+    const [client, setClient] = useState<Person | Company>({})
 
     const handlePutData = () => {
         return (
@@ -23,8 +27,25 @@ export default function BudgetPrintView(props: BudgetPrintViewProps) {
     useEffect(() => {
         if (isFirst) {
             if (props.id && props.id?.length && project.id?.length === 0) {
-                fetch("../api/project/" + props.id).then((res) => res.json()).then((res) => {
+                fetch("../api/projectview/" + props.id).then((res) => res.json()).then((res) => {
+                    let client = res.data?.clients[0] ?? {}
+                    if (client && client.length) {
+                        let array = client.split("/")
+                        if (array && array.length > 0) {
+                            if (array[0].includes(PERSON_COLLECTION_NAME)) {
+                                fetch("../api/person/" + array[1]).then((res) => res.json())
+                                    .then((res) => setClient(res.data))
+                            } else if (array[0].includes(COMPANY_COLLECTION_NAME)) {
+                                fetch("../api/company/" + array[1]).then((res) => res.json())
+                                    .then((res) => setClient(res.data))
+                            }
+                        }
+                    }
                     setProject(res.data)
+                    setIsFirst(false)
+                })
+                fetch("../api/services/" + props.id).then((res) => res.json()).then((res) => {
+                    setServices(res.list)
                     setIsFirst(false)
                 })
             }
@@ -48,6 +69,12 @@ export default function BudgetPrintView(props: BudgetPrintViewProps) {
                         {props.dataInside && handlePutData()}
                     </InfoHolderView>
                     {!props.dataInside && handlePutData()}
+                    {services.map((element, index) => (
+                        <>{element.title}</>
+                    ))}
+                    {client && "cpf" in client && (
+                        <PersonView dataInside id={client.id} person={client} />
+                    )}
                 </>
             )}
         </div>

@@ -29,9 +29,9 @@ export default function ActionButtonsForm(props: ActionButtonsFormProps) {
     let buttonHolderClassName = "flex"
 
     if (props.isLeftOn && props.onLeftClick) {
-        buttonHolderClassName = buttonHolderClassName + " justify-between"
+        buttonHolderClassName = buttonHolderClassName + " justify-between items-end"
     } else {
-        buttonHolderClassName = buttonHolderClassName + " justify-end"
+        buttonHolderClassName = buttonHolderClassName + " justify-end items-end"
     }
 
     const [isOpenLeft, setIsOpenLeft] = useState(false)
