@@ -110,7 +110,7 @@ export default function ProjectForm(props: ProjectFormProps) {
                     isLoading={isLoading}
                     isDisabled={!isFormValid}
                 >
-                    Arquivar
+                    Arquivar projeto
                 </Button>
                 {project.status === "ORÇAMENTO" && (
                     <>
