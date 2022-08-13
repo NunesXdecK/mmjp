@@ -22,6 +22,7 @@ interface ActionButtonsFormProps {
     centerChild?: () => any,
     onLeftClick?: (any?) => void,
     onRightClick?: (any?) => void,
+    onRightClickCancel?: (any?) => void,
 }
 
 export default function ActionButtonsForm(props: ActionButtonsFormProps) {
@@ -85,6 +86,8 @@ export default function ActionButtonsForm(props: ActionButtonsFormProps) {
                                 {props.isLeftOn && props.onLeftClick && (
                                     <Button
                                         type="button"
+                                        isLoading={props.isLoading}
+                                        isDisabled={props.isLoading}
                                         onClick={(event) => {
                                             if (props.isForOpenLeft) {
                                                 setIsOpenLeft(true)
@@ -95,8 +98,6 @@ export default function ActionButtonsForm(props: ActionButtonsFormProps) {
                                                 setIsOpenLeft(false)
                                             }
                                         }}
-                                        isLoading={props.isLoading}
-                                        isDisabled={props.isLoading}
                                     >
                                         {props.leftButtonText ?? "Voltar"}
                                     </Button>
@@ -110,6 +111,8 @@ export default function ActionButtonsForm(props: ActionButtonsFormProps) {
 
                                 {props.onRightClick && (
                                     <Button
+                                        isLoading={props.isLoading}
+                                        isDisabled={props.isDisabled || props.isLoading}
                                         onClick={(event) => {
                                             if (props.isForOpenRight) {
                                                 setIsOpenRight(true)
@@ -119,8 +122,6 @@ export default function ActionButtonsForm(props: ActionButtonsFormProps) {
                                                 }
                                             }
                                         }}
-                                        isLoading={props.isLoading}
-                                        isDisabled={props.isDisabled || props.isLoading}
                                     >
                                         {props.rightButtonText ?? "Salvar"}
                                     </Button>
@@ -161,7 +162,12 @@ export default function ActionButtonsForm(props: ActionButtonsFormProps) {
                 <p className="text-center">{props.rightWindowText}</p>
                 <div className="flex mt-10 justify-between content-between">
                     <Button
-                        onClick={() => setIsOpenRight(false)}
+                        onClick={(event) => {
+                            setIsOpenRight(false)
+                            if (props.onRightClickCancel) {
+                                props.onRightClickCancel(event)
+                            }
+                        }}
                     >
                         Voltar
                     </Button>

@@ -7,6 +7,39 @@ interface ValidationReturn {
     validation: boolean,
 }
 
+export const handleIsEqual = (objectOne, objectTwo) => {
+    let isEqual = true
+    try {
+        if (Array.isArray(objectOne) && Array.isArray(objectTwo)) {
+            if (objectOne?.length !== objectTwo?.length) {
+                return false
+            }
+            objectOne.map((element, index) => {
+                if (isEqual) {
+                    isEqual = handleIsEqual(element, objectTwo[index])
+                }
+            })
+        } else if (typeof objectOne === 'object' && typeof objectTwo === 'object') {
+            let arrayOne = Object.keys(objectOne)
+            let arrayTwo = Object.keys(objectTwo)
+            if (arrayOne?.length !== arrayTwo?.length) {
+                return false
+            }
+            arrayOne?.map((element, index) => {
+                if (isEqual) {
+                    isEqual = handleIsEqual(objectOne[element], objectTwo[element])
+                }
+            })
+        } else if (objectOne !== null && objectTwo !== null && objectOne !== objectTwo) {
+            return false
+        }
+    } catch (err) {
+        console.error(err)
+        return false
+    }
+    return isEqual
+}
+
 export const handleJSONcheck = (value) => {
     if (typeof value !== 'string') return false
     try {
@@ -69,10 +102,16 @@ export const handlePersonValidationForDB = (person: Person) => {
     let validation: ValidationReturn = { validation: false, messages: [] }
     let nameCheck = true
     let cpfCheck = true
+    let codeCheck = true
 
     if (!handleValidationOnlyTextNotNull(person?.name)) {
         validation = { ...validation, messages: [...validation.messages, "O campo nome está em branco."] }
         nameCheck = false
+    }
+
+    if (!handleValidationNotNull(person?.clientCode)) {
+        validation = { ...validation, messages: [...validation.messages, "O campo código está em branco."] }
+        codeCheck = false
     }
 
     if (!handleValidationCPF(person?.cpf)) {
@@ -80,7 +119,7 @@ export const handlePersonValidationForDB = (person: Person) => {
         cpfCheck = false
     }
 
-    validation = { ...validation, validation: nameCheck && cpfCheck }
+    validation = { ...validation, validation: nameCheck && codeCheck && cpfCheck }
 
     return validation
 }

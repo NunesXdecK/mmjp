@@ -8,16 +8,14 @@ import ServiceStageForm from "./serviceStageForm";
 import ServicePaymentForm from "./servicePaymentForm";
 import InputTextArea from "../inputText/inputTextArea";
 import SelectImmobileForm from "../select/selectImmobileForm";
-import { handleMountNumberCurrency, handleValueStringToFloat } from "../../util/maskUtil";
 import ScrollDownTransition from "../animation/scrollDownTransition";
 import SelectProfessionalForm from "../select/selectProfessionalForm";
 import InputTextAutoComplete from "../inputText/inputTextAutocomplete";
-import { handleServiceValidationForDB } from "../../util/validationUtil";
 import { NOT_NULL_MARK, NUMBER_MARK } from "../../util/patternValidationUtil";
 import { handleNewDateToUTC, handleUTCToDateShow } from "../../util/dateUtils";
 import { ChevronDownIcon, ChevronRightIcon, TrashIcon } from "@heroicons/react/outline";
+import { handleMountNumberCurrency, handleValueStringToFloat } from "../../util/maskUtil";
 import { defaultServicePayment, Service, ServicePayment, ServiceStage } from "../../interfaces/objectInterfaces";
-import { version } from "process";
 
 interface ServiceDataFormProps {
     id?: string,
@@ -39,7 +37,6 @@ export default function ServiceDataForm(props: ServiceDataFormProps) {
     const [isFormOpen, setIsFormOpen] = useState(false)
     const [isFormValid, setIsFormValid] = useState(false)
     const [index, setIndex] = useState(props.index ?? 0)
-    const [valueTotal, setValueTotal] = useState(props.services[index].total ?? "0")
 
     const [professionals, setProfessionals] = useState(("id" in props.services[index]?.responsible
         && props.services[index].responsible.id.length) ? [props.services[index].responsible] : [])
@@ -61,16 +58,14 @@ export default function ServiceDataForm(props: ServiceDataFormProps) {
         const total = handleCalculateTotal(value, props.services[index].quantity)
         const totalFormated = handleMountNumberCurrency(total.toString(), ".", ",", 3, 2)
         const list = handlePutPayment(total)
-        setValueTotal(totalFormated)
-        handleSetText({ ...props.services[index], value: value, servicePayments: list })
+        handleSetText({ ...props.services[index], value: value, servicePayments: list, total: totalFormated })
     }
 
     const handleSetServiceQuantity = (value) => {
         const total = handleCalculateTotal(props.services[index].value, value)
         const totalFormated = handleMountNumberCurrency(total.toString(), ".", ",", 3, 2)
         const list = handlePutPayment(total)
-        setValueTotal(totalFormated)
-        handleSetText({ ...props.services[index], quantity: value, servicePayments: list })
+        handleSetText({ ...props.services[index], quantity: value, servicePayments: list, total: totalFormated })
     }
 
     const handleCalculateTotal = (value: string, quantity: string) => {
@@ -249,13 +244,11 @@ export default function ServiceDataForm(props: ServiceDataFormProps) {
                         isDisabled
                         title="Total"
                         mask="currency"
-                        value={valueTotal}
                         validation={NUMBER_MARK}
-                        onSetText={setValueTotal}
                         isLoading={props.isLoading}
+                        value={props.services[index].total}
                         id={"total-service-" + index + "-" + props.id}
                     />
-
                     {props.onDelete && (
                         <Button
                             color="red"

@@ -11,9 +11,11 @@ import ActionButtonsForm from "./actionButtonsForm"
 import InputCheckbox from "../inputText/inputCheckbox"
 import { FeedbackMessage } from "../modal/feedbackMessageModal"
 import { handlePreparePersonForDB } from "../../util/converterUtil"
-import { handlePersonValidationForDB } from "../../util/validationUtil"
+import ScrollDownTransition from "../animation/scrollDownTransition"
+import FeedbackMessageSaveText from "../modal/feedbackMessageSavingText"
 import { defaultPerson, Person } from "../../interfaces/objectInterfaces"
-import { CPF_MARK, TELEPHONE_MARK, TEXT_NOT_NULL_MARK } from "../../util/patternValidationUtil"
+import { handleIsEqual, handlePersonValidationForDB } from "../../util/validationUtil"
+import { CPF_MARK, NOT_NULL_MARK, TELEPHONE_MARK, TEXT_NOT_NULL_MARK } from "../../util/patternValidationUtil"
 
 interface PersonFormProps {
     title?: string,
@@ -30,13 +32,14 @@ interface PersonFormProps {
 }
 
 export default function PersonForm(props: PersonFormProps) {
-
     const [personOriginal, setPersonOriginal] = useState<Person>(props?.person ?? defaultPerson)
     const [person, setPerson] = useState<Person>(props?.person ?? defaultPerson)
     const [isFormValid, setIsFormValid] = useState(handlePersonValidationForDB(person).validation)
 
     const [isLoading, setIsLoading] = useState(false)
     const [isMultiple, setIsMultiple] = useState(false)
+
+    const [isAutoSaving, setIsAutoSaving] = useState(false)
 
     const handleSetPersonOldData = (value) => { setPerson({ ...person, oldData: value }) }
 
@@ -52,82 +55,133 @@ export default function PersonForm(props: PersonFormProps) {
     const handleSetPersonTelephones = (values) => { setPerson({ ...person, telephones: values }) }
     const handleSetPersonMaritalStatus = (value) => { setPerson({ ...person, maritalStatus: value }) }
 
-    const handleDiference = (): boolean => {
-        let hasDiference = false
-        Object.keys(personOriginal)?.map((element, index) => {
-            if (person[element] !== personOriginal[element]) {
-                hasDiference = true
-            }
-        })
-        return hasDiference
-    }
-
     const handleOnBack = () => {
         if (props.onBack) {
             props.onBack()
         }
     }
 
+    const handleDiference = (): boolean => {
+        return !handleIsEqual(person, personOriginal)
+    }
+
     const handleChangeFormValidation = (isValid) => {
-        setIsFormValid(isValid)
+        setIsFormValid(old => isValid)
+    }
+
+    const handleShowMessage = (feedbackMessage: FeedbackMessage) => {
+        if (props.onShowMessage) {
+            props.onShowMessage(feedbackMessage)
+        }
+    }
+
+    const handleAutoSave = async (event) => {
+        if (event.relatedTarget?.tagName?.toLowerCase() !== ("input" || "select" || "textarea")) {
+            return
+        }
+        if (isAutoSaving) {
+            return
+        }
+        if (handleIsEqual(person, personOriginal)) {
+            return
+        }
+        const isValid = handlePersonValidationForDB(person)
+        if (!isValid.validation) {
+            return
+        }
+        setIsAutoSaving(old => true)
+        const res = await handleSaveInner(person)
+        if (res.status === "ERROR") {
+            return
+        }
+        setIsAutoSaving(old => false)
+        setPerson(old => res.person)
+        setPersonOriginal(old => res.person)
+    }
+
+    const handleSaveInner = async (person) => {
+        let res = { status: "ERROR", id: "", person: person }
+        const personForDB = handlePreparePersonForDB(person)
+        try {
+            const saveRes = await fetch("api/person", {
+                method: "POST",
+                body: JSON.stringify({ token: "tokenbemseguro", data: personForDB }),
+            }).then((res) => res.json())
+            res = { ...res, status: "SUCCESS", id: saveRes.id, person: { ...person, id: saveRes.id } }
+        } catch (e) {
+            console.error("Error adding document: ", e)
+        }
+        return res
     }
 
     const handleSave = async () => {
+        /*
+        if (handleIsEqual(person, personOriginal)) {
+            const feedbackMessage: FeedbackMessage = { messages: ["Não há alteração nos dados"], messageType: "WARNING" }
+            handleShowMessage(feedbackMessage)
+            return
+        }
+        */
+        if (isAutoSaving) {
+            return
+        }
+        const isValid = handlePersonValidationForDB(person)
+        if (!isValid.validation) {
+            const feedbackMessage: FeedbackMessage = { messages: isValid.messages, messageType: "ERROR" }
+            handleShowMessage(feedbackMessage)
+            return
+        }
         setIsLoading(true)
-        let feedbackMessage: FeedbackMessage = { messages: ["Algo estranho aconteceu"], messageType: "WARNING" }
-        let personForDB: Person = { ...person }
-        const isValid = handlePersonValidationForDB(personForDB)
-        if (isValid.validation) {
-            personForDB = handlePreparePersonForDB(personForDB)
-            let nowID = personForDB?.id ?? ""
-            const isSave = nowID === ""
-            let res = { status: "ERROR", id: nowID, message: "" }
-
-            if (isSave) {
-                feedbackMessage = { ...feedbackMessage, messages: ["Salvo com sucesso!"], messageType: "SUCCESS" }
-            } else {
-                feedbackMessage = { ...feedbackMessage, messages: ["Atualizado com sucesso!"], messageType: "SUCCESS" }
-            }
-
-            try {
-                res = await fetch("api/person", {
-                    method: "POST",
-                    body: JSON.stringify({ token: "tokenbemseguro", data: personForDB }),
-                }).then((res) => res.json())
-            } catch (e) {
-                if (isSave) {
-                    feedbackMessage = { ...feedbackMessage, messages: ["Erro em salvar!"], messageType: "ERROR" }
-                } else {
-                    feedbackMessage = { ...feedbackMessage, messages: ["Erro em Atualizadar!"], messageType: "ERROR" }
-                }
-                console.error("Error adding document: ", e)
-            }
-
-            if (res.status === "SUCCESS") {
-                setPerson({ ...person, id: res.id })
-                personForDB = { ...personForDB, id: res.id }
-
-                if (isMultiple) {
-                    setPerson(defaultPerson)
-                }
-
-                if (!isMultiple && props.onAfterSave) {
-                    props.onAfterSave(feedbackMessage, personForDB)
-                }
-            } else {
-                feedbackMessage = { ...feedbackMessage, messages: ["Erro!"], messageType: "ERROR" }
-            }
-
-            if (props.onShowMessage) {
-                props.onShowMessage(feedbackMessage)
-            }
-        } else {
-            feedbackMessage = { ...feedbackMessage, messages: isValid.messages, messageType: "ERROR" }
-            if (props.onShowMessage) {
-                props.onShowMessage(feedbackMessage)
-            }
+        let res = await handleSaveInner(person)
+        if (res.status === "ERROR") {
+            const feedbackMessage: FeedbackMessage = { messages: ["Algo deu errado!"], messageType: "ERROR" }
+            handleShowMessage(feedbackMessage)
+            return
+        }
+        setPerson({ ...person, id: res.id })
+        let personFromDB = { ...res.person }
+        const feedbackMessage: FeedbackMessage = { messages: ["Sucesso!"], messageType: "SUCCESS" }
+        handleShowMessage(feedbackMessage)
+        if (isMultiple) {
+            setPerson(defaultPerson)
+        }
+        if (!isMultiple && props.onAfterSave) {
+            props.onAfterSave(feedbackMessage, personFromDB)
         }
         setIsLoading(false)
+    }
+
+    const handleActionBar = () => {
+        return (
+            <ActionButtonsForm
+                isLeftOn
+                isForBackControl
+                isLoading={isLoading}
+                isDisabled={!isFormValid || isAutoSaving}
+                rightWindowText="Deseja confirmar as alterações?"
+                isForOpenLeft={person.id !== "" && handleDiference()}
+                isForOpenRight={person.id !== "" && handleDiference()}
+                rightButtonText={person.id === "" ? "Salvar" : "Editar"}
+                leftWindowText="Dejesa realmente voltar e descartar as alterações?"
+                onLeftClick={(event) => {
+                    if (event) {
+                        event.preventDefault()
+                    }
+                    handleOnBack()
+                }}
+                onRightClick={(event) => {
+                    if (event) {
+                        event.preventDefault()
+                    }
+                    handleSave()
+                }}
+                onRightClickCancel={(event) => {
+                    if (event) {
+                        event.preventDefault()
+                    }
+                }}
+            />
+        )
     }
 
     return (
@@ -146,28 +200,17 @@ export default function PersonForm(props: PersonFormProps) {
                         event.preventDefault()
                     }
                 }}>
-                <ActionButtonsForm
-                    isLeftOn
-                    isForBackControl
-                    isDisabled={!isFormValid}
-                    rightWindowText="Deseja confirmar as alterações?"
-                    isForOpenLeft={person.id !== "" && handleDiference()}
-                    isForOpenRight={person.id !== "" && handleDiference()}
-                    rightButtonText={person.id === "" ? "Salvar" : "Editar"}
-                    leftWindowText="Dejesa realmente voltar e descartar as alterações?"
-                    onLeftClick={(event) => {
-                        if (event) {
-                            event.preventDefault()
-                        }
-                        handleOnBack()
-                    }}
-                    onRightClick={(event) => {
-                        if (event) {
-                            event.preventDefault()
-                        }
-                        handleSave()
-                    }}
-                />
+
+                {handleActionBar()}
+
+                <ScrollDownTransition
+                    isOpen={isAutoSaving}>
+                    <Form>
+                        <FeedbackMessageSaveText
+                            isOpen={true}
+                        />
+                    </Form>
+                </ScrollDownTransition>
 
                 <Form
                     title={props.title}
@@ -195,6 +238,7 @@ export default function PersonForm(props: PersonFormProps) {
                                 value={person.name}
                                 title="Nome completo"
                                 isLoading={isLoading}
+                                onBlur={handleAutoSave}
                                 validation={TEXT_NOT_NULL_MARK}
                                 onSetText={handleSetPersonName}
                                 isDisabled={props.isForDisable}
@@ -206,11 +250,15 @@ export default function PersonForm(props: PersonFormProps) {
                         <FormRowColumn unit="2">
                             <InputText
                                 id="code"
+                                isLoading={isLoading}
+                                onBlur={handleAutoSave}
                                 title="Codigo do cliente"
                                 value={person.clientCode}
-                                isLoading={isLoading}
-                                onSetText={handleSetPersonClientCode}
+                                validation={NOT_NULL_MARK}
                                 isDisabled={props.isForDisable}
+                                onSetText={handleSetPersonClientCode}
+                                onValidate={handleChangeFormValidation}
+                                validationMessage="O código não pode ficar em branco."
                             />
                         </FormRowColumn>
                     </FormRow>
@@ -225,6 +273,7 @@ export default function PersonForm(props: PersonFormProps) {
                                 value={person.cpf}
                                 isLoading={isLoading}
                                 validation={CPF_MARK}
+                                onBlur={handleAutoSave}
                                 onSetText={handleSetPersonCPF}
                                 isDisabled={props.isForDisable}
                                 validationMessage="O CPF está invalido"
@@ -241,6 +290,7 @@ export default function PersonForm(props: PersonFormProps) {
                                 value={person.rg}
                                 validation="number"
                                 isLoading={isLoading}
+                                onBlur={handleAutoSave}
                                 onSetText={handleSetPersonRG}
                                 isDisabled={props.isForDisable}
                             />
@@ -252,6 +302,7 @@ export default function PersonForm(props: PersonFormProps) {
                                 title="Emissor RG"
                                 isLoading={isLoading}
                                 value={person.rgIssuer}
+                                onBlur={handleAutoSave}
                                 isDisabled={props.isForDisable}
                                 onSetText={handleSetPersonRgIssuer}
                             />
@@ -264,6 +315,7 @@ export default function PersonForm(props: PersonFormProps) {
                                 id="naturalness"
                                 title="Naturalidade"
                                 isLoading={isLoading}
+                                onBlur={handleAutoSave}
                                 value={person.naturalness}
                                 isDisabled={props.isForDisable}
                                 onSetText={handleSetPersonNaturalness}
@@ -275,6 +327,7 @@ export default function PersonForm(props: PersonFormProps) {
                                 id="nationality"
                                 title="Nacionalidade"
                                 isLoading={isLoading}
+                                onBlur={handleAutoSave}
                                 value={person.nationality}
                                 isDisabled={props.isForDisable}
                                 onSetText={handleSetPersonNationality}
@@ -288,6 +341,7 @@ export default function PersonForm(props: PersonFormProps) {
                                 id="martial-status"
                                 title="Estado Civil"
                                 isLoading={isLoading}
+                                onBlur={handleAutoSave}
                                 value={person.maritalStatus}
                                 isDisabled={props.isForDisable}
                                 onSetText={handleSetPersonMaritalStatus}
@@ -300,6 +354,7 @@ export default function PersonForm(props: PersonFormProps) {
                                 id="profession"
                                 title="Profissão"
                                 isLoading={isLoading}
+                                onBlur={handleAutoSave}
                                 value={person.profession}
                                 isDisabled={props.isForDisable}
                                 onSetText={handleSetPersonProfession}
@@ -332,32 +387,13 @@ export default function PersonForm(props: PersonFormProps) {
                 <AddressForm
                     title="Endereço"
                     isLoading={isLoading}
+                    onBlur={handleAutoSave}
                     address={person.address}
                     setAddress={handleSetPersonAddress}
                     subtitle="Informações sobre o endereço"
                 />
 
-                <ActionButtonsForm
-                    isLeftOn
-                    isDisabled={!isFormValid}
-                    rightWindowText="Deseja confirmar as alterações?"
-                    isForOpenLeft={person.id !== "" && handleDiference()}
-                    isForOpenRight={person.id !== "" && handleDiference()}
-                    rightButtonText={person.id === "" ? "Salvar" : "Editar"}
-                    leftWindowText="Dejesa realmente voltar e descartar as alterações?"
-                    onLeftClick={(event) => {
-                        if (event) {
-                            event.preventDefault()
-                        }
-                        handleOnBack()
-                    }}
-                    onRightClick={(event) => {
-                        if (event) {
-                            event.preventDefault()
-                        }
-                        handleSave()
-                    }}
-                />
+                {handleActionBar()}
             </form>
         </>
     )

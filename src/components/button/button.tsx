@@ -65,21 +65,24 @@ export default function Button(props: ButtonProps) {
     }
 
     className = colorClassName + " " + className
+
     return (
         <>
             {props.isLink ? (
                 <a
-                    target={props.newTab && "_blank"}
                     href={props.href}
-                    className={className}>
+                    className={className}
+                    target={props.newTab && "_blank"}
+                >
                     {props.children}
                 </a>
             ) : (
                 <button
-                    disabled={props.isDisabled}
                     type={props.type}
+                    className={className}
                     onClick={props.onClick}
-                    className={className}>
+                    disabled={props.isDisabled}
+                >
                     {props.children}
                 </button>
             )

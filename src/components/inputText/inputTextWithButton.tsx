@@ -12,6 +12,7 @@ interface InputTextWithButtonProps {
     children?: any,
     isLoading?: boolean,
     isDisabled?: boolean,
+    onBlur?: (any?) => void,
     onClick?: (object, string) => void,
 }
 
@@ -57,15 +58,20 @@ export default function InputTextWithButton(props: InputTextWithButtonProps) {
 
                     <div className="mt-1 flex rounded-md shadow-sm">
                         <input
-                            id={props.id}
-                            disabled={props.isDisabled || props.isLoading}
+                            type="text"
                             value={text}
+                            id={props.id}
+                            className={classNameInput}
+                            disabled={props.isDisabled || props.isLoading}
+                            onBlur={(event) => {
+                                if (props.onBlur) {
+                                    props.onBlur(event)
+                                }
+                            }}
                             onChange={(event) => {
                                 let value = event.target.value
                                 setText(value)
                             }}
-                            type="text"
-                            className={classNameInput}
                         />
 
                         <button

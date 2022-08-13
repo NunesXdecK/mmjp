@@ -7,6 +7,7 @@ interface InputCheckboxProps {
     value?: boolean,
     isLoading?: boolean,
     isDisabled?: boolean,
+    onBlur?: (any?) => void,
     onSetText?: (string) => void,
 }
 export default function InputCheckbox(props: InputCheckboxProps) {
@@ -40,6 +41,11 @@ export default function InputCheckbox(props: InputCheckboxProps) {
                         checked={props.value}
                         className={classNameInput}
                         disabled={props.isDisabled || props.isLoading}
+                        onBlur={(event) => {
+                            if (props.onBlur) {
+                                props.onBlur(event)
+                            }
+                        }}
                         onChange={(event) => {
                             props.onSetText(!props.value)
                         }}

@@ -17,6 +17,7 @@ interface InputTextAreaProps {
     isAutoFocus?: boolean,
     children?: any,
     mask?: "cpf" | "rg" | "cnpj" | "currency" | "telephone" | "cep" | "perimeter" | "area" | "date",
+    onBlur?: (any?) => void,
     onChange?: (any) => void,
     onSetText?: (string) => void,
     onValidate?: (boolean) => void,
@@ -78,13 +79,18 @@ export default function InputTextArea(props: InputTextAreaProps) {
             <textarea
                 rows={3}
                 id={props.id}
-                value={props.value}
                 name={props.title}
+                value={props.value}
                 className={classNameInput}
                 maxLength={props.maxLength}
                 required={props.isRequired}
                 autoFocus={props.isAutoFocus}
                 disabled={props.isDisabled || props.isLoading}
+                onBlur={(event) => {
+                    if (props.onBlur) {
+                        props.onBlur(event)
+                    }
+                }}
                 onChange={(event) => {
                     let text = event.target.value
                     text = handleValidation(text)

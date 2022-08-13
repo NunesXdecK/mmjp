@@ -16,6 +16,7 @@ interface InputTextAutoCompleteProps {
     ref?: any,
     children?: any,
     sugestions?: any[],
+    onBlur?: (any?) => void,
     onChange?: (any) => void,
     onSetText?: (string) => void,
     onValidate?: (boolean) => void,
@@ -96,6 +97,11 @@ export default function InputTextAutoComplete(props: InputTextAutoCompleteProps)
                 maxLength={props.maxLength}
                 required={props.isRequired}
                 disabled={props.isDisabled || props.isLoading}
+                onBlur={(event) => {
+                    if (props.onBlur) {
+                        props.onBlur(event)
+                    }
+                }}
                 onChange={(event) => {
                     let text = event.target.value
                     text = handleValidation(text)

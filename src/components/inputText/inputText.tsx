@@ -20,9 +20,10 @@ interface InputTextProps {
     isAutoFocus?: boolean,
     children?: any,
     mask?: "cpf" | "rg" | "cnpj" | "currency" | "telephone" | "cep" | "perimeter" | "area" | "date",
+    onBlur?: (any?) => void,
     onChange?: (any) => void,
     onSetText?: (string) => void,
-    onValidate?: (boolean) => void,
+    onValidate?: (boolean?) => void,
 }
 
 const handleMountRG = (text, dig1, dig2) => {
@@ -119,12 +120,10 @@ export default function InputText(props: InputTextProps) {
         switch (props.validation) {
             case NOT_NULL_MARK:
                 test = handleValidationNotNull(text)
-                setIsValid(test)
                 break
             case TEXT_NOT_NULL_MARK:
                 text = text?.replaceAll(ONLY_CHARACTERS_PATTERN_TWO, '')
                 test = handleValidationNotNull(text)
-                setIsValid(test)
                 break
             case DATE_MARK:
                 text = handleRemoveDateMask(text)
@@ -136,12 +135,10 @@ export default function InputText(props: InputTextProps) {
                 } else {
                     test = false
                 }
-                setIsValid(test)
                 break
             case CEP_MARK:
                 text = handleRemoveCEPMask(text)
                 test = handleValidationNotNull(text)
-                setIsValid(test)
                 break
             case CPF_MARK:
                 text = text?.trim()
@@ -149,7 +146,6 @@ export default function InputText(props: InputTextProps) {
                 text = text?.replace(new RegExp(ONLY_SPECIAL_FOR_NUMBER_PATTERN), "")
                 text = text?.replace(new RegExp(ONLY_CHARACTERS_PATTERN), "")
                 test = new RegExp(CPF_PATTERN).test(text)
-                setIsValid(test)
                 break
             case CNPJ_MARK:
                 text = text?.trim()
@@ -157,25 +153,24 @@ export default function InputText(props: InputTextProps) {
                 text = text?.replace(new RegExp(ONLY_SPECIAL_FOR_NUMBER_PATTERN), "")
                 text = text?.replace(new RegExp(ONLY_CHARACTERS_PATTERN), "")
                 test = new RegExp(CNPJ_PATTERN).test(text)
-                setIsValid(test)
                 break
             case NUMBER_MARK:
                 text = text?.trim()
                 text = text?.replace(new RegExp(ONLY_SPECIAL_FOR_NUMBER_PATTERN), "")
                 text = text?.replace(new RegExp(ONLY_CHARACTERS_PATTERN), "")
-                setIsValid(test)
                 break
             case TELEPHONE_MARK:
                 text = text?.trim()
                 text = text?.replace(new RegExp(ONLY_CHARACTERS_PATTERN), "")
                 test = text?.length === 0 || (text.length > 13 && text.length < 16)
-                setIsValid(test)
                 break
         }
+        setIsValid(test)
 
         if (props.onValidate) {
             props.onValidate(test)
         }
+
         return text
     }
 
@@ -220,14 +215,19 @@ export default function InputText(props: InputTextProps) {
             </label>
             <input
                 id={props.id}
-                value={props.value}
                 name={props.title}
+                value={props.value}
                 type={props.type ?? "text"}
                 maxLength={props.maxLength}
+                required={props.isRequired}
                 autoFocus={props.isAutoFocus}
                 className={classNameInputLocal}
                 disabled={props.isDisabled || props.isLoading}
-                required={props.isRequired}
+                onBlur={(event) => {
+                    if (props.onBlur) {
+                        props.onBlur(event)
+                    }
+                }}
                 onChange={(event) => {
                     let text = event.target.value
                     text = handleValidation(text)

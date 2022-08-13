@@ -7,6 +7,7 @@ import Layout from "../components/layout/layout"
 import FormRowColumn from "../components/form/formRowColumn"
 import { ServicePayment, ServiceStage } from "../interfaces/objectInterfaces"
 import FeedbackMessageModal, { defaultFeedbackMessage, FeedbackMessage } from "../components/modal/feedbackMessageModal"
+import { handleIsEqual } from "../util/validationUtil"
 
 export default function Index() {
     const [isFirst, setIsFirst] = useState(false)

@@ -26,6 +26,7 @@ interface AddressFormProps {
     isForSelect?: boolean,
     setAddress?: any,
     address?: Address,
+    onBlur?: (any?) => void,
 }
 
 export default function AddressForm(props: AddressFormProps) {
@@ -113,10 +114,11 @@ export default function AddressForm(props: AddressFormProps) {
                             mask="cep"
                             title="CEP"
                             validation="cep"
-                            isLoading={isSearching || props.isLoading}
-                            isDisabled={isSearching || props.isLoading}
+                            onBlur={props.onBlur}
                             value={props.address.cep}
                             onSetText={handleOnChangeCep}
+                            isLoading={isSearching || props.isLoading}
+                            isDisabled={isSearching || props.isLoading}
                         />
                     </FormRowColumn>
 
@@ -124,10 +126,11 @@ export default function AddressForm(props: AddressFormProps) {
                         <InputText
                             id="public-place"
                             title="Logradouro"
-                            isLoading={isSearching || props.isLoading}
-                            isDisabled={isSearching || props.isLoading}
+                            onBlur={props.onBlur}
                             value={props.address.publicPlace}
                             onSetText={handleOnChangePublicPlace}
+                            isLoading={isSearching || props.isLoading}
+                            isDisabled={isSearching || props.isLoading}
                         />
                     </FormRowColumn>
                 </FormRow>
@@ -137,9 +140,10 @@ export default function AddressForm(props: AddressFormProps) {
                         <InputText
                             id="number"
                             title="Número"
+                            onBlur={props.onBlur}
                             isLoading={props.isLoading}
-                            isDisabled={props.isLoading}
                             value={props.address.number}
+                            isDisabled={props.isLoading}
                             onSetText={handleOnChangeNumber}
                         />
                     </FormRowColumn>
@@ -148,6 +152,7 @@ export default function AddressForm(props: AddressFormProps) {
                         <InputText
                             id="district"
                             title="Bairro"
+                            onBlur={props.onBlur}
                             isLoading={isSearching || props.isLoading}
                             isDisabled={isSearching || props.isLoading}
                             value={props.address.district}
@@ -159,10 +164,11 @@ export default function AddressForm(props: AddressFormProps) {
                         <InputText
                             id="county"
                             title="Cidade"
-                            isLoading={isSearching || props.isLoading}
-                            isDisabled={isSearching || props.isLoading}
+                            onBlur={props.onBlur}
                             value={props.address.county}
                             onSetText={handleOnChangeCounty}
+                            isLoading={isSearching || props.isLoading}
+                            isDisabled={isSearching || props.isLoading}
                         />
                     </FormRowColumn>
                 </FormRow>
@@ -172,10 +178,11 @@ export default function AddressForm(props: AddressFormProps) {
                         <InputText
                             id="complement"
                             title="Complemento"
-                            isLoading={isSearching || props.isLoading}
-                            isDisabled={isSearching || props.isLoading}
+                            onBlur={props.onBlur}
                             value={props.address.complement}
                             onSetText={handleOnChangeComplement}
+                            isLoading={isSearching || props.isLoading}
+                            isDisabled={isSearching || props.isLoading}
                         />
                     </FormRowColumn>
                 </FormRow>

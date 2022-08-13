@@ -11,8 +11,9 @@ interface InputSelectProps {
     isDisabled?: boolean,
     isRequired?: boolean,
     options?: string[],
-    onValidate?: (boolean) => void,
+    onBlur?: (any?) => void,
     onSetText?: (string) => void,
+    onValidate?: (boolean) => void,
 }
 export default function InputSelect(props: InputSelectProps) {
 
@@ -49,6 +50,11 @@ export default function InputSelect(props: InputSelectProps) {
                 className={classNameInput}
                 value={props.value.toLowerCase()}
                 disabled={props.isDisabled || props.isLoading}
+                onBlur={(event) => {
+                    if (props.onBlur) {
+                        props.onBlur(event)
+                    }
+                }}
                 onChange={(event) => {
                     props.onSetText(event.target.value)
                 }}
