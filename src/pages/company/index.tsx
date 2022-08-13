@@ -6,6 +6,7 @@ import CompanyForm from "../../components/form/companyForm"
 import { handlePrepareCompanyForShow } from "../../util/converterUtil"
 import { defaultCompany, Company } from "../../interfaces/objectInterfaces"
 import FeedbackMessageModal, { defaultFeedbackMessage, FeedbackMessage } from "../../components/modal/feedbackMessageModal"
+import CompanyView from "../../components/view/companyView"
 
 export default function Companies() {
     const [title, setTitle] = useState("Lista de empresas")
@@ -45,8 +46,15 @@ export default function Companies() {
         } else {
             feedbackMessage = { messages: ["Algo deu errado"], messageType: "ERROR" }
         }
+        const index = companies.indexOf(company)
+        const list = [
+            ...companies.slice(0, index),
+            ...companies.slice(index + 1, companies.length),
+        ]
+        setCompanies(list)
+        setCompaniesForShow(list)
+        setIsLoading(false)
         handleShowMessage(feedbackMessage)
-        handleBackClick()
     }
 
     const handleNewClick = () => {
@@ -128,7 +136,7 @@ export default function Companies() {
                         return (<p>{element.name}</p>)
                     }}
                     onInfo={(element: Company) => {
-                        return (<p>{element.name}</p>)
+                        return (<CompanyView classNameContentHolder="" id={element.id} />)
                     }}
                 />
             ) : (

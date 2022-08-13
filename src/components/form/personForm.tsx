@@ -32,13 +32,12 @@ interface PersonFormProps {
 }
 
 export default function PersonForm(props: PersonFormProps) {
-    const [personOriginal, setPersonOriginal] = useState<Person>(props?.person ?? defaultPerson)
     const [person, setPerson] = useState<Person>(props?.person ?? defaultPerson)
+    const [personOriginal, setPersonOriginal] = useState<Person>(props?.person ?? defaultPerson)
     const [isFormValid, setIsFormValid] = useState(handlePersonValidationForDB(person).validation)
 
     const [isLoading, setIsLoading] = useState(false)
     const [isMultiple, setIsMultiple] = useState(false)
-
     const [isAutoSaving, setIsAutoSaving] = useState(false)
 
     const handleSetPersonOldData = (value) => { setPerson({ ...person, oldData: value }) }

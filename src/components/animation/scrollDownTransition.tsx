@@ -8,6 +8,7 @@ interface ScrollDownTransitionProps {
 export default function ScrollDownTransition(props: ScrollDownTransitionProps) {
     return (
         <Transition.Root
+            className="w-full"
             show={props.isOpen}>
             <Transition.Child
                 enter="transform transition duration-500"

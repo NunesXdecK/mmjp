@@ -3,10 +3,10 @@ import { useEffect, useState } from "react"
 import List from "../../components/list/list"
 import Layout from "../../components/layout/layout"
 import PersonForm from "../../components/form/personForm"
+import PersonView from "../../components/view/personView"
 import { handlePreparePersonForShow } from "../../util/converterUtil"
 import { defaultPerson, Person } from "../../interfaces/objectInterfaces"
 import FeedbackMessageModal, { defaultFeedbackMessage, FeedbackMessage } from "../../components/modal/feedbackMessageModal"
-import PersonView from "../../components/view/personView"
 
 export default function Persons() {
     const [title, setTitle] = useState("Lista de pessoas")
@@ -46,8 +46,15 @@ export default function Persons() {
         } else {
             feedbackMessage = { messages: ["Algo deu errado"], messageType: "ERROR" }
         }
+        const index = persons.indexOf(person)
+        const list = [
+            ...persons.slice(0, index),
+            ...persons.slice(index + 1, persons.length),
+        ]
+        setPersons(list)
+        setPersonsForShow(list)
+        setIsLoading(false)
         handleShowMessage(feedbackMessage)
-        handleBackClick()
     }
 
     const handleNewClick = () => {
