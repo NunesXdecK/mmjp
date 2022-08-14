@@ -102,7 +102,6 @@ export default function ProfessionalForm(props: ProfessionalFormProps) {
             return
         }
         setIsAutoSaving(old => false)
-        setProfessional(old => res.professional)
         setProfessionalOriginal(old => res.professional)
     }
 
@@ -144,10 +143,10 @@ export default function ProfessionalForm(props: ProfessionalFormProps) {
             handleShowMessage(feedbackMessage)
             return
         }
-        setProfessional({ ...professionalForValid, id: res.id })
-        let professionalFromDB = { ...res.professional }
         const feedbackMessage: FeedbackMessage = { messages: ["Sucesso!"], messageType: "SUCCESS" }
         handleShowMessage(feedbackMessage)
+        setProfessional({ ...professionalForValid, id: res.id })
+        let professionalFromDB = { ...res.professional }
         if (isMultiple) {
             setProfessional(defaultProfessional)
         }

@@ -98,7 +98,6 @@ export default function PersonForm(props: PersonFormProps) {
             return
         }
         setIsAutoSaving(old => false)
-        setPerson(old => res.person)
         setPersonOriginal(old => res.person)
     }
 
@@ -141,10 +140,10 @@ export default function PersonForm(props: PersonFormProps) {
             handleShowMessage(feedbackMessage)
             return
         }
-        setPerson({ ...person, id: res.id })
-        let personFromDB = { ...res.person }
         const feedbackMessage: FeedbackMessage = { messages: ["Sucesso!"], messageType: "SUCCESS" }
         handleShowMessage(feedbackMessage)
+        setPerson({ ...person, id: res.id })
+        let personFromDB = { ...res.person }
         if (isMultiple) {
             setPerson(defaultPerson)
         }

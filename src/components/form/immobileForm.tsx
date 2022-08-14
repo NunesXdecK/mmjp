@@ -9,10 +9,12 @@ import InputCheckbox from "../inputText/inputCheckbox";
 import { FeedbackMessage } from "../modal/feedbackMessageModal";
 import InputImmobilePoints from "../inputText/inputImmobilePoints";
 import SelectPersonCompanyForm from "../select/selectPersonCompanyForm";
-import { handleImmobileValidationForDB } from "../../util/validationUtil";
+import { handleImmobileValidationForDB, handleIsEqual } from "../../util/validationUtil";
 import { defaultImmobile, Immobile } from "../../interfaces/objectInterfaces";
 import { NOT_NULL_MARK, NUMBER_MARK } from "../../util/patternValidationUtil";
 import { defaultElementFromBase, ElementFromBase, handlePrepareImmobileForDB } from "../../util/converterUtil";
+import ScrollDownTransition from "../animation/scrollDownTransition";
+import FeedbackMessageSaveText from "../modal/feedbackMessageSavingText";
 
 interface ImmobileFormProps {
     title?: string,
@@ -37,6 +39,7 @@ export default function ImmobileForm(props: ImmobileFormProps) {
 
     const [isLoading, setIsLoading] = useState(false)
     const [isMultiple, setIsMultiple] = useState(false)
+    const [isAutoSaving, setIsAutoSaving] = useState(false)
 
     const [oldData, setOldData] = useState<ElementFromBase>(props?.immobile?.oldData ?? defaultElementFromBase)
 
@@ -49,79 +52,122 @@ export default function ImmobileForm(props: ImmobileFormProps) {
     const handleSetImmobileAddress = (value) => { setImmobile({ ...immobile, address: value }) }
     const handleSetImmobilePerimeter = (value) => { setImmobile({ ...immobile, perimeter: value }) }
 
-    const handleDiference = (): boolean => {
-        let hasDiference = false
-        Object.keys(immobileOriginal)?.map((element, index) => {
-            if (immobile[element] !== immobileOriginal[element]) {
-                hasDiference = true
-            }
-        })
-        return hasDiference
-    }
-
     const handleOnBack = () => {
         if (props.onBack) {
             props.onBack()
         }
     }
 
+    const handleDiference = (): boolean => {
+        return !handleIsEqual(immobile, immobileOriginal)
+    }
+
     const handleChangeFormValidation = (isValid) => {
         setIsFormValid(isValid)
     }
 
+    const handleShowMessage = (feedbackMessage: FeedbackMessage) => {
+        if (props.onShowMessage) {
+            props.onShowMessage(feedbackMessage)
+        }
+    }
+
+    const handleAutoSave = async (event) => {
+        if (!props.canAutoSave) {
+            return
+        }
+        if (event.relatedTarget?.tagName?.toLowerCase() !== ("input" || "select" || "textarea")) {
+            return
+        }
+        if (isAutoSaving) {
+            return
+        }
+        if (!handleDiference()) {
+            return
+        }
+        const isValid = handleImmobileValidationForDB(immobile)
+        if (!isValid.validation) {
+            return
+        }
+        setIsAutoSaving(old => true)
+        const res = await handleSaveInner(immobile)
+        if (res.status === "ERROR") {
+            return
+        }
+        setIsAutoSaving(old => false)
+        setImmobileOriginal(old => res.immobile)
+    }
+
+    const handleSaveInner = async (immobile) => {
+        let res = { status: "ERROR", id: "", immobile: immobile }
+        let immobileForDB = handlePrepareImmobileForDB(immobile)
+        try {
+            const saveRes = await fetch("api/immobile", {
+                method: "POST",
+                body: JSON.stringify({ token: "tokenbemseguro", data: immobileForDB }),
+            }).then((res) => res.json())
+            res = { ...res, status: "SUCCESS", id: saveRes.id, immobile: { ...immobile, id: saveRes.id } }
+        } catch (e) {
+            console.error("Error adding document: ", e)
+        }
+        return res
+    }
+
     const handleSave = async () => {
+        if (isAutoSaving) {
+            return
+        }
+        const isValid = handleImmobileValidationForDB(immobile)
+        if (!isValid.validation) {
+            const feedbackMessage: FeedbackMessage = { messages: isValid.messages, messageType: "ERROR" }
+            handleShowMessage(feedbackMessage)
+            return
+        }
         setIsLoading(true)
-        let feedbackMessage: FeedbackMessage = { messages: ["Algo estranho aconteceu"], messageType: "WARNING" }
-        let immobileForDB = { ...immobile }
-        const isValid = handleImmobileValidationForDB(immobileForDB)
-        if (isValid.validation) {
-            immobileForDB = handlePrepareImmobileForDB(immobileForDB)
-            let nowID = immobileForDB?.id ?? ""
-            const isSave = nowID === ""
-            let res = { status: "ERROR", id: nowID, message: "" }
-            if (isSave) {
-                feedbackMessage = { ...feedbackMessage, messages: ["Salvo com sucesso!"], messageType: "SUCCESS" }
-            } else {
-                feedbackMessage = { ...feedbackMessage, messages: ["Atualizado com sucesso!"], messageType: "SUCCESS" }
-            }
-            try {
-                res = await fetch("api/immobile", {
-                    method: "POST",
-                    body: JSON.stringify({ token: "tokenbemseguro", data: immobileForDB }),
-                }).then((res) => res.json())
-            } catch (e) {
-                if (isSave) {
-                    feedbackMessage = { ...feedbackMessage, messages: ["Erro em salvar!"], messageType: "ERROR" }
-                } else {
-                    feedbackMessage = { ...feedbackMessage, messages: ["Erro em Atualizadar!"], messageType: "ERROR" }
-                }
-                console.error("Error adding document: ", e)
-            }
-            if (res.status === "SUCCESS") {
-                setImmobile({ ...immobile, id: res.id })
-                immobileForDB = { ...immobileForDB, id: res.id }
-
-                if (isMultiple) {
-                    setImmobile(defaultImmobile)
-                }
-
-                if (!isMultiple && props.onAfterSave) {
-                    props.onAfterSave(feedbackMessage, immobileForDB)
-                }
-            } else {
-                feedbackMessage = { ...feedbackMessage, messages: ["Erro!"], messageType: "ERROR" }
-            }
-
-            if (props.onShowMessage) {
-                props.onShowMessage(feedbackMessage)
-            }
-        } else {
-            feedbackMessage = { ...feedbackMessage, messages: isValid.messages, messageType: "ERROR" }
-            if (props.onShowMessage) {
-                props.onShowMessage(feedbackMessage)
-            }
+        let res = await handleSaveInner(immobile)
+        if (res.status === "ERROR") {
+            const feedbackMessage: FeedbackMessage = { messages: ["Algo deu errado!"], messageType: "ERROR" }
+            handleShowMessage(feedbackMessage)
+            return
+        }
+        const feedbackMessage: FeedbackMessage = { messages: ["Sucesso!"], messageType: "SUCCESS" }
+        handleShowMessage(feedbackMessage)
+        setImmobile({ ...immobile, id: res.id })
+        let immobileFromDB = { ...res.immobile }
+        if (isMultiple) {
+            setImmobile(defaultImmobile)
+        }
+        if (!isMultiple && props.onAfterSave) {
+            props.onAfterSave(feedbackMessage, immobileFromDB)
         }
         setIsLoading(false)
+    }
+
+    const handleActionBar = () => {
+        return (
+            <ActionButtonsForm
+                isLeftOn
+                isForBackControl
+                isDisabled={!isFormValid || isAutoSaving}
+                rightWindowText="Deseja confirmar as alterações?"
+                isForOpenLeft={immobile.id !== "" && handleDiference()}
+                isForOpenRight={immobile.id !== "" && handleDiference()}
+                rightButtonText={immobile.id === "" ? "Salvar" : "Editar"}
+                leftWindowText="Dejesa realmente voltar e descartar as alterações?"
+                onLeftClick={(event) => {
+                    if (event) {
+                        event.preventDefault()
+                    }
+                    handleOnBack()
+                }}
+                onRightClick={(event) => {
+                    if (event) {
+                        event.preventDefault()
+                    }
+                    handleSave()
+                }}
+            />
+        )
     }
 
     return (
@@ -132,28 +178,17 @@ export default function ImmobileForm(props: ImmobileFormProps) {
                         event.preventDefault()
                     }
                 }}>
-                <ActionButtonsForm
-                    isLeftOn
-                    isForBackControl
-                    isDisabled={!isFormValid}
-                    rightWindowText="Deseja confirmar as alterações?"
-                    isForOpenLeft={immobile.id !== "" && handleDiference()}
-                    isForOpenRight={immobile.id !== "" && handleDiference()}
-                    rightButtonText={immobile.id === "" ? "Salvar" : "Editar"}
-                    leftWindowText="Dejesa realmente voltar e descartar as alterações?"
-                    onLeftClick={(event) => {
-                        if (event) {
-                            event.preventDefault()
-                        }
-                        handleOnBack()
-                    }}
-                    onRightClick={(event) => {
-                        if (event) {
-                            event.preventDefault()
-                        }
-                        handleSave()
-                    }}
-                />
+
+                {handleActionBar()}
+
+                <ScrollDownTransition
+                    isOpen={isAutoSaving}>
+                    <Form>
+                        <FeedbackMessageSaveText
+                            isOpen={true}
+                        />
+                    </Form>
+                </ScrollDownTransition>
 
                 <Form
                     title={props.title}
@@ -181,6 +216,7 @@ export default function ImmobileForm(props: ImmobileFormProps) {
                                 value={immobile.name}
                                 isLoading={isLoading}
                                 title="Nome do imóvel"
+                                onBlur={handleAutoSave}
                                 validation={NOT_NULL_MARK}
                                 isDisabled={props.isForDisable}
                                 onSetText={handleSetImmobileName}
@@ -206,6 +242,7 @@ export default function ImmobileForm(props: ImmobileFormProps) {
                                 title="Gleba"
                                 value={immobile.land}
                                 isLoading={isLoading}
+                                onBlur={handleAutoSave}
                                 isDisabled={props.isForDisable}
                                 onSetText={handleSetImmobileLand}
                                 onValidate={handleChangeFormValidation}
@@ -219,6 +256,7 @@ export default function ImmobileForm(props: ImmobileFormProps) {
                                 title="Município/UF"
                                 isLoading={isLoading}
                                 value={immobile.county}
+                                onBlur={handleAutoSave}
                                 isDisabled={props.isForDisable}
                                 onSetText={handleSetImmobileCounty}
                                 onValidate={handleChangeFormValidation}
@@ -235,6 +273,7 @@ export default function ImmobileForm(props: ImmobileFormProps) {
                                 title="Área"
                                 isLoading={isLoading}
                                 value={immobile.area}
+                                onBlur={handleAutoSave}
                                 validation={NUMBER_MARK}
                                 isDisabled={props.isForDisable}
                                 onSetText={handleSetImmobileArea}
@@ -249,6 +288,7 @@ export default function ImmobileForm(props: ImmobileFormProps) {
                                 mask="perimeter"
                                 title="Perímetro"
                                 isLoading={isLoading}
+                                onBlur={handleAutoSave}
                                 validation={NUMBER_MARK}
                                 value={immobile.perimeter}
                                 isDisabled={props.isForDisable}
@@ -296,27 +336,7 @@ export default function ImmobileForm(props: ImmobileFormProps) {
                     subtitle="Informações sobre o endereço"
                 />
 
-                <ActionButtonsForm
-                    isLeftOn
-                    isDisabled={!isFormValid}
-                    rightWindowText="Deseja confirmar as alterações?"
-                    isForOpenLeft={immobile.id !== "" && handleDiference()}
-                    isForOpenRight={immobile.id !== "" && handleDiference()}
-                    rightButtonText={immobile.id === "" ? "Salvar" : "Editar"}
-                    leftWindowText="Dejesa realmente voltar e descartar as alterações?"
-                    onLeftClick={(event) => {
-                        if (event) {
-                            event.preventDefault()
-                        }
-                        handleOnBack()
-                    }}
-                    onRightClick={(event) => {
-                        if (event) {
-                            event.preventDefault()
-                        }
-                        handleSave()
-                    }}
-                />
+                {handleActionBar()}
             </form>
         </>
     )

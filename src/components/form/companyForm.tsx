@@ -93,7 +93,6 @@ export default function CompanyForm(props: CompanyFormProps) {
             return
         }
         setIsAutoSaving(old => false)
-        setCompany(old => res.company)
         setCompanyOriginal(old => res.company)
     }
 
@@ -129,10 +128,10 @@ export default function CompanyForm(props: CompanyFormProps) {
             handleShowMessage(feedbackMessage)
             return
         }
-        setCompany({ ...company, id: res.id })
-        let companyFromDB = { ...res.company }
         const feedbackMessage: FeedbackMessage = { messages: ["Sucesso!"], messageType: "SUCCESS" }
         handleShowMessage(feedbackMessage)
+        setCompany({ ...company, id: res.id })
+        let companyFromDB = { ...res.company }
         if (isMultiple) {
             setCompany(defaultCompany)
         }

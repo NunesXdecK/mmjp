@@ -6,6 +6,7 @@ import CompanyView from "./companyView"
 import { useEffect, useState } from "react"
 import InfoHolderView from "./infoHolderView"
 import PlaceholderItemList from "../list/placeholderItemList"
+import { handleMountNumberCurrency } from "../../util/maskUtil"
 import ScrollDownTransition from "../animation/scrollDownTransition"
 import { ChevronDownIcon, ChevronRightIcon } from "@heroicons/react/outline"
 import { defaultImmobile, Immobile } from "../../interfaces/objectInterfaces"
@@ -34,9 +35,20 @@ export default function ImmobileView(props: ImmobileViewProps) {
     const hasData = hasHideData || immobile?.name?.length
 
     const handlePutData = () => {
+        let list = immobile?.owners?.sort((elementOne, elementTwo) => {
+            let dateOne = 0
+            let dateTwo = 0
+            if ("dateInsertUTC" in elementOne) {
+                dateOne = elementOne.dateInsertUTC
+            }
+            if ("dateInsertUTC" in elementTwo) {
+                dateTwo = elementTwo.dateInsertUTC
+            }
+            return dateOne - dateTwo
+        }) ?? []
         return (
             <div className="w-full">
-                {immobile.owners?.map((owner, index) => (
+                {list.map((owner, index) => (
                     <>
                         {owner && "cpf" in owner && (
                             <>
@@ -117,13 +129,16 @@ export default function ImmobileView(props: ImmobileViewProps) {
                                     </Button>
                                 )}
                                 <InfoView title="Nome" info={immobile.name} />
+                                <InfoView title="Status" info={immobile.status} />
                                 <ScrollDownTransition isOpen={isShowInfo}>
                                     <InfoHolderView
                                         hideBorder
                                         hidePaddingMargin
                                     >
-                                        <InfoView title="Área" info={immobile.area} />
-                                        <InfoView title="Perimetro" info={immobile.perimeter} />
+                                        <InfoView title="Gleba" info={immobile.land} />
+                                        <InfoView title="Município/UF" info={immobile.county} />
+                                        <InfoView title="Área" info={handleMountNumberCurrency(immobile.area, ".", ",", 3, 2)} />
+                                        <InfoView title="Perimetro" info={handleMountNumberCurrency(immobile.perimeter, ".", ",", 3, 4)} />
                                         {props.dataInside && handlePutData()}
                                     </InfoHolderView>
                                 </ScrollDownTransition>
