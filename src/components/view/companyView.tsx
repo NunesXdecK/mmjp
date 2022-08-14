@@ -19,6 +19,7 @@ interface CompanyViewProps {
     dataInside?: boolean,
     hideBorder?: boolean,
     canShowHideData?: boolean,
+    hidePaddingMargin?: boolean,
     company?: Company,
 }
 
@@ -49,7 +50,6 @@ export default function CompanyView(props: CompanyViewProps) {
                 ))}
                 <AddressView
                     address={company.address}
-                    classNameHolder={"w-full"}
                 />
             </div>
         )
@@ -79,8 +79,9 @@ export default function CompanyView(props: CompanyViewProps) {
                             <InfoHolderView
                                 hideBorder={props.hideBorder}
                                 classNameTitle={props.classNameTitle}
-                                title={props.title ?? "Dados empresariais"}
                                 classNameHolder={props.classNameHolder}
+                                title={props.title ?? "Dados empresariais"}
+                                hidePaddingMargin={props.hidePaddingMargin}
                                 classNameContentHolder={props.classNameContentHolder}
                             >
                                 {props.canShowHideData && props.hideData && hasHideData && (
@@ -104,8 +105,7 @@ export default function CompanyView(props: CompanyViewProps) {
                                 <ScrollDownTransition isOpen={isShowInfo}>
                                     <InfoHolderView
                                         hideBorder
-                                        classNameHolder="pb-0 pt-0 px-0 mt-0"
-                                        classNameContentHolder="py-0 px-0 mt-0"
+                                        hidePaddingMargin
                                     >
                                         {company.telephones?.length > 0 && (<p className="font-semibold">Telefones:</p>)}
                                         {company.telephones?.map((element, index) => (

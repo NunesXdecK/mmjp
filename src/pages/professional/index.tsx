@@ -136,6 +136,7 @@ export default function Professionals() {
                                 title=""
                                 hideData
                                 hideBorder
+                                hidePaddingMargin
                                 professional={element}
                                 classNameHolder="pb-0 pt-0 px-0 mt-0"
                                 classNameContentHolder="py-0 px-0 mt-0"

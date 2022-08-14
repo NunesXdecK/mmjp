@@ -17,6 +17,7 @@ interface ProfessionalViewProps {
     dataInside?: boolean,
     hideBorder?: boolean,
     canShowHideData?: boolean,
+    hidePaddingMargin?: boolean,
     professional?: Professional,
 }
 
@@ -35,9 +36,9 @@ export default function ProfessionalView(props: ProfessionalViewProps) {
                     hideData
                     dataInside
                     canShowHideData
-                    person={professional.person}
                     title={"Dados pessoais"}
                     addressTitle={"Endereço"}
+                    person={professional.person}
                 />
             </div>
         )
@@ -67,8 +68,9 @@ export default function ProfessionalView(props: ProfessionalViewProps) {
                             <InfoHolderView
                                 hideBorder={props.hideBorder}
                                 classNameTitle={props.classNameTitle}
-                                title={props.title ?? "Dados profissionais"}
                                 classNameHolder={props.classNameHolder}
+                                hidePaddingMargin={props.hidePaddingMargin}
+                                title={props.title ?? "Dados profissionais"}
                                 classNameContentHolder={props.classNameContentHolder}
                             >
                                 {props.canShowHideData && props.hideData && hasHideData && (
@@ -89,9 +91,8 @@ export default function ProfessionalView(props: ProfessionalViewProps) {
                                 {professional.title && (<p><span className="font-semibold">Titulo:</span> {professional.title}</p>)}
                                 <ScrollDownTransition isOpen={isShowInfo}>
                                     <InfoHolderView
-                                        classNameHolder="pb-0 pt-0 px-0 mt-0"
-                                        classNameContentHolder="py-0 px-0 mt-0"
-                                        hideBorder={true}
+                                        hideBorder
+                                        hidePaddingMargin
                                     >
                                         {professional.creaNumber && (<p><span className="font-semibold">CREA:</span> {professional.creaNumber}</p>)}
                                         {professional.credentialCode && (<p><span className="font-semibold">Código credencial:</span> {professional.credentialCode}</p>)}

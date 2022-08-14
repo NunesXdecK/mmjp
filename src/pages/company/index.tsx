@@ -139,6 +139,7 @@ export default function Companies() {
                                 hideData
                                 hideBorder
                                 company={element}
+                                hidePaddingMargin
                                 classNameHolder="pb-0 pt-0 px-0 mt-0"
                                 classNameContentHolder="py-0 px-0 mt-0"
                             />

@@ -19,6 +19,7 @@ interface PersonViewProps {
     dataInside?: boolean,
     hideBorder?: boolean,
     canShowHideData?: boolean,
+    hidePaddingMargin?: boolean,
     person?: Person,
 }
 
@@ -47,9 +48,6 @@ export default function PersonView(props: PersonViewProps) {
             <AddressView
                 address={person.address}
                 title={props.addressTitle}
-                classNameTitle={props.classNameTitle}
-                classNameHolder={props.classNameHolder + " w-full"}
-                classNameContentHolder={props.classNameContentHolder}
             />
         )
     }
@@ -79,6 +77,7 @@ export default function PersonView(props: PersonViewProps) {
                                 classNameTitle={props.classNameTitle}
                                 title={props.title ?? "Dados pessoais"}
                                 classNameHolder={props.classNameHolder}
+                                hidePaddingMargin={props.hidePaddingMargin}
                                 classNameContentHolder={props.classNameContentHolder}
                             >
                                 {props.canShowHideData && props.hideData && hasHideData && (
@@ -101,9 +100,8 @@ export default function PersonView(props: PersonViewProps) {
                                 {person.cpf && (<p><span className="font-semibold">CPF:</span> {handleMaskCPF(person.cpf)}</p>)}
                                 <ScrollDownTransition isOpen={isShowInfo}>
                                     <InfoHolderView
-                                        classNameHolder="pb-0 pt-0 px-0 mt-0"
-                                        classNameContentHolder="py-0 px-0 mt-0"
-                                        hideBorder={true}
+                                        hideBorder
+                                        hidePaddingMargin
                                     >
                                         {person.rg && (<p><span className="font-semibold">RG:</span> {person.rg} {person.rgIssuer && " " + person.rgIssuer}</p>)}
                                         {person.naturalness && (<p><span className="font-semibold">Naturalidade:</span> {person.naturalness}</p>)}

@@ -137,6 +137,7 @@ export default function Persons() {
                                 title=""
                                 hideData
                                 hideBorder
+                                hidePaddingMargin
                                 person={element}
                                 classNameHolder="pb-0 pt-0 px-0 mt-0"
                                 classNameContentHolder="py-0 px-0 mt-0"
