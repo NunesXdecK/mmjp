@@ -14,19 +14,19 @@ export default function InfoHolderView(props: InfoHolderViewProps) {
     let classNameContentHolder = "mt-6 flex flex-row flex-wrap place-items-center gap-4"
 
     if (props.hideBorder) {
-        classNameHolder = classNameHolder + " border-none"
+        classNameHolder = " border-none " + classNameHolder
     }
 
     if (props.classNameHolder) {
-        classNameHolder = classNameHolder + " " + props.classNameHolder
+        classNameHolder = props.classNameHolder + " " + classNameHolder
     }
 
     if (props.classNameTitle) {
-        classNameTitle = classNameTitle + " " + props.classNameTitle
+        classNameTitle = props.classNameTitle + " " + classNameTitle
     }
 
     if (props.classNameContentHolder) {
-        classNameContentHolder = classNameContentHolder + " " + props.classNameContentHolder
+        classNameContentHolder = props.classNameContentHolder + " " + classNameContentHolder
     }
 
     return (
