@@ -47,7 +47,7 @@ export default function CompanyView(props: CompanyViewProps) {
                         canShowHideData
                         key={index + owner.id}
                         title={"Dados do proprietário " + (index + 1)}
-                        addressTitle={"Endereço do proprietário " + (index + 1)}
+                        addressTitle={"Endereço"}
                     />
                 ))}
                 <AddressView
