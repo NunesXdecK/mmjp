@@ -1,15 +1,16 @@
 import InfoView from "./infoView"
 import Button from "../button/button"
+import PersonView from "./personView"
 import AddressView from "./addressView"
+import CompanyView from "./companyView"
 import { useEffect, useState } from "react"
 import InfoHolderView from "./infoHolderView"
 import PlaceholderItemList from "../list/placeholderItemList"
 import ScrollDownTransition from "../animation/scrollDownTransition"
-import { handleMaskCPF, handleMaskTelephone } from "../../util/maskUtil"
-import { defaultPerson, Person } from "../../interfaces/objectInterfaces"
 import { ChevronDownIcon, ChevronRightIcon } from "@heroicons/react/outline"
+import { defaultImmobile, Immobile } from "../../interfaces/objectInterfaces"
 
-interface PersonViewProps {
+interface ImmobileViewProps {
     id?: string,
     title?: string,
     addressTitle?: string,
@@ -21,51 +22,70 @@ interface PersonViewProps {
     hideBorder?: boolean,
     canShowHideData?: boolean,
     hidePaddingMargin?: boolean,
-    person?: Person,
+    immobile?: Immobile,
 }
 
-export default function PersonView(props: PersonViewProps) {
+export default function ImmobileView(props: ImmobileViewProps) {
     const [isFirst, setIsFirst] = useState(true)
     const [isShowInfo, setIsShowInfo] = useState(props.hideData ? false : true)
-    const [person, setPerson] = useState<Person>(props.person ?? defaultPerson)
+    const [immobile, setImmobile] = useState<Immobile>(props.immobile ?? defaultImmobile)
 
-    const hasHideData =
-        person.rg?.length ||
-        person.rgIssuer?.length ||
-        person.naturalness?.length ||
-        person.profession?.length ||
-        person.nationality?.length ||
-        person.maritalStatus?.length ||
-        person.telephones?.length > 0
-
-    const hasData =
-        hasHideData ||
-        person.cpf?.length ||
-        person.name?.length ||
-        person.clientCode?.length
+    const hasHideData = immobile.owners?.length > 0
+    const hasData = hasHideData || immobile?.name?.length
 
     const handlePutData = () => {
         return (
-            <AddressView
-                address={person.address}
-                title={props.addressTitle}
-            />
+            <div className="w-full">
+                {immobile.owners?.map((owner, index) => (
+                    <>
+                        {owner && "cpf" in owner && (
+                            <>
+                                <PersonView
+                                    hideData
+                                    dataInside
+                                    canShowHideData
+                                    person={owner}
+                                    addressTitle={"Endereço"}
+                                    title={"Dados do proprietário " + (index + 1)}
+                                />
+                            </>
+                        )}
+                        {owner && "cnpj" in owner && (
+                            <>
+                                <CompanyView
+                                    hideData
+                                    dataInside
+                                    canShowHideData
+                                    id={owner.id}
+                                    addressTitle={"Endereço"}
+                                    title={"Dados do proprietário " + (index + 1)}
+                                />
+                            </>
+                        )}
+                    </>
+                ))}
+                <AddressView
+                    address={immobile.address}
+                    title={props.addressTitle}
+                />
+            </div>
         )
     }
 
     useEffect(() => {
         if (isFirst) {
-            if (props.id && props.id.length !== 0 && person.id?.length === 0) {
-                fetch("api/person/" + props.id).then((res) => res.json()).then((res) => {
-                    setPerson(res.data)
+            if (props.id && props.id.length !== 0 && immobile.id?.length === 0) {
+                fetch("api/immobile/" + props.id).then((res) => res.json()).then((res) => {
+                    setImmobile(res.data)
                     setIsFirst(false)
                 })
             }
         }
     })
+
     return (
         <>
-            {person.id?.length === 0 ? (
+            {immobile.id?.length === 0 ? (
                 <div className="mt-6">
                     <PlaceholderItemList />
                 </div>
@@ -76,9 +96,9 @@ export default function PersonView(props: PersonViewProps) {
                             <InfoHolderView
                                 hideBorder={props.hideBorder}
                                 classNameTitle={props.classNameTitle}
-                                title={props.title ?? "Dados pessoais"}
                                 classNameHolder={props.classNameHolder}
                                 hidePaddingMargin={props.hidePaddingMargin}
+                                title={props.title ?? "Dados básicos"}
                                 classNameContentHolder={props.classNameContentHolder}
                             >
                                 {props.canShowHideData && props.hideData && hasHideData && (
@@ -96,29 +116,14 @@ export default function PersonView(props: PersonViewProps) {
                                         )}
                                     </Button>
                                 )}
-                                <InfoView title="Codigo de cliente" info={person.clientCode} />
-                                <InfoView title="Nome" info={person.name} />
-                                <InfoView title="CPF" info={handleMaskCPF(person.cpf)} />
+                                <InfoView title="Nome" info={immobile.name} />
                                 <ScrollDownTransition isOpen={isShowInfo}>
                                     <InfoHolderView
                                         hideBorder
                                         hidePaddingMargin
                                     >
-                                        {person.rg?.length > 0 && (
-                                            <InfoView title="RG" info={person.rg + " " + (person.rgIssuer && " " + person.rgIssuer)} />
-                                        )}
-                                        <InfoView title="Naturalidade" info={person.naturalness} />
-                                        <InfoView title="Nacionalidade" info={person.nationality} />
-                                        <InfoView title="Estado civil" info={person.maritalStatus} />
-                                        <InfoView title="Profissão" info={person.profession} />
-                                        {person.telephones?.length > 0 && (
-                                            <>
-                                                <InfoView title="Telefones" info=" " />
-                                                {person.telephones?.map((element, index) => (
-                                                    <InfoView key={index + element} title="" info={handleMaskTelephone(element)} />
-                                                ))}
-                                            </>
-                                        )}
+                                        <InfoView title="Área" info={immobile.area} />
+                                        <InfoView title="Perimetro" info={immobile.perimeter} />
                                         {props.dataInside && handlePutData()}
                                     </InfoHolderView>
                                 </ScrollDownTransition>

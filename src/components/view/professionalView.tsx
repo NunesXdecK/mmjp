@@ -1,3 +1,4 @@
+import InfoView from "./infoView"
 import Button from "../button/button"
 import PersonView from "./personView"
 import { useEffect, useState } from "react"
@@ -88,14 +89,14 @@ export default function ProfessionalView(props: ProfessionalViewProps) {
                                         )}
                                     </Button>
                                 )}
-                                {professional.title && (<p><span className="font-semibold">Titulo:</span> {professional.title}</p>)}
+                                <InfoView title="Titulo" info={professional.title} />
                                 <ScrollDownTransition isOpen={isShowInfo}>
                                     <InfoHolderView
                                         hideBorder
                                         hidePaddingMargin
                                     >
-                                        {professional.creaNumber && (<p><span className="font-semibold">CREA:</span> {professional.creaNumber}</p>)}
-                                        {professional.credentialCode && (<p><span className="font-semibold">Código credencial:</span> {professional.credentialCode}</p>)}
+                                        <InfoView title="CREA" info={professional.creaNumber} />
+                                        <InfoView title="Código credencial" info={professional.credentialCode} />
                                         {props.dataInside && handlePutData()}
                                     </InfoHolderView>
                                 </ScrollDownTransition>

@@ -18,6 +18,7 @@ interface ImmobileFormProps {
     title?: string,
     subtitle?: string,
     isBack?: boolean,
+    canAutoSave?: boolean,
     canMultiple?: boolean,
     isForSelect?: boolean,
     isForDisable?: boolean,

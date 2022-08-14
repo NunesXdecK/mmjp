@@ -1,3 +1,4 @@
+import InfoView from "./infoView"
 import Button from "../button/button"
 import PersonView from "./personView"
 import AddressView from "./addressView"
@@ -5,13 +6,14 @@ import { useEffect, useState } from "react"
 import InfoHolderView from "./infoHolderView"
 import PlaceholderItemList from "../list/placeholderItemList"
 import ScrollDownTransition from "../animation/scrollDownTransition"
-import { handleMaskCPF, handleMaskTelephone } from "../../util/maskUtil"
+import { handleMaskCNPJ, handleMaskTelephone } from "../../util/maskUtil"
 import { defaultCompany, Company } from "../../interfaces/objectInterfaces"
 import { ChevronDownIcon, ChevronRightIcon } from "@heroicons/react/outline"
 
 interface CompanyViewProps {
     id?: string,
     title?: string,
+    addressTitle?: string,
     classNameTitle?: string,
     classNameHolder?: string,
     classNameContentHolder?: string,
@@ -50,6 +52,7 @@ export default function CompanyView(props: CompanyViewProps) {
                 ))}
                 <AddressView
                     address={company.address}
+                    title={props.addressTitle}
                 />
             </div>
         )
@@ -99,18 +102,22 @@ export default function CompanyView(props: CompanyViewProps) {
                                         )}
                                     </Button>
                                 )}
-                                {company.clientCode && (<p><span className="font-semibold">Codigo de cliente:</span> {company.clientCode}</p>)}
-                                {company.name && (<p><span className="font-semibold">Nome:</span> {company.name}</p>)}
-                                {company.cnpj && (<p><span className="font-semibold">CPF:</span> {handleMaskCPF(company.cnpj)}</p>)}
+                                <InfoView title="Codigo de cliente" info={company.clientCode} />
+                                <InfoView title="Nome" info={company.name} />
+                                <InfoView title="CNPJ" info={handleMaskCNPJ(company.cnpj)} />
                                 <ScrollDownTransition isOpen={isShowInfo}>
                                     <InfoHolderView
                                         hideBorder
                                         hidePaddingMargin
                                     >
-                                        {company.telephones?.length > 0 && (<p className="font-semibold">Telefones:</p>)}
-                                        {company.telephones?.map((element, index) => (
-                                            <p key={index + element}>{handleMaskTelephone(element)}</p>
-                                        ))}
+                                        {company.telephones?.length > 0 && (
+                                            <>
+                                                <InfoView title="Telefones" info=" " />
+                                                {company.telephones?.map((element, index) => (
+                                                    <InfoView key={index + element} title="" info={handleMaskTelephone(element)} />
+                                                ))}
+                                            </>
+                                        )}
                                         {props.dataInside && handlePutData()}
                                     </InfoHolderView>
                                 </ScrollDownTransition>

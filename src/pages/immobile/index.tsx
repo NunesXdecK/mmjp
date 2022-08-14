@@ -5,6 +5,7 @@ import Layout from "../../components/layout/layout"
 import ImmobileForm from "../../components/form/immobileForm"
 import { defaultImmobile, Immobile } from "../../interfaces/objectInterfaces"
 import FeedbackMessageModal, { defaultFeedbackMessage, FeedbackMessage } from "../../components/modal/feedbackMessageModal"
+import ImmobileView from "../../components/view/immobileView"
 
 export default function Immobiles() {
     const [title, setTitle] = useState("Lista de imóveis")
@@ -44,8 +45,15 @@ export default function Immobiles() {
         } else {
             feedbackMessage = { messages: ["Algo deu errado"], messageType: "ERROR" }
         }
+        const index = immobiles.indexOf(immobile)
+        const list = [
+            ...immobiles.slice(0, index),
+            ...immobiles.slice(index + 1, immobiles.length),
+        ]
+        setImmobiles(list)
+        setImmobilesForShow(list)
+        setIsLoading(false)
         handleShowMessage(feedbackMessage)
-        handleBackClick()
     }
 
     const handleNewClick = () => {
@@ -123,15 +131,23 @@ export default function Immobiles() {
                     onDeleteClick={handleDeleteClick}
                     deleteWindowTitle={"Deseja realmente deletar " + immobile.name + "?"}
                     onTitle={(element: Immobile) => {
-                        return (<p>{element.name}</p>)
+                        return (
+                            <ImmobileView
+                                title=""
+                                hideData
+                                hideBorder
+                                hidePaddingMargin
+                                immobile={element}
+                            />)
                     }}
                     onInfo={(element: Immobile) => {
-                        return (<p>{element.name}</p>)
+                        return (<ImmobileView classNameContentHolder="" id={element.id} />)
                     }}
                 />
             ) : (
                 <ImmobileForm
                     canMultiple
+                    canAutoSave
                     isBack={true}
                     immobile={immobile}
                     onBack={handleBackClick}

@@ -1,4 +1,5 @@
 import { useState } from "react"
+import InfoView from "./infoView"
 import InfoHolderView from "./infoHolderView"
 import { handleMaskCEP } from "../../util/maskUtil"
 import { defaultAddress, Address } from "../../interfaces/objectInterfaces"
@@ -25,12 +26,12 @@ export default function AddressView(props: AddressViewProps) {
                     classNameHolder={props.classNameHolder}
                     classNameContentHolder={props.classNameContentHolder}
                 >
-                    {address.cep && (<p><span className="font-semibold">CEP:</span> {handleMaskCEP(address.cep)}</p>)}
-                    {address.publicPlace && (<p><span className="font-semibold">Logradouro:</span> {address.publicPlace}</p>)}
-                    {address.number && (<p><span className="font-semibold">Número:</span> {address.number}</p>)}
-                    {address.district && (<p><span className="font-semibold">Bairro:</span> {address.district}</p>)}
-                    {address.county && (<p><span className="font-semibold">Cidade:</span> {address.county}</p>)}
-                    {address.complement && (<p><span className="font-semibold">Complemento:</span> {address.complement}</p>)}
+                    <InfoView title="CEP" info={handleMaskCEP(address.cep)} />
+                    <InfoView title="Logradouro" info={address.publicPlace} />
+                    <InfoView title="Número" info={address.number} />
+                    <InfoView title="Bairro" info={address.district} />
+                    <InfoView title="Cidade" info={address.county} />
+                    <InfoView title="Complemento" info={address.complement} />
                 </InfoHolderView>
             )}
         </>
