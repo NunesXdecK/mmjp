@@ -1,6 +1,6 @@
 import Form from "./form";
 import FormRow from "./formRow";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import FormRowColumn from "./formRowColumn";
 import InputText from "../inputText/inputText";
 import ActionButtonsForm from "./actionButtonsForm";
@@ -8,14 +8,17 @@ import InputCheckbox from "../inputText/inputCheckbox";
 import SelectPersonForm from "../select/selectPersonForm";
 import { FeedbackMessage } from "../modal/feedbackMessageModal";
 import { NOT_NULL_MARK } from "../../util/patternValidationUtil";
-import { handleProfessionalValidationForDB } from "../../util/validationUtil";
 import { defaultProfessional, Professional } from "../../interfaces/objectInterfaces";
+import { handleIsEqual, handleProfessionalValidationForDB } from "../../util/validationUtil";
 import { defaultElementFromBase, ElementFromBase, handlePrepareProfessionalForDB } from "../../util/converterUtil";
+import ScrollDownTransition from "../animation/scrollDownTransition";
+import FeedbackMessageSaveText from "../modal/feedbackMessageSavingText";
 
 interface ProfessionalFormProps {
     title?: string,
     subtitle?: string,
     isBack?: boolean,
+    canAutoSave?: boolean,
     canMultiple?: boolean,
     isForSelect?: boolean,
     isForDisable?: boolean,
@@ -34,6 +37,7 @@ export default function ProfessionalForm(props: ProfessionalFormProps) {
 
     const [isLoading, setIsLoading] = useState(false)
     const [isMultiple, setIsMultiple] = useState(false)
+    const [isAutoSaving, setIsAutoSaving] = useState(false)
 
     const [oldData, setOldData] = useState<ElementFromBase>(props?.professional?.oldData ?? defaultElementFromBase)
 
@@ -43,84 +47,140 @@ export default function ProfessionalForm(props: ProfessionalFormProps) {
     const handleSetProfessionalCreaNumber = (value) => { setProfessional({ ...professional, creaNumber: value }) }
     const handleSetProfessionalCredentialCode = (value) => { setProfessional({ ...professional, credentialCode: value }) }
 
-    const handleDiference = (): boolean => {
-        let hasDiference = false
-        Object.keys(professionalOriginal)?.map((element, index) => {
-            if (professional[element] !== professionalOriginal[element]) {
-                hasDiference = true
-            }
-        })
-        return hasDiference
-    }
-
     const handleOnBack = () => {
         if (props.onBack) {
             props.onBack()
         }
     }
 
+    const handleDiference = (): boolean => {
+        let professionalForValid = { ...professional }
+        if (persons.length > 0) {
+            professionalForValid = { ...professionalForValid, person: persons[0] }
+        } else {
+            professionalForValid = { ...professionalForValid, person: {} }
+        }
+        return !handleIsEqual(professionalForValid, professionalOriginal)
+    }
+
     const handleChangeFormValidation = (isValid) => {
         setIsFormValid(isValid)
     }
 
-    const handleSave = async () => {
-        setIsLoading(true)
-        let feedbackMessage: FeedbackMessage = { messages: ["Algo estranho aconteceu"], messageType: "WARNING" }
-        let professionalForDB = { ...professional }
-        if (persons.length > 0) {
-            professionalForDB = { ...professionalForDB, person: persons[0] }
-        } else {
-            professionalForDB = { ...professionalForDB, person: {} }
+    const handleShowMessage = (feedbackMessage: FeedbackMessage) => {
+        if (props.onShowMessage) {
+            props.onShowMessage(feedbackMessage)
         }
-        const isValid = handleProfessionalValidationForDB(professionalForDB)
-        if (isValid.validation) {
-            professionalForDB = handlePrepareProfessionalForDB(professionalForDB)
-            let nowID = professionalForDB?.id ?? ""
-            const isSave = nowID === ""
-            let res = { status: "ERROR", id: nowID, message: "" }
-            if (isSave) {
-                feedbackMessage = { ...feedbackMessage, messages: ["Salvo com sucesso!"], messageType: "SUCCESS" }
-            } else {
-                feedbackMessage = { ...feedbackMessage, messages: ["Atualizado com sucesso!"], messageType: "SUCCESS" }
-            }
-            try {
-                res = await fetch("api/professional", {
-                    method: "POST",
-                    body: JSON.stringify({ token: "tokenbemseguro", data: professionalForDB }),
-                }).then((res) => res.json())
-            } catch (e) {
-                if (isSave) {
-                    feedbackMessage = { ...feedbackMessage, messages: ["Erro em salvar!"], messageType: "ERROR" }
-                } else {
-                    feedbackMessage = { ...feedbackMessage, messages: ["Erro em Atualizadar!"], messageType: "ERROR" }
-                }
-                console.error("Error adding document: ", e)
-            }
-            if (res.status === "SUCCESS") {
-                setProfessional({ ...professional, id: res.id })
-                professionalForDB = { ...professionalForDB, id: res.id }
+    }
 
-                if (isMultiple) {
-                    setProfessional(defaultProfessional)
-                }
-
-                if (!isMultiple && props.onAfterSave) {
-                    props.onAfterSave(feedbackMessage, professionalForDB)
-                }
-            } else {
-                feedbackMessage = { ...feedbackMessage, messages: ["Erro!"], messageType: "ERROR" }
-            }
-
-            if (props.onShowMessage) {
-                props.onShowMessage(feedbackMessage)
-            }
+    const handleAutoSave = async (event) => {
+        if (!props.canAutoSave) {
+            return
+        }
+        if (event.relatedTarget?.tagName?.toLowerCase() !== ("input" || "select" || "textarea")) {
+            return
+        }
+        if (isAutoSaving) {
+            return
+        }
+        if (!handleDiference()) {
+            return
+        }
+        let professionalForValid = { ...professional }
+        if (persons.length > 0) {
+            professionalForValid = { ...professionalForValid, person: persons[0] }
         } else {
-            feedbackMessage = { ...feedbackMessage, messages: isValid.messages, messageType: "ERROR" }
-            if (props.onShowMessage) {
-                props.onShowMessage(feedbackMessage)
-            }
+            professionalForValid = { ...professionalForValid, person: {} }
+        }
+        const isValid = handleProfessionalValidationForDB(professionalForValid)
+        if (!isValid.validation) {
+            return
+        }
+        setIsAutoSaving(old => true)
+        const res = await handleSaveInner(professionalForValid)
+        if (res.status === "ERROR") {
+            return
+        }
+        setIsAutoSaving(old => false)
+        setProfessional(old => res.professional)
+        setProfessionalOriginal(old => res.professional)
+    }
+
+    const handleSaveInner = async (professional) => {
+        let res = { status: "ERROR", id: "", professional: professional }
+        let professionalForDB = handlePrepareProfessionalForDB(professional)
+        try {
+            const saveRes = await fetch("api/professional", {
+                method: "POST",
+                body: JSON.stringify({ token: "tokenbemseguro", data: professionalForDB }),
+            }).then((res) => res.json())
+            res = { ...res, status: "SUCCESS", id: saveRes.id, professional: { ...professional, id: saveRes.id } }
+        } catch (e) {
+            console.error("Error adding document: ", e)
+        }
+        return res
+    }
+
+    const handleSave = async () => {
+        if (isAutoSaving) {
+            return
+        }
+        let professionalForValid = { ...professional }
+        if (persons.length > 0) {
+            professionalForValid = { ...professionalForValid, person: persons[0] }
+        } else {
+            professionalForValid = { ...professionalForValid, person: {} }
+        }
+        const isValid = handleProfessionalValidationForDB(professionalForValid)
+        if (!isValid.validation) {
+            const feedbackMessage: FeedbackMessage = { messages: isValid.messages, messageType: "ERROR" }
+            handleShowMessage(feedbackMessage)
+            return
+        }
+        setIsLoading(true)
+        let res = await handleSaveInner(professionalForValid)
+        if (res.status === "ERROR") {
+            const feedbackMessage: FeedbackMessage = { messages: ["Algo deu errado!"], messageType: "ERROR" }
+            handleShowMessage(feedbackMessage)
+            return
+        }
+        setProfessional({ ...professionalForValid, id: res.id })
+        let professionalFromDB = { ...res.professional }
+        const feedbackMessage: FeedbackMessage = { messages: ["Sucesso!"], messageType: "SUCCESS" }
+        handleShowMessage(feedbackMessage)
+        if (isMultiple) {
+            setProfessional(defaultProfessional)
+        }
+        if (!isMultiple && props.onAfterSave) {
+            props.onAfterSave(feedbackMessage, professionalFromDB)
         }
         setIsLoading(false)
+    }
+
+    const handleActionBar = () => {
+        return (<ActionButtonsForm
+            isLeftOn
+            isForBackControl
+            isDisabled={!isFormValid || isAutoSaving}
+            rightWindowText="Deseja confirmar as alterações?"
+            isForOpenLeft={professional.id !== "" && handleDiference()}
+            isForOpenRight={professional.id !== "" && handleDiference()}
+            rightButtonText={professional.id === "" ? "Salvar" : "Editar"}
+            leftWindowText="Dejesa realmente voltar e descartar as alterações?"
+            onLeftClick={(event) => {
+                if (event) {
+                    event.preventDefault()
+                }
+                handleOnBack()
+            }}
+            onRightClick={(event) => {
+                if (event) {
+                    event.preventDefault()
+                }
+                handleSave()
+            }}
+        />
+        )
     }
 
     return (
@@ -132,28 +192,16 @@ export default function ProfessionalForm(props: ProfessionalFormProps) {
                     }
                 }}>
 
-                <ActionButtonsForm
-                    isLeftOn
-                    isForBackControl
-                    isDisabled={!isFormValid}
-                    rightWindowText="Deseja confirmar as alterações?"
-                    isForOpenLeft={professional.id !== "" && handleDiference()}
-                    isForOpenRight={professional.id !== "" && handleDiference()}
-                    rightButtonText={professional.id === "" ? "Salvar" : "Editar"}
-                    leftWindowText="Dejesa realmente voltar e descartar as alterações?"
-                    onLeftClick={(event) => {
-                        if (event) {
-                            event.preventDefault()
-                        }
-                        handleOnBack()
-                    }}
-                    onRightClick={(event) => {
-                        if (event) {
-                            event.preventDefault()
-                        }
-                        handleSave()
-                    }}
-                />
+                {handleActionBar()}
+
+                <ScrollDownTransition
+                    isOpen={isAutoSaving}>
+                    <Form>
+                        <FeedbackMessageSaveText
+                            isOpen={true}
+                        />
+                    </Form>
+                </ScrollDownTransition>
 
                 <Form
                     title={props.title}
@@ -178,8 +226,9 @@ export default function ProfessionalForm(props: ProfessionalFormProps) {
                         <FormRowColumn unit="6">
                             <InputText
                                 id="professionalTitle"
-                                value={professional.title}
                                 isLoading={isLoading}
+                                onBlur={handleAutoSave}
+                                value={professional.title}
                                 validation={NOT_NULL_MARK}
                                 title="Titulo do profissional"
                                 isDisabled={props.isForDisable}
@@ -195,8 +244,9 @@ export default function ProfessionalForm(props: ProfessionalFormProps) {
                             <InputText
                                 id="creaNumber"
                                 title="Número do CREA"
-                                value={professional.creaNumber}
+                                onBlur={handleAutoSave}
                                 isLoading={isLoading}
+                                value={professional.creaNumber}
                                 isDisabled={props.isForDisable}
                                 onSetText={handleSetProfessionalCreaNumber}
                                 onValidate={handleChangeFormValidation}
@@ -207,10 +257,11 @@ export default function ProfessionalForm(props: ProfessionalFormProps) {
                         <FormRowColumn unit="3">
                             <InputText
                                 id="credentialCode"
-                                title="Codigo credencial"
                                 isLoading={isLoading}
-                                value={professional.credentialCode}
+                                onBlur={handleAutoSave}
+                                title="Codigo credencial"
                                 isDisabled={props.isForDisable}
+                                value={professional.credentialCode}
                                 onSetText={handleSetProfessionalCredentialCode}
                                 onValidate={handleChangeFormValidation}
                                 validationMessage="O codigo credencial não pode ficar em branco."
@@ -240,27 +291,7 @@ export default function ProfessionalForm(props: ProfessionalFormProps) {
                         event.preventDefault()
                     }
                 }}>
-                <ActionButtonsForm
-                    isLeftOn
-                    isDisabled={!isFormValid}
-                    rightWindowText="Deseja confirmar as alterações?"
-                    isForOpenLeft={professional.id !== "" && handleDiference()}
-                    isForOpenRight={professional.id !== "" && handleDiference()}
-                    rightButtonText={professional.id === "" ? "Salvar" : "Editar"}
-                    leftWindowText="Dejesa realmente voltar e descartar as alterações?"
-                    onLeftClick={(event) => {
-                        if (event) {
-                            event.preventDefault()
-                        }
-                        handleOnBack()
-                    }}
-                    onRightClick={(event) => {
-                        if (event) {
-                            event.preventDefault()
-                        }
-                        handleSave()
-                    }}
-                />
+                {handleActionBar()}
             </form>
         </>
     )

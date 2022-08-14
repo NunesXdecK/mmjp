@@ -21,6 +21,7 @@ interface PersonFormProps {
     title?: string,
     subtitle?: string,
     isBack?: boolean,
+    canAutoSave?: boolean,
     canMultiple?: boolean,
     isForDisable?: boolean,
     isForOldRegister?: boolean,
@@ -75,13 +76,16 @@ export default function PersonForm(props: PersonFormProps) {
     }
 
     const handleAutoSave = async (event) => {
+        if (!props.canAutoSave) {
+            return
+        }
         if (event.relatedTarget?.tagName?.toLowerCase() !== ("input" || "select" || "textarea")) {
             return
         }
         if (isAutoSaving) {
             return
         }
-        if (handleIsEqual(person, personOriginal)) {
+        if (!handleDiference()) {
             return
         }
         const isValid = handlePersonValidationForDB(person)
@@ -174,11 +178,6 @@ export default function PersonForm(props: PersonFormProps) {
                     }
                     handleSave()
                 }}
-                onRightClickCancel={(event) => {
-                    if (event) {
-                        event.preventDefault()
-                    }
-                }}
             />
         )
     }
@@ -251,7 +250,7 @@ export default function PersonForm(props: PersonFormProps) {
                                 id="code"
                                 isLoading={isLoading}
                                 onBlur={handleAutoSave}
-                                title="Codigo do cliente"
+                                title="Codigo de cliente"
                                 value={person.clientCode}
                                 validation={NOT_NULL_MARK}
                                 isDisabled={props.isForDisable}
@@ -364,6 +363,7 @@ export default function PersonForm(props: PersonFormProps) {
             </form>
 
             <ArrayTextForm
+                maxLength={15}
                 id="telephone"
                 mask="telephone"
                 title="Telefones"

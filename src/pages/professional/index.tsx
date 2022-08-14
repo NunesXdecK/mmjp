@@ -5,6 +5,7 @@ import Layout from "../../components/layout/layout"
 import ProfessionalForm from "../../components/form/professionalForm"
 import { defaultProfessional, Professional } from "../../interfaces/objectInterfaces"
 import FeedbackMessageModal, { defaultFeedbackMessage, FeedbackMessage } from "../../components/modal/feedbackMessageModal"
+import ProfessionalView from "../../components/view/professionalView"
 
 export default function Professionals() {
     const [title, setTitle] = useState("Lista de profissionais")
@@ -44,8 +45,15 @@ export default function Professionals() {
         } else {
             feedbackMessage = { messages: ["Algo deu errado"], messageType: "ERROR" }
         }
+        const index = professionals.indexOf(professional)
+        const list = [
+            ...professionals.slice(0, index),
+            ...professionals.slice(index + 1, professionals.length),
+        ]
+        setProfessionals(list)
+        setProfessionalsForShow(list)
+        setIsLoading(false)
         handleShowMessage(feedbackMessage)
-        handleBackClick()
     }
 
     const handleNewClick = () => {
@@ -123,15 +131,25 @@ export default function Professionals() {
                     onDeleteClick={handleDeleteClick}
                     deleteWindowTitle={"Deseja realmente deletar " + professional.title + "?"}
                     onTitle={(element: Professional) => {
-                        return (<p>{element.title}</p>)
+                        return (
+                            <ProfessionalView
+                                title=""
+                                hideData
+                                hideBorder
+                                professional={element}
+                                classNameHolder="pb-0 pt-0 px-0 mt-0"
+                                classNameContentHolder="py-0 px-0 mt-0"
+                            />
+                        )
                     }}
                     onInfo={(element: Professional) => {
-                        return (<p>{element.title}</p>)
+                        return (<ProfessionalView classNameContentHolder="" id={element.id} />)
                     }}
                 />
             ) : (
                 <ProfessionalForm
                     canMultiple
+                    canAutoSave
                     isBack={true}
                     onBack={handleBackClick}
                     professional={professional}

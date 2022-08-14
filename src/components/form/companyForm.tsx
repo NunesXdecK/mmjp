@@ -1,25 +1,26 @@
 import Form from "./form";
 import FormRow from "./formRow";
-import Button from "../button/button";
+import { useState } from "react";
 import AddressForm from "./addressForm";
-import { useEffect, useState } from "react";
 import FormRowColumn from "./formRowColumn";
 import ArrayTextForm from "./arrayTextForm";
-import WindowModal from "../modal/windowModal";
 import InputText from "../inputText/inputText";
+import ActionButtonsForm from "./actionButtonsForm";
 import InputCheckbox from "../inputText/inputCheckbox";
+import SelectPersonForm from "../select/selectPersonForm";
 import { FeedbackMessage } from "../modal/feedbackMessageModal";
-import { handleCompanyValidationForDB } from "../../util/validationUtil";
+import ScrollDownTransition from "../animation/scrollDownTransition";
+import FeedbackMessageSaveText from "../modal/feedbackMessageSavingText";
 import { defaultCompany, Company } from "../../interfaces/objectInterfaces";
+import { handleCompanyValidationForDB, handleIsEqual } from "../../util/validationUtil";
 import { CNPJ_MARK, NOT_NULL_MARK, TELEPHONE_MARK } from "../../util/patternValidationUtil";
 import { defaultElementFromBase, ElementFromBase, handlePrepareCompanyForDB } from "../../util/converterUtil";
-import SelectPersonForm from "../select/selectPersonForm";
-import ActionButtonsForm from "./actionButtonsForm";
 
 interface CompanyFormProps {
     title?: string,
     subtitle?: string,
     isBack?: boolean,
+    canAutoSave?: boolean,
     canMultiple?: boolean,
     isForSelect?: boolean,
     isForDisable?: boolean,
@@ -38,6 +39,7 @@ export default function CompanyForm(props: CompanyFormProps) {
 
     const [isLoading, setIsLoading] = useState(false)
     const [isMultiple, setIsMultiple] = useState(false)
+    const [isAutoSaving, setIsAutoSaving] = useState(false)
 
     const [oldData, setOldData] = useState<ElementFromBase>(props?.company?.oldData ?? defaultElementFromBase)
 
@@ -48,79 +50,124 @@ export default function CompanyForm(props: CompanyFormProps) {
     const handleSetCompanyClientCode = (value) => { setCompany({ ...company, clientCode: value }) }
     const handleSetCompanyTelephones = (value) => { setCompany({ ...company, telephones: value }) }
 
-    const handleDiference = (): boolean => {
-        let hasDiference = false
-        Object.keys(companyOriginal)?.map((element, index) => {
-            if (company[element] !== companyOriginal[element]) {
-                hasDiference = true
-            }
-        })
-        return hasDiference
-    }
-
     const handleOnBack = () => {
         if (props.onBack) {
             props.onBack()
         }
     }
 
+    const handleDiference = (): boolean => {
+        return !handleIsEqual(company, companyOriginal)
+    }
+
     const handleChangeFormValidation = (isValid) => {
         setIsFormValid(isValid)
     }
 
+    const handleShowMessage = (feedbackMessage: FeedbackMessage) => {
+        if (props.onShowMessage) {
+            props.onShowMessage(feedbackMessage)
+        }
+    }
+
+    const handleAutoSave = async (event) => {
+        if (!props.canAutoSave) {
+            return
+        }
+        if (event.relatedTarget?.tagName?.toLowerCase() !== ("input" || "select" || "textarea")) {
+            return
+        }
+        if (isAutoSaving) {
+            return
+        }
+        if (!handleDiference()) {
+            return
+        }
+        const isValid = handleCompanyValidationForDB(company)
+        if (!isValid.validation) {
+            return
+        }
+        setIsAutoSaving(old => true)
+        const res = await handleSaveInner(company)
+        if (res.status === "ERROR") {
+            return
+        }
+        setIsAutoSaving(old => false)
+        setCompany(old => res.company)
+        setCompanyOriginal(old => res.company)
+    }
+
+    const handleSaveInner = async (company) => {
+        let res = { status: "ERROR", id: "", company: company }
+        const companyForDB = handlePrepareCompanyForDB(company)
+        try {
+            const saveRes = await fetch("api/company", {
+                method: "POST",
+                body: JSON.stringify({ token: "tokenbemseguro", data: companyForDB }),
+            }).then((res) => res.json())
+            res = { ...res, status: "SUCCESS", id: saveRes.id, company: { ...company, id: saveRes.id } }
+        } catch (e) {
+            console.error("Error adding document: ", e)
+        }
+        return res
+    }
+
     const handleSave = async () => {
+        if (isAutoSaving) {
+            return
+        }
+        const isValid = handleCompanyValidationForDB(company)
+        if (!isValid.validation) {
+            const feedbackMessage: FeedbackMessage = { messages: isValid.messages, messageType: "ERROR" }
+            handleShowMessage(feedbackMessage)
+            return
+        }
         setIsLoading(true)
-        let feedbackMessage: FeedbackMessage = { messages: ["Algo estranho aconteceu"], messageType: "WARNING" }
-        let companyForDB = { ...company }
-        const isValid = handleCompanyValidationForDB(companyForDB)
-        if (isValid.validation) {
-            companyForDB = handlePrepareCompanyForDB(companyForDB)
-            let nowID = companyForDB?.id ?? ""
-            const isSave = nowID === ""
-            let res = { status: "ERROR", id: nowID, message: "" }
-            if (isSave) {
-                feedbackMessage = { ...feedbackMessage, messages: ["Salvo com sucesso!"], messageType: "SUCCESS" }
-            } else {
-                feedbackMessage = { ...feedbackMessage, messages: ["Atualizado com sucesso!"], messageType: "SUCCESS" }
-            }
-            try {
-                res = await fetch("api/company", {
-                    method: "POST",
-                    body: JSON.stringify({ token: "tokenbemseguro", data: companyForDB }),
-                }).then((res) => res.json())
-            } catch (e) {
-                if (isSave) {
-                    feedbackMessage = { ...feedbackMessage, messages: ["Erro em salvar!"], messageType: "ERROR" }
-                } else {
-                    feedbackMessage = { ...feedbackMessage, messages: ["Erro em Atualizadar!"], messageType: "ERROR" }
-                }
-                console.error("Error adding document: ", e)
-            }
-            if (res.status === "SUCCESS") {
-                setCompany({ ...company, id: res.id })
-                companyForDB = { ...companyForDB, id: res.id }
-
-                if (isMultiple) {
-                    setCompany(defaultCompany)
-                }
-
-                if (!isMultiple && props.onAfterSave) {
-                    props.onAfterSave(feedbackMessage, companyForDB)
-                }
-            } else {
-                feedbackMessage = { ...feedbackMessage, messages: ["Erro!"], messageType: "ERROR" }
-            }
-
-            if (props.onShowMessage) {
-                props.onShowMessage(feedbackMessage)
-            }
-        } else {
-            feedbackMessage = { ...feedbackMessage, messages: isValid.messages, messageType: "ERROR" }
-            if (props.onShowMessage) {
-                props.onShowMessage(feedbackMessage)
-            }
+        let res = await handleSaveInner(company)
+        if (res.status === "ERROR") {
+            const feedbackMessage: FeedbackMessage = { messages: ["Algo deu errado!"], messageType: "ERROR" }
+            handleShowMessage(feedbackMessage)
+            return
+        }
+        setCompany({ ...company, id: res.id })
+        let companyFromDB = { ...res.company }
+        const feedbackMessage: FeedbackMessage = { messages: ["Sucesso!"], messageType: "SUCCESS" }
+        handleShowMessage(feedbackMessage)
+        if (isMultiple) {
+            setCompany(defaultCompany)
+        }
+        if (!isMultiple && props.onAfterSave) {
+            props.onAfterSave(feedbackMessage, companyFromDB)
         }
         setIsLoading(false)
+    }
+
+    const handleActionBar = () => {
+        return (
+            <ActionButtonsForm
+                isLeftOn
+                isForBackControl
+                isLoading={isLoading}
+                isDisabled={!isFormValid || isAutoSaving}
+                rightWindowText="Deseja confirmar as alterações?"
+                isForOpenLeft={company.id !== "" && handleDiference()}
+                isForOpenRight={company.id !== "" && handleDiference()}
+                rightButtonText={company.id === "" ? "Salvar" : "Editar"}
+                leftWindowText="Dejesa realmente voltar e descartar as alterações?"
+                onLeftClick={(event) => {
+                    if (event) {
+                        event.preventDefault()
+                    }
+                    handleOnBack()
+                }}
+                onRightClick={(event) => {
+                    if (event) {
+                        event.preventDefault()
+                    }
+                    handleSave()
+                }}
+            />
+        )
     }
 
     return (
@@ -132,28 +179,16 @@ export default function CompanyForm(props: CompanyFormProps) {
                     }
                 }}>
 
-                <ActionButtonsForm
-                    isLeftOn
-                    isForBackControl
-                    isDisabled={!isFormValid}
-                    rightWindowText="Deseja confirmar as alterações?"
-                    isForOpenLeft={company.id !== "" && handleDiference()}
-                    isForOpenRight={company.id !== "" && handleDiference()}
-                    rightButtonText={company.id === "" ? "Salvar" : "Editar"}
-                    leftWindowText="Dejesa realmente voltar e descartar as alterações?"
-                    onLeftClick={(event) => {
-                        if (event) {
-                            event.preventDefault()
-                        }
-                        handleOnBack()
-                    }}
-                    onRightClick={(event) => {
-                        if (event) {
-                            event.preventDefault()
-                        }
-                        handleSave()
-                    }}
-                />
+                {handleActionBar()}
+
+                <ScrollDownTransition
+                    isOpen={isAutoSaving}>
+                    <Form>
+                        <FeedbackMessageSaveText
+                            isOpen={true}
+                        />
+                    </Form>
+                </ScrollDownTransition>
 
                 <Form
                     title={props.title}
@@ -180,6 +215,7 @@ export default function CompanyForm(props: CompanyFormProps) {
                                 value={company.name}
                                 isLoading={isLoading}
                                 title="Nome da empresa"
+                                onBlur={handleAutoSave}
                                 validation={NOT_NULL_MARK}
                                 isDisabled={props.isForDisable}
                                 onSetText={handleSetCompanyName}
@@ -192,10 +228,14 @@ export default function CompanyForm(props: CompanyFormProps) {
                             <InputText
                                 id="code"
                                 isLoading={isLoading}
-                                title="Codigo do cliente"
+                                onBlur={handleAutoSave}
+                                title="Codigo de cliente"
                                 value={company.clientCode}
+                                validation={NOT_NULL_MARK}
                                 isDisabled={props.isForDisable}
                                 onSetText={handleSetCompanyClientCode}
+                                onValidate={handleChangeFormValidation}
+                                validationMessage="O código não pode ficar em branco."
                             />
                         </FormRowColumn>
                     </FormRow>
@@ -210,6 +250,7 @@ export default function CompanyForm(props: CompanyFormProps) {
                                 value={company.cnpj}
                                 isLoading={isLoading}
                                 validation={CNPJ_MARK}
+                                onBlur={handleAutoSave}
                                 isDisabled={props.isForDisable}
                                 onSetText={handleSetCompanyCnpj}
                                 onValidate={handleChangeFormValidation}
@@ -221,6 +262,7 @@ export default function CompanyForm(props: CompanyFormProps) {
             </form>
 
             <ArrayTextForm
+                maxLength={15}
                 id="telephone"
                 mask="telephone"
                 title="Telefones"
@@ -262,27 +304,7 @@ export default function CompanyForm(props: CompanyFormProps) {
                     subtitle="Informações sobre o endereço"
                 />
 
-                <ActionButtonsForm
-                    isLeftOn
-                    isDisabled={!isFormValid}
-                    rightWindowText="Deseja confirmar as alterações?"
-                    isForOpenLeft={company.id !== "" && handleDiference()}
-                    isForOpenRight={company.id !== "" && handleDiference()}
-                    rightButtonText={company.id === "" ? "Salvar" : "Editar"}
-                    leftWindowText="Dejesa realmente voltar e descartar as alterações?"
-                    onLeftClick={(event) => {
-                        if (event) {
-                            event.preventDefault()
-                        }
-                        handleOnBack()
-                    }}
-                    onRightClick={(event) => {
-                        if (event) {
-                            event.preventDefault()
-                        }
-                        handleSave()
-                    }}
-                />
+                {handleActionBar()}
             </form>
         </>
     )

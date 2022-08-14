@@ -142,18 +142,23 @@ export const handleCompanyValidationForDB = (company: Company) => {
     let validation: ValidationReturn = { validation: false, messages: [] }
     let nameCheck = handleValidationNotNull(company.name)
     let cnpjCheck = true
+    let codeCheck = true
 
     if (!nameCheck) {
         validation = { ...validation, messages: [...validation.messages, "O campo nome está em branco."] }
     }
 
+    if (!handleValidationNotNull(company?.clientCode)) {
+        validation = { ...validation, messages: [...validation.messages, "O campo código está em branco."] }
+        codeCheck = false
+    }
 
     if (!handleValidationCPF(company?.cnpj)) {
         validation = { ...validation, messages: [...validation.messages, "O campo CNPJ está invalido."] }
         cnpjCheck = false
     }
 
-    validation = { ...validation, validation: nameCheck && cnpjCheck }
+    validation = { ...validation, validation: nameCheck && codeCheck && cnpjCheck }
     return validation
 }
 

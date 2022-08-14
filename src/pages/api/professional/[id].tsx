@@ -4,7 +4,7 @@ import { ProfessionalConversor, PersonConversor } from "../../../db/converters"
 import { db, PROFESSIONAL_COLLECTION_NAME, PERSON_COLLECTION_NAME } from "../../../db/firebaseDB"
 
 export default async function handler(req, res) {
-    const { query, method, body } = req
+    const { query, method } = req
 
     const personCollection = collection(db, PERSON_COLLECTION_NAME).withConverter(PersonConversor)
     const professionalCollection = collection(db, PROFESSIONAL_COLLECTION_NAME).withConverter(ProfessionalConversor)
@@ -17,10 +17,10 @@ export default async function handler(req, res) {
                 if (id) {
                     const docRef = doc(professionalCollection, id)
                     let professional: Professional = (await getDoc(docRef)).data()
-                    if ("id" in professional && professional.person?.id.length) {
+                    if (professional && "id" in professional.person && professional.person?.id?.length) {
                         const personDocRef = doc(personCollection, professional.person?.id)
                         let person: Person = (await getDoc(personDocRef)).data()
-                        if ("id" in person && person?.id.length) {
+                        if (person && "id" in person && person?.id.length) {
                             professional = { ...professional, person: person }
                         }
                     }

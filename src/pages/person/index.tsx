@@ -132,7 +132,16 @@ export default function Persons() {
                     onSetElement={setPerson}
                     deleteWindowTitle={"Deseja realmente deletar " + person.name + "?"}
                     onTitle={(element: Person) => {
-                        return (<p>{element.clientCode + " - " + element.name}</p>)
+                        return (
+                            <PersonView
+                                title=""
+                                hideData
+                                hideBorder
+                                person={element}
+                                classNameHolder="pb-0 pt-0 px-0 mt-0"
+                                classNameContentHolder="py-0 px-0 mt-0"
+                            />
+                        )
                     }}
                     onInfo={(element: Person) => {
                         return (<PersonView id={element.id} person={element} />)
@@ -141,6 +150,7 @@ export default function Persons() {
             ) : (
                 <PersonForm
                     canMultiple
+                    canAutoSave
                     isBack={true}
                     person={person}
                     onBack={handleBackClick}

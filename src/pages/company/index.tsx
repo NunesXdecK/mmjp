@@ -3,10 +3,10 @@ import { useEffect, useState } from "react"
 import List from "../../components/list/list"
 import Layout from "../../components/layout/layout"
 import CompanyForm from "../../components/form/companyForm"
+import CompanyView from "../../components/view/companyView"
 import { handlePrepareCompanyForShow } from "../../util/converterUtil"
 import { defaultCompany, Company } from "../../interfaces/objectInterfaces"
 import FeedbackMessageModal, { defaultFeedbackMessage, FeedbackMessage } from "../../components/modal/feedbackMessageModal"
-import CompanyView from "../../components/view/companyView"
 
 export default function Companies() {
     const [title, setTitle] = useState("Lista de empresas")
@@ -133,7 +133,16 @@ export default function Companies() {
                     onDeleteClick={handleDeleteClick}
                     deleteWindowTitle={"Deseja realmente deletar " + company.name + "?"}
                     onTitle={(element: Company) => {
-                        return (<p>{element.name}</p>)
+                        return (
+                            <CompanyView
+                                title=""
+                                hideData
+                                hideBorder
+                                company={element}
+                                classNameHolder="pb-0 pt-0 px-0 mt-0"
+                                classNameContentHolder="py-0 px-0 mt-0"
+                            />
+                        )
                     }}
                     onInfo={(element: Company) => {
                         return (<CompanyView classNameContentHolder="" id={element.id} />)
@@ -142,6 +151,7 @@ export default function Companies() {
             ) : (
                 <CompanyForm
                     canMultiple
+                    canAutoSave
                     isBack={true}
                     company={company}
                     onBack={handleBackClick}

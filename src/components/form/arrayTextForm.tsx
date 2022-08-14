@@ -15,6 +15,7 @@ interface ArrayTextFormProps {
     inputTitle?: string,
     validation?: string,
     validationMessage?: string,
+    maxLength?: number,
     isLoading?: boolean,
     mask?: "cpf" | "rg" | "cnpj" | "currency" | "telephone",
     texts?: string[],
@@ -79,6 +80,7 @@ export default function ArrayTextForm(props: ArrayTextFormProps) {
                                 mask={props.mask}
                                 onSetText={setText}
                                 title={props.inputTitle}
+                                maxLength={props.maxLength}
                                 isLoading={props.isLoading}
                                 validation={props.validation}
                                 validationMessage={props.validationMessage}
