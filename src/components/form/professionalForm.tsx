@@ -102,6 +102,7 @@ export default function ProfessionalForm(props: ProfessionalFormProps) {
             return
         }
         setIsAutoSaving(old => false)
+        setProfessional({ ...professionalForValid, id: res.id })
         setProfessionalOriginal(old => res.professional)
     }
 
@@ -137,16 +138,21 @@ export default function ProfessionalForm(props: ProfessionalFormProps) {
             return
         }
         setIsLoading(true)
-        let res = await handleSaveInner(professionalForValid)
-        if (res.status === "ERROR") {
-            const feedbackMessage: FeedbackMessage = { messages: ["Algo deu errado!"], messageType: "ERROR" }
-            handleShowMessage(feedbackMessage)
-            return
+        let professionalFromDB = { ...professionalForValid }
+        if (!handleIsEqual(professional, professionalOriginal)) {
+            let res = await handleSaveInner(professionalForValid)
+            if (res.status === "ERROR") {
+                const feedbackMessage: FeedbackMessage = { messages: ["Algo deu errado!"], messageType: "ERROR" }
+                handleShowMessage(feedbackMessage)
+                setIsLoading(false)
+                return
+            }
+            setProfessional({ ...professionalForValid, id: res.id })
+            setProfessionalOriginal({ ...professionalForValid, id: res.id })
+            professionalFromDB = { ...res.professional }
         }
         const feedbackMessage: FeedbackMessage = { messages: ["Sucesso!"], messageType: "SUCCESS" }
         handleShowMessage(feedbackMessage)
-        setProfessional({ ...professionalForValid, id: res.id })
-        let professionalFromDB = { ...res.professional }
         if (isMultiple) {
             setProfessional(defaultProfessional)
         }

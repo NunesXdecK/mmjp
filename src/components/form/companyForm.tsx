@@ -93,6 +93,7 @@ export default function CompanyForm(props: CompanyFormProps) {
             return
         }
         setIsAutoSaving(old => false)
+        setCompany({ ...company, id: res.id })
         setCompanyOriginal(old => res.company)
     }
 
@@ -122,16 +123,21 @@ export default function CompanyForm(props: CompanyFormProps) {
             return
         }
         setIsLoading(true)
-        let res = await handleSaveInner(company)
-        if (res.status === "ERROR") {
-            const feedbackMessage: FeedbackMessage = { messages: ["Algo deu errado!"], messageType: "ERROR" }
-            handleShowMessage(feedbackMessage)
-            return
+        let companyFromDB = { ...company }
+        if (!handleIsEqual(company, companyOriginal)) {
+            let res = await handleSaveInner(company)
+            if (res.status === "ERROR") {
+                const feedbackMessage: FeedbackMessage = { messages: ["Algo deu errado!"], messageType: "ERROR" }
+                handleShowMessage(feedbackMessage)
+                setIsLoading(false)
+                return
+            }
+            setCompany({ ...company, id: res.id })
+            setCompanyOriginal({ ...company, id: res.id })
+            companyFromDB = { ...res.company }
         }
         const feedbackMessage: FeedbackMessage = { messages: ["Sucesso!"], messageType: "SUCCESS" }
         handleShowMessage(feedbackMessage)
-        setCompany({ ...company, id: res.id })
-        let companyFromDB = { ...res.company }
         if (isMultiple) {
             setCompany(defaultCompany)
         }

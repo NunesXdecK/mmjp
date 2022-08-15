@@ -95,6 +95,7 @@ export default function ImmobileForm(props: ImmobileFormProps) {
             return
         }
         setIsAutoSaving(old => false)
+        setImmobile({ ...immobile, id: res.id })
         setImmobileOriginal(old => res.immobile)
     }
 
@@ -124,16 +125,21 @@ export default function ImmobileForm(props: ImmobileFormProps) {
             return
         }
         setIsLoading(true)
-        let res = await handleSaveInner(immobile)
-        if (res.status === "ERROR") {
-            const feedbackMessage: FeedbackMessage = { messages: ["Algo deu errado!"], messageType: "ERROR" }
-            handleShowMessage(feedbackMessage)
-            return
+        let immobileFromDB = { ...immobile }
+        if (!handleIsEqual(immobile, immobileOriginal)) {
+            let res = await handleSaveInner(immobile)
+            if (res.status === "ERROR") {
+                const feedbackMessage: FeedbackMessage = { messages: ["Algo deu errado!"], messageType: "ERROR" }
+                handleShowMessage(feedbackMessage)
+                setIsLoading(false)
+                return
+            }
+            setImmobile({ ...immobile, id: res.id })
+            setImmobileOriginal({ ...immobile, id: res.id })
+            immobileFromDB = { ...res.immobile }
         }
         const feedbackMessage: FeedbackMessage = { messages: ["Sucesso!"], messageType: "SUCCESS" }
         handleShowMessage(feedbackMessage)
-        setImmobile({ ...immobile, id: res.id })
-        let immobileFromDB = { ...res.immobile }
         if (isMultiple) {
             setImmobile(defaultImmobile)
         }

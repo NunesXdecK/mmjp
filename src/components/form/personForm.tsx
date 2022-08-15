@@ -98,6 +98,7 @@ export default function PersonForm(props: PersonFormProps) {
             return
         }
         setIsAutoSaving(old => false)
+        setPerson({ ...person, id: res.id })
         setPersonOriginal(old => res.person)
     }
 
@@ -117,13 +118,6 @@ export default function PersonForm(props: PersonFormProps) {
     }
 
     const handleSave = async () => {
-        /*
-        if (handleIsEqual(person, personOriginal)) {
-            const feedbackMessage: FeedbackMessage = { messages: ["Não há alteração nos dados"], messageType: "WARNING" }
-            handleShowMessage(feedbackMessage)
-            return
-        }
-        */
         if (isAutoSaving) {
             return
         }
@@ -134,16 +128,21 @@ export default function PersonForm(props: PersonFormProps) {
             return
         }
         setIsLoading(true)
-        let res = await handleSaveInner(person)
-        if (res.status === "ERROR") {
-            const feedbackMessage: FeedbackMessage = { messages: ["Algo deu errado!"], messageType: "ERROR" }
-            handleShowMessage(feedbackMessage)
-            return
+        let personFromDB = { ...person }
+        if (!handleIsEqual(person, personOriginal)) {
+            let res = await handleSaveInner(person)
+            if (res.status === "ERROR") {
+                const feedbackMessage: FeedbackMessage = { messages: ["Algo deu errado!"], messageType: "ERROR" }
+                handleShowMessage(feedbackMessage)
+                setIsLoading(false)
+                return
+            }
+            setPerson({ ...person, id: res.id })
+            setPersonOriginal({ ...person, id: res.id })
+            personFromDB = { ...res.person }
         }
         const feedbackMessage: FeedbackMessage = { messages: ["Sucesso!"], messageType: "SUCCESS" }
         handleShowMessage(feedbackMessage)
-        setPerson({ ...person, id: res.id })
-        let personFromDB = { ...res.person }
         if (isMultiple) {
             setPerson(defaultPerson)
         }
