@@ -141,11 +141,11 @@ export default function SelectPersonForm(props: SelectPersonFormProps) {
     useEffect(() => {
         if (isOpen && isFirst) {
             fetch("api/persons").then((res) => res.json()).then((res) => {
+                setIsFirst(old => false)
                 if (res.list.length) {
                     setPersons(res.list)
                     setPersonsForShow(res.list)
                 }
-                setIsFirst(false)
                 if (props.onSetLoading) {
                     props.onSetLoading(false)
                 }

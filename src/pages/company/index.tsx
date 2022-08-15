@@ -97,11 +97,11 @@ export default function Companies() {
     useEffect(() => {
         if (isFirst) {
             fetch("api/companies").then((res) => res.json()).then((res) => {
+                setIsFirst(old => false)
                 if (res.list.length) {
                     setCompanies(res.list)
                     setCompaniesForShow(res.list)
                 }
-                setIsFirst(false)
                 setIsLoading(false)
             })
         }
@@ -140,8 +140,6 @@ export default function Companies() {
                                 hideBorder
                                 company={element}
                                 hidePaddingMargin
-                                classNameHolder="pb-0 pt-0 px-0 mt-0"
-                                classNameContentHolder="py-0 px-0 mt-0"
                             />
                         )
                     }}

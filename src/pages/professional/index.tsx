@@ -95,11 +95,11 @@ export default function Professionals() {
     useEffect(() => {
         if (isFirst) {
             fetch("api/professionals").then((res) => res.json()).then((res) => {
+                setIsFirst(old => false)
                 if (res.list.length) {
                     setProfessionals(res.list)
                     setProfessionalsForShow(res.list)
                 }
-                setIsFirst(false)
                 setIsLoading(false)
             })
         }

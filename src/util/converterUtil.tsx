@@ -508,10 +508,11 @@ export const handlePrepareServicePaymentStageForDB = (service: Service, list: (S
 export const handlePrepareServiceForShow = (service: Service) => {
     return {
         ...service,
+        dateString: handleUTCToDateShow(service.date.toString()),
+        total: handleMountNumberCurrency(service.total, ".", ",", 3, 2),
         value: handleMountNumberCurrency((service.value).toString(), ".", ",", 3, 2),
         serviceStages: handlePrepareServicePaymentStageForShow(service.serviceStages),
         servicePayments: handlePrepareServicePaymentStageForShow(service.servicePayments),
-        total: handleMountNumberCurrency(service.total, ".", ",", 3, 2),
     }
 }
 

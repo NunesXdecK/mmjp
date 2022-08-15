@@ -1,15 +1,16 @@
 import InfoView from "./infoView"
 import Button from "../button/button"
-import AddressView from "./addressView"
+import ServiceView from "./serviceView"
 import { useEffect, useState } from "react"
 import InfoHolderView from "./infoHolderView"
+import ProfessionalView from "./professionalView"
+import { handleUTCToDateShow } from "../../util/dateUtils"
 import PlaceholderItemList from "../list/placeholderItemList"
 import ScrollDownTransition from "../animation/scrollDownTransition"
-import { handleMaskCPF, handleMaskTelephone } from "../../util/maskUtil"
-import { defaultPerson, Person } from "../../interfaces/objectInterfaces"
 import { ChevronDownIcon, ChevronRightIcon } from "@heroicons/react/outline"
+import { defaultServiceStage, ServiceStage } from "../../interfaces/objectInterfaces"
 
-interface PersonViewProps {
+interface ServiceStageViewProps {
     id?: string,
     title?: string,
     addressTitle?: string,
@@ -19,53 +20,66 @@ interface PersonViewProps {
     hideData?: boolean,
     dataInside?: boolean,
     hideBorder?: boolean,
+    hideService?: boolean,
     canShowHideData?: boolean,
     hidePaddingMargin?: boolean,
-    person?: Person,
+    serviceStage?: ServiceStage,
 }
 
-export default function PersonView(props: PersonViewProps) {
+export default function ServiceStageView(props: ServiceStageViewProps) {
     const [isFirst, setIsFirst] = useState(true)
     const [isShowInfo, setIsShowInfo] = useState(props.hideData ? false : true)
-    const [person, setPerson] = useState<Person>(props.person ?? defaultPerson)
+    const [serviceStage, setServiceStage] = useState<ServiceStage>(props.serviceStage ?? defaultServiceStage)
 
     const hasHideData =
-        person.rg?.length ||
-        person.rgIssuer?.length ||
-        person.naturalness?.length ||
-        person.profession?.length ||
-        person.nationality?.length ||
-        person.maritalStatus?.length ||
-        person.telephones?.length > 0
+        serviceStage.description?.length ||
+        serviceStage.service?.id > 0 ||
+        serviceStage.responsible?.id > 0
 
     const hasData =
         hasHideData ||
-        person.cpf?.length ||
-        person.name?.length ||
-        person.clientCode?.length
+        serviceStage?.dateDue > 0 ||
+        serviceStage?.title?.length
 
     const handlePutData = () => {
         return (
-            <AddressView
-                address={person.address}
-                title={props.addressTitle}
-            />
+            <div className="w-full">
+                {!props.hideService && serviceStage?.service?.id?.length && (
+                    <ServiceView
+                        hideData
+                        dataInside
+                        canShowHideData
+                        id={serviceStage.service.id}
+                    />
+                )}
+
+                {serviceStage?.responsible?.id?.length && (
+                    <ProfessionalView
+                        hideData
+                        dataInside
+                        canShowHideData
+                        id={serviceStage.responsible.id}
+                    />
+                )}
+            </div>
         )
     }
 
     useEffect(() => {
         if (isFirst) {
-            if (props.id && props.id.length !== 0 && person.id?.length === 0) {
-                fetch("api/person/" + props.id).then((res) => res.json()).then((res) => {
+            if (props.id && props.id.length !== 0 && serviceStage.id?.length === 0) {
+                fetch("api/serviceStage/" + props.id).then((res) => res.json()).then((res) => {
+                    console.log(res.data)
                     setIsFirst(old => false)
-                    setPerson(res.data)
+                    setServiceStage(res.data)
                 })
             }
         }
     })
+
     return (
         <>
-            {person.id?.length === 0 ? (
+            {serviceStage.id?.length === 0 ? (
                 <div className="mt-6">
                     <PlaceholderItemList />
                 </div>
@@ -76,9 +90,9 @@ export default function PersonView(props: PersonViewProps) {
                             <InfoHolderView
                                 hideBorder={props.hideBorder}
                                 classNameTitle={props.classNameTitle}
-                                title={props.title ?? "Dados pessoais"}
                                 classNameHolder={props.classNameHolder}
                                 hidePaddingMargin={props.hidePaddingMargin}
+                                title={props.title ?? "Dados básicos"}
                                 classNameContentHolder={props.classNameContentHolder}
                             >
                                 {props.canShowHideData && props.hideData && hasHideData && (
@@ -96,29 +110,15 @@ export default function PersonView(props: PersonViewProps) {
                                         )}
                                     </Button>
                                 )}
-                                <InfoView title="Codigo de cliente" info={person.clientCode} />
-                                <InfoView title="Nome" info={person.name} />
-                                <InfoView title="CPF" info={handleMaskCPF(person.cpf)} />
+                                <InfoView title="Titulo" info={serviceStage.title} />
+                                <InfoView title="Status" info={serviceStage.status} />
+                                <InfoView title="Data" info={handleUTCToDateShow(serviceStage.dateDue.toString())} />
                                 <ScrollDownTransition isOpen={isShowInfo}>
                                     <InfoHolderView
                                         hideBorder
                                         hidePaddingMargin
                                     >
-                                        {person.rg?.length > 0 && (
-                                            <InfoView title="RG" info={person.rg + " " + (person.rgIssuer && " " + person.rgIssuer)} />
-                                        )}
-                                        <InfoView title="Naturalidade" info={person.naturalness} />
-                                        <InfoView title="Nacionalidade" info={person.nationality} />
-                                        <InfoView title="Estado civil" info={person.maritalStatus} />
-                                        <InfoView title="Profissão" info={person.profession} />
-                                        {person.telephones?.length > 0 && (
-                                            <>
-                                                <InfoView title="Telefones" info=" " />
-                                                {person.telephones?.map((element, index) => (
-                                                    <InfoView key={index + element} title="" info={handleMaskTelephone(element)} />
-                                                ))}
-                                            </>
-                                        )}
+                                        <InfoView title="Descrição" info={serviceStage.description} />
                                         {props.dataInside && handlePutData()}
                                     </InfoHolderView>
                                 </ScrollDownTransition>

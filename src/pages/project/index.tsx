@@ -184,11 +184,11 @@ localProject = {
     useEffect(() => {
         if (isFirst) {
             fetch("api/projects").then((res) => res.json()).then((res) => {
+                setIsFirst(old => false)
                 if (res.list.length) {
                     setProjects(res.list)
                     setProjectsForShow(res.list)
                 }
-                setIsFirst(false)
                 setIsLoading(false)
             })
         }

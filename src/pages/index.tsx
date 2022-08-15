@@ -49,19 +49,19 @@ export default function Index() {
     useEffect(() => {
         if (isFirst) {
             fetch("api/serviceStages").then((res) => res.json()).then((res) => {
+                setIsFirst(old => false)
                 if (res.list.length) {
                     setServiceStages(res.list)
                     setServiceStagesForShow(res.list)
                 }
-                setIsFirst(false)
                 setIsLoading(false)
             })
             fetch("api/servicePayments").then((res) => res.json()).then((res) => {
+                setIsFirst(old => false)
                 if (res.list.length) {
                     setServicePayments(res.list)
                     setServicePaymentsForShow(res.list)
                 }
-                setIsFirst(false)
                 setIsLoading(false)
             })
         }

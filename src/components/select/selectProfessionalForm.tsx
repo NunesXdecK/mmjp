@@ -141,11 +141,11 @@ export default function SelectProfessionalForm(props: SelectProfessionalFormProp
     useEffect(() => {
         if (isOpen && isFirst) {
             fetch("api/professionals").then((res) => res.json()).then((res) => {
+                setIsFirst(old => false)
                 if (res.list.length) {
                     setProfessionals(res.list)
                     setProfessionalsForShow(res.list)
                 }
-                setIsFirst(false)
                 if (props.onSetLoading) {
                     props.onSetLoading(false)
                 }

@@ -62,8 +62,8 @@ export default function CompanyView(props: CompanyViewProps) {
         if (isFirst) {
             if (props.id && props.id.length !== 0 && company.id?.length === 0) {
                 fetch("api/company/" + props.id).then((res) => res.json()).then((res) => {
+                    setIsFirst(old => false)
                     setCompany(res.data)
-                    setIsFirst(false)
                 })
             }
         }

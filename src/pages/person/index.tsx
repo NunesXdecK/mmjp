@@ -96,11 +96,11 @@ export default function Persons() {
     useEffect(() => {
         if (isFirst) {
             fetch("api/persons").then((res) => res.json()).then((res) => {
+                setIsFirst(old => false)
                 if (res.list.length) {
                     setPersons(res.list)
                     setPersonsForShow(res.list)
                 }
-                setIsFirst(false)
                 setIsLoading(false)
             })
         }
@@ -139,8 +139,6 @@ export default function Persons() {
                                 hideBorder
                                 hidePaddingMargin
                                 person={element}
-                                classNameHolder="pb-0 pt-0 px-0 mt-0"
-                                classNameContentHolder="py-0 px-0 mt-0"
                             />
                         )
                     }}

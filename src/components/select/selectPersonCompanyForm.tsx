@@ -177,11 +177,11 @@ export default function SelectPersonCompanyForm(props: SelectPersonCompanyFormPr
     useEffect(() => {
         if (isOpen && isFirst) {
             fetch("api/personsAndCompanies").then((res) => res.json()).then((res) => {
+                setIsFirst(old => false)
                 if (res.list.length) {
                     setPersonsAndCompanies(res.list)
                     setPersonsAndCompaniesForShow(res.list)
                 }
-                setIsFirst(false)
                 if (props.onSetLoading) {
                     props.onSetLoading(false)
                 }

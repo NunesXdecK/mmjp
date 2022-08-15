@@ -95,11 +95,11 @@ export default function Immobiles() {
     useEffect(() => {
         if (isFirst) {
             fetch("api/immobiles").then((res) => res.json()).then((res) => {
+                setIsFirst(old => false)
                 if (res.list.length) {
                     setImmobiles(res.list)
                     setImmobilesForShow(res.list)
                 }
-                setIsFirst(false)
                 setIsLoading(false)
             })
         }

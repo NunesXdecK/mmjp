@@ -49,8 +49,8 @@ export default function ProfessionalView(props: ProfessionalViewProps) {
         if (isFirst) {
             if (props.id && props.id.length !== 0 && professional.id?.length === 0) {
                 fetch("api/professional/" + props.id).then((res) => res.json()).then((res) => {
+                    setIsFirst(old => false)
                     setProfessional(res.data)
-                    setIsFirst(false)
                 })
             }
         }

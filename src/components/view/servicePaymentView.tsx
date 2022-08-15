@@ -1,15 +1,16 @@
 import InfoView from "./infoView"
 import Button from "../button/button"
-import AddressView from "./addressView"
+import ServiceView from "./serviceView"
 import { useEffect, useState } from "react"
 import InfoHolderView from "./infoHolderView"
+import { handleUTCToDateShow } from "../../util/dateUtils"
 import PlaceholderItemList from "../list/placeholderItemList"
+import { handleMountNumberCurrency } from "../../util/maskUtil"
 import ScrollDownTransition from "../animation/scrollDownTransition"
-import { handleMaskCPF, handleMaskTelephone } from "../../util/maskUtil"
-import { defaultPerson, Person } from "../../interfaces/objectInterfaces"
 import { ChevronDownIcon, ChevronRightIcon } from "@heroicons/react/outline"
+import { defaultServicePayment, ServicePayment } from "../../interfaces/objectInterfaces"
 
-interface PersonViewProps {
+interface ServicePaymentViewProps {
     id?: string,
     title?: string,
     addressTitle?: string,
@@ -19,53 +20,54 @@ interface PersonViewProps {
     hideData?: boolean,
     dataInside?: boolean,
     hideBorder?: boolean,
+    hideService?: boolean,
     canShowHideData?: boolean,
     hidePaddingMargin?: boolean,
-    person?: Person,
+    servicePayment?: ServicePayment,
 }
 
-export default function PersonView(props: PersonViewProps) {
+export default function ServicePaymentView(props: ServicePaymentViewProps) {
     const [isFirst, setIsFirst] = useState(true)
     const [isShowInfo, setIsShowInfo] = useState(props.hideData ? false : true)
-    const [person, setPerson] = useState<Person>(props.person ?? defaultPerson)
+    const [servicePayment, setServicePayment] = useState<ServicePayment>(props.servicePayment ?? defaultServicePayment)
 
     const hasHideData =
-        person.rg?.length ||
-        person.rgIssuer?.length ||
-        person.naturalness?.length ||
-        person.profession?.length ||
-        person.nationality?.length ||
-        person.maritalStatus?.length ||
-        person.telephones?.length > 0
+        servicePayment.service?.id > 0
 
     const hasData =
         hasHideData ||
-        person.cpf?.length ||
-        person.name?.length ||
-        person.clientCode?.length
+        servicePayment?.dateDue > 0 ||
+        servicePayment?.description?.length
 
     const handlePutData = () => {
         return (
-            <AddressView
-                address={person.address}
-                title={props.addressTitle}
-            />
+            <div className="w-full">
+                {!props.hideService && servicePayment?.service?.id?.length && (
+                    <ServiceView
+                        hideData
+                        dataInside
+                        canShowHideData
+                        id={servicePayment.service.id}
+                    />
+                )}
+            </div>
         )
     }
 
     useEffect(() => {
         if (isFirst) {
-            if (props.id && props.id.length !== 0 && person.id?.length === 0) {
-                fetch("api/person/" + props.id).then((res) => res.json()).then((res) => {
+            if (props.id && props.id.length !== 0 && servicePayment.id?.length === 0) {
+                fetch("api/servicePayment/" + props.id).then((res) => res.json()).then((res) => {
                     setIsFirst(old => false)
-                    setPerson(res.data)
+                    setServicePayment(res.data)
                 })
             }
         }
     })
+
     return (
         <>
-            {person.id?.length === 0 ? (
+            {servicePayment.id?.length === 0 ? (
                 <div className="mt-6">
                     <PlaceholderItemList />
                 </div>
@@ -76,9 +78,9 @@ export default function PersonView(props: PersonViewProps) {
                             <InfoHolderView
                                 hideBorder={props.hideBorder}
                                 classNameTitle={props.classNameTitle}
-                                title={props.title ?? "Dados pessoais"}
                                 classNameHolder={props.classNameHolder}
                                 hidePaddingMargin={props.hidePaddingMargin}
+                                title={props.title ?? "Dados básicos"}
                                 classNameContentHolder={props.classNameContentHolder}
                             >
                                 {props.canShowHideData && props.hideData && hasHideData && (
@@ -96,29 +98,15 @@ export default function PersonView(props: PersonViewProps) {
                                         )}
                                     </Button>
                                 )}
-                                <InfoView title="Codigo de cliente" info={person.clientCode} />
-                                <InfoView title="Nome" info={person.name} />
-                                <InfoView title="CPF" info={handleMaskCPF(person.cpf)} />
+                                <InfoView title="Descrição" info={servicePayment.description} />
+                                <InfoView title="Valor" info={handleMountNumberCurrency(servicePayment.value.toString(), ".", ",", 3, 2)} />
+                                <InfoView title="Data" info={handleUTCToDateShow(servicePayment.dateDue.toString())} />
+                                <InfoView title="Status" info={servicePayment.status} />
                                 <ScrollDownTransition isOpen={isShowInfo}>
                                     <InfoHolderView
                                         hideBorder
                                         hidePaddingMargin
                                     >
-                                        {person.rg?.length > 0 && (
-                                            <InfoView title="RG" info={person.rg + " " + (person.rgIssuer && " " + person.rgIssuer)} />
-                                        )}
-                                        <InfoView title="Naturalidade" info={person.naturalness} />
-                                        <InfoView title="Nacionalidade" info={person.nationality} />
-                                        <InfoView title="Estado civil" info={person.maritalStatus} />
-                                        <InfoView title="Profissão" info={person.profession} />
-                                        {person.telephones?.length > 0 && (
-                                            <>
-                                                <InfoView title="Telefones" info=" " />
-                                                {person.telephones?.map((element, index) => (
-                                                    <InfoView key={index + element} title="" info={handleMaskTelephone(element)} />
-                                                ))}
-                                            </>
-                                        )}
                                         {props.dataInside && handlePutData()}
                                     </InfoHolderView>
                                 </ScrollDownTransition>

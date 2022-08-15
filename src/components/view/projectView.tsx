@@ -1,7 +1,6 @@
 import InfoView from "./infoView"
 import Button from "../button/button"
 import PersonView from "./personView"
-import AddressView from "./addressView"
 import CompanyView from "./companyView"
 import { useEffect, useState } from "react"
 import InfoHolderView from "./infoHolderView"
@@ -9,9 +8,13 @@ import PlaceholderItemList from "../list/placeholderItemList"
 import { handleMountNumberCurrency } from "../../util/maskUtil"
 import ScrollDownTransition from "../animation/scrollDownTransition"
 import { ChevronDownIcon, ChevronRightIcon } from "@heroicons/react/outline"
-import { defaultImmobile, Immobile } from "../../interfaces/objectInterfaces"
+import { defaultProject, Project, Service } from "../../interfaces/objectInterfaces"
+import { handleUTCToDateShow } from "../../util/dateUtils"
+import { COMPANY_COLLECTION_NAME, PERSON_COLLECTION_NAME } from "../../db/firebaseDB"
+import ProfessionalView from "./professionalView"
+import ServiceView from "./serviceView"
 
-interface ImmobileViewProps {
+interface ProjectViewProps {
     id?: string,
     title?: string,
     addressTitle?: string,
@@ -23,19 +26,26 @@ interface ImmobileViewProps {
     hideBorder?: boolean,
     canShowHideData?: boolean,
     hidePaddingMargin?: boolean,
-    immobile?: Immobile,
+    project?: Project,
 }
 
-export default function ImmobileView(props: ImmobileViewProps) {
+export default function ProjectView(props: ProjectViewProps) {
     const [isFirst, setIsFirst] = useState(true)
     const [isShowInfo, setIsShowInfo] = useState(props.hideData ? false : true)
-    const [immobile, setImmobile] = useState<Immobile>(props.immobile ?? defaultImmobile)
+    const [project, setProject] = useState<Project>(props.project ?? defaultProject)
+    const [services, setServices] = useState<Service[]>([])
 
-    const hasHideData = immobile.owners?.length > 0
-    const hasData = hasHideData || immobile?.name?.length
+    const hasHideData =
+        project.professional?.id > 0 ||
+        project.clients?.length > 0
+    const hasData =
+        hasHideData ||
+        project?.date > 0 ||
+        project?.number?.length ||
+        project?.title?.length
 
     const handlePutData = () => {
-        let list = immobile?.owners?.sort((elementOne, elementTwo) => {
+        let listClients = project?.clients?.sort((elementOne, elementTwo) => {
             let dateOne = 0
             let dateTwo = 0
             if ("dateInsertUTC" in elementOne) {
@@ -46,47 +56,77 @@ export default function ImmobileView(props: ImmobileViewProps) {
             }
             return dateOne - dateTwo
         }) ?? []
+        let listServices = services?.sort((elementOne, elementTwo) => {
+            let dateOne = 0
+            let dateTwo = 0
+            if ("index" in elementOne) {
+                dateOne = elementOne.index
+            }
+            if ("index" in elementTwo) {
+                dateTwo = elementTwo.index
+            }
+            return dateOne - dateTwo
+        }) ?? []
         return (
             <div className="w-full">
-                {list.map((owner, index) => (
-                    <div
-                        key={"" + index + owner.id + immobile.id}>
-                        {owner && "cpf" in owner && (
+                {listClients?.map((owner, index) => (
+                    <div key={index + owner}>
+                        {owner?.length && owner.includes(PERSON_COLLECTION_NAME) && (
                             <PersonView
                                 hideData
                                 dataInside
                                 canShowHideData
-                                person={owner}
                                 addressTitle={"Endereço"}
-                                title={"Dados do proprietário " + (index + 1)}
+                                title={"Dados do cliente"}
+                                id={owner.split("/")[1] ?? ""}
                             />
                         )}
-                        {owner && "cnpj" in owner && (
+                        {owner?.length && owner.includes(COMPANY_COLLECTION_NAME) && (
                             <CompanyView
                                 hideData
                                 dataInside
                                 canShowHideData
-                                id={owner.id}
                                 addressTitle={"Endereço"}
-                                title={"Dados do proprietário " + (index + 1)}
+                                title={"Dados do cliente"}
+                                id={owner.split("/")[1] ?? ""}
                             />
                         )}
                     </div>
                 ))}
-                <AddressView
-                    address={immobile.address}
-                    title={props.addressTitle}
-                />
+
+                {project.professional?.length && (
+                    <ProfessionalView
+                        hideData
+                        dataInside
+                        canShowHideData
+                        id={project.professional}
+                    />
+                )}
+
+                {listServices?.map((service, index) => (
+                    <ServiceView
+                        hideData
+                        dataInside
+                        hideProject
+                        canShowHideData
+                        id={service.id}
+                        key={index + service.id}
+                        title={"Dados do serviço " + (index + 1)}
+                    />
+                ))}
             </div>
         )
     }
 
     useEffect(() => {
         if (isFirst) {
-            if (props.id && props.id.length !== 0 && immobile.id?.length === 0) {
-                fetch("api/immobile/" + props.id).then((res) => res.json()).then((res) => {
+            if (props.id && props.id.length !== 0 && project.id?.length === 0) {
+                fetch("api/projectview/" + props.id).then((res) => res.json()).then((res) => {
                     setIsFirst(old => false)
-                    setImmobile(res.data)
+                    setProject(res.data)
+                    fetch("api/services/" + res.data.id).then((res) => res.json()).then((res) => {
+                        setServices(res.list)
+                    })
                 })
             }
         }
@@ -94,7 +134,7 @@ export default function ImmobileView(props: ImmobileViewProps) {
 
     return (
         <>
-            {immobile.id?.length === 0 ? (
+            {project.id?.length === 0 ? (
                 <div className="mt-6">
                     <PlaceholderItemList />
                 </div>
@@ -125,17 +165,15 @@ export default function ImmobileView(props: ImmobileViewProps) {
                                         )}
                                     </Button>
                                 )}
-                                <InfoView title="Nome" info={immobile.name} />
-                                <InfoView title="Status" info={immobile.status} />
+                                <InfoView title="Titulo" info={project.title} />
+                                <InfoView title="Número" info={project.number} />
+                                <InfoView title="Status" info={project.status} />
+                                <InfoView title="Data" info={handleUTCToDateShow(project.date.toString())} />
                                 <ScrollDownTransition isOpen={isShowInfo}>
                                     <InfoHolderView
                                         hideBorder
                                         hidePaddingMargin
                                     >
-                                        <InfoView title="Gleba" info={immobile.land} />
-                                        <InfoView title="Município/UF" info={immobile.county} />
-                                        <InfoView title="Área" info={handleMountNumberCurrency(immobile.area, ".", ",", 3, 2)} />
-                                        <InfoView title="Perimetro" info={handleMountNumberCurrency(immobile.perimeter, ".", ",", 3, 4)} />
                                         {props.dataInside && handlePutData()}
                                     </InfoHolderView>
                                 </ScrollDownTransition>

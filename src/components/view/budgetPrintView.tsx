@@ -44,6 +44,7 @@ export default function BudgetPrintView(props: BudgetPrintViewProps) {
         if (isFirst) {
             if (props.id && props.id?.length && project.id?.length === 0) {
                 fetch("../api/projectview/" + props.id).then((res) => res.json()).then((res) => {
+                    setIsFirst(old => false)
                     let client = res.data?.clients[0] ?? {}
                     if (client && client.length) {
                         let array = client.split("/")
@@ -62,11 +63,10 @@ export default function BudgetPrintView(props: BudgetPrintViewProps) {
                         }
                     }
                     setProject(res.data)
-                    setIsFirst(false)
                 })
                 fetch("../api/services/" + props.id).then((res) => res.json()).then((res) => {
+                    setIsFirst(old => false)
                     setServices(res.list)
-                    setIsFirst(false)
                 })
             }
         }

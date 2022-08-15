@@ -3,11 +3,12 @@ import { useEffect, useState } from "react"
 import List from "../../components/list/list"
 import Layout from "../../components/layout/layout"
 import ProjectForm from "../../components/form/projectForm"
-import { handleNewDateToUTC, handleUTCToDateShow } from "../../util/dateUtils"
-import { Company, defaultProfessional, defaultProject, defaultService, Person, Professional, Project, Service } from "../../interfaces/objectInterfaces"
-import FeedbackMessageModal, { defaultFeedbackMessage, FeedbackMessage } from "../../components/modal/feedbackMessageModal"
-import { COMPANY_COLLECTION_NAME, PERSON_COLLECTION_NAME } from "../../db/firebaseDB"
 import { handlePrepareServiceForShow } from "../../util/converterUtil"
+import { handleNewDateToUTC, handleUTCToDateShow } from "../../util/dateUtils"
+import { COMPANY_COLLECTION_NAME, PERSON_COLLECTION_NAME } from "../../db/firebaseDB"
+import FeedbackMessageModal, { defaultFeedbackMessage, FeedbackMessage } from "../../components/modal/feedbackMessageModal"
+import { Company, defaultProfessional, defaultProject, defaultService, Person, Professional, Project, Service } from "../../interfaces/objectInterfaces"
+import ProjectView from "../../components/view/projectView"
 
 export default function Budget() {
     const [title, setTitle] = useState("Lista de orçamentos")
@@ -47,8 +48,15 @@ export default function Budget() {
         } else {
             feedbackMessage = { messages: ["Algo deu errado"], messageType: "ERROR" }
         }
+        const index = projects.indexOf(project)
+        const list = [
+            ...projects.slice(0, index),
+            ...projects.slice(index + 1, projects.length),
+        ]
+        setProjects(list)
+        setProjectsForShow(list)
+        setIsLoading(false)
         handleShowMessage(feedbackMessage)
-        handleBackClick()
     }
 
     const handleNewClick = async () => {
@@ -105,7 +113,7 @@ localProject = {
         setIsLoading(true)
         let localProject: Project = await fetch("api/projectview/" + project.id).then((res) => res.json()).then((res) => res.data)
         let localProfessional: Professional = defaultProfessional
-        if (localProject.professional&& localProject.professional.length) {
+        if (localProject.professional && localProject.professional.length) {
             localProfessional = await fetch("api/professional/" + localProject.professional).then((res) => res.json()).then((res) => res.data)
         } else {
             localProfessional = await fetch("api/lastProfessional").then((res) => res.json()).then((res) => res.professional)
@@ -184,11 +192,11 @@ localProject = {
     useEffect(() => {
         if (isFirst) {
             fetch("api/budgets").then((res) => res.json()).then((res) => {
+                setIsFirst(old => false)
                 if (res.list.length) {
                     setProjects(res.list)
                     setProjectsForShow(res.list)
                 }
-                setIsFirst(false)
                 setIsLoading(false)
             })
         }
@@ -220,14 +228,18 @@ localProject = {
                     onDeleteClick={handleDeleteClick}
                     deleteWindowTitle={"Deseja realmente deletar " + project.title + "?"}
                     onTitle={(element: Project) => {
-                        return (<>
-                            <p>{element.title}</p>
-                            <p>Data do orçamento: {handleUTCToDateShow(element.date.toString())}</p>
-                        </>
+                        return (
+                            <ProjectView
+                                title=""
+                                hideData
+                                hideBorder
+                                hidePaddingMargin
+                                project={element}
+                            />
                         )
                     }}
                     onInfo={(element: Project) => {
-                        return (<p>{element.title}</p>)
+                        return (<ProjectView id={element.id} />)
                     }}
                 />
             ) : (
