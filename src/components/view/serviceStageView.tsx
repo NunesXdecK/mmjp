@@ -69,7 +69,6 @@ export default function ServiceStageView(props: ServiceStageViewProps) {
         if (isFirst) {
             if (props.id && props.id.length !== 0 && serviceStage.id?.length === 0) {
                 fetch("api/serviceStage/" + props.id).then((res) => res.json()).then((res) => {
-                    console.log(res.data)
                     setIsFirst(old => false)
                     setServiceStage(res.data)
                 })

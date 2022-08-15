@@ -129,7 +129,7 @@ export default function PersonForm(props: PersonFormProps) {
         }
         setIsLoading(true)
         let personFromDB = { ...person }
-        if (!handleIsEqual(person, personOriginal)) {
+        if (handleDiference()) {
             let res = await handleSaveInner(person)
             if (res.status === "ERROR") {
                 const feedbackMessage: FeedbackMessage = { messages: ["Algo deu errado!"], messageType: "ERROR" }

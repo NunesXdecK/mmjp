@@ -1,30 +1,33 @@
 import Form from "./form";
 import FormRow from "./formRow";
 import { useState } from "react";
+import Button from "../button/button";
 import FormRowColumn from "./formRowColumn";
+import WindowModal from "../modal/windowModal";
 import InputText from "../inputText/inputText";
 import ServiceForm from "../listForm/serviceForm";
 import ActionButtonsForm from "./actionButtonsForm";
+import BudgetPrintView from "../view/budgetPrintView";
 import InputCheckbox from "../inputText/inputCheckbox";
+import ContractPrintView from "../view/contractPrintView";
 import { FeedbackMessage } from "../modal/feedbackMessageModal";
 import { NOT_NULL_MARK } from "../../util/patternValidationUtil";
+import ScrollDownTransition from "../animation/scrollDownTransition";
 import SelectProfessionalForm from "../select/selectProfessionalForm";
 import InputTextAutoComplete from "../inputText/inputTextAutocomplete";
 import SelectPersonCompanyForm from "../select/selectPersonCompanyForm";
-import { handleProjectValidationForDB, handleServicesValidationForDB } from "../../util/validationUtil";
-import { defaultProject, Project, Service, ServicePayment, ServiceStage } from "../../interfaces/objectInterfaces";
-import { defaultElementFromBase, ElementFromBase, handlePrepareProjectForDB, handlePrepareServiceForDB } from "../../util/converterUtil";
+import FeedbackMessageSaveText from "../modal/feedbackMessageSavingText";
 import { handleNewDateToUTC, handleUTCToDateShow } from "../../util/dateUtils";
-import Button from "../button/button";
-import WindowModal from "../modal/windowModal";
-import BudgetPrintView from "../view/budgetPrintView";
-import ContractPrintView from "../view/contractPrintView";
+import { defaultProject, Project, Service, ServicePayment, ServiceStage } from "../../interfaces/objectInterfaces";
+import { handleIsEqual, handleProjectValidationForDB, handleServicesValidationForDB } from "../../util/validationUtil";
+import { defaultElementFromBase, ElementFromBase, handlePrepareProjectForDB, handlePrepareServiceForDB } from "../../util/converterUtil";
 
 interface ProjectFormProps {
     title?: string,
     subtitle?: string,
     isBack?: boolean,
     canMultiple?: boolean,
+    canAutoSave?: boolean,
     isForSelect?: boolean,
     isForDisable?: boolean,
     isForOldRegister?: boolean,
@@ -36,8 +39,8 @@ interface ProjectFormProps {
 }
 
 export default function ProjectForm(props: ProjectFormProps) {
-    const [projectOriginal, setProjectOriginal] = useState<Project>(props?.project ?? defaultProject)
     const [project, setProject] = useState<Project>(props?.project ?? defaultProject)
+    const [projectOriginal, setProjectOriginal] = useState<Project>(props?.project ?? defaultProject)
     const [isFormValid, setIsFormValid] = useState(handleProjectValidationForDB(project).validation)
 
     const [windowText, setWindowText] = useState("")
@@ -45,6 +48,7 @@ export default function ProjectForm(props: ProjectFormProps) {
     const [isOpen, setIsOpen] = useState(false)
     const [isLoading, setIsLoading] = useState(false)
     const [isMultiple, setIsMultiple] = useState(false)
+    const [isAutoSaving, setIsAutoSaving] = useState(false)
 
     const [isPrint, setIsPrint] = useState(false)
     const [isContract, setIsContract] = useState(false)
@@ -52,6 +56,7 @@ export default function ProjectForm(props: ProjectFormProps) {
     const [oldData, setOldData] = useState<ElementFromBase>(props?.project?.oldData ?? defaultElementFromBase)
 
     const [services, setServices] = useState<Service[]>(props?.project?.services ? props.project.services : [])
+    const [servicesOriginal, setServicesOriginal] = useState<Service[]>(props?.project?.services ? props.project.services : [])
     const [professionals, setProfessionals] = useState(props?.project?.professional?.id ? [props.project.professional] : [])
 
     const handleSetProjectTitle = (value) => { setProject({ ...project, title: value }) }
@@ -72,24 +77,215 @@ export default function ProjectForm(props: ProjectFormProps) {
         setProject({ ...project, clients: value, number: number })
     }
 
-    const handleDiference = (): boolean => {
-        let hasDiference = false
-        Object.keys(projectOriginal)?.map((element, index) => {
-            if (project[element] !== projectOriginal[element]) {
-                hasDiference = true
-            }
-        })
-        return hasDiference
-    }
-
     const handleOnBack = () => {
         if (props.onBack) {
             props.onBack()
         }
     }
 
+    const handleDiference = (): boolean => {
+        return !handleIsEqual(project, projectOriginal) || !handleIsEqual(services, servicesOriginal)
+    }
+
     const handleChangeFormValidation = (isValid) => {
         setIsFormValid(isValid)
+    }
+
+    const handleShowMessage = (feedbackMessage: FeedbackMessage) => {
+        if (props.onShowMessage) {
+            props.onShowMessage(feedbackMessage)
+        }
+    }
+
+    const handleProjectServicesToDB = (project: Project, status?: "ORÇAMENTO" | "NORMAL" | "ARQUIVADO" | "FINALIZADO") => {
+        let projectFinal = { ...project }
+        let servicesFinal = []
+        let localServiceStages: ServiceStage[] = []
+        let localServicePayments: ServicePayment[] = []
+        let projectStatus = project.status
+        if (professionals.length > 0) {
+            projectFinal = { ...projectFinal, professional: professionals[0] }
+        } else {
+            projectFinal = { ...projectFinal, professional: {} }
+        }
+        if (status && status.length) {
+            projectStatus = status
+        }
+        projectFinal = { ...projectFinal, status: projectStatus }
+        services?.map((element, index) => {
+            element.serviceStages?.map((elementStages, index) => {
+                localServiceStages = [...localServiceStages, { ...elementStages, status: projectStatus }]
+            })
+            element.servicePayments?.map((elementPayments, index) => {
+                localServicePayments = [...localServicePayments, { ...elementPayments, status: projectStatus }]
+            })
+            servicesFinal = [...servicesFinal, {
+                ...element,
+                status: projectStatus,
+                serviceStages: localServiceStages,
+                servicePayments: localServicePayments,
+            }]
+        })
+        return { project: projectFinal, services: servicesFinal }
+    }
+
+    const handlePutServicesIDs = (servicesIDs, services: Service[]) => {
+        let servicesRES = []
+        servicesIDs.map((element, index) => {
+            let service: Service = services[element.index]
+            let stagesWithIDs = []
+            let paymentsWithIDs = []
+            element.stages.map((stage, index) => {
+                let serviceStage = service?.serviceStages[stage.index]
+                stagesWithIDs = [...stagesWithIDs, { ...serviceStage, id: stage.id }]
+            })
+            element.payments.map((payment, index) => {
+                let servicePayment = service?.servicePayments[payment.index]
+                paymentsWithIDs = [...paymentsWithIDs, { ...servicePayment, id: payment.id }]
+
+            })
+            servicesRES = [...servicesRES,
+            {
+                ...service,
+                id: element.id,
+                serviceStages: stagesWithIDs,
+                servicePayments: paymentsWithIDs,
+            }
+            ]
+        })
+        return servicesRES
+    }
+
+    const handleAutoSave = async (event) => {
+        if (!props.canAutoSave) {
+            return
+        }
+        if (event.relatedTarget?.tagName?.toLowerCase() !== ("input" || "select" || "textarea")) {
+            return
+        }
+        if (isAutoSaving) {
+            return
+        }
+        if (!handleDiference()) {
+            return
+        }
+        let projectServiceFinal = handleProjectServicesToDB(project)
+        let projectForValid: Project = projectServiceFinal.project
+        let servicesForValid: Service[] = projectServiceFinal.services
+        const isProjectValid = handleProjectValidationForDB(projectForValid)
+        const isServicesValid = handleServicesValidationForDB(servicesForValid, false, false)
+        if (!isProjectValid.validation || !isServicesValid.validation) {
+            return
+        }
+        setIsAutoSaving(old => true)
+        const resProject = await handleSaveProjectInner(projectForValid)
+        if (resProject.status === "ERROR") {
+            return
+        }
+        setProject({ ...project, id: resProject.id })
+        setProjectOriginal(old => resProject.project)
+        const resServices = await handleSaveServicesInner(servicesForValid, { ...projectForValid, id: resProject.id })
+        if (resServices.status === "ERROR") {
+            return
+        }
+        setIsAutoSaving(old => false)
+        let servicesLastWithId = handlePutServicesIDs(resServices.services, services)
+        let servicesFromDBLastWithId = handlePutServicesIDs(resServices.services, servicesForValid)
+        setServices(old => servicesLastWithId)
+        setServicesOriginal(old => servicesFromDBLastWithId)
+    }
+
+    const handleSaveProjectInner = async (project) => {
+        let res = { status: "ERROR", id: "", project: project }
+        let projectForDB = handlePrepareProjectForDB(project)
+        try {
+            const saveRes = await fetch("api/project", {
+                method: "POST",
+                body: JSON.stringify({ token: "tokenbemseguro", data: projectForDB }),
+            }).then((res) => res.json())
+            res = { ...res, status: "SUCCESS", id: saveRes.id, project: { ...project, id: saveRes.id } }
+        } catch (e) {
+            console.error("Error adding document: ", e)
+        }
+        return res
+    }
+
+    const handleSaveServicesInner = async (services, project) => {
+        let res = { status: "ERROR", services: [] }
+        let localServicesForDB = []
+        let servicesFinal = []
+        services.map((element: Service, index) => {
+            localServicesForDB = [...localServicesForDB, {
+                ...element,
+                project: { ...project }
+            }]
+        })
+        try {
+            await Promise.all(
+                localServicesForDB.map(async (element: Service, index) => {
+                    let serviceForDB = handlePrepareServiceForDB(element)
+                    const saveRes = await fetch("api/service", {
+                        method: "POST",
+                        body: JSON.stringify({ token: "tokenbemseguro", data: serviceForDB }),
+                    }).then((res) => res.json())
+                    servicesFinal = [...servicesFinal, saveRes.service]
+                }))
+            res = { ...res, status: "SUCCESS", services: servicesFinal }
+        } catch (e) {
+            console.error("Error adding document: ", e)
+        }
+        return res
+    }
+
+    const handleSave = async (status?: "ORÇAMENTO" | "NORMAL" | "ARQUIVADO" | "FINALIZADO") => {
+        if (isAutoSaving) {
+            return
+        }
+        let projectServiceFinal = handleProjectServicesToDB(project)
+        let projectForValid: Project = projectServiceFinal.project
+        let servicesForValid: Service[] = projectServiceFinal.services
+        const isProjectValid = handleProjectValidationForDB(projectForValid)
+        const isServicesValid = handleServicesValidationForDB(servicesForValid, false, false)
+        if (!isProjectValid.validation || !isServicesValid.validation) {
+            const feedbackMessage: FeedbackMessage = { messages: [...isProjectValid.messages, ...isServicesValid.messages], messageType: "ERROR" }
+            handleShowMessage(feedbackMessage)
+            return
+        }
+        setIsLoading(true)
+        let projectFromDB = { ...projectForValid }
+        if (handleDiference()) {
+            let resProject = await handleSaveProjectInner(projectForValid)
+            if (resProject.status === "ERROR") {
+                const feedbackMessage: FeedbackMessage = { messages: ["Algo deu errado!"], messageType: "ERROR" }
+                handleShowMessage(feedbackMessage)
+                setIsLoading(false)
+                return
+            }
+            setProject({ ...projectForValid, id: resProject.id })
+            setProjectOriginal({ ...projectForValid, id: resProject.id })
+            projectFromDB = { ...resProject.project }
+
+            let resServices = await handleSaveServicesInner(services, projectForValid)
+            if (resServices.status === "ERROR") {
+                const feedbackMessage: FeedbackMessage = { messages: ["Algo deu errado!"], messageType: "ERROR" }
+                handleShowMessage(feedbackMessage)
+                setIsLoading(false)
+                return
+            }
+            let servicesLastWithId = handlePutServicesIDs(resServices.services, servicesForValid)
+            setServices([...servicesLastWithId])
+            setServicesOriginal([...servicesLastWithId])
+        }
+        const feedbackMessage: FeedbackMessage = { messages: ["Sucesso!"], messageType: "SUCCESS" }
+        handleShowMessage(feedbackMessage)
+        if (isMultiple) {
+            setServices([])
+            setProject({ ...defaultProject, dateString: handleUTCToDateShow(handleNewDateToUTC().toString()) })
+        }
+        if (!isMultiple && props.onAfterSave) {
+            props.onAfterSave(feedbackMessage, projectFromDB)
+        }
+        setIsLoading(false)
     }
 
     const handleCenterActionsButtons = () => {
@@ -184,194 +380,86 @@ export default function ProjectForm(props: ProjectFormProps) {
         )
     }
 
-    const handleSave = async (status?: "ORÇAMENTO" | "NORMAL" | "ARQUIVADO" | "FINALIZADO") => {
-        setIsLoading(true)
-        let feedbackMessage: FeedbackMessage = { messages: ["Algo estranho aconteceu"], messageType: "WARNING" }
-        let projectForDB: Project = { ...project }
-        let localServicesForDB = []
-        if (professionals?.length > 0) {
-            projectForDB = { ...projectForDB, professional: professionals[0] }
-        } else {
-            projectForDB = { ...projectForDB, professional: {} }
-        }
-        if (status && status.length) {
-            projectForDB = { ...projectForDB, status: status }
-            let localServiceStages: ServiceStage[] = []
-            let localServicePayments: ServicePayment[] = []
-            services?.map((element, index) => {
-                element.serviceStages?.map((elementStages, index) => {
-                    localServiceStages = [...localServiceStages, { ...elementStages, status: status }]
-                })
-                element.servicePayments?.map((elementPayments, index) => {
-                    localServicePayments = [...localServicePayments, { ...elementPayments, status: status }]
-                })
-                localServicesForDB = [...localServicesForDB, {
-                    ...element,
-                    status: status,
-                    serviceStages: localServiceStages,
-                    servicePayments: localServicePayments,
-                }]
-            })
-        } else {
-            localServicesForDB = [...services]
-        }
-        const isValid = handleProjectValidationForDB(projectForDB)
-        const servicesValidation = handleServicesValidationForDB(localServicesForDB, false, false)
-        if (isValid.validation && servicesValidation.validation) {
-            projectForDB = handlePrepareProjectForDB(projectForDB)
-            let nowID = projectForDB?.id ?? ""
-            const isSave = nowID === ""
-            let res = { status: "ERROR", id: nowID, message: "" }
-            if (isSave) {
-                feedbackMessage = { ...feedbackMessage, messages: ["Salvo com sucesso!"], messageType: "SUCCESS" }
-            } else {
-                feedbackMessage = { ...feedbackMessage, messages: ["Atualizado com sucesso!"], messageType: "SUCCESS" }
-            }
-
-            try {
-                res = await fetch("api/project", {
-                    method: "POST",
-                    body: JSON.stringify({ token: "tokenbemseguro", data: projectForDB }),
-                }).then((res) => res.json())
-                nowID = res.id
-            } catch (e) {
-                if (isSave) {
-                    feedbackMessage = { ...feedbackMessage, messages: ["Erro em salvar!"], messageType: "ERROR" }
-                } else {
-                    feedbackMessage = { ...feedbackMessage, messages: ["Erro em Atualizadar!"], messageType: "ERROR" }
-                }
-                console.error("Error adding document: ", e)
-            }
-            if (res.status === "SUCCESS") {
-                let serviceValidation = true
-                let localServices = []
-                if (localServicesForDB.length && localServicesForDB.length > 0) {
-                    localServicesForDB.map((element: Service, index) => {
-                        localServices = [...localServices, {
-                            ...element,
-                            project: { ...defaultProject, id: nowID }
-                        }]
-                    })
-
-                    let localServiceWithId = []
-                    try {
-                        await Promise.all(localServices.map(async (element: Service, index) => {
-                            let serviceForDB = handlePrepareServiceForDB(element)
-                            res = await fetch("api/service", {
-                                method: "POST",
-                                body: JSON.stringify({ token: "tokenbemseguro", data: serviceForDB }),
-                            }).then((res) => res.json())
-                            if (res.status === "ERROR") {
-                                serviceValidation = false
-                                feedbackMessage = { ...feedbackMessage, messageType: "ERROR", messages: ["Erro ao adicionar um serviço"] }
-                            }
-                            localServiceWithId = [...localServiceWithId, { ...element, id: res.id }]
-                        }))
-                    } catch (e) {
-                        serviceValidation = false
-                        feedbackMessage = { ...feedbackMessage, messageType: "ERROR", messages: ["Erro ao adicionar um serviço"] }
-                        console.error("Error adding document: ", e)
+    const handleActionBar = () => {
+        return (
+            <ActionButtonsForm
+                isLeftOn
+                isForBackControl
+                isLoading={isLoading}
+                isDisabled={!isFormValid}
+                centerChild={handleCenterActionsButtons}
+                rightWindowText="Deseja confirmar as alterações?"
+                isForOpenLeft={project.id !== "" && handleDiference()}
+                isForOpenRight={project.id !== "" && handleDiference()}
+                rightButtonText={project.id === "" ? "Salvar" : "Editar"}
+                leftWindowText="Dejesa realmente voltar e descartar as alterações?"
+                onLeftClick={(event) => {
+                    if (event) {
+                        event.preventDefault()
                     }
-                }
-
-                if (serviceValidation) {
-                    setProject({ ...project, id: res.id })
-                    projectForDB = { ...projectForDB, id: res.id }
-
-                    if (isMultiple) {
-                        setServices([])
-                        setProject({ ...defaultProject, dateString: handleUTCToDateShow(handleNewDateToUTC().toString()) })
+                    handleOnBack()
+                }}
+                onRightClick={(event) => {
+                    if (event) {
+                        event.preventDefault()
                     }
-
-                    if (!isMultiple && props.onAfterSave) {
-                        props.onAfterSave(feedbackMessage, projectForDB)
-                    }
-                }
-            } else {
-                feedbackMessage = { ...feedbackMessage, messages: ["Erro ao adicionar o projeto!"], messageType: "ERROR" }
-            }
-
-            if (props.onShowMessage) {
-                props.onShowMessage(feedbackMessage)
-            }
-        } else {
-            feedbackMessage = { ...feedbackMessage, messages: [...isValid.messages, ...servicesValidation.messages], messageType: "ERROR" }
-            if (props.onShowMessage) {
-                props.onShowMessage(feedbackMessage)
-            }
-        }
-        setIsLoading(false)
+                    handleSave()
+                }}
+            />
+        )
     }
 
+
+    const handlePrintActionBar = () => {
+        return (
+            <ActionButtonsForm
+                isLeftOn
+                leftWindowText="Dejesa realmente voltar?"
+                onLeftClick={(event) => {
+                    if (event) {
+                        event.preventDefault()
+                    }
+                    setIsPrint(false)
+                    setIsContract(false)
+                }}
+            />
+        )
+    }
     return (
         <>
             {isPrint && (
                 <>
-                    <ActionButtonsForm
-                        isLeftOn
-                        leftWindowText="Dejesa realmente voltar e descartar as alterações?"
-                        onLeftClick={(event) => {
-                            if (event) {
-                                event.preventDefault()
-                            }
-                            setIsPrint(false)
-                            setIsContract(false)
-                        }}
-                    />
+                    {handlePrintActionBar()}
                     <BudgetPrintView
                         project={project}
                         services={services}
                         client={project.clients[0]}
                     />
+                    {handlePrintActionBar()}
                 </>
             )}
             {isContract && (
                 <>
-                    <ActionButtonsForm
-                        isLeftOn
-                        leftWindowText="Dejesa realmente voltar e descartar as alterações?"
-                        onLeftClick={(event) => {
-                            if (event) {
-                                event.preventDefault()
-                            }
-                            setIsPrint(false)
-                            setIsContract(false)
-                        }}
-                    />
+                    {handlePrintActionBar()}
                     <ContractPrintView
                         project={project}
                         services={services}
                         client={project.clients[0]}
                     />
+                    {handlePrintActionBar()}
                 </>
             )}
-
             {!isPrint && !isContract && (
                 <>
-                    <ActionButtonsForm
-                        isLeftOn
-                        isForBackControl
-                        isLoading={isLoading}
-                        isDisabled={!isFormValid}
-                        centerChild={handleCenterActionsButtons}
-                        rightWindowText="Deseja confirmar as alterações?"
-                        isForOpenLeft={project.id !== "" && handleDiference()}
-                        isForOpenRight={project.id !== "" && handleDiference()}
-                        rightButtonText={project.id === "" ? "Salvar" : "Editar"}
-                        leftWindowText="Dejesa realmente voltar e descartar as alterações?"
-                        onLeftClick={(event) => {
-                            if (event) {
-                                event.preventDefault()
-                            }
-                            handleOnBack()
-                        }}
-                        onRightClick={(event) => {
-                            if (event) {
-                                event.preventDefault()
-                            }
-                            handleSave()
-                        }}
-                    />
+                    {handleActionBar()}
+                    <ScrollDownTransition
+                        isOpen={isAutoSaving}>
+                        <Form>
+                            <FeedbackMessageSaveText
+                                isOpen={true}
+                            />
+                        </Form>
+                    </ScrollDownTransition>
 
                     <form
                         onSubmit={(event) => {
@@ -382,27 +470,7 @@ export default function ProjectForm(props: ProjectFormProps) {
 
                         <FormRow className="p-2 hidden">
                             <FormRowColumn unit="6">
-                                <ActionButtonsForm
-                                    isLeftOn
-                                    isDisabled={!isFormValid}
-                                    rightWindowText="Deseja confirmar as alterações?"
-                                    isForOpenLeft={project.id !== "" && handleDiference()}
-                                    isForOpenRight={project.id !== "" && handleDiference()}
-                                    rightButtonText={project.id === "" ? "Salvar" : "Editar"}
-                                    leftWindowText="Dejesa realmente voltar e descartar as alterações?"
-                                    onLeftClick={(event) => {
-                                        if (event) {
-                                            event.preventDefault()
-                                        }
-                                        handleOnBack()
-                                    }}
-                                    onRightClick={(event) => {
-                                        if (event) {
-                                            event.preventDefault()
-                                        }
-                                        handleSave()
-                                    }}
-                                />
+                                {handleActionBar()}
                             </FormRowColumn>
                         </FormRow>
 
@@ -431,6 +499,7 @@ export default function ProjectForm(props: ProjectFormProps) {
                                         id="title"
                                         isLoading={isLoading}
                                         value={project.title}
+                                        onBlur={handleAutoSave}
                                         title="Titulo do projeto"
                                         validation={NOT_NULL_MARK}
                                         isDisabled={props.isForDisable}
@@ -444,9 +513,10 @@ export default function ProjectForm(props: ProjectFormProps) {
                                 <FormRowColumn unit="2">
                                     <InputText
                                         id="number"
+                                        title="Numero"
                                         isLoading={isLoading}
                                         value={project.number}
-                                        title="Numero"
+                                        onBlur={handleAutoSave}
                                         isDisabled={props.isForDisable}
                                         onSetText={handleSetProjectNumber}
                                         onValidate={handleChangeFormValidation}
@@ -460,6 +530,7 @@ export default function ProjectForm(props: ProjectFormProps) {
                                         maxLength={10}
                                         id="project-date"
                                         isLoading={isLoading}
+                                        onBlur={handleAutoSave}
                                         value={project.dateString}
                                         isDisabled={props.isForDisable}
                                         onSetText={handleSetProjectDate}
@@ -523,29 +594,7 @@ export default function ProjectForm(props: ProjectFormProps) {
                                 event.preventDefault()
                             }
                         }}>
-                        <ActionButtonsForm
-                            isLeftOn
-                            isLoading={isLoading}
-                            isDisabled={!isFormValid}
-                            centerChild={handleCenterActionsButtons}
-                            rightWindowText="Deseja confirmar as alterações?"
-                            isForOpenLeft={project.id !== "" && handleDiference()}
-                            isForOpenRight={project.id !== "" && handleDiference()}
-                            rightButtonText={project.id === "" ? "Salvar" : "Editar"}
-                            leftWindowText="Dejesa realmente voltar e descartar as alterações?"
-                            onLeftClick={(event) => {
-                                if (event) {
-                                    event.preventDefault()
-                                }
-                                handleOnBack()
-                            }}
-                            onRightClick={(event) => {
-                                if (event) {
-                                    event.preventDefault()
-                                }
-                                handleSave()
-                            }}
-                        />
+                        {handleActionBar()}
                     </form>
 
                     <WindowModal
@@ -569,7 +618,8 @@ export default function ProjectForm(props: ProjectFormProps) {
                             </Button>
                         </div>
                     </WindowModal>
-                </>)}
+                </>
+            )}
         </>
     )
 }

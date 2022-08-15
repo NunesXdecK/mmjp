@@ -10,7 +10,7 @@ interface ValidationReturn {
 export const handleIsEqual = (objectOne, objectTwo) => {
     let isEqual = true
     try {
-        if (Array.isArray(objectOne) && Array.isArray(objectTwo)) {
+        if ((objectOne && Array.isArray(objectOne)) && (objectTwo && Array.isArray(objectTwo))) {
             if (objectOne?.length !== objectTwo?.length) {
                 return false
             }
@@ -19,7 +19,7 @@ export const handleIsEqual = (objectOne, objectTwo) => {
                     isEqual = handleIsEqual(element, objectTwo[index])
                 }
             })
-        } else if (typeof objectOne === 'object' && typeof objectTwo === 'object') {
+        } else if ((objectOne && typeof objectOne === 'object') && (objectTwo && typeof objectTwo === 'object')) {
             let arrayOne = Object.keys(objectOne)
             let arrayTwo = Object.keys(objectTwo)
             if (arrayOne?.length !== arrayTwo?.length) {

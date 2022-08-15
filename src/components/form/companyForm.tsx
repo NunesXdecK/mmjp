@@ -124,7 +124,7 @@ export default function CompanyForm(props: CompanyFormProps) {
         }
         setIsLoading(true)
         let companyFromDB = { ...company }
-        if (!handleIsEqual(company, companyOriginal)) {
+        if (handleDiference()) {
             let res = await handleSaveInner(company)
             if (res.status === "ERROR") {
                 const feedbackMessage: FeedbackMessage = { messages: ["Algo deu errado!"], messageType: "ERROR" }

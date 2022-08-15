@@ -126,7 +126,7 @@ export default function ImmobileForm(props: ImmobileFormProps) {
         }
         setIsLoading(true)
         let immobileFromDB = { ...immobile }
-        if (!handleIsEqual(immobile, immobileOriginal)) {
+        if (handleDiference()) {
             let res = await handleSaveInner(immobile)
             if (res.status === "ERROR") {
                 const feedbackMessage: FeedbackMessage = { messages: ["Algo deu errado!"], messageType: "ERROR" }

@@ -73,6 +73,16 @@ export default function ProfessionalForm(props: ProfessionalFormProps) {
         }
     }
 
+    const handleProfessionalToDB = (professional) => {
+        let professionalFinal = { ...professional }
+        if (persons.length > 0) {
+            professionalFinal = { ...professionalFinal, person: persons[0] }
+        } else {
+            professionalFinal = { ...professionalFinal, person: {} }
+        }
+        return professionalFinal
+    }
+
     const handleAutoSave = async (event) => {
         if (!props.canAutoSave) {
             return
@@ -86,12 +96,7 @@ export default function ProfessionalForm(props: ProfessionalFormProps) {
         if (!handleDiference()) {
             return
         }
-        let professionalForValid = { ...professional }
-        if (persons.length > 0) {
-            professionalForValid = { ...professionalForValid, person: persons[0] }
-        } else {
-            professionalForValid = { ...professionalForValid, person: {} }
-        }
+        let professionalForValid = handleProfessionalToDB(professional)
         const isValid = handleProfessionalValidationForDB(professionalForValid)
         if (!isValid.validation) {
             return
@@ -102,7 +107,7 @@ export default function ProfessionalForm(props: ProfessionalFormProps) {
             return
         }
         setIsAutoSaving(old => false)
-        setProfessional({ ...professionalForValid, id: res.id })
+        setProfessional({ ...professional, id: res.id })
         setProfessionalOriginal(old => res.professional)
     }
 
@@ -125,12 +130,7 @@ export default function ProfessionalForm(props: ProfessionalFormProps) {
         if (isAutoSaving) {
             return
         }
-        let professionalForValid = { ...professional }
-        if (persons.length > 0) {
-            professionalForValid = { ...professionalForValid, person: persons[0] }
-        } else {
-            professionalForValid = { ...professionalForValid, person: {} }
-        }
+        let professionalForValid = handleProfessionalToDB(professional)
         const isValid = handleProfessionalValidationForDB(professionalForValid)
         if (!isValid.validation) {
             const feedbackMessage: FeedbackMessage = { messages: isValid.messages, messageType: "ERROR" }
@@ -139,7 +139,7 @@ export default function ProfessionalForm(props: ProfessionalFormProps) {
         }
         setIsLoading(true)
         let professionalFromDB = { ...professionalForValid }
-        if (!handleIsEqual(professional, professionalOriginal)) {
+        if (handleDiference()) {
             let res = await handleSaveInner(professionalForValid)
             if (res.status === "ERROR") {
                 const feedbackMessage: FeedbackMessage = { messages: ["Algo deu errado!"], messageType: "ERROR" }

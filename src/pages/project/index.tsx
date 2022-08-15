@@ -3,11 +3,12 @@ import { useEffect, useState } from "react"
 import List from "../../components/list/list"
 import Layout from "../../components/layout/layout"
 import ProjectForm from "../../components/form/projectForm"
+import ProjectView from "../../components/view/projectView"
+import { handlePrepareServiceForShow } from "../../util/converterUtil"
 import { handleNewDateToUTC, handleUTCToDateShow } from "../../util/dateUtils"
+import { COMPANY_COLLECTION_NAME, PERSON_COLLECTION_NAME } from "../../db/firebaseDB"
 import { Company, defaultProfessional, defaultProject, defaultService, Person, Professional, Project, Service } from "../../interfaces/objectInterfaces"
 import FeedbackMessageModal, { defaultFeedbackMessage, FeedbackMessage } from "../../components/modal/feedbackMessageModal"
-import { COMPANY_COLLECTION_NAME, PERSON_COLLECTION_NAME } from "../../db/firebaseDB"
-import { handlePrepareServiceForShow } from "../../util/converterUtil"
 
 export default function Projects() {
     const [title, setTitle] = useState("Lista de projetos")
@@ -47,8 +48,15 @@ export default function Projects() {
         } else {
             feedbackMessage = { messages: ["Algo deu errado"], messageType: "ERROR" }
         }
+        const index = projects.indexOf(project)
+        const list = [
+            ...projects.slice(0, index),
+            ...projects.slice(index + 1, projects.length),
+        ]
+        setProjects(list)
+        setProjectsForShow(list)
+        setIsLoading(false)
         handleShowMessage(feedbackMessage)
-        handleBackClick()
     }
 
     const handleNewClick = async () => {
@@ -219,18 +227,23 @@ localProject = {
                     onDeleteClick={handleDeleteClick}
                     deleteWindowTitle={"Deseja realmente deletar " + project.title + "?"}
                     onTitle={(element: Project) => {
-                        return (<>
-                            <p>{element.title}</p>
-                            <p>Data do projeto: {handleUTCToDateShow(element.date.toString())}</p>
-                        </>
+                        return (
+                            <ProjectView
+                                title=""
+                                hideData
+                                hideBorder
+                                hidePaddingMargin
+                                project={element}
+                            />
                         )
                     }}
                     onInfo={(element: Project) => {
-                        return (<p>{element.title}</p>)
+                        return (<ProjectView id={element.id} />)
                     }}
                 />
             ) : (
                 <ProjectForm
+                    canAutoSave
                     canMultiple
                     isBack={true}
                     project={project}
