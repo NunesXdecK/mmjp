@@ -150,6 +150,7 @@ export default function Companies() {
             ) : (
                 <CompanyForm
                     canMultiple
+                    canAutoSave
                     isBack={true}
                     company={company}
                     onBack={handleBackClick}

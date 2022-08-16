@@ -31,8 +31,9 @@ interface ProfessionalFormProps {
 }
 
 export default function ProfessionalForm(props: ProfessionalFormProps) {
-    const [professionalOriginal, setProfessionalOriginal] = useState<Professional>(props?.professional ?? defaultProfessional)
+    const [professionalID, setProfessionalID] = useState(props?.professional?.id?.length ? props?.professional?.id : "")
     const [professional, setProfessional] = useState<Professional>(props?.professional ?? defaultProfessional)
+    const [professionalOriginal, setProfessionalOriginal] = useState<Professional>(props?.professional ?? defaultProfessional)
     const [isFormValid, setIsFormValid] = useState(handleProfessionalValidationForDB(professional).validation)
 
     const [isLoading, setIsLoading] = useState(false)
@@ -107,13 +108,16 @@ export default function ProfessionalForm(props: ProfessionalFormProps) {
             return
         }
         setIsAutoSaving(old => false)
-        setProfessional({ ...professional, id: res.id })
-        setProfessionalOriginal(old => res.professional)
+        setProfessionalID(res.id)
+        setProfessionalOriginal(res.professional)
     }
 
     const handleSaveInner = async (professional) => {
         let res = { status: "ERROR", id: "", professional: professional }
         let professionalForDB = handlePrepareProfessionalForDB(professional)
+        if (!professionalForDB?.id?.length && professionalID?.length) {
+            professionalForDB = { ...professionalForDB, id: professionalID }
+        }
         try {
             const saveRes = await fetch("api/professional", {
                 method: "POST",

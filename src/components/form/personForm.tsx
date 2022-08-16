@@ -33,6 +33,7 @@ interface PersonFormProps {
 }
 
 export default function PersonForm(props: PersonFormProps) {
+    const [personID, setPersonID] = useState(props?.person?.id?.length ? props?.person?.id : "")
     const [person, setPerson] = useState<Person>(props?.person ?? defaultPerson)
     const [personOriginal, setPersonOriginal] = useState<Person>(props?.person ?? defaultPerson)
     const [isFormValid, setIsFormValid] = useState(handlePersonValidationForDB(person).validation)
@@ -98,13 +99,16 @@ export default function PersonForm(props: PersonFormProps) {
             return
         }
         setIsAutoSaving(old => false)
-        setPerson({ ...person, id: res.id })
+        setPersonID(res.id)
         setPersonOriginal(old => res.person)
     }
 
     const handleSaveInner = async (person) => {
         let res = { status: "ERROR", id: "", person: person }
-        const personForDB = handlePreparePersonForDB(person)
+        let personForDB = handlePreparePersonForDB(person)
+        if (!personForDB?.id?.length && personID?.length) {
+            personForDB = { ...personForDB, id: personID }
+        }
         try {
             const saveRes = await fetch("api/person", {
                 method: "POST",

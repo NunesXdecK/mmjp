@@ -33,8 +33,9 @@ interface ImmobileFormProps {
 }
 
 export default function ImmobileForm(props: ImmobileFormProps) {
-    const [immobileOriginal, setImmobileOriginal] = useState<Immobile>(props?.immobile ?? defaultImmobile)
+    const [immobileID, setImmobileID] = useState(props?.immobile?.id?.length ? props?.immobile?.id : "")
     const [immobile, setImmobile] = useState<Immobile>(props?.immobile ?? defaultImmobile)
+    const [immobileOriginal, setImmobileOriginal] = useState<Immobile>(props?.immobile ?? defaultImmobile)
     const [isFormValid, setIsFormValid] = useState(handleImmobileValidationForDB(immobile).validation)
 
     const [isLoading, setIsLoading] = useState(false)
@@ -95,13 +96,16 @@ export default function ImmobileForm(props: ImmobileFormProps) {
             return
         }
         setIsAutoSaving(old => false)
-        setImmobile({ ...immobile, id: res.id })
-        setImmobileOriginal(old => res.immobile)
+        setImmobileID(res.id)
+        setImmobileOriginal(res.immobile)
     }
 
     const handleSaveInner = async (immobile) => {
         let res = { status: "ERROR", id: "", immobile: immobile }
         let immobileForDB = handlePrepareImmobileForDB(immobile)
+        if (!immobileForDB?.id?.length && immobileID?.length) {
+            immobileForDB = { ...immobileForDB, id: immobileID }
+        }
         try {
             const saveRes = await fetch("api/immobile", {
                 method: "POST",

@@ -33,8 +33,9 @@ interface CompanyFormProps {
 }
 
 export default function CompanyForm(props: CompanyFormProps) {
-    const [companyOriginal, setCompanyOriginal] = useState<Company>(props?.company ?? defaultCompany)
+    const [companyID, setCompanyID] = useState(props?.company?.id?.length ? props?.company?.id : "")
     const [company, setCompany] = useState<Company>(props?.company ?? defaultCompany)
+    const [companyOriginal, setCompanyOriginal] = useState<Company>(props?.company ?? defaultCompany)
     const [isFormValid, setIsFormValid] = useState(handleCompanyValidationForDB(company).validation)
 
     const [isLoading, setIsLoading] = useState(false)
@@ -93,13 +94,16 @@ export default function CompanyForm(props: CompanyFormProps) {
             return
         }
         setIsAutoSaving(old => false)
-        setCompany({ ...company, id: res.id })
+        setCompanyID(res.id)
         setCompanyOriginal(old => res.company)
     }
 
     const handleSaveInner = async (company) => {
         let res = { status: "ERROR", id: "", company: company }
-        const companyForDB = handlePrepareCompanyForDB(company)
+        let companyForDB = handlePrepareCompanyForDB(company)
+        if (!companyForDB?.id?.length && companyID?.length) {
+            companyForDB = { ...companyForDB, id: companyID }
+        }
         try {
             const saveRes = await fetch("api/company", {
                 method: "POST",
