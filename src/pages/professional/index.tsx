@@ -148,7 +148,6 @@ export default function Professionals() {
             ) : (
                 <ProfessionalForm
                     canMultiple
-                    canAutoSave
                     isBack={true}
                     onBack={handleBackClick}
                     professional={professional}

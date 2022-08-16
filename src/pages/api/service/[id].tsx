@@ -36,10 +36,10 @@ export default async function handler(req, res) {
                         await Promise.all(
                             listServiceStage.map(async (element, index) => {
                                 let data: ServiceStage = element
-                                if ("id" in data.responsible && data.responsible.id.length) {
+                                if (data.responsible && "id" in data.responsible && data.responsible.id.length) {
                                     const professionalDocRef = doc(professionalCollection, data.responsible?.id)
                                     let professional: Professional = (await getDoc(professionalDocRef)).data()
-                                    if ("id" in professional && professional?.id.length) {
+                                    if (professional && "id" in professional && professional?.id.length) {
                                         data = { ...data, responsible: professional }
                                     }
                                 }

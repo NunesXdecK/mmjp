@@ -73,7 +73,6 @@ export default function ServiceView(props: ServiceViewProps) {
             dateTwo = elementTwo.index
         }
         return dateOne - dateTwo
-
     }
 
     const handlePutData = () => {

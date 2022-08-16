@@ -5,13 +5,13 @@ import Button from "../button/button";
 import IOSModal from "../modal/iosModal";
 import { useEffect, useState } from "react";
 import InputText from "../inputText/inputText";
+import WindowModal from "../modal/windowModal";
 import FormRowColumn from "../form/formRowColumn";
 import ProfessionalForm from "../form/professionalForm";
-import { defaultFeedbackMessage, FeedbackMessage } from "../modal/feedbackMessageModal";
+import FeedbackMessageText from "../modal/feedbackMessageText";
 import { PencilAltIcon, TrashIcon } from "@heroicons/react/outline";
 import { defaultProfessional, Professional } from "../../interfaces/objectInterfaces";
-import FeedbackMessageText from "../modal/feedbackMessageText";
-import WindowModal from "../modal/windowModal";
+import { defaultFeedbackMessage, FeedbackMessage } from "../modal/feedbackMessageModal";
 
 interface SelectProfessionalFormProps {
     id?: string,
@@ -28,10 +28,11 @@ interface SelectProfessionalFormProps {
     validationButton?: boolean,
     isMultipleSelect?: boolean,
     professionals?: Professional[],
-    onValidate?: (any) => boolean,
+    onFinishAdd?: (any?) => void,
     onSetLoading?: (any) => void,
     onSetProfessionals?: (array) => void,
     onShowMessage?: (FeedbackMessage) => void,
+    onValidate?: (any) => boolean,
 }
 
 export default function SelectProfessionalForm(props: SelectProfessionalFormProps) {
@@ -113,6 +114,9 @@ export default function SelectProfessionalForm(props: SelectProfessionalFormProp
             if (props.onSetProfessionals) {
                 props.onSetProfessionals(localProfessionals)
                 setIsOpen(false)
+            }
+            if (props.onFinishAdd) {
+                props.onFinishAdd()
             }
         } else {
             let feedbackMessage: FeedbackMessage = { messages: [props?.validationMessage], messageType: "ERROR" }

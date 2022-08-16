@@ -1,12 +1,11 @@
-import Button from "../button/button";
-import ServicePaymentDataForm from "./servicePaymentDataForm";
-import { defaultServicePayment, ServicePayment } from "../../interfaces/objectInterfaces";
-import { handleNewDateToUTC, handleUTCToDateShow } from "../../util/dateUtils";
-import { FeedbackMessage } from "../modal/feedbackMessageModal";
 import Form from "../form/form";
 import FormRow from "../form/formRow";
+import Button from "../button/button";
 import FormRowColumn from "../form/formRowColumn";
-import { handleMountNumberCurrency } from "../../util/maskUtil";
+import ServicePaymentDataForm from "./servicePaymentDataForm";
+import { FeedbackMessage } from "../modal/feedbackMessageModal";
+import { handleNewDateToUTC, handleUTCToDateShow } from "../../util/dateUtils";
+import { defaultServicePayment, ServicePayment } from "../../interfaces/objectInterfaces";
 
 interface ServicePaymentFormProps {
     id?: string,
@@ -16,6 +15,7 @@ interface ServicePaymentFormProps {
     isBack?: boolean,
     isLoading?: boolean,
     servicePayments?: ServicePayment[],
+    onBlur?: (any) => void,
     onSetServicePayments?: (any) => void,
     onShowMessage?: (FeedbackMessage) => void,
 }
@@ -38,7 +38,7 @@ export default function ServicePaymentForm(props: ServicePaymentFormProps) {
         let localServicePayment = localServicePayments[index]
         let canDelete = true
 
-        if ("id" in localServicePayment && localServicePayment.id.length) {
+        if (localServicePayment && "id" in localServicePayment && localServicePayment.id.length) {
             const res = await fetch("api/servicePayment", {
                 method: "DELETE",
                 body: JSON.stringify({ token: "tokenbemseguro", id: localServicePayment.id }),
@@ -88,6 +88,7 @@ export default function ServicePaymentForm(props: ServicePaymentFormProps) {
                 <ServicePaymentDataForm
                     key={index}
                     index={index}
+                    onBlur={props.onBlur}
                     onDelete={handeOnDelete}
                     onSetText={handleSetText}
                     isLoading={props.isLoading}

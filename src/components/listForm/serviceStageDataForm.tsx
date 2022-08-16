@@ -23,7 +23,9 @@ interface ServiceStageDataFormProps {
     isForSelect?: boolean,
     isForDisable?: boolean,
     serviceStages?: ServiceStage[],
+    onBlur?: (any) => void,
     onDelete?: (number) => void,
+    onFinishAdd?: (any?) => void,
     onSetText?: (any, number) => void,
     onShowMessage?: (FeedbackMessage) => void,
 }
@@ -84,6 +86,7 @@ export default function ServiceStageDataForm(props: ServiceStageDataFormProps) {
                     </Button>
                     <InputTextAutoComplete
                         title="Titulo"
+                        onBlur={props.onBlur}
                         holderClassName="w-full"
                         validation={NOT_NULL_MARK}
                         isLoading={props.isLoading}
@@ -101,6 +104,7 @@ export default function ServiceStageDataForm(props: ServiceStageDataFormProps) {
                         mask="date"
                         maxLength={10}
                         title="Prazo"
+                        onBlur={props.onBlur}
                         isLoading={props.isLoading}
                         isDisabled={props.isForDisable}
                         onSetText={handleSetServiceStageDate}
@@ -142,6 +146,7 @@ export default function ServiceStageDataForm(props: ServiceStageDataFormProps) {
                         <FormRowColumn unit="6" className="">
                             <InputTextArea
                                 title="Descrição"
+                                onBlur={props.onBlur}
                                 isLoading={props.isLoading}
                                 isDisabled={props.isForDisable}
                                 onSetText={handleSetServiceStageDescription}
@@ -167,6 +172,13 @@ export default function ServiceStageDataForm(props: ServiceStageDataFormProps) {
                     validationMessage="Esta pessoa já é um profissional"
                     onSetProfessionals={handleSetServiceStageProfessional}
                     validationMessageButton="Você não pode mais adicionar profissionais"
+                    onFinishAdd={() => {
+                        {/*
+                        if (props.onFinishAdd) {
+                            props.onFinishAdd()
+                        }
+                    */}
+                    }}
                 />
             </ScrollDownTransition>
 

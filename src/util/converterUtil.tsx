@@ -109,7 +109,7 @@ export const handlePreparePersonForDB = (person: Person) => {
         person = { ...person, dateInsertUTC: handleNewDateToUTC() }
     }
 
-    if ("id" in person && person.id.length) {
+    if (person && "id" in person && person.id.length) {
         person = { ...person, dateLastUpdateUTC: handleNewDateToUTC() }
     }
 
@@ -167,7 +167,7 @@ export const handlePrepareCompanyForDB = (company: Company) => {
         company = { ...company, dateInsertUTC: handleNewDateToUTC() }
     }
 
-    if ("id" in company && company.id.length) {
+    if (company && "id" in company && company.id.length) {
         company = { ...company, dateLastUpdateUTC: handleNewDateToUTC() }
     }
 
@@ -181,7 +181,7 @@ export const handlePrepareCompanyForDB = (company: Company) => {
     let owners = []
     if (company.owners && company.owners.length) {
         company.owners?.map((element, index) => {
-            if ("id" in element && element.id.length) {
+            if (element && "id" in element && element.id.length) {
                 owners = [...owners, { id: element.id }]
             }
         })
@@ -205,7 +205,7 @@ export const handlePrepareProfessionalForDB = (professional: Professional) => {
         professional = { ...professional, dateInsertUTC: handleNewDateToUTC() }
     }
 
-    if ("id" in professional && professional.id.length) {
+    if (professional && "id" in professional && professional.id.length) {
         professional = { ...professional, dateLastUpdateUTC: handleNewDateToUTC() }
     }
 
@@ -226,7 +226,7 @@ export const handlePrepareImmobileForDB = (immobile: Immobile) => {
         immobile = { ...immobile, dateInsertUTC: handleNewDateToUTC() }
     }
 
-    if ("id" in immobile && immobile.id.length) {
+    if (immobile && "id" in immobile && immobile.id.length) {
         immobile = { ...immobile, dateLastUpdateUTC: handleNewDateToUTC() }
     }
 
@@ -236,7 +236,7 @@ export const handlePrepareImmobileForDB = (immobile: Immobile) => {
     let owners = []
     if (immobile.owners && immobile.owners.length) {
         immobile.owners?.map((element, index) => {
-            if ("id" in element && element.id.length) {
+            if (element && "id" in element && element.id.length) {
                 if ("cpf" in element) {
                     owners = [...owners, { id: element.id, cpf: "" }]
                 } else if ("cnpj" in element) {
@@ -257,7 +257,7 @@ export const handlePrepareProjectForDB = (project: Project) => {
     if (project.dateInsertUTC === 0) {
         project = { ...project, dateInsertUTC: handleNewDateToUTC() }
     }
-    if ("id" in project && project.id.length) {
+    if (project && "id" in project && project.id.length) {
         project = { ...project, dateLastUpdateUTC: handleNewDateToUTC() }
     }
     if (project.dateString?.length === 10) {
@@ -281,7 +281,7 @@ export const handlePrepareProjectForDB = (project: Project) => {
     let clients = []
     if (project.clients && project.clients.length) {
         project.clients?.map((element, index) => {
-            if ("id" in element && element.id.length) {
+            if (element && "id" in element && element.id.length) {
                 if ("cpf" in element) {
                     clients = [...clients, { id: element.id, cpf: "" }]
                 } else if ("cnpj" in element) {
@@ -342,7 +342,7 @@ export const handlePrepareServiceForDB = (service: Service) => {
     let immobilesTarget = []
     if (service.immobilesTarget && service.immobilesTarget.length) {
         service.immobilesTarget?.map((element, index) => {
-            if ("id" in element && element.id.length) {
+            if (element && "id" in element && element.id.length) {
                 immobilesTarget = [...immobilesTarget, { id: element.id }]
             }
         })
@@ -350,7 +350,7 @@ export const handlePrepareServiceForDB = (service: Service) => {
     let immobilesOrigin = []
     if (service.immobilesOrigin && service.immobilesOrigin.length) {
         service.immobilesOrigin?.map((element, index) => {
-            if ("id" in element && element.id.length) {
+            if (element && "id" in element && element.id.length) {
                 immobilesOrigin = [...immobilesOrigin, { id: element.id }]
             }
         })
@@ -359,7 +359,7 @@ export const handlePrepareServiceForDB = (service: Service) => {
     if (service.serviceStages && service.serviceStages.length) {
         service.serviceStages?.map((element, index) => {
             let serviceStage: ServiceStage = handlePrepareServiceStageForDB(element)
-            if ("id" in serviceStage && serviceStage.id.length) {
+            if (serviceStage && "id" in serviceStage && serviceStage.id.length) {
                 serviceStage = { ...serviceStage, id: serviceStage.id }
             }
             serviceStages = [...serviceStages, serviceStage]
@@ -369,7 +369,7 @@ export const handlePrepareServiceForDB = (service: Service) => {
     if (service.servicePayments && service.servicePayments.length) {
         service.servicePayments?.map((element, index) => {
             let servicePayment: ServicePayment = handlePrepareServicePaymentForDB(element)
-            if ("id" in servicePayment && servicePayment.id.length) {
+            if (servicePayment && "id" in servicePayment && servicePayment.id.length) {
                 servicePayment = { ...servicePayment, id: servicePayment.id }
             }
             servicePayments = [...servicePayments, servicePayment]
@@ -378,13 +378,13 @@ export const handlePrepareServiceForDB = (service: Service) => {
     {/*
     let serviceStages = []
     service.serviceStages.map((element, index) => {
-        if ("id" in element && element.id.length) {
+        if (element && "id" in element && element.id.length) {
             serviceStages = [...serviceStages, { id: element.id }]
         }
     })
     let servicePayments = []
     service.servicePayments.map((element, index) => {
-        if ("id" in element && element.id.length) {
+        if (element && "id" in element && element.id.length) {
             servicePayments = [...servicePayments, { id: element.id }]
         }
     })

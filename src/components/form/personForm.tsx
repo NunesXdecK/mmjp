@@ -75,11 +75,11 @@ export default function PersonForm(props: PersonFormProps) {
         }
     }
 
-    const handleAutoSave = async (event) => {
+    const handleAutoSave = async (event?) => {
         if (!props.canAutoSave) {
             return
         }
-        if (event.relatedTarget?.tagName?.toLowerCase() !== ("input" || "select" || "textarea")) {
+        if (event && event.relatedTarget?.tagName?.toLowerCase() !== ("input" || "select" || "textarea")) {
             return
         }
         if (isAutoSaving) {

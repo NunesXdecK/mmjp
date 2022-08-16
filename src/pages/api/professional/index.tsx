@@ -16,7 +16,7 @@ export default async function handler(req, res) {
                 let { token, data } = JSON.parse(body)
                 if (token === "tokenbemseguro") {
                     let nowID = data?.id ?? ""
-                    if ("id" in data.person && data.person?.id.length) {
+                    if (data.person && "id" in data.person && data.person?.id.length) {
                         const docRef = doc(personCollection, data.person.id)
                         data = { ...data, person: docRef }
                     }

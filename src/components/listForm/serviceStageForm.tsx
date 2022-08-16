@@ -1,11 +1,11 @@
+import Form from "../form/form";
 import Button from "../button/button";
+import FormRow from "../form/formRow";
+import FormRowColumn from "../form/formRowColumn";
 import ServiceStageDataForm from "./serviceStageDataForm";
 import { FeedbackMessage } from "../modal/feedbackMessageModal";
 import { handleNewDateToUTC, handleUTCToDateShow } from "../../util/dateUtils";
 import { defaultServiceStage, ServiceStage } from "../../interfaces/objectInterfaces";
-import Form from "../form/form";
-import FormRow from "../form/formRow";
-import FormRowColumn from "../form/formRowColumn";
 
 interface ServiceStageFormProps {
     id?: string,
@@ -15,6 +15,8 @@ interface ServiceStageFormProps {
     isBack?: boolean,
     isLoading?: boolean,
     serviceStages?: ServiceStage[],
+    onBlur?: (any) => void,
+    onFinishAdd?: (any?) => void,
     onSetServiceStages?: (any) => void,
     onShowMessage?: (FeedbackMessage) => void,
 }
@@ -36,7 +38,7 @@ export default function ServiceStageForm(props: ServiceStageFormProps) {
         let localServiceStage = localServiceStages[index]
         let canDelete = true
 
-        if ("id" in localServiceStage && localServiceStage.id.length) {
+        if (localServiceStage && "id" in localServiceStage && localServiceStage.id.length) {
             const res = await fetch("api/serviceStage", {
                 method: "DELETE",
                 body: JSON.stringify({ token: "tokenbemseguro", id: localServiceStage.id }),
@@ -86,9 +88,11 @@ export default function ServiceStageForm(props: ServiceStageFormProps) {
                 <ServiceStageDataForm
                     key={index}
                     index={index}
+                    onBlur={props.onBlur}
                     onDelete={handeOnDelete}
                     onSetText={handleSetText}
                     isLoading={props.isLoading}
+                    onFinishAdd={props.onFinishAdd}
                     serviceStages={props.serviceStages}
                 />
             ))}

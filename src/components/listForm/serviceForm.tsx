@@ -14,6 +14,8 @@ interface ServiceFormProps {
     isBack?: boolean,
     isLoading?: boolean,
     services?: Service[],
+    onBlur?: (any) => void,
+    onFinishAdd?: (any?) => void,
     onSetServices?: (any) => void,
     onShowMessage?: (FeedbackMessage) => void,
 }
@@ -90,10 +92,12 @@ export default function ServiceForm(props: ServiceFormProps) {
                 <ServiceDataForm
                     key={index}
                     index={index}
+                    onBlur={props.onBlur}
                     onDelete={handeOnDelete}
                     onSetText={handleSetText}
                     services={props.services}
                     isLoading={props.isLoading}
+                    onFinishAdd={props.onFinishAdd}
                     onShowMessage={props.onShowMessage}
                 />
             ))}

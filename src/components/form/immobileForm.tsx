@@ -72,11 +72,11 @@ export default function ImmobileForm(props: ImmobileFormProps) {
         }
     }
 
-    const handleAutoSave = async (event) => {
+    const handleAutoSave = async (event?) => {
         if (!props.canAutoSave) {
             return
         }
-        if (event.relatedTarget?.tagName?.toLowerCase() !== ("input" || "select" || "textarea")) {
+        if (event && event.relatedTarget?.tagName?.toLowerCase() !== ("input" || "select" || "textarea")) {
             return
         }
         if (isAutoSaving) {
@@ -337,6 +337,7 @@ export default function ImmobileForm(props: ImmobileFormProps) {
                 <AddressForm
                     title="Endereço"
                     isLoading={isLoading}
+                    onBlur={handleAutoSave}
                     address={immobile.address}
                     setAddress={handleSetImmobileAddress}
                     subtitle="Informações sobre o endereço"

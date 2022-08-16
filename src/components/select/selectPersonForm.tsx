@@ -5,14 +5,14 @@ import FormRow from "../form/formRow";
 import IOSModal from "../modal/iosModal";
 import { useEffect, useState } from "react";
 import PersonForm from "../form/personForm";
+import WindowModal from "../modal/windowModal";
 import InputText from "../inputText/inputText";
 import FormRowColumn from "../form/formRowColumn";
-import { defaultFeedbackMessage, FeedbackMessage } from "../modal/feedbackMessageModal";
+import FeedbackMessageText from "../modal/feedbackMessageText";
 import { PencilAltIcon, TrashIcon } from "@heroicons/react/outline";
 import { handleMaskCPF, handleRemoveCPFMask } from "../../util/maskUtil";
 import { defaultPerson, Person } from "../../interfaces/objectInterfaces";
-import FeedbackMessageText from "../modal/feedbackMessageText";
-import WindowModal from "../modal/windowModal";
+import { defaultFeedbackMessage, FeedbackMessage } from "../modal/feedbackMessageModal";
 
 interface SelectPersonFormProps {
     id?: string,
@@ -29,10 +29,11 @@ interface SelectPersonFormProps {
     validationButton?: boolean,
     isMultipleSelect?: boolean,
     persons?: Person[],
-    onValidate?: (any) => boolean,
+    onFinishAdd?: (any?) => void,
     onSetLoading?: (any) => void,
     onSetPersons?: (array) => void,
     onShowMessage?: (FeedbackMessage) => void,
+    onValidate?: (any) => boolean,
 }
 
 export default function SelectPersonForm(props: SelectPersonFormProps) {
@@ -113,6 +114,9 @@ export default function SelectPersonForm(props: SelectPersonFormProps) {
             if (props.onSetPersons) {
                 props.onSetPersons(localPersons)
                 setIsOpen(false)
+            }
+            if (props.onFinishAdd) {
+                props.onFinishAdd()
             }
         } else {
             let feedbackMessage: FeedbackMessage = { messages: [props?.validationMessage], messageType: "ERROR" }

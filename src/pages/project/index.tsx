@@ -63,7 +63,7 @@ export default function Projects() {
         setIsLoading(true)
         let newProject = { ...defaultProject, dateString: handleUTCToDateShow(handleNewDateToUTC().toString()) }
         const lastProfessional = await fetch("api/lastProfessional").then((res) => res.json()).then((res) => res.professional)
-        if ("id" in lastProfessional && lastProfessional.id.length) {
+        if (lastProfessional && "id" in lastProfessional && lastProfessional.id.length) {
             newProject = { ...newProject, professional: lastProfessional }
         }
         setProject(newProject)
@@ -124,9 +124,9 @@ localProject = {
             if (localServicesByProject && localServicesByProject?.length > 0) {
                 await Promise.all(
                     localServicesByProject.map(async (element, index) => {
-                        if ("id" in element && element.id.length) {
+                        if (element && "id" in element && element.id.length) {
                             let service: Service = await fetch("api/service/" + element.id).then((res) => res.json()).then((res) => res.data)
-                            if ("id" in service && service.id.length) {
+                            if (service && "id" in service && service.id.length) {
                                 localServices = [...localServices, { ...defaultService, ...handlePrepareServiceForShow(service) }]
                             }
                         }
@@ -153,7 +153,7 @@ localProject = {
                         } else if (array[0].includes(COMPANY_COLLECTION_NAME)) {
                             localClient = await fetch("api/company/" + array[1]).then((res) => res.json()).then((res) => res.data)
                         }
-                        if ("id" in localClient && localClient.id.length) {
+                        if (localClient && "id" in localClient && localClient.id.length) {
                             localClients = [...localClients, localClient]
                         }
                     }
@@ -243,7 +243,6 @@ localProject = {
                 />
             ) : (
                 <ProjectForm
-                    canAutoSave
                     canMultiple
                     isBack={true}
                     project={project}

@@ -97,6 +97,18 @@ export default function ProjectForm(props: ProjectFormProps) {
         }
     }
 
+    const handleSortByIndex = (elementOne, elementTwo) => {
+        let indexOne = 0
+        let indexTwo = 0
+        if (elementOne && "index" in elementOne) {
+            indexOne = elementOne.index
+        }
+        if (elementTwo && "index" in elementTwo) {
+            indexTwo = elementTwo.index
+        }
+        return indexOne - indexTwo
+    }
+
     const handleProjectServicesToDB = (project: Project, status?: "ORÇAMENTO" | "NORMAL" | "ARQUIVADO" | "FINALIZADO") => {
         let projectFinal = { ...project }
         let servicesFinal = []
@@ -131,68 +143,112 @@ export default function ProjectForm(props: ProjectFormProps) {
 
     const handlePutServicesIDs = (servicesIDs, services: Service[]) => {
         let servicesRES = []
+        let servicesIDsSPSorted = []
+        let servicesSPSorted = []
         servicesIDs.map((element, index) => {
-            let service: Service = services[element.index]
-            let stagesWithIDs = []
-            let paymentsWithIDs = []
-            element.stages.map((stage, index) => {
-                let serviceStage = service?.serviceStages[stage.index]
-                stagesWithIDs = [...stagesWithIDs, { ...serviceStage, id: stage.id }]
-            })
-            element.payments.map((payment, index) => {
-                let servicePayment = service?.servicePayments[payment.index]
-                paymentsWithIDs = [...paymentsWithIDs, { ...servicePayment, id: payment.id }]
-
-            })
-            servicesRES = [...servicesRES,
-            {
-                ...service,
-                id: element.id,
-                serviceStages: stagesWithIDs,
-                servicePayments: paymentsWithIDs,
+            servicesIDsSPSorted = [...servicesIDsSPSorted, {
+                ...element,
+                stages: element.stages.sort(handleSortByIndex),
+                payments: element.payments.sort(handleSortByIndex),
+            }]
+        })
+        services.map((element, index) => {
+            servicesSPSorted = [...servicesSPSorted, {
+                ...element,
+                serviceStages: element.serviceStages.sort(handleSortByIndex),
+                servicePayments: element.servicePayments.sort(handleSortByIndex),
+            }]
+        })
+        let serviceIDsorted = servicesIDsSPSorted.sort(handleSortByIndex)
+        let servicesSorted = servicesSPSorted.sort(handleSortByIndex)
+        servicesSorted.map((element, index) => {
+            let service = serviceIDsorted[element.index]
+            if (service) {
+                let stagesWithIDs = []
+                let paymentsWithIDs = []
+                element.serviceStages.map((serviceStage, index) => {
+                    let stage = service?.stages[serviceStage.index]
+                    if (stage) {
+                        stagesWithIDs = [...stagesWithIDs, { ...serviceStage, id: stage.id }]
+                    }
+                })
+                element.servicePayments.map((servicePayment, index) => {
+                    let payment = service?.payments[servicePayment.index]
+                    if (payment) {
+                        paymentsWithIDs = [...paymentsWithIDs, { ...servicePayment, id: payment.id }]
+                    }
+                })
+                servicesRES = [...servicesRES,
+                {
+                    ...element,
+                    id: service.id,
+                    serviceStages: stagesWithIDs,
+                    servicePayments: paymentsWithIDs,
+                }
+                ]
             }
-            ]
         })
         return servicesRES
     }
 
-    const handleAutoSave = async (event) => {
+    const handleAutoSave = async (event?) => {
+        console.log("entrou")
         if (!props.canAutoSave) {
             return
         }
-        if (event.relatedTarget?.tagName?.toLowerCase() !== ("input" || "select" || "textarea")) {
+        if (event && event.relatedTarget?.tagName?.toLowerCase() !== ("input" || "select" || "textarea")) {
             return
         }
+        console.log("sem evento")
         if (isAutoSaving) {
             return
         }
+        console.log("não autosalvando")
         if (!handleDiference()) {
             return
         }
+        console.log("sem diferença")
         let projectServiceFinal = handleProjectServicesToDB(project)
         let projectForValid: Project = projectServiceFinal.project
-        let servicesForValid: Service[] = projectServiceFinal.services
         const isProjectValid = handleProjectValidationForDB(projectForValid)
-        const isServicesValid = handleServicesValidationForDB(servicesForValid, false, false)
-        if (!isProjectValid.validation || !isServicesValid.validation) {
+        if (!isProjectValid.validation) {
             return
         }
+        console.log("projeto válido")
         setIsAutoSaving(old => true)
-        const resProject = await handleSaveProjectInner(projectForValid)
-        if (resProject.status === "ERROR") {
+        let projectID = project.id
+        if (!handleIsEqual(project, projectOriginal)) {
+            console.log("projeto diferente")
+            const resProject = await handleSaveProjectInner(projectForValid)
+            if (resProject.status === "ERROR") {
+                setIsAutoSaving(old => false)
+                return
+            }
+            projectID = resProject.id
+            setProject({ ...project, id: resProject.id })
+            setProjectOriginal(old => resProject.project)
+        }
+        let servicesForValid: Service[] = projectServiceFinal.services
+        const isServicesValid = handleServicesValidationForDB(servicesForValid, false, false)
+        console.log("serviço invalido", isServicesValid)
+        if (!isServicesValid.validation) {
+            setIsAutoSaving(old => false)
             return
         }
-        setProject({ ...project, id: resProject.id })
-        setProjectOriginal(old => resProject.project)
-        const resServices = await handleSaveServicesInner(servicesForValid, { ...projectForValid, id: resProject.id })
-        if (resServices.status === "ERROR") {
-            return
+        console.log("serviço valido")
+        if (projectID?.length > 0 && !handleIsEqual(services, servicesOriginal)) {
+            console.log("serviço diferente")
+            const resServices = await handleSaveServicesInner(servicesForValid, { ...projectForValid, id: projectID })
+            if (resServices.status === "ERROR") {
+                return
+            }
+            console.log(services)
+            let servicesLastWithId = handlePutServicesIDs(resServices.services, services)
+            let servicesFromDBLastWithId = handlePutServicesIDs(resServices.services, servicesForValid)
+            setServices(old => servicesLastWithId)
+            setServicesOriginal(old => servicesFromDBLastWithId)
         }
         setIsAutoSaving(old => false)
-        let servicesLastWithId = handlePutServicesIDs(resServices.services, services)
-        let servicesFromDBLastWithId = handlePutServicesIDs(resServices.services, servicesForValid)
-        setServices(old => servicesLastWithId)
-        setServicesOriginal(old => servicesFromDBLastWithId)
     }
 
     const handleSaveProjectInner = async (project) => {
@@ -583,7 +639,9 @@ export default function ProjectForm(props: ProjectFormProps) {
                         title="Serviços"
                         services={services}
                         isLoading={isLoading}
+                        onBlur={handleAutoSave}
                         onSetServices={setServices}
+                        onFinishAdd={handleAutoSave}
                         subtitle="Adicione os serviços"
                         onShowMessage={props.onShowMessage}
                     />

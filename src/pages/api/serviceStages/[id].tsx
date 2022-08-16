@@ -25,7 +25,7 @@ export default async function handler(req, res) {
 
                 await Promise.all(
                     listLocal.map(async (element: ServiceStage, index) => {
-                        if ("id" in element.responsible && element.responsible.id.length) {
+                        if (element.responsible && "id" in element.responsible && element.responsible.id.length) {
                             const docRef = doc(professionalCollection, element.responsible.id)
                             if (docRef) {
                                 const data: Professional = (await getDoc(docRef)).data()

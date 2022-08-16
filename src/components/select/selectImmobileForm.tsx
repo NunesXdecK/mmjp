@@ -5,13 +5,13 @@ import Button from "../button/button";
 import IOSModal from "../modal/iosModal";
 import { useEffect, useState } from "react";
 import InputText from "../inputText/inputText";
+import WindowModal from "../modal/windowModal";
 import ImmobileForm from "../form/immobileForm";
 import FormRowColumn from "../form/formRowColumn";
-import { defaultFeedbackMessage, FeedbackMessage } from "../modal/feedbackMessageModal";
+import FeedbackMessageText from "../modal/feedbackMessageText";
 import { PencilAltIcon, TrashIcon } from "@heroicons/react/outline";
 import { defaultImmobile, Immobile } from "../../interfaces/objectInterfaces";
-import FeedbackMessageText from "../modal/feedbackMessageText";
-import WindowModal from "../modal/windowModal";
+import { defaultFeedbackMessage, FeedbackMessage } from "../modal/feedbackMessageModal";
 
 interface SelectImmobileFormProps {
     id?: string,
@@ -28,10 +28,11 @@ interface SelectImmobileFormProps {
     validationButton?: boolean,
     isMultipleSelect?: boolean,
     immobiles?: Immobile[],
-    onValidate?: (any) => boolean,
+    onFinishAdd?: (any?) => void,
     onSetLoading?: (any) => void,
     onSetImmobiles?: (array) => void,
     onShowMessage?: (FeedbackMessage) => void,
+    onValidate?: (any) => boolean,
 }
 
 export default function SelectImmobileForm(props: SelectImmobileFormProps) {
@@ -113,6 +114,9 @@ export default function SelectImmobileForm(props: SelectImmobileFormProps) {
             if (props.onSetImmobiles) {
                 props.onSetImmobiles(localImmobiles)
                 setIsOpen(false)
+            }
+            if (props.onFinishAdd) {
+                props.onFinishAdd()
             }
         } else {
             let feedbackMessage: FeedbackMessage = { messages: [props?.validationMessage], messageType: "ERROR" }

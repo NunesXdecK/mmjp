@@ -21,6 +21,7 @@ interface ServicePaymentDataFormProps {
     isForSelect?: boolean,
     isForDisable?: boolean,
     servicePayments?: ServicePayment[],
+    onBlur?: (any) => void,
     onDelete?: (number) => void,
     onSetText?: (any, number) => void,
     onShowMessage?: (FeedbackMessage) => void,
@@ -59,6 +60,7 @@ export default function ServicePaymentDataForm(props: ServicePaymentDataFormProp
                 <FormRowColumn unit="2">
                     <InputTextAutoComplete
                         title="Descrição"
+                        onBlur={props.onBlur}
                         isLoading={props.isLoading}
                         validation={NOT_NULL_MARK}
                         isDisabled={props.isForDisable}
@@ -75,6 +77,7 @@ export default function ServicePaymentDataForm(props: ServicePaymentDataFormProp
                     <InputText
                         title="Valor"
                         mask="currency"
+                        onBlur={props.onBlur}
                         validation={NUMBER_MARK}
                         isLoading={props.isLoading}
                         isDisabled={props.isForDisable}
@@ -91,6 +94,7 @@ export default function ServicePaymentDataForm(props: ServicePaymentDataFormProp
                         mask="date"
                         maxLength={10}
                         title="Vencimento"
+                        onBlur={props.onBlur}
                         isLoading={props.isLoading}
                         isDisabled={props.isForDisable}
                         onSetText={handleSetServicePaymentDate}

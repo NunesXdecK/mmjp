@@ -13,9 +13,9 @@ import SelectProfessionalForm from "../select/selectProfessionalForm";
 import InputTextAutoComplete from "../inputText/inputTextAutocomplete";
 import { NOT_NULL_MARK, NUMBER_MARK } from "../../util/patternValidationUtil";
 import { handleNewDateToUTC, handleUTCToDateShow } from "../../util/dateUtils";
+import { defaultServicePayment, Service } from "../../interfaces/objectInterfaces";
 import { ChevronDownIcon, ChevronRightIcon, TrashIcon } from "@heroicons/react/outline";
 import { handleMountNumberCurrency, handleValueStringToFloat } from "../../util/maskUtil";
-import { defaultServicePayment, Service, ServicePayment, ServiceStage } from "../../interfaces/objectInterfaces";
 
 interface ServiceDataFormProps {
     id?: string,
@@ -27,7 +27,9 @@ interface ServiceDataFormProps {
     isForSelect?: boolean,
     isForDisable?: boolean,
     services?: Service[],
+    onBlur?: (any) => void,
     onDelete?: (number) => void,
+    onFinishAdd?: (any?) => void,
     onSetText?: (any, number) => void,
     onShowMessage?: (FeedbackMessage) => void,
 }
@@ -38,7 +40,7 @@ export default function ServiceDataForm(props: ServiceDataFormProps) {
     const [isFormValid, setIsFormValid] = useState(false)
     const [index, setIndex] = useState(props.index ?? 0)
 
-    const [professionals, setProfessionals] = useState(("id" in props.services[index]?.responsible
+    const [professionals, setProfessionals] = useState((props.services[index]?.responsible && "id" in props.services[index]?.responsible
         && props.services[index].responsible.id.length) ? [props.services[index].responsible] : [])
 
     const handleSetServiceTitle = (value) => { handleSetText({ ...props.services[index], title: value }) }
@@ -203,6 +205,7 @@ export default function ServiceDataForm(props: ServiceDataFormProps) {
 
                     <InputTextAutoComplete
                         title="Titulo"
+                        onBlur={props.onBlur}
                         validation={NOT_NULL_MARK}
                         isLoading={props.isLoading}
                         isDisabled={props.isForDisable}
@@ -218,6 +221,7 @@ export default function ServiceDataForm(props: ServiceDataFormProps) {
                     <InputText
                         title="Valor"
                         mask="currency"
+                        onBlur={props.onBlur}
                         validation={NUMBER_MARK}
                         isLoading={props.isLoading}
                         isDisabled={props.isForDisable}
@@ -230,6 +234,7 @@ export default function ServiceDataForm(props: ServiceDataFormProps) {
                 <FormRowColumn unit="1">
                     <InputText
                         title="Quantidade"
+                        onBlur={props.onBlur}
                         validation={NUMBER_MARK}
                         isLoading={props.isLoading}
                         isDisabled={props.isForDisable}
@@ -273,8 +278,9 @@ export default function ServiceDataForm(props: ServiceDataFormProps) {
                         <FormRowColumn unit="2">
                             <InputText
                                 mask="date"
-                                maxLength={10}
                                 title="Prazo"
+                                maxLength={10}
+                                onBlur={props.onBlur}
                                 isLoading={props.isLoading}
                                 isDisabled={props.isForDisable}
                                 onSetText={handleSetServiceDate}
@@ -286,10 +292,10 @@ export default function ServiceDataForm(props: ServiceDataFormProps) {
 
                         <FormRowColumn unit="2">
                             <InputText
-                                id="status-service"
-                                isDisabled={true}
-                                value={props.services[index].status}
                                 title="Status"
+                                isDisabled={true}
+                                id="status-service"
+                                value={props.services[index].status}
                             />
                         </FormRowColumn>
                     </FormRow>
@@ -298,6 +304,7 @@ export default function ServiceDataForm(props: ServiceDataFormProps) {
                         <FormRowColumn unit="6" className="">
                             <InputTextArea
                                 title="Descrição"
+                                onBlur={props.onBlur}
                                 isLoading={props.isLoading}
                                 isDisabled={props.isForDisable}
                                 onSetText={handleSetServiceDescription}
@@ -325,6 +332,13 @@ export default function ServiceDataForm(props: ServiceDataFormProps) {
                     onSetProfessionals={handleSetServiceProfessional}
                     validationMessage="Esta pessoa já é um profissional"
                     validationMessageButton="Você não pode mais adicionar profissionais"
+                    onFinishAdd={() => {
+                        {/*
+                        if (props.onFinishAdd) {
+                            props.onFinishAdd()
+                        }
+                    */}
+                    }}
                 />
 
                 <SelectImmobileForm
@@ -341,6 +355,13 @@ export default function ServiceDataForm(props: ServiceDataFormProps) {
                     validationButton={handleValidadeTargetForAddButton()}
                     validationMessage="Este imóvel alvo já está selecionado"
                     isMultipleSelect={props.services[index].immobilesOrigin?.length < 2}
+                    onFinishAdd={() => {
+                        {/*
+                        if (props.onFinishAdd) {
+                            props.onFinishAdd()
+                        }
+                    */}
+                    }}
                 />
 
                 {props.services[index].immobilesTarget?.length > 0 && (
@@ -358,6 +379,13 @@ export default function ServiceDataForm(props: ServiceDataFormProps) {
                         validationButton={handleValidadeOriginForAddButton()}
                         validationMessage="Este imóvel de origem já está selecionado"
                         isMultipleSelect={props.services[index].immobilesTarget?.length < 2}
+                        onFinishAdd={() => {
+                            {/*
+                            if (props.onFinishAdd) {
+                                props.onFinishAdd()
+                            }
+                        */}
+                        }}
                     />
                 )}
 

@@ -17,7 +17,7 @@ export default async function handler(req, res) {
                     const docRef = doc(projectCollection, id)
                     let project: Project = (await getDoc(docRef)).data()
                     let professionalId = ""
-                    if ("id" in project.professional && project.professional?.id.length) {
+                    if (project.professional && "id" in project.professional && project.professional?.id.length) {
                         professionalId = project.professional.id
                     }
 

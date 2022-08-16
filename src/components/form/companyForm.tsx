@@ -70,11 +70,11 @@ export default function CompanyForm(props: CompanyFormProps) {
         }
     }
 
-    const handleAutoSave = async (event) => {
+    const handleAutoSave = async (event?) => {
         if (!props.canAutoSave) {
             return
         }
-        if (event.relatedTarget?.tagName?.toLowerCase() !== ("input" || "select" || "textarea")) {
+        if (event && event.relatedTarget?.tagName?.toLowerCase() !== ("input" || "select" || "textarea")) {
             return
         }
         if (isAutoSaving) {
@@ -304,6 +304,7 @@ export default function CompanyForm(props: CompanyFormProps) {
                 <AddressForm
                     title="Endereço"
                     isLoading={isLoading}
+                    onBlur={handleAutoSave}
                     address={company.address}
                     setAddress={handleSetCompanyAddress}
                     subtitle="Informações sobre o endereço"

@@ -149,7 +149,6 @@ export default function Persons() {
             ) : (
                 <PersonForm
                     canMultiple
-                    canAutoSave
                     isBack={true}
                     person={person}
                     onBack={handleBackClick}

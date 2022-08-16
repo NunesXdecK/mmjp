@@ -7,14 +7,14 @@ import PersonForm from "../form/personForm";
 import { useEffect, useState } from "react";
 import CompanyForm from "../form/companyForm";
 import InputText from "../inputText/inputText";
+import WindowModal from "../modal/windowModal";
 import FormRowColumn from "../form/formRowColumn";
-import { defaultFeedbackMessage, FeedbackMessage } from "../modal/feedbackMessageModal";
+import FeedbackMessageText from "../modal/feedbackMessageText";
 import { PencilAltIcon, TrashIcon } from "@heroicons/react/outline";
+import { defaultFeedbackMessage, FeedbackMessage } from "../modal/feedbackMessageModal";
 import { Company, defaultCompany, defaultPerson, Person } from "../../interfaces/objectInterfaces";
 import { handleMaskCNPJ, handleMaskCPF, handleRemoveCNPJMask, handleRemoveCPFMask } from "../../util/maskUtil";
 import { handleValidationOnlyNumbersNotNull, handleValidationOnlyTextNotNull } from "../../util/validationUtil";
-import FeedbackMessageText from "../modal/feedbackMessageText";
-import WindowModal from "../modal/windowModal";
 
 interface SelectPersonCompanyFormProps {
     id?: string,
@@ -31,10 +31,11 @@ interface SelectPersonCompanyFormProps {
     validationButton?: boolean,
     isMultipleSelect?: boolean,
     personsAndCompanies?: Person[],
-    onValidate?: (any) => boolean,
+    onFinishAdd?: (any?) => void,
     onSetLoading?: (any) => void,
     onShowMessage?: (FeedbackMessage) => void,
     onSetPersonsAndCompanies?: (array) => void,
+    onValidate?: (any) => boolean,
 }
 
 export default function SelectPersonCompanyForm(props: SelectPersonCompanyFormProps) {
@@ -149,6 +150,9 @@ export default function SelectPersonCompanyForm(props: SelectPersonCompanyFormPr
             if (props.onSetPersonsAndCompanies) {
                 props.onSetPersonsAndCompanies(localPersonsAndCompanies)
                 setIsOpen(false)
+            }
+            if (props.onFinishAdd) {
+                props.onFinishAdd()
             }
         } else {
             let feedbackMessage: FeedbackMessage = { messages: [props?.validationMessage], messageType: "ERROR" }

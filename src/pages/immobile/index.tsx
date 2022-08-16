@@ -147,7 +147,6 @@ export default function Immobiles() {
             ) : (
                 <ImmobileForm
                     canMultiple
-                    canAutoSave
                     isBack={true}
                     immobile={immobile}
                     onBack={handleBackClick}
