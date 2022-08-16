@@ -100,8 +100,6 @@ export default function ProjectForm(props: ProjectFormProps) {
     const handleProjectServicesToDB = (project: Project, status?: "ORÇAMENTO" | "NORMAL" | "ARQUIVADO" | "FINALIZADO") => {
         let projectFinal = { ...project }
         let servicesFinal = []
-        let localServiceStages: ServiceStage[] = []
-        let localServicePayments: ServicePayment[] = []
         let projectStatus = project.status
         if (professionals.length > 0) {
             projectFinal = { ...projectFinal, professional: professionals[0] }
@@ -113,6 +111,8 @@ export default function ProjectForm(props: ProjectFormProps) {
         }
         projectFinal = { ...projectFinal, status: projectStatus }
         services?.map((element, index) => {
+            let localServiceStages: ServiceStage[] = []
+            let localServicePayments: ServicePayment[] = []
             element.serviceStages?.map((elementStages, index) => {
                 localServiceStages = [...localServiceStages, { ...elementStages, status: projectStatus }]
             })
