@@ -192,33 +192,27 @@ export default function ProjectForm(props: ProjectFormProps) {
     }
 
     const handleAutoSave = async (event?) => {
-        console.log("entrou")
         if (!props.canAutoSave) {
             return
         }
         if (event && event.relatedTarget?.tagName?.toLowerCase() !== ("input" || "select" || "textarea")) {
             return
         }
-        console.log("sem evento")
         if (isAutoSaving) {
             return
         }
-        console.log("não autosalvando")
         if (!handleDiference()) {
             return
         }
-        console.log("sem diferença")
         let projectServiceFinal = handleProjectServicesToDB(project)
         let projectForValid: Project = projectServiceFinal.project
         const isProjectValid = handleProjectValidationForDB(projectForValid)
         if (!isProjectValid.validation) {
             return
         }
-        console.log("projeto válido")
         setIsAutoSaving(old => true)
         let projectID = project.id
         if (!handleIsEqual(project, projectOriginal)) {
-            console.log("projeto diferente")
             const resProject = await handleSaveProjectInner(projectForValid)
             if (resProject.status === "ERROR") {
                 setIsAutoSaving(old => false)
@@ -228,26 +222,24 @@ export default function ProjectForm(props: ProjectFormProps) {
             setProject({ ...project, id: resProject.id })
             setProjectOriginal(old => resProject.project)
         }
+        /*
         let servicesForValid: Service[] = projectServiceFinal.services
         const isServicesValid = handleServicesValidationForDB(servicesForValid, false, false)
-        console.log("serviço invalido", isServicesValid)
         if (!isServicesValid.validation) {
             setIsAutoSaving(old => false)
             return
         }
-        console.log("serviço valido")
         if (projectID?.length > 0 && !handleIsEqual(services, servicesOriginal)) {
-            console.log("serviço diferente")
             const resServices = await handleSaveServicesInner(servicesForValid, { ...projectForValid, id: projectID })
             if (resServices.status === "ERROR") {
                 return
             }
-            console.log(services)
             let servicesLastWithId = handlePutServicesIDs(resServices.services, services)
             let servicesFromDBLastWithId = handlePutServicesIDs(resServices.services, servicesForValid)
             setServices(old => servicesLastWithId)
             setServicesOriginal(old => servicesFromDBLastWithId)
         }
+        */
         setIsAutoSaving(old => false)
     }
 
@@ -321,7 +313,7 @@ export default function ProjectForm(props: ProjectFormProps) {
             setProjectOriginal({ ...projectForValid, id: resProject.id })
             projectFromDB = { ...resProject.project }
 
-            let resServices = await handleSaveServicesInner(services, projectForValid)
+            let resServices = await handleSaveServicesInner(services, { ...projectForValid, id: resProject.id })
             if (resServices.status === "ERROR") {
                 const feedbackMessage: FeedbackMessage = { messages: ["Algo deu errado!"], messageType: "ERROR" }
                 handleShowMessage(feedbackMessage)

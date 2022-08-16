@@ -7,8 +7,8 @@ import ProjectView from "../../components/view/projectView"
 import { handlePrepareServiceForShow } from "../../util/converterUtil"
 import { handleNewDateToUTC, handleUTCToDateShow } from "../../util/dateUtils"
 import { COMPANY_COLLECTION_NAME, PERSON_COLLECTION_NAME } from "../../db/firebaseDB"
-import { Company, defaultProfessional, defaultProject, defaultService, Person, Professional, Project, Service } from "../../interfaces/objectInterfaces"
 import FeedbackMessageModal, { defaultFeedbackMessage, FeedbackMessage } from "../../components/modal/feedbackMessageModal"
+import { Company, defaultProfessional, defaultProject, defaultService, Person, Professional, Project, Service } from "../../interfaces/objectInterfaces"
 
 export default function Projects() {
     const [title, setTitle] = useState("Lista de projetos")
