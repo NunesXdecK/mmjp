@@ -1,20 +1,21 @@
 import Form from "./form";
 import FormRow from "./formRow";
+import { useState } from "react";
 import AddressForm from "./addressForm";
 import FormRowColumn from "./formRowColumn";
-import { useEffect, useState } from "react";
 import InputText from "../inputText/inputText";
 import ActionButtonsForm from "./actionButtonsForm";
 import InputCheckbox from "../inputText/inputCheckbox";
 import { FeedbackMessage } from "../modal/feedbackMessageModal";
 import InputImmobilePoints from "../inputText/inputImmobilePoints";
-import SelectPersonCompanyForm from "../select/selectPersonCompanyForm";
-import { handleImmobileValidationForDB, handleIsEqual } from "../../util/validationUtil";
-import { defaultImmobile, Immobile } from "../../interfaces/objectInterfaces";
-import { NOT_NULL_MARK, NUMBER_MARK } from "../../util/patternValidationUtil";
-import { defaultElementFromBase, ElementFromBase, handlePrepareImmobileForDB } from "../../util/converterUtil";
 import ScrollDownTransition from "../animation/scrollDownTransition";
+import SelectPersonCompanyForm from "../select/selectPersonCompanyForm";
 import FeedbackMessageSaveText from "../modal/feedbackMessageSavingText";
+import { defaultImmobile, Immobile } from "../../interfaces/objectInterfaces";
+import { CCIR_MARK, NOT_NULL_MARK, NUMBER_MARK } from "../../util/patternValidationUtil";
+import { handleImmobileValidationForDB, handleIsEqual } from "../../util/validationUtil";
+import { defaultElementFromBase, ElementFromBase, handlePrepareImmobileForDB } from "../../util/converterUtil";
+import InputSelect from "../inputText/inputSelect";
 
 interface ImmobileFormProps {
     title?: string,
@@ -50,8 +51,14 @@ export default function ImmobileForm(props: ImmobileFormProps) {
     const handleSetImmobileCounty = (value) => { setImmobile({ ...immobile, county: value }) }
     const handleSetImmobileOwners = (value) => { setImmobile({ ...immobile, owners: value }) }
     const handleSetImmobilePoints = (value) => { setImmobile({ ...immobile, points: value }) }
+    const handleSetImmobileComarca = (value) => { setImmobile({ ...immobile, comarca: value }) }
+    const handleSetImmobileProcess = (value) => { setImmobile({ ...immobile, process: value }) }
     const handleSetImmobileAddress = (value) => { setImmobile({ ...immobile, address: value }) }
     const handleSetImmobilePerimeter = (value) => { setImmobile({ ...immobile, perimeter: value }) }
+    const handleSetImmobileCCRINumber = (value) => { setImmobile({ ...immobile, ccirNumber: value }) }
+    const handleSetImmobileComarcaCode = (value) => { setImmobile({ ...immobile, comarcaCode: value }) }
+    const handleSetImmobileRegistration = (value) => { setImmobile({ ...immobile, registration: value }) }
+
 
     const handleOnBack = () => {
         if (props.onBack) {
@@ -91,7 +98,7 @@ export default function ImmobileForm(props: ImmobileFormProps) {
             return
         }
         setIsAutoSaving(old => true)
-        const res = await handleSaveInner(immobile)
+        const res = await handleSaveInner(immobile, false)
         if (res.status === "ERROR") {
             return
         }
@@ -100,7 +107,7 @@ export default function ImmobileForm(props: ImmobileFormProps) {
         setImmobileOriginal(res.immobile)
     }
 
-    const handleSaveInner = async (immobile) => {
+    const handleSaveInner = async (immobile, history) => {
         let res = { status: "ERROR", id: "", immobile: immobile }
         let immobileForDB = handlePrepareImmobileForDB(immobile)
         if (!immobileForDB?.id?.length && immobileID?.length) {
@@ -109,7 +116,7 @@ export default function ImmobileForm(props: ImmobileFormProps) {
         try {
             const saveRes = await fetch("api/immobile", {
                 method: "POST",
-                body: JSON.stringify({ token: "tokenbemseguro", data: immobileForDB }),
+                body: JSON.stringify({ token: "tokenbemseguro", data: immobileForDB, history }),
             }).then((res) => res.json())
             res = { ...res, status: "SUCCESS", id: saveRes.id, immobile: { ...immobile, id: saveRes.id } }
         } catch (e) {
@@ -131,7 +138,7 @@ export default function ImmobileForm(props: ImmobileFormProps) {
         setIsLoading(true)
         let immobileFromDB = { ...immobile }
         if (handleDiference()) {
-            let res = await handleSaveInner(immobile)
+            let res = await handleSaveInner(immobile, true)
             if (res.status === "ERROR") {
                 const feedbackMessage: FeedbackMessage = { messages: ["Algo deu errado!"], messageType: "ERROR" }
                 handleShowMessage(feedbackMessage)
@@ -305,6 +312,78 @@ export default function ImmobileForm(props: ImmobileFormProps) {
                                 onSetText={handleSetImmobilePerimeter}
                                 onValidate={handleChangeFormValidation}
                                 validationMessage="O perímetro não pode ficar em branco."
+                            />
+                        </FormRowColumn>
+                    </FormRow>
+
+                    <FormRow>
+                        <FormRowColumn unit="3">
+                            <InputText
+                                id="comarca"
+                                title="Comarca"
+                                isLoading={isLoading}
+                                onBlur={handleAutoSave}
+                                value={immobile.comarca}
+                                isDisabled={props.isForDisable}
+                                onSetText={handleSetImmobileComarca}
+                            />
+                        </FormRowColumn>
+
+                        <FormRowColumn unit="3">
+                            <InputSelect
+                                id="comarca-code"
+                                isLoading={isLoading}
+                                onBlur={handleAutoSave}
+                                title="Codigo da comarca"
+                                value={immobile.comarcaCode}
+                                isDisabled={props.isForDisable}
+                                onSetText={handleSetImmobileComarcaCode}
+                                options={["123654", "752132", "875643", "8775643", "132161"]}
+                            />
+                        </FormRowColumn>
+                    </FormRow>
+
+                    <FormRow>
+                        <FormRowColumn unit="3">
+                            <InputText
+                                id="process"
+                                title="Processo"
+                                isLoading={isLoading}
+                                onBlur={handleAutoSave}
+                                value={immobile.process}
+                                isDisabled={props.isForDisable}
+                                onSetText={handleSetImmobileProcess}
+                            />
+                        </FormRowColumn>
+
+                        <FormRowColumn unit="3">
+                            <InputText
+                                id="ccir"
+                                mask="ccir"
+                                title="CCIR"
+                                maxLength={17}
+                                isLoading={isLoading}
+                                validation={CCIR_MARK}
+                                onBlur={handleAutoSave}
+                                value={immobile.ccirNumber}
+                                isDisabled={props.isForDisable}
+                                onSetText={handleSetImmobileCCRINumber}
+                                onValidate={handleChangeFormValidation}
+                                validationMessage="O CCIR está invalido"
+                            />
+                        </FormRowColumn>
+                    </FormRow>
+
+                    <FormRow>
+                        <FormRowColumn unit="3">
+                            <InputText
+                                title="Matricula"
+                                id="registration"
+                                isLoading={isLoading}
+                                onBlur={handleAutoSave}
+                                value={immobile.registration}
+                                isDisabled={props.isForDisable}
+                                onSetText={handleSetImmobileRegistration}
                             />
                         </FormRowColumn>
                     </FormRow>

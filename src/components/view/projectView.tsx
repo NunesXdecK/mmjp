@@ -77,7 +77,7 @@ export default function ProjectView(props: ProjectViewProps) {
                                 dataInside
                                 canShowHideData
                                 addressTitle={"Endereço"}
-                                title={"Dados do cliente"}
+                                title={"Cliente"}
                                 id={owner.split("/")[1] ?? ""}
                             />
                         )}
@@ -87,7 +87,7 @@ export default function ProjectView(props: ProjectViewProps) {
                                 dataInside
                                 canShowHideData
                                 addressTitle={"Endereço"}
-                                title={"Dados do cliente"}
+                                title={"Cliente"}
                                 id={owner.split("/")[1] ?? ""}
                             />
                         )}
@@ -99,6 +99,7 @@ export default function ProjectView(props: ProjectViewProps) {
                         hideData
                         dataInside
                         canShowHideData
+                        title="Profissional"
                         id={project.professional}
                     />
                 )}
@@ -111,7 +112,7 @@ export default function ProjectView(props: ProjectViewProps) {
                         canShowHideData
                         id={service.id}
                         key={index + service.id}
-                        title={"Dados do serviço " + (index + 1)}
+                        title={"Serviço " + (index + 1)}
                     />
                 ))}
             </div>

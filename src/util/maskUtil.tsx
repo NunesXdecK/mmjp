@@ -94,6 +94,10 @@ export const handleMountDateMask = (text) => {
     return maskedText
 }
 
+export const handleMountCCIRMask = (text) => {
+    return handleMountNumberCurrency(text, ".", "-", 3, 1)
+}
+
 export const handleMountCNPJMask = (text) => {
     let maskedText = ""
     const specialDigits = [

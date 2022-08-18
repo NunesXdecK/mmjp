@@ -1,7 +1,7 @@
 import { useState } from "react"
 import { handleValidationNotNull } from "../../util/validationUtil"
-import { handleMaskCEP, handleMaskCPF, handleMaskTelephone, handleMountCNPJMask, handleMountDateMask, handleMountMask, handleMountNumberCurrency, handleRemoveCEPMask, handleRemoveCNPJMask, handleRemoveCPFMask, handleRemoveDateMask } from "../../util/maskUtil"
-import { CEP_MARK, CNPJ_MARK, CNPJ_PATTERN, CPF_MARK, CPF_PATTERN, DATE_MARK, DATE_PATTERN, NOT_NULL_MARK, NUMBER_MARK, ONLY_CHARACTERS_PATTERN, ONLY_CHARACTERS_PATTERN_TWO, ONLY_SPECIAL_FOR_NUMBER_PATTERN, STYLE_FOR_INPUT_LOADING, STYLE_FOR_INPUT_LOADING_TRANSPARENT, TELEPHONE_MARK, TEXT_NOT_NULL_MARK } from "../../util/patternValidationUtil"
+import { handleMaskCEP, handleMaskCPF, handleMaskTelephone, handleMountCCIRMask, handleMountCNPJMask, handleMountDateMask, handleMountMask, handleMountNumberCurrency, handleRemoveCEPMask, handleRemoveCNPJMask, handleRemoveCPFMask, handleRemoveDateMask } from "../../util/maskUtil"
+import { CCIR_MARK, CCIR_PATTERN, CEP_MARK, CNPJ_MARK, CNPJ_PATTERN, CPF_MARK, CPF_PATTERN, DATE_MARK, DATE_PATTERN, NOT_NULL_MARK, NUMBER_MARK, ONLY_CHARACTERS_PATTERN, ONLY_CHARACTERS_PATTERN_TWO, ONLY_SPECIAL_FOR_NUMBER_PATTERN, STYLE_FOR_INPUT_LOADING, STYLE_FOR_INPUT_LOADING_TRANSPARENT, TELEPHONE_MARK, TEXT_NOT_NULL_MARK } from "../../util/patternValidationUtil"
 
 interface InputTextProps {
     id?: string,
@@ -19,7 +19,7 @@ interface InputTextProps {
     isRequired?: boolean,
     isAutoFocus?: boolean,
     children?: any,
-    mask?: "cpf" | "rg" | "cnpj" | "currency" | "telephone" | "cep" | "perimeter" | "area" | "date",
+    mask?: "cpf" | "rg" | "cnpj" | "currency" | "telephone" | "cep" | "perimeter" | "area" | "date" | "ccir",
     onBlur?: (any?) => void,
     onChange?: (any) => void,
     onSetText?: (string) => void,
@@ -154,6 +154,13 @@ export default function InputText(props: InputTextProps) {
                 text = text?.replace(new RegExp(ONLY_CHARACTERS_PATTERN), "")
                 test = new RegExp(CNPJ_PATTERN).test(text)
                 break
+            case CCIR_MARK:
+                text = text?.trim()
+                text = handleRemoveCPFMask(text)
+                text = text?.replace(new RegExp(ONLY_SPECIAL_FOR_NUMBER_PATTERN), "")
+                text = text?.replace(new RegExp(ONLY_CHARACTERS_PATTERN), "")
+                test = new RegExp(CCIR_PATTERN).test(text)
+                break
             case NUMBER_MARK:
                 text = text?.trim()
                 text = text?.replace(new RegExp(ONLY_SPECIAL_FOR_NUMBER_PATTERN), "")
@@ -177,6 +184,9 @@ export default function InputText(props: InputTextProps) {
     const handleMask = (text) => {
         let value = text
         switch (props.mask) {
+            case "ccir":
+                value = handleMountCCIRMask(value)
+                break
             case "cpf":
                 value = handleMaskCPF(value)
                 break

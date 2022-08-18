@@ -87,6 +87,7 @@ export default function ServiceView(props: ServiceViewProps) {
                         hideData
                         dataInside
                         canShowHideData
+                        title="Projeto"
                         id={service.project}
                     />
                 )}
@@ -142,6 +143,7 @@ export default function ServiceView(props: ServiceViewProps) {
                         hideData
                         dataInside
                         canShowHideData
+                        title="Profissional"
                         id={service.responsible}
                     />
                 )}

@@ -1,6 +1,6 @@
-import { Dialog, Transition } from "@headlessui/react";
-import { Fragment, useRef } from "react";
 import HeaderModal from "./headerModal";
+import { Fragment, useRef } from "react";
+import { Dialog, Transition } from "@headlessui/react";
 
 interface WindowModalProps {
     isOpen?: boolean,
@@ -18,7 +18,6 @@ export default function WindowModal(props: WindowModalProps) {
                 initialFocus={cancelButtonRef}
                 open={props.isOpen}
                 onClose={() => { }}>
-
                 <Transition.Child
                     as={Fragment}
                     enter="ease-out duration-300"
@@ -29,7 +28,6 @@ export default function WindowModal(props: WindowModalProps) {
                     leaveTo="opacity-0">
                     <div className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" />
                 </Transition.Child>
-
                 <div className="fixed z-10 inset-0 overflow-y-auto">
                     <div className="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
                         <span className="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">

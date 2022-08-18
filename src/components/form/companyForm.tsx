@@ -89,7 +89,7 @@ export default function CompanyForm(props: CompanyFormProps) {
             return
         }
         setIsAutoSaving(old => true)
-        const res = await handleSaveInner(company)
+        const res = await handleSaveInner(company, false)
         if (res.status === "ERROR") {
             return
         }
@@ -98,7 +98,7 @@ export default function CompanyForm(props: CompanyFormProps) {
         setCompanyOriginal(old => res.company)
     }
 
-    const handleSaveInner = async (company) => {
+    const handleSaveInner = async (company, history) => {
         let res = { status: "ERROR", id: "", company: company }
         let companyForDB = handlePrepareCompanyForDB(company)
         if (!companyForDB?.id?.length && companyID?.length) {
@@ -107,7 +107,7 @@ export default function CompanyForm(props: CompanyFormProps) {
         try {
             const saveRes = await fetch("api/company", {
                 method: "POST",
-                body: JSON.stringify({ token: "tokenbemseguro", data: companyForDB }),
+                body: JSON.stringify({ token: "tokenbemseguro", data: companyForDB, history: history }),
             }).then((res) => res.json())
             res = { ...res, status: "SUCCESS", id: saveRes.id, company: { ...company, id: saveRes.id } }
         } catch (e) {
@@ -129,7 +129,7 @@ export default function CompanyForm(props: CompanyFormProps) {
         setIsLoading(true)
         let companyFromDB = { ...company }
         if (handleDiference()) {
-            let res = await handleSaveInner(company)
+            let res = await handleSaveInner(company, true)
             if (res.status === "ERROR") {
                 const feedbackMessage: FeedbackMessage = { messages: ["Algo deu errado!"], messageType: "ERROR" }
                 handleShowMessage(feedbackMessage)

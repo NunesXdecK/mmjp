@@ -13,7 +13,7 @@ export default async function handler(req, res) {
         case "POST":
             let resPOST = { status: "ERROR", error: {}, id: "", message: "" }
             try {
-                let { token, data } = JSON.parse(body)
+                let { token, data, history } = JSON.parse(body)
                 if (token === "tokenbemseguro") {
                     let nowID = data?.id ?? ""
                     if (data.person && "id" in data.person && data.person?.id.length) {
@@ -28,8 +28,10 @@ export default async function handler(req, res) {
                         const docRef = doc(professionalCollection, nowID)
                         await updateDoc(docRef, ProfessionalConversor.toFirestore(data))
                     }
-                    const dataForHistory = { ...ProfessionalConversor.toFirestore(data), databaseid: nowID, databasename: PROFESSIONAL_COLLECTION_NAME }
-                    await addDoc(historyCollection, dataForHistory)
+                    if (history) {
+                        const dataForHistory = { ...ProfessionalConversor.toFirestore(data), databaseid: nowID, databasename: PROFESSIONAL_COLLECTION_NAME }
+                        await addDoc(historyCollection, dataForHistory)
+                    }
                     resPOST = { ...resPOST, status: "SUCCESS", id: nowID }
                 } else {
                     resPOST = { ...resPOST, status: "ERROR", message: "Token invalido!" }

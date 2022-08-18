@@ -94,7 +94,7 @@ export default function PersonForm(props: PersonFormProps) {
             return
         }
         setIsAutoSaving(old => true)
-        const res = await handleSaveInner(person)
+        const res = await handleSaveInner(person, false)
         if (res.status === "ERROR") {
             return
         }
@@ -103,7 +103,7 @@ export default function PersonForm(props: PersonFormProps) {
         setPersonOriginal(old => res.person)
     }
 
-    const handleSaveInner = async (person) => {
+    const handleSaveInner = async (person, history) => {
         let res = { status: "ERROR", id: "", person: person }
         let personForDB = handlePreparePersonForDB(person)
         if (!personForDB?.id?.length && personID?.length) {
@@ -112,7 +112,7 @@ export default function PersonForm(props: PersonFormProps) {
         try {
             const saveRes = await fetch("api/person", {
                 method: "POST",
-                body: JSON.stringify({ token: "tokenbemseguro", data: personForDB }),
+                body: JSON.stringify({ token: "tokenbemseguro", data: personForDB, history }),
             }).then((res) => res.json())
             res = { ...res, status: "SUCCESS", id: saveRes.id, person: { ...person, id: saveRes.id } }
         } catch (e) {
@@ -134,7 +134,7 @@ export default function PersonForm(props: PersonFormProps) {
         setIsLoading(true)
         let personFromDB = { ...person }
         if (handleDiference()) {
-            let res = await handleSaveInner(person)
+            let res = await handleSaveInner(person, true)
             if (res.status === "ERROR") {
                 const feedbackMessage: FeedbackMessage = { messages: ["Algo deu errado!"], messageType: "ERROR" }
                 handleShowMessage(feedbackMessage)

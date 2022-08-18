@@ -172,6 +172,7 @@ export default function ActionButtonsForm(props: ActionButtonsFormProps) {
                         Voltar
                     </Button>
                     <Button
+                        type="submit"
                         color="red"
                         onClick={(event) => {
                             setIsOpenRight(false)

@@ -136,6 +136,11 @@ export default function ImmobileView(props: ImmobileViewProps) {
                                         <InfoView title="Município/UF" info={immobile.county} />
                                         <InfoView title="Área" info={handleMountNumberCurrency(immobile.area, ".", ",", 3, 2)} />
                                         <InfoView title="Perimetro" info={handleMountNumberCurrency(immobile.perimeter, ".", ",", 3, 4)} />
+                                        <InfoView title="CCIR" info={immobile.ccirNumber} />
+                                        <InfoView title="Processo" info={immobile.process} />
+                                        <InfoView title="Comarca" info={immobile.comarca} />
+                                        <InfoView title="Codigo da comarca" info={immobile.comarcaCode} />
+                                        <InfoView title="Matricula" info={immobile.registration} />
                                         {props.dataInside && handlePutData()}
                                     </InfoHolderView>
                                 </ScrollDownTransition>

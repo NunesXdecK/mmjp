@@ -23,7 +23,7 @@ export default async function handler(req, res) {
             let servicesStagesIDs = []
             let servicesPaymentsIDs = []
             try {
-                let { token, data } = JSON.parse(body)
+                let { token, data, history } = JSON.parse(body)
                 service = data
                 serviceNowID = data?.id ?? ""
                 if (token === "tokenbemseguro") {
@@ -68,8 +68,10 @@ export default async function handler(req, res) {
                         await updateDoc(docRef, ServiceConversor.toFirestore(service))
                     }
                     serviceRES = { ...serviceRES, id: serviceNowID, index: service.index, title: service.title }
-                    const dataForHistory = { ...ServiceConversor.toFirestore(service), databaseid: serviceNowID, databasename: SERVICE_COLLECTION_NAME }
-                    await addDoc(historyCollection, dataForHistory)
+                    if (history) {
+                        const dataForHistory = { ...ServiceConversor.toFirestore(service), databaseid: serviceNowID, databasename: SERVICE_COLLECTION_NAME }
+                        await addDoc(historyCollection, dataForHistory)
+                    }
                 }
             } catch (err) {
                 console.error(err)
@@ -98,8 +100,10 @@ export default async function handler(req, res) {
                                         await updateDoc(docRef, ServiceStageConversor.toFirestore(serviceStage))
                                     }
                                     servicesStagesIDs = [...servicesStagesIDs, { id: serviceStageNowID, index: serviceStage.index, title: serviceStage.title }]
-                                    const dataForHistory = { ...ServiceStageConversor.toFirestore(serviceStage), databaseid: serviceStageNowID, databasename: SERVICE_STAGE_COLLECTION_NAME }
-                                    await addDoc(historyCollection, dataForHistory)
+                                    if (history) {
+                                        const dataForHistory = { ...ServiceStageConversor.toFirestore(serviceStage), databaseid: serviceStageNowID, databasename: SERVICE_STAGE_COLLECTION_NAME }
+                                        await addDoc(historyCollection, dataForHistory)
+                                    }
                                 }
                             })
                         )
@@ -120,8 +124,10 @@ export default async function handler(req, res) {
                                         await updateDoc(docRef, ServicePaymentConversor.toFirestore(servicePayment))
                                     }
                                     servicesPaymentsIDs = [...servicesPaymentsIDs, { id: servicePaymentNowID, index: servicePayment.index, description: servicePayment.description }]
-                                    const dataForHistory = { ...ServicePaymentConversor.toFirestore(servicePayment), databaseid: servicePaymentNowID, databasename: SERVICE_PAYMENT_COLLECTION_NAME }
-                                    await addDoc(historyCollection, dataForHistory)
+                                    if (history) {
+                                        const dataForHistory = { ...ServicePaymentConversor.toFirestore(servicePayment), databaseid: servicePaymentNowID, databasename: SERVICE_PAYMENT_COLLECTION_NAME }
+                                        await addDoc(historyCollection, dataForHistory)
+                                    }
                                 }
                             })
                         )

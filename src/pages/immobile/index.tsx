@@ -96,6 +96,7 @@ export default function Immobiles() {
         if (isFirst) {
             fetch("api/immobiles").then((res) => res.json()).then((res) => {
                 setIsFirst(old => false)
+                console.log(res.list)
                 if (res.list.length) {
                     setImmobiles(res.list)
                     setImmobilesForShow(res.list)

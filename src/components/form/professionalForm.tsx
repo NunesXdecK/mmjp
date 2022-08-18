@@ -103,7 +103,7 @@ export default function ProfessionalForm(props: ProfessionalFormProps) {
             return
         }
         setIsAutoSaving(old => true)
-        const res = await handleSaveInner(professionalForValid)
+        const res = await handleSaveInner(professionalForValid, false)
         if (res.status === "ERROR") {
             return
         }
@@ -112,7 +112,7 @@ export default function ProfessionalForm(props: ProfessionalFormProps) {
         setProfessionalOriginal(res.professional)
     }
 
-    const handleSaveInner = async (professional) => {
+    const handleSaveInner = async (professional, history) => {
         let res = { status: "ERROR", id: "", professional: professional }
         let professionalForDB = handlePrepareProfessionalForDB(professional)
         if (!professionalForDB?.id?.length && professionalID?.length) {
@@ -121,7 +121,7 @@ export default function ProfessionalForm(props: ProfessionalFormProps) {
         try {
             const saveRes = await fetch("api/professional", {
                 method: "POST",
-                body: JSON.stringify({ token: "tokenbemseguro", data: professionalForDB }),
+                body: JSON.stringify({ token: "tokenbemseguro", data: professionalForDB, history }),
             }).then((res) => res.json())
             res = { ...res, status: "SUCCESS", id: saveRes.id, professional: { ...professional, id: saveRes.id } }
         } catch (e) {
@@ -144,7 +144,7 @@ export default function ProfessionalForm(props: ProfessionalFormProps) {
         setIsLoading(true)
         let professionalFromDB = { ...professionalForValid }
         if (handleDiference()) {
-            let res = await handleSaveInner(professionalForValid)
+            let res = await handleSaveInner(professionalForValid, true)
             if (res.status === "ERROR") {
                 const feedbackMessage: FeedbackMessage = { messages: ["Algo deu errado!"], messageType: "ERROR" }
                 handleShowMessage(feedbackMessage)

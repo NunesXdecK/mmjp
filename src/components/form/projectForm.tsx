@@ -55,6 +55,7 @@ export default function ProjectForm(props: ProjectFormProps) {
 
     const [oldData, setOldData] = useState<ElementFromBase>(props?.project?.oldData ?? defaultElementFromBase)
 
+    const [servicesID, setServicesID] = useState<any[]>([])
     const [services, setServices] = useState<Service[]>(props?.project?.services ? props.project.services : [])
     const [servicesOriginal, setServicesOriginal] = useState<Service[]>(props?.project?.services ? props.project.services : [])
     const [professionals, setProfessionals] = useState(props?.project?.professional?.id ? [props.project.professional] : [])
@@ -162,31 +163,43 @@ export default function ProjectForm(props: ProjectFormProps) {
         let serviceIDsorted = servicesIDsSPSorted.sort(handleSortByIndex)
         let servicesSorted = servicesSPSorted.sort(handleSortByIndex)
         servicesSorted.map((element, index) => {
+            let stagesWithIDs = []
+            let paymentsWithIDs = []
+            let id = element.id ?? ""
             let service = serviceIDsorted[element.index]
-            if (service) {
-                let stagesWithIDs = []
-                let paymentsWithIDs = []
-                element.serviceStages.map((serviceStage, index) => {
-                    let stage = service?.stages[serviceStage.index]
-                    if (stage) {
-                        stagesWithIDs = [...stagesWithIDs, { ...serviceStage, id: stage.id }]
-                    }
-                })
-                element.servicePayments.map((servicePayment, index) => {
-                    let payment = service?.payments[servicePayment.index]
-                    if (payment) {
-                        paymentsWithIDs = [...paymentsWithIDs, { ...servicePayment, id: payment.id }]
-                    }
-                })
-                servicesRES = [...servicesRES,
-                {
-                    ...element,
-                    id: service.id,
-                    serviceStages: stagesWithIDs,
-                    servicePayments: paymentsWithIDs,
+            if (id.length === 0) {
+                if (service && "id" in service && service.id.length) {
+                    id = service.id
                 }
-                ]
             }
+            element.serviceStages.map((serviceStage, index) => {
+                let stageId = serviceStage.id ?? ""
+                if (stageId.length === 0) {
+                    let stage = service?.stages[serviceStage.index]
+                    if (stage && "id" in stage && stage.id.length) {
+                        stageId = stage.id
+                    }
+                }
+                stagesWithIDs = [...stagesWithIDs, { ...serviceStage, id: stageId }]
+            })
+            element.servicePayments.map((servicePayment, index) => {
+                let paymentId = servicePayment.id ?? ""
+                if (paymentId.length === 0) {
+                    let payment = service?.payments[servicePayment.index]
+                    if (payment && "id" in payment && payment.id.length) {
+                        paymentId = payment.id
+                    }
+                }
+                paymentsWithIDs = [...paymentsWithIDs, { ...servicePayment, id: paymentId }]
+            })
+            servicesRES = [...servicesRES,
+            {
+                ...element,
+                id: id,
+                serviceStages: stagesWithIDs,
+                servicePayments: paymentsWithIDs,
+            }
+            ]
         })
         return servicesRES
     }
@@ -213,7 +226,7 @@ export default function ProjectForm(props: ProjectFormProps) {
         setIsAutoSaving(old => true)
         let projectID = project.id
         if (!handleIsEqual(project, projectOriginal)) {
-            const resProject = await handleSaveProjectInner(projectForValid)
+            const resProject = await handleSaveProjectInner(projectForValid, false)
             if (resProject.status === "ERROR") {
                 setIsAutoSaving(old => false)
                 return
@@ -222,7 +235,6 @@ export default function ProjectForm(props: ProjectFormProps) {
             setProject({ ...project, id: resProject.id })
             setProjectOriginal(old => resProject.project)
         }
-        /*
         let servicesForValid: Service[] = projectServiceFinal.services
         const isServicesValid = handleServicesValidationForDB(servicesForValid, false, false)
         if (!isServicesValid.validation) {
@@ -230,26 +242,23 @@ export default function ProjectForm(props: ProjectFormProps) {
             return
         }
         if (projectID?.length > 0 && !handleIsEqual(services, servicesOriginal)) {
-            const resServices = await handleSaveServicesInner(servicesForValid, { ...projectForValid, id: projectID })
+            const resServices = await handleSaveServicesInner(servicesForValid, { ...projectForValid, id: projectID }, false)
             if (resServices.status === "ERROR") {
                 return
             }
-            let servicesLastWithId = handlePutServicesIDs(resServices.services, services)
-            let servicesFromDBLastWithId = handlePutServicesIDs(resServices.services, servicesForValid)
-            setServices(old => servicesLastWithId)
-            setServicesOriginal(old => servicesFromDBLastWithId)
+            setServicesID(old => resServices.services)
+            setServicesOriginal(old => servicesForValid)
         }
-        */
         setIsAutoSaving(old => false)
     }
 
-    const handleSaveProjectInner = async (project) => {
+    const handleSaveProjectInner = async (project, history) => {
         let res = { status: "ERROR", id: "", project: project }
         let projectForDB = handlePrepareProjectForDB(project)
         try {
             const saveRes = await fetch("api/project", {
                 method: "POST",
-                body: JSON.stringify({ token: "tokenbemseguro", data: projectForDB }),
+                body: JSON.stringify({ token: "tokenbemseguro", data: projectForDB, history: history }),
             }).then((res) => res.json())
             res = { ...res, status: "SUCCESS", id: saveRes.id, project: { ...project, id: saveRes.id } }
         } catch (e) {
@@ -258,7 +267,7 @@ export default function ProjectForm(props: ProjectFormProps) {
         return res
     }
 
-    const handleSaveServicesInner = async (services, project) => {
+    const handleSaveServicesInner = async (services, project, history) => {
         let res = { status: "ERROR", services: [] }
         let localServicesForDB = []
         let servicesFinal = []
@@ -268,13 +277,16 @@ export default function ProjectForm(props: ProjectFormProps) {
                 project: { ...project }
             }]
         })
+        if (servicesID.length) {
+            localServicesForDB = handlePutServicesIDs(servicesID, localServicesForDB)
+        }
         try {
             await Promise.all(
                 localServicesForDB.map(async (element: Service, index) => {
                     let serviceForDB = handlePrepareServiceForDB(element)
                     const saveRes = await fetch("api/service", {
                         method: "POST",
-                        body: JSON.stringify({ token: "tokenbemseguro", data: serviceForDB }),
+                        body: JSON.stringify({ token: "tokenbemseguro", data: serviceForDB, history: history }),
                     }).then((res) => res.json())
                     servicesFinal = [...servicesFinal, saveRes.service]
                 }))
@@ -302,7 +314,7 @@ export default function ProjectForm(props: ProjectFormProps) {
         setIsLoading(true)
         let projectFromDB = { ...projectForValid }
         if (handleDiference()) {
-            let resProject = await handleSaveProjectInner(projectForValid)
+            let resProject = await handleSaveProjectInner(projectForValid, true)
             if (resProject.status === "ERROR") {
                 const feedbackMessage: FeedbackMessage = { messages: ["Algo deu errado!"], messageType: "ERROR" }
                 handleShowMessage(feedbackMessage)
@@ -312,8 +324,7 @@ export default function ProjectForm(props: ProjectFormProps) {
             setProject({ ...projectForValid, id: resProject.id })
             setProjectOriginal({ ...projectForValid, id: resProject.id })
             projectFromDB = { ...resProject.project }
-
-            let resServices = await handleSaveServicesInner(services, { ...projectForValid, id: resProject.id })
+            let resServices = await handleSaveServicesInner(services, { ...projectForValid, id: resProject.id }, true)
             if (resServices.status === "ERROR") {
                 const feedbackMessage: FeedbackMessage = { messages: ["Algo deu errado!"], messageType: "ERROR" }
                 handleShowMessage(feedbackMessage)
@@ -321,6 +332,7 @@ export default function ProjectForm(props: ProjectFormProps) {
                 return
             }
             let servicesLastWithId = handlePutServicesIDs(resServices.services, servicesForValid)
+            setServicesID(resServices.services)
             setServices([...servicesLastWithId])
             setServicesOriginal([...servicesLastWithId])
         }

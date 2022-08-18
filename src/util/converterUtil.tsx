@@ -225,11 +225,9 @@ export const handlePrepareImmobileForDB = (immobile: Immobile) => {
     if (immobile.dateInsertUTC === 0) {
         immobile = { ...immobile, dateInsertUTC: handleNewDateToUTC() }
     }
-
     if (immobile && "id" in immobile && immobile.id.length) {
         immobile = { ...immobile, dateLastUpdateUTC: handleNewDateToUTC() }
     }
-
     if (immobile.oldData) {
         delete immobile.oldData
     }

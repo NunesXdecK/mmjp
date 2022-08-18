@@ -14,7 +14,7 @@ export default async function handler(req, res) {
         case "POST":
             let resPOST = { status: "ERROR", error: {}, id: "", message: "" }
             try {
-                let { token, data } = JSON.parse(body)
+                let { token, data, history } = JSON.parse(body)
                 if (token === "tokenbemseguro") {
                     let nowID = data?.id ?? ""
                     const isSave = nowID === ""
@@ -33,8 +33,10 @@ export default async function handler(req, res) {
                                 const docRef = doc(serviceStageCollection, nowID)
                                 await updateDoc(docRef, ServiceStageConversor.toFirestore(data))
                             }
-                            const dataForHistory = { ...ServiceStageConversor.toFirestore(data), databaseid: nowID, databasename: SERVICE_STAGE_COLLECTION_NAME }
-                            await addDoc(historyCollection, dataForHistory)
+                            if (history) {
+                                const dataForHistory = { ...ServiceStageConversor.toFirestore(data), databaseid: nowID, databasename: SERVICE_STAGE_COLLECTION_NAME }
+                                await addDoc(historyCollection, dataForHistory)
+                            }
                             resPOST = { ...resPOST, status: "SUCCESS", id: nowID }
                         } else {
                             resPOST = { ...resPOST, status: "ERROR", message: "Projeto não vinculado!" }
