@@ -13,11 +13,9 @@ export default function Index() {
     const [isLoading, setIsLoading] = useState(false)
     const [isFeedbackOpen, setIsFeedbackOpen] = useState(false)
     const [serviceStages, setServiceStages] = useState<ServiceStage[]>([])
-    const [serviceStagesForShow, setServiceStagesForShow] = useState<ServiceStage[]>([])
 
     const [feedbackMessage, setFeedbackMessage] = useState<FeedbackMessage>(defaultFeedbackMessage)
     const [servicePayments, setServicePayments] = useState<ServicePayment[]>([])
-    const [servicePaymentsForShow, setServicePaymentsForShow] = useState<ServicePayment[]>([])
 
     const handleFilterStagesList = (string) => {
         let listItems = [...serviceStages]
@@ -25,7 +23,7 @@ export default function Index() {
         listItemsFiltered = listItems.filter((element: ServiceStage, index) => {
             return element.description.toLowerCase().includes(string.toLowerCase())
         })
-        setServiceStagesForShow((old) => listItemsFiltered)
+        return listItemsFiltered
     }
 
     const handleFilterPaymentsList = (string) => {
@@ -34,7 +32,7 @@ export default function Index() {
         listItemsFiltered = listItems.filter((element: ServicePayment, index) => {
             return element.description.toLowerCase().includes(string.toLowerCase())
         })
-        setServicePaymentsForShow((old) => listItemsFiltered)
+        return listItemsFiltered
     }
 
     const handleShowMessage = (feedbackMessage: FeedbackMessage) => {
@@ -51,7 +49,6 @@ export default function Index() {
                 setIsFirst(old => false)
                 if (res.list.length) {
                     setServiceStages(res.list)
-                    setServiceStagesForShow(res.list)
                 }
                 setIsLoading(false)
             })
@@ -59,7 +56,6 @@ export default function Index() {
                 setIsFirst(old => false)
                 if (res.list.length) {
                     setServicePayments(res.list)
-                    setServicePaymentsForShow(res.list)
                 }
                 setIsLoading(false)
             })
@@ -84,7 +80,6 @@ export default function Index() {
                             canSeeInfo
                             title="Etapas"
                             isLoading={isLoading}
-                            list={serviceStagesForShow}
                             onFilterList={handleFilterStagesList}
                             onTitle={(element: ServiceStage) => {
                                 return (<p>{element.description}</p>)
@@ -102,7 +97,6 @@ export default function Index() {
                             canSeeInfo
                             title="Pagamentos"
                             isLoading={isLoading}
-                            list={servicePaymentsForShow}
                             onFilterList={handleFilterPaymentsList}
                             onTitle={(element: ServicePayment) => {
                                 return (<p>{element.description}</p>)
