@@ -12,6 +12,7 @@ interface ServiceStageFormProps {
     title?: string,
     subtitle?: string,
     formClassName?: string,
+    status?: "ORÇAMENTO" | "NORMAL" | "ARQUIVADO" | "FINALIZADO",
     isBack?: boolean,
     isLoading?: boolean,
     serviceStages?: ServiceStage[],
@@ -76,7 +77,13 @@ export default function ServiceStageForm(props: ServiceStageFormProps) {
                         isDisabled={props.isLoading}
                         onClick={() => {
                             if (props.onSetServiceStages) {
-                                props.onSetServiceStages([...props.serviceStages ?? [], { ...defaultServiceStage, dateString: handleUTCToDateShow(handleNewDateToUTC() + ""), index: props.serviceStages?.length }])
+                                props.onSetServiceStages([...props.serviceStages ?? [],
+                                {
+                                    ...defaultServiceStage,
+                                    index: props.serviceStages?.length,
+                                    status: props.status ?? "ORÇAMENTO",
+                                    dateString: handleUTCToDateShow(handleNewDateToUTC() + ""),
+                                }])
                             }
                         }}>
                         Adicionar etapa

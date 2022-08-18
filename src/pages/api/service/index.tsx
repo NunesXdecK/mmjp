@@ -17,13 +17,13 @@ export default async function handler(req, res) {
     switch (method) {
         case "POST":
             let resPOST = { status: "ERROR", error: {}, id: "", message: "", service: {} }
+            let { token, data, history } = JSON.parse(body)
             let serviceNowID = ""
             let service: Service = {}
             let serviceRES: Service = {}
             let servicesStagesIDs = []
             let servicesPaymentsIDs = []
             try {
-                let { token, data, history } = JSON.parse(body)
                 service = data
                 serviceNowID = data?.id ?? ""
                 if (token === "tokenbemseguro") {

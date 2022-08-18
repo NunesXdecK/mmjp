@@ -166,9 +166,14 @@ export default function ProjectView(props: ProjectViewProps) {
                                         )}
                                     </Button>
                                 )}
+                                {project.status === "FINALIZADO" && (
+                                    <InfoView classNameHolder="w-full" classNameInfo="rounded-md px-3 py-1 bg-green-600 text-white" title="Status" info={project.status} />
+                                )}
+                                {project.status === "ARQUIVADO" && (
+                                    <InfoView classNameHolder="w-full" classNameInfo="rounded-md px-3 py-1 bg-orange-600 text-white" title="Status" info={project.status} />
+                                )}
                                 <InfoView title="Titulo" info={project.title} />
                                 <InfoView title="Número" info={project.number} />
-                                <InfoView title="Status" info={project.status} />
                                 <InfoView title="Data" info={handleUTCToDateShow(project.date.toString())} />
                                 <ScrollDownTransition isOpen={isShowInfo}>
                                     <InfoHolderView

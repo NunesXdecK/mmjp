@@ -114,13 +114,13 @@ export default function ProjectForm(props: ProjectFormProps) {
         let projectFinal = { ...project }
         let servicesFinal = []
         let projectStatus = project.status
+        if (status && status.length) {
+            projectStatus = status
+        }
         if (professionals.length > 0) {
             projectFinal = { ...projectFinal, professional: professionals[0] }
         } else {
             projectFinal = { ...projectFinal, professional: {} }
-        }
-        if (status && status.length) {
-            projectStatus = status
         }
         projectFinal = { ...projectFinal, status: projectStatus }
         services?.map((element, index) => {
@@ -301,7 +301,7 @@ export default function ProjectForm(props: ProjectFormProps) {
         if (isAutoSaving) {
             return
         }
-        let projectServiceFinal = handleProjectServicesToDB(project)
+        let projectServiceFinal = handleProjectServicesToDB(project, status)
         let projectForValid: Project = projectServiceFinal.project
         let servicesForValid: Service[] = projectServiceFinal.services
         const isProjectValid = handleProjectValidationForDB(projectForValid)
@@ -313,37 +313,37 @@ export default function ProjectForm(props: ProjectFormProps) {
         }
         setIsLoading(true)
         let projectFromDB = { ...projectForValid }
-        if (handleDiference()) {
-            let resProject = await handleSaveProjectInner(projectForValid, true)
-            if (resProject.status === "ERROR") {
-                const feedbackMessage: FeedbackMessage = { messages: ["Algo deu errado!"], messageType: "ERROR" }
-                handleShowMessage(feedbackMessage)
-                setIsLoading(false)
-                return
-            }
-            setProject({ ...projectForValid, id: resProject.id })
-            setProjectOriginal({ ...projectForValid, id: resProject.id })
-            projectFromDB = { ...resProject.project }
-            let resServices = await handleSaveServicesInner(services, { ...projectForValid, id: resProject.id }, true)
-            if (resServices.status === "ERROR") {
-                const feedbackMessage: FeedbackMessage = { messages: ["Algo deu errado!"], messageType: "ERROR" }
-                handleShowMessage(feedbackMessage)
-                setIsLoading(false)
-                return
-            }
-            let servicesLastWithId = handlePutServicesIDs(resServices.services, servicesForValid)
-            setServicesID(resServices.services)
-            setServices([...servicesLastWithId])
-            setServicesOriginal([...servicesLastWithId])
+        let resProject = await handleSaveProjectInner(projectForValid, true)
+        if (resProject.status === "ERROR") {
+            const feedbackMessage: FeedbackMessage = { messages: ["Algo deu errado!"], messageType: "ERROR" }
+            handleShowMessage(feedbackMessage)
+            setIsLoading(false)
+            return
         }
+        setProject({ ...projectForValid, id: resProject.id })
+        setProjectOriginal({ ...projectForValid, id: resProject.id })
+        projectFromDB = { ...resProject.project }
+        let resServices = await handleSaveServicesInner(servicesForValid, { ...projectForValid, id: resProject.id }, true)
+        if (resServices.status === "ERROR") {
+            const feedbackMessage: FeedbackMessage = { messages: ["Algo deu errado!"], messageType: "ERROR" }
+            handleShowMessage(feedbackMessage)
+            setIsLoading(false)
+            return
+        }
+        let servicesLastWithId = handlePutServicesIDs(resServices.services, servicesForValid)
+        setServicesID(resServices.services)
+        setServices([...servicesLastWithId])
+        setServicesOriginal([...servicesLastWithId])
         const feedbackMessage: FeedbackMessage = { messages: ["Sucesso!"], messageType: "SUCCESS" }
         handleShowMessage(feedbackMessage)
-        if (isMultiple) {
-            setServices([])
-            setProject({ ...defaultProject, dateString: handleUTCToDateShow(handleNewDateToUTC().toString()) })
-        }
-        if (!isMultiple && props.onAfterSave) {
-            props.onAfterSave(feedbackMessage, projectFromDB)
+        if (!status) {
+            if (isMultiple) {
+                setServices([])
+                setProject({ ...defaultProject, dateString: handleUTCToDateShow(handleNewDateToUTC().toString()) })
+            }
+            if (!isMultiple && props.onAfterSave) {
+                props.onAfterSave(feedbackMessage, projectFromDB)
+            }
         }
         setIsLoading(false)
     }
@@ -351,23 +351,46 @@ export default function ProjectForm(props: ProjectFormProps) {
     const handleCenterActionsButtons = () => {
         return (
             <div className="px-2 w-full flex flex-col sm:flex-row gap-2 items-end justify-end">
-                <Button
-                    type="button"
-                    onClick={(event) => {
-                        event.preventDefault()
-                        if (project.id.length) {
-                            setWindowText("Deseja realmente arquivar o projeto " + project.title + "?")
-                            setProjectStatus("ARQUIVADO")
-                            setIsOpen(true)
-                        } else {
-                            handleSave("ARQUIVADO")
-                        }
-                    }}
-                    isLoading={isLoading}
-                    isDisabled={!isFormValid}
-                >
-                    Arquivar projeto
-                </Button>
+
+                {(project.status === "ARQUIVADO" || project.status === "FINALIZADO") && (
+                    <Button
+                        type="button"
+                        onClick={(event) => {
+                            event.preventDefault()
+                            if (project.id.length) {
+                                setWindowText("Deseja realmente reativar o projeto " + project.title + "?")
+                                setProjectStatus("NORMAL")
+                                setIsOpen(true)
+                            } else {
+                                handleSave("NORMAL")
+                            }
+                        }}
+                        isLoading={isLoading}
+                        isDisabled={!isFormValid}
+                    >
+                        Reativar projeto
+                    </Button>
+                )}
+
+                {(project.status === "ORÇAMENTO" || project.status === "NORMAL") && (
+                    <Button
+                        type="button"
+                        onClick={(event) => {
+                            event.preventDefault()
+                            if (project.id.length) {
+                                setWindowText("Deseja realmente arquivar o projeto " + project.title + "?")
+                                setProjectStatus("ARQUIVADO")
+                                setIsOpen(true)
+                            } else {
+                                handleSave("ARQUIVADO")
+                            }
+                        }}
+                        isLoading={isLoading}
+                        isDisabled={!isFormValid}
+                    >
+                        Arquivar projeto
+                    </Button>
+                )}
                 {project.status === "ORÇAMENTO" && (
                     <>
                         <div className="flex flex-col gap-1">
@@ -643,13 +666,13 @@ export default function ProjectForm(props: ProjectFormProps) {
                         title="Serviços"
                         services={services}
                         isLoading={isLoading}
+                        status={project.status}
                         onBlur={handleAutoSave}
                         onSetServices={setServices}
                         onFinishAdd={handleAutoSave}
                         subtitle="Adicione os serviços"
                         onShowMessage={props.onShowMessage}
                     />
-
                     <form
                         onSubmit={(event) => {
                             if (event) {

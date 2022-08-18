@@ -21,6 +21,7 @@ interface ServiceDataFormProps {
     id?: string,
     title?: string,
     subtitle?: string,
+    status?: "ORÇAMENTO" | "NORMAL" | "ARQUIVADO" | "FINALIZADO",
     index?: number,
     isBack?: boolean,
     isLoading?: boolean,
@@ -391,6 +392,7 @@ export default function ServiceDataForm(props: ServiceDataFormProps) {
 
                 <ServiceStageForm
                     title="Etapas"
+                    status={props.status}
                     formClassName="p-1 m-2"
                     isLoading={props.isLoading}
                     subtitle="Adicione as etapas"
@@ -401,6 +403,7 @@ export default function ServiceDataForm(props: ServiceDataFormProps) {
 
                 <ServicePaymentForm
                     title="Pagamento"
+                    status={props.status}
                     formClassName="p-1 m-2"
                     isLoading={props.isLoading}
                     subtitle="Adicione os pagamentos"

@@ -12,6 +12,7 @@ interface ServicePaymentFormProps {
     title?: string,
     subtitle?: string,
     formClassName?: string,
+    status?: "ORÇAMENTO" | "NORMAL" | "ARQUIVADO" | "FINALIZADO",
     isBack?: boolean,
     isLoading?: boolean,
     servicePayments?: ServicePayment[],
@@ -30,7 +31,6 @@ export default function ServicePaymentForm(props: ServicePaymentFormProps) {
             ])
         }
     }
-
 
     const handeOnDelete = async (index: number) => {
         let feedbackMessage: FeedbackMessage = { messages: ["Algo deu errado"], messageType: "ERROR" }
@@ -76,7 +76,13 @@ export default function ServicePaymentForm(props: ServicePaymentFormProps) {
                         isDisabled={props.isLoading}
                         onClick={() => {
                             if (props.onSetServicePayments) {
-                                props.onSetServicePayments([...props.servicePayments, { ...defaultServicePayment, dateString: handleUTCToDateShow(handleNewDateToUTC() + ""), index: props.servicePayments?.length }])
+                                props.onSetServicePayments([...props.servicePayments,
+                                {
+                                    ...defaultServicePayment,
+                                    status: props.status ?? "ORÇAMENTO",
+                                    index: props.servicePayments?.length,
+                                    dateString: handleUTCToDateShow(handleNewDateToUTC() + ""),
+                                }])
                             }
                         }}>
                         Adicionar pagamento

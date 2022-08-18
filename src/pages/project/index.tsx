@@ -14,7 +14,6 @@ export default function Projects() {
     const [title, setTitle] = useState("Lista de projetos")
     const [project, setProject] = useState<Project>(defaultProject)
     const [projects, setProjects] = useState<Project[]>([])
-    const [projectsForShow, setProjectsForShow] = useState<Project[]>([])
 
     const [isFirst, setIsFirst] = useState(true)
     const [isLoading, setIsLoading] = useState(true)
@@ -28,7 +27,6 @@ export default function Projects() {
             event.preventDefault()
         }
         setProjects([])
-        setProjectsForShow([])
         setProject(defaultProject)
         setIsFirst(true)
         setIsLoading(true)
@@ -54,7 +52,6 @@ export default function Projects() {
             ...projects.slice(index + 1, projects.length),
         ]
         setProjects(list)
-        setProjectsForShow(list)
         setIsLoading(false)
         handleShowMessage(feedbackMessage)
     }
@@ -78,7 +75,7 @@ export default function Projects() {
         listItemsFiltered = listItems.filter((element: Project, index) => {
             return element.title.toLowerCase().includes(string.toLowerCase())
         })
-        setProjectsForShow((old) => listItemsFiltered)
+        return listItemsFiltered
     }
 
     const handleEditClickOld = async (project) => {
@@ -195,7 +192,6 @@ localProject = {
                 setIsFirst(old => false)
                 if (res.list.length) {
                     setProjects(res.list)
-                    setProjectsForShow(res.list)
                 }
                 setIsLoading(false)
             })
@@ -219,7 +215,6 @@ localProject = {
                     autoSearch
                     title={title}
                     isLoading={isLoading}
-                    list={projectsForShow}
                     onSetElement={setProject}
                     onNewClick={handleNewClick}
                     onEditClick={handleEditClick}

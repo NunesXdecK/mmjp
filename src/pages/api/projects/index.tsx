@@ -12,7 +12,7 @@ export default async function handler(req, res) {
             const projectCollection = collection(db, PROJECT_COLLECTION_NAME).withConverter(ProjectConversor)
             let list = []
             try {
-                const queryProjects = query(projectCollection, where("status", "==", "NORMAL"))
+                const queryProjects = query(projectCollection, where("status", "!=", "ORÇAMENTO"))
                 const querySnapshot = await getDocs(queryProjects)
                 querySnapshot.forEach((doc) => {
                     list = [...list, doc.data()]

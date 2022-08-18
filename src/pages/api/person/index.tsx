@@ -12,7 +12,7 @@ export default async function handler(req, res) {
         case "POST":
             let resPOST = { status: "ERROR", error: {}, id: "", message: "" }
             try {
-                let { token, data } = JSON.parse(body)
+                let { token, data, history } = JSON.parse(body)
                 if (token === "tokenbemseguro") {
                     let nowID = data?.id ?? ""
                     {/*

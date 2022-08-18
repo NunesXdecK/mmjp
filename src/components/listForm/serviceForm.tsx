@@ -11,6 +11,7 @@ interface ServiceFormProps {
     id?: string,
     title?: string,
     subtitle?: string,
+    status?: "ORÇAMENTO" | "NORMAL" | "ARQUIVADO" | "FINALIZADO",
     isBack?: boolean,
     isLoading?: boolean,
     services?: Service[],
@@ -79,6 +80,7 @@ export default function ServiceForm(props: ServiceFormProps) {
                                     {
                                         ...defaultService,
                                         index: props.services?.length,
+                                        status: props.status ?? "ORÇAMENTO",
                                         dateString: handleUTCToDateShow(handleNewDateToUTC() + ""),
                                     }])
                             }
@@ -92,6 +94,7 @@ export default function ServiceForm(props: ServiceFormProps) {
                 <ServiceDataForm
                     key={index}
                     index={index}
+                    status={props.status}
                     onBlur={props.onBlur}
                     onDelete={handeOnDelete}
                     onSetText={handleSetText}

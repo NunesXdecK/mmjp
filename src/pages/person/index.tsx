@@ -12,7 +12,6 @@ export default function Persons() {
     const [title, setTitle] = useState("Lista de pessoas")
     const [person, setPerson] = useState<Person>(defaultPerson)
     const [persons, setPersons] = useState<Person[]>([])
-    const [personsForShow, setPersonsForShow] = useState<Person[]>([])
 
     const [isFirst, setIsFirst] = useState(true)
     const [isLoading, setIsLoading] = useState(true)
@@ -26,7 +25,6 @@ export default function Persons() {
             event.preventDefault()
         }
         setPersons([])
-        setPersonsForShow([])
         setPerson(defaultPerson)
         setIsFirst(true)
         setIsLoading(true)
@@ -52,7 +50,6 @@ export default function Persons() {
             ...persons.slice(index + 1, persons.length),
         ]
         setPersons(list)
-        setPersonsForShow(list)
         setIsLoading(false)
         handleShowMessage(feedbackMessage)
     }
@@ -69,7 +66,7 @@ export default function Persons() {
         listItemsFiltered = listItems.filter((element: Person, index) => {
             return element.name.toLowerCase().includes(string.toLowerCase())
         })
-        setPersonsForShow((old) => listItemsFiltered)
+        return listItemsFiltered
     }
 
     const handleEditClick = (person) => {
@@ -99,7 +96,6 @@ export default function Persons() {
                 setIsFirst(old => false)
                 if (res.list.length) {
                     setPersons(res.list)
-                    setPersonsForShow(res.list)
                 }
                 setIsLoading(false)
             })
@@ -123,7 +119,6 @@ export default function Persons() {
                     canSeeInfo
                     autoSearch
                     title={title}
-                    list={personsForShow}
                     isLoading={isLoading}
                     onNewClick={handleNewClick}
                     onEditClick={handleEditClick}

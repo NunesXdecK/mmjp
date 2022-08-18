@@ -19,17 +19,16 @@ interface ListProps {
     isLoading?: boolean,
     canSeeInfo?: boolean,
     autoSearch?: boolean,
-    list?: any[],
     onNewClick?: () => void,
     onEditClick?: (any) => void,
     onSetElement?: (any) => void,
     onDeleteClick?: (any) => void,
     onSelectClick?: (any) => void,
-    onFilterList?: (string) => void,
     onShowMessage?: (FeedbackMessage) => void,
     onInfo?: (element) => any,
     onTitle?: (element) => any,
     onCustomNewButton?: () => any,
+    onFilterList?: (string) => any[],
 }
 
 export default function List(props: ListProps) {
@@ -40,6 +39,8 @@ export default function List(props: ListProps) {
     const [inputSearch, setInputSearch] = useState("")
     const [isActiveItem, setIsActiveItem] = useState(-1)
     const [isOpenDelete, setIsOpenDelete] = useState(false)
+
+    const list = props.onFilterList(inputSearch) ?? []
 
     const handleSetInputSearch = (value) => {
         if (props.autoSearch) {
@@ -102,7 +103,7 @@ export default function List(props: ListProps) {
 
     let classNavigationBar = "bg-slate-50 px-4 py-3 flex items-center justify-between border-t border-gray-200 sm:px-6"
 
-    if (props.list && Math.ceil(props.list.length / perPage) < 2) {
+    if (list && Math.ceil(list.length / perPage) < 2) {
         classNavigationBar = classNavigationBar + " hidden"
     }
 
@@ -177,7 +178,7 @@ export default function List(props: ListProps) {
                     </>
                 )}
 
-                {handlePagination(props.list)?.map((element, index) => (
+                {handlePagination(list)?.map((element, index) => (
                     <ItemList
                         index={index}
                         element={element}
@@ -221,11 +222,11 @@ export default function List(props: ListProps) {
                         Anterior
                     </Button>
 
-                    <span className={subtitle}>{(page + 1) + " de " + (Math.ceil(props.list.length / perPage))}</span>
+                    <span className={subtitle}>{(page + 1) + " de " + (Math.ceil(list.length / perPage))}</span>
 
                     <Button
                         onClick={handlePaginationPlus}
-                        isDisabled={page === (Math.ceil(props.list.length / perPage) - 1)}
+                        isDisabled={page === (Math.ceil(list.length / perPage) - 1)}
                     >
                         Próxima
                     </Button>

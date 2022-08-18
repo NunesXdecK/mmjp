@@ -12,7 +12,6 @@ export default function Companies() {
     const [title, setTitle] = useState("Lista de empresas")
     const [company, setCompany] = useState<Company>(defaultCompany)
     const [companies, setCompanies] = useState<Company[]>([])
-    const [companiesForShow, setCompaniesForShow] = useState<Company[]>([])
 
     const [isFirst, setIsFirst] = useState(true)
     const [isLoading, setIsLoading] = useState(true)
@@ -26,7 +25,6 @@ export default function Companies() {
             event.preventDefault()
         }
         setCompanies([])
-        setCompaniesForShow([])
         setCompany(defaultCompany)
         setIsFirst(true)
         setIsLoading(true)
@@ -52,7 +50,6 @@ export default function Companies() {
             ...companies.slice(index + 1, companies.length),
         ]
         setCompanies(list)
-        setCompaniesForShow(list)
         setIsLoading(false)
         handleShowMessage(feedbackMessage)
     }
@@ -69,7 +66,7 @@ export default function Companies() {
         listItemsFiltered = listItems.filter((element: Company, index) => {
             return element.name.toLowerCase().includes(string.toLowerCase())
         })
-        setCompaniesForShow((old) => listItemsFiltered)
+        return listItemsFiltered
     }
 
     const handleEditClick = async (company) => {
@@ -100,7 +97,6 @@ export default function Companies() {
                 setIsFirst(old => false)
                 if (res.list.length) {
                     setCompanies(res.list)
-                    setCompaniesForShow(res.list)
                 }
                 setIsLoading(false)
             })
@@ -125,7 +121,6 @@ export default function Companies() {
                     autoSearch
                     title={title}
                     isLoading={isLoading}
-                    list={companiesForShow}
                     onSetElement={setCompany}
                     onNewClick={handleNewClick}
                     onEditClick={handleEditClick}

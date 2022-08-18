@@ -11,7 +11,6 @@ export default function Immobiles() {
     const [title, setTitle] = useState("Lista de imóveis")
     const [immobile, setImmobile] = useState<Immobile>(defaultImmobile)
     const [immobiles, setImmobiles] = useState<Immobile[]>([])
-    const [immobilesForShow, setImmobilesForShow] = useState<Immobile[]>([])
 
     const [isFirst, setIsFirst] = useState(true)
     const [isLoading, setIsLoading] = useState(true)
@@ -25,7 +24,6 @@ export default function Immobiles() {
             event.preventDefault()
         }
         setImmobiles([])
-        setImmobilesForShow([])
         setImmobile(defaultImmobile)
         setIsFirst(true)
         setIsLoading(true)
@@ -51,7 +49,6 @@ export default function Immobiles() {
             ...immobiles.slice(index + 1, immobiles.length),
         ]
         setImmobiles(list)
-        setImmobilesForShow(list)
         setIsLoading(false)
         handleShowMessage(feedbackMessage)
     }
@@ -68,7 +65,7 @@ export default function Immobiles() {
         listItemsFiltered = listItems.filter((element: Immobile, index) => {
             return element.name.toLowerCase().includes(string.toLowerCase())
         })
-        setImmobilesForShow((old) => listItemsFiltered)
+        return listItemsFiltered
     }
 
     const handleEditClick = async (immobile) => {
@@ -96,10 +93,8 @@ export default function Immobiles() {
         if (isFirst) {
             fetch("api/immobiles").then((res) => res.json()).then((res) => {
                 setIsFirst(old => false)
-                console.log(res.list)
                 if (res.list.length) {
                     setImmobiles(res.list)
-                    setImmobilesForShow(res.list)
                 }
                 setIsLoading(false)
             })
@@ -124,7 +119,6 @@ export default function Immobiles() {
                     autoSearch
                     title={title}
                     isLoading={isLoading}
-                    list={immobilesForShow}
                     onSetElement={setImmobile}
                     onNewClick={handleNewClick}
                     onEditClick={handleEditClick}

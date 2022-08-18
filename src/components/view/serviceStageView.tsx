@@ -109,8 +109,13 @@ export default function ServiceStageView(props: ServiceStageViewProps) {
                                         )}
                                     </Button>
                                 )}
+                                {serviceStage.status === "FINALIZADO" && (
+                                    <InfoView classNameHolder="w-full" classNameInfo="rounded-md px-3 py-1 bg-green-600 text-white" title="Status" info={serviceStage.status} />
+                                )}
+                                {serviceStage.status === "ARQUIVADO" && (
+                                    <InfoView classNameHolder="w-full" classNameInfo="rounded-md px-3 py-1 bg-orange-600 text-white" title="Status" info={serviceStage.status} />
+                                )}
                                 <InfoView title="Titulo" info={serviceStage.title} />
-                                <InfoView title="Status" info={serviceStage.status} />
                                 <InfoView title="Data" info={handleUTCToDateShow(serviceStage.dateDue.toString())} />
                                 <ScrollDownTransition isOpen={isShowInfo}>
                                     <InfoHolderView

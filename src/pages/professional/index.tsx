@@ -11,7 +11,6 @@ export default function Professionals() {
     const [title, setTitle] = useState("Lista de profissionais")
     const [professional, setProfessional] = useState<Professional>(defaultProfessional)
     const [professionals, setProfessionals] = useState<Professional[]>([])
-    const [professionalsForShow, setProfessionalsForShow] = useState<Professional[]>([])
 
     const [isFirst, setIsFirst] = useState(true)
     const [isLoading, setIsLoading] = useState(true)
@@ -25,7 +24,6 @@ export default function Professionals() {
             event.preventDefault()
         }
         setProfessionals([])
-        setProfessionalsForShow([])
         setProfessional(defaultProfessional)
         setIsFirst(true)
         setIsLoading(true)
@@ -51,7 +49,6 @@ export default function Professionals() {
             ...professionals.slice(index + 1, professionals.length),
         ]
         setProfessionals(list)
-        setProfessionalsForShow(list)
         setIsLoading(false)
         handleShowMessage(feedbackMessage)
     }
@@ -68,7 +65,7 @@ export default function Professionals() {
         listItemsFiltered = listItems.filter((element: Professional, index) => {
             return element.title.toLowerCase().includes(string.toLowerCase())
         })
-        setProfessionalsForShow((old) => listItemsFiltered)
+        return listItemsFiltered
     }
 
     const handleEditClick = async (professional) => {
@@ -98,7 +95,6 @@ export default function Professionals() {
                 setIsFirst(old => false)
                 if (res.list.length) {
                     setProfessionals(res.list)
-                    setProfessionalsForShow(res.list)
                 }
                 setIsLoading(false)
             })
@@ -123,7 +119,6 @@ export default function Professionals() {
                     autoSearch
                     title={title}
                     isLoading={isLoading}
-                    list={professionalsForShow}
                     onNewClick={handleNewClick}
                     onEditClick={handleEditClick}
                     onSetElement={setProfessional}

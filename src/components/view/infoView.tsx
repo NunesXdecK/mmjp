@@ -1,16 +1,21 @@
 interface InfoViewProps {
     id?: string,
-    title?: string,
     info?: string,
-    classNameTitle?: string,
+    title?: string,
     classNameInfo?: string,
+    classNameTitle?: string,
+    classNameHolder?: string,
 }
 
 export default function InfoView(props: InfoViewProps) {
 
     let classNameTitle = "font-semibold"
     let classNameInfo = ""
+    let classNameHolder = ""
 
+    if (props.classNameHolder) {
+        classNameHolder = classNameHolder + " " + props.classNameHolder
+    }
     if (props.classNameTitle) {
         classNameTitle = classNameTitle + " " + props.classNameTitle
     }
@@ -21,10 +26,12 @@ export default function InfoView(props: InfoViewProps) {
     return (
         <>
             {props.info?.length > 0 && (
-                <p className={classNameInfo}>
-                    {props.title?.length > 0 && (<span className={classNameTitle}>{props.title}: </span>)}
-                    {props.info}
-                </p>
+                <div className={classNameHolder}>
+                    <span className={classNameInfo}>
+                        {props.title?.length > 0 && (<span className={classNameTitle}>{props.title}: </span>)}
+                        {props.info}
+                    </span>
+                </div>
             )}
         </>
     )
