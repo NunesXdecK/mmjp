@@ -48,7 +48,6 @@ export default function SelectPersonForm(props: SelectPersonFormProps) {
     const [person, setPerson] = useState<Person>(defaultPerson)
 
     const [persons, setPersons] = useState<Person[]>([])
-    const [personsForShow, setPersonsForShow] = useState<Person[]>([])
 
     const handleNewClick = () => {
         setIsRegister(true)
@@ -60,7 +59,6 @@ export default function SelectPersonForm(props: SelectPersonFormProps) {
             event.preventDefault()
         }
         setPersons([])
-        setPersonsForShow([])
         setPerson(defaultPerson)
         setIsFirst(true)
         setIsRegister(false)
@@ -72,7 +70,7 @@ export default function SelectPersonForm(props: SelectPersonFormProps) {
         listItemsFiltered = listItems.filter((element: Person, index) => {
             return element.name.toLowerCase().includes(string.toLowerCase())
         })
-        setPersonsForShow((old) => listItemsFiltered)
+        return listItemsFiltered
     }
 
     const handleAfterSave = (feedbackMessage: FeedbackMessage, person) => {
@@ -148,7 +146,6 @@ export default function SelectPersonForm(props: SelectPersonFormProps) {
                 setIsFirst(old => false)
                 if (res.list.length) {
                     setPersons(res.list)
-                    setPersonsForShow(res.list)
                 }
                 if (props.onSetLoading) {
                     props.onSetLoading(false)
@@ -272,7 +269,6 @@ export default function SelectPersonForm(props: SelectPersonFormProps) {
                                     haveNew
                                     canSelect
                                     autoSearch
-                                    list={personsForShow}
                                     onSelectClick={handleAdd}
                                     title={"Lista de pessoas"}
                                     isLoading={props.isLoading}

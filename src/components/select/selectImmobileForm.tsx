@@ -47,7 +47,6 @@ export default function SelectImmobileForm(props: SelectImmobileFormProps) {
     const [immobile, setImmobile] = useState<Immobile>(defaultImmobile)
 
     const [immobiles, setImmobiles] = useState<Immobile[]>([])
-    const [immobilesForShow, setImmobilesForShow] = useState<Immobile[]>([])
 
     const handleNewClick = () => {
         setIsRegister(true)
@@ -59,7 +58,6 @@ export default function SelectImmobileForm(props: SelectImmobileFormProps) {
             event.preventDefault()
         }
         setImmobiles([])
-        setImmobilesForShow([])
         setImmobile(defaultImmobile)
         setIsFirst(true)
         setIsRegister(false)
@@ -71,7 +69,7 @@ export default function SelectImmobileForm(props: SelectImmobileFormProps) {
         listItemsFiltered = listItems.filter((element: Immobile, index) => {
             return element.name.toLowerCase().includes(string.toLowerCase())
         })
-        setImmobilesForShow((old) => listItemsFiltered)
+        return listItemsFiltered
     }
 
     const handleAfterSave = (feedbackMessage: FeedbackMessage, immobile) => {
@@ -148,7 +146,6 @@ export default function SelectImmobileForm(props: SelectImmobileFormProps) {
                 setIsFirst(old => false)
                 if (res.list.length) {
                     setImmobiles(res.list)
-                    setImmobilesForShow(res.list)
                 }
                 if (props.onSetLoading) {
                     props.onSetLoading(false)
@@ -259,7 +256,6 @@ export default function SelectImmobileForm(props: SelectImmobileFormProps) {
                                     haveNew
                                     canSelect
                                     autoSearch
-                                    list={immobilesForShow}
                                     onSelectClick={handleAdd}
                                     title={"Lista de imóveis"}
                                     isLoading={props.isLoading}

@@ -47,7 +47,6 @@ export default function SelectProfessionalForm(props: SelectProfessionalFormProp
     const [professional, setProfessional] = useState<Professional>(defaultProfessional)
 
     const [professionals, setProfessionals] = useState<Professional[]>([])
-    const [professionalsForShow, setProfessionalsForShow] = useState<Professional[]>([])
 
     const handleNewClick = () => {
         setIsRegister(true)
@@ -59,7 +58,6 @@ export default function SelectProfessionalForm(props: SelectProfessionalFormProp
             event.preventDefault()
         }
         setProfessionals([])
-        setProfessionalsForShow([])
         setProfessional(defaultProfessional)
         setIsFirst(true)
         setIsRegister(false)
@@ -71,7 +69,7 @@ export default function SelectProfessionalForm(props: SelectProfessionalFormProp
         listItemsFiltered = listItems.filter((element: Professional, index) => {
             return element.title.toLowerCase().includes(string.toLowerCase())
         })
-        setProfessionalsForShow((old) => listItemsFiltered)
+        return listItemsFiltered
     }
 
     const handleAfterSave = (feedbackMessage: FeedbackMessage, professional) => {
@@ -148,7 +146,6 @@ export default function SelectProfessionalForm(props: SelectProfessionalFormProp
                 setIsFirst(old => false)
                 if (res.list.length) {
                     setProfessionals(res.list)
-                    setProfessionalsForShow(res.list)
                 }
                 if (props.onSetLoading) {
                     props.onSetLoading(false)
@@ -269,7 +266,6 @@ export default function SelectProfessionalForm(props: SelectProfessionalFormProp
                                     onSelectClick={handleAdd}
                                     isLoading={props.isLoading}
                                     onNewClick={handleNewClick}
-                                    list={professionalsForShow}
                                     onFilterList={handleFilterList}
                                     title={"Lista de profissionais"}
                                     onTitle={(element: Professional) => {

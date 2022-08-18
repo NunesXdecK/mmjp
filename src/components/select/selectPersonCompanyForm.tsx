@@ -53,7 +53,6 @@ export default function SelectPersonCompanyForm(props: SelectPersonCompanyFormPr
     const [company, setCompany] = useState<Person>(defaultCompany)
 
     const [personsAndCompanies, setPersonsAndCompanies] = useState<Person[]>([])
-    const [personsAndCompaniesForShow, setPersonsAndCompaniesForShow] = useState<Person[]>([])
 
     const handleNewClickPerson = () => {
         setIsRegisterCompany(false)
@@ -72,7 +71,6 @@ export default function SelectPersonCompanyForm(props: SelectPersonCompanyFormPr
             event.preventDefault()
         }
         setPersonsAndCompanies([])
-        setPersonsAndCompaniesForShow([])
         setPerson(defaultPerson)
         setCompany(defaultCompany)
         setIsFirst(true)
@@ -101,7 +99,7 @@ export default function SelectPersonCompanyForm(props: SelectPersonCompanyFormPr
             }
             return true
         })
-        setPersonsAndCompaniesForShow((old) => listItemsFiltered)
+        return listItemsFiltered
     }
 
     const handleAfterSave = (feedbackMessage: FeedbackMessage, element) => {
@@ -184,7 +182,6 @@ export default function SelectPersonCompanyForm(props: SelectPersonCompanyFormPr
                 setIsFirst(old => false)
                 if (res.list.length) {
                     setPersonsAndCompanies(res.list)
-                    setPersonsAndCompaniesForShow(res.list)
                 }
                 if (props.onSetLoading) {
                     props.onSetLoading(false)
@@ -325,7 +322,6 @@ export default function SelectPersonCompanyForm(props: SelectPersonCompanyFormPr
                                     onSelectClick={handleAdd}
                                     isLoading={props.isLoading}
                                     onFilterList={handleFilterList}
-                                    list={personsAndCompaniesForShow}
                                     title={"Lista de pessoas e empresas"}
                                     onCustomNewButton={() => {
                                         return (
