@@ -21,6 +21,7 @@ import { handleNewDateToUTC, handleUTCToDateShow } from "../../util/dateUtils";
 import { defaultProject, Immobile, Project, Service, ServicePayment, ServiceStage } from "../../interfaces/objectInterfaces";
 import { handleIsEqual, handleProjectValidationForDB, handleServicesValidationForDB } from "../../util/validationUtil";
 import { defaultElementFromBase, ElementFromBase, handlePrepareImmobileForDB, handlePrepareProjectForDB, handlePrepareServiceForDB } from "../../util/converterUtil";
+import { COMPANY_COLLECTION_NAME, PERSON_COLLECTION_NAME } from "../../db/firebaseDB";
 
 interface ProjectFormProps {
     title?: string,
@@ -313,10 +314,12 @@ export default function ProjectForm(props: ProjectFormProps) {
                         statusFinal = "DESMEMBRADO"
                     }
                 }
-                immobilesFinal = [...immobilesFinal, { ...immobile, status: statusFinal }]
+                immobilesFinal = [...immobilesFinal, {
+                    ...immobile,
+                    status: statusFinal
+                }]
             })
         })
-        console.log(immobilesFinal)
         try {
             if (immobilesFinal.length > 0) {
                 await Promise.all(
@@ -377,7 +380,6 @@ export default function ProjectForm(props: ProjectFormProps) {
         setServices([...servicesLastWithId])
         setServicesOriginal([...servicesLastWithId])
         if (status) {
-            console.log("entrou")
             await handleSaveImmobilesInner(servicesForValid, status)
         }
         const feedbackMessage: FeedbackMessage = { messages: ["Sucesso!"], messageType: "SUCCESS" }

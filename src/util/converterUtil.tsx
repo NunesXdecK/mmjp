@@ -1,6 +1,7 @@
 import { handleNewDateToUTC, handleUTCToDateShow } from "./dateUtils"
 import { defaultPerson, defaultAddress, defaultProfessional, defaultImmobile, Person, Address, Professional, Immobile, Company, defaultCompany, Project, ServiceStage, ServicePayment, Service } from "../interfaces/objectInterfaces"
 import { handleMaskCNPJ, handleMaskCPF, handleMaskTelephone, handleMountMask, handleMountNumberCurrency, handleRemoveCEPMask, handleRemoveCNPJMask, handleRemoveCPFMask, handleRemoveCurrencyMask, handleRemoveDateMask, handleRemoveTelephoneMask, handleValueStringToFloat } from "./maskUtil"
+import { COMPANY_COLLECTION_NAME, PERSON_COLLECTION_NAME } from "../db/firebaseDB"
 
 export interface ElementFromBase {
     "Nome Prop."?: string,
@@ -239,6 +240,19 @@ export const handlePrepareImmobileForDB = (immobile: Immobile) => {
                     owners = [...owners, { id: element.id, cpf: "" }]
                 } else if ("cnpj" in element) {
                     owners = [...owners, { id: element.id, cnpj: "" }]
+                }
+            } else if (element?._key?.path?.segments[5]?.length
+                && element?._key?.path?.segments[6]?.length) {
+                let database = element?._key?.path?.segments[5] ?? ""
+                let id = element?._key?.path?.segments[6] ?? ""
+                if (database?.includes(PERSON_COLLECTION_NAME)) {
+                    if (id?.length) {
+                        owners = [...owners, { id: id, cpf: "" }]
+                    }
+                } else if (database?.includes(COMPANY_COLLECTION_NAME)) {
+                    if (id?.length) {
+                        owners = [...owners, { id: id, cnpj: "" }]
+                    }
                 }
             }
         })

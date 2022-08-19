@@ -49,14 +49,12 @@ export default function Index() {
         if (isFirst) {
             fetch("api/serviceStages").then((res) => res.json()).then((res) => {
                 setIsFirst(old => false)
-                console.log("entrou")
                 if (res.list.length) {
                     setServiceStages(res.list)
                 }
                 setIsLoading(false)
             })
             fetch("api/servicePayments").then((res) => res.json()).then((res) => {
-                console.log("entrou")
                 setIsFirst(old => false)
                 if (res.list.length) {
                     setServicePayments(res.list)

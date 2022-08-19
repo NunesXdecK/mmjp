@@ -20,24 +20,12 @@ export default async function handler(req, res) {
                     let docRefsForDB = []
                     if (data.owners?.length > 0) {
                         data.owners?.map((element, index) => {
-                            if (element && (element.id || element.path)) {
-                                console.log(element.id)
-                                console.log(element.path)
+                            if (element && "id" in element && element.id.length) {
                                 let docRef = null
                                 if ("cpf" in element) {
                                     docRef = doc(personCollection, element.id)
                                 } else if ("cnpj" in element) {
                                     docRef = doc(companyCollection, element.id)
-                                } else if (element.path?.includes(PERSON_COLLECTION_NAME)) {
-                                    let array = element.split("/")
-                                    if (array[1]?.length) {
-                                        docRef = doc(personCollection, array[1])
-                                    }
-                                } else if (element.path?.includes(COMPANY_COLLECTION_NAME)) {
-                                    let array = element.split("/")
-                                    if (array[1]?.length) {
-                                        docRef = doc(companyCollection, array[1])
-                                    }
                                 }
                                 if (docRef) {
                                     docRefsForDB = [...docRefsForDB, docRef]
