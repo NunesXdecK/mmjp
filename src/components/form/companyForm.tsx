@@ -128,18 +128,16 @@ export default function CompanyForm(props: CompanyFormProps) {
         }
         setIsLoading(true)
         let companyFromDB = { ...company }
-        if (handleDiference()) {
-            let res = await handleSaveInner(company, true)
-            if (res.status === "ERROR") {
-                const feedbackMessage: FeedbackMessage = { messages: ["Algo deu errado!"], messageType: "ERROR" }
-                handleShowMessage(feedbackMessage)
-                setIsLoading(false)
-                return
-            }
-            setCompany({ ...company, id: res.id })
-            setCompanyOriginal({ ...company, id: res.id })
-            companyFromDB = { ...res.company }
+        let res = await handleSaveInner(company, true)
+        if (res.status === "ERROR") {
+            const feedbackMessage: FeedbackMessage = { messages: ["Algo deu errado!"], messageType: "ERROR" }
+            handleShowMessage(feedbackMessage)
+            setIsLoading(false)
+            return
         }
+        setCompany({ ...company, id: res.id })
+        setCompanyOriginal({ ...company, id: res.id })
+        companyFromDB = { ...res.company }
         const feedbackMessage: FeedbackMessage = { messages: ["Sucesso!"], messageType: "SUCCESS" }
         handleShowMessage(feedbackMessage)
         if (isMultiple) {
@@ -155,6 +153,7 @@ export default function CompanyForm(props: CompanyFormProps) {
         return (
             <ActionButtonsForm
                 isLeftOn
+                isRightOn
                 isForBackControl
                 isLoading={isLoading}
                 isDisabled={!isFormValid || isAutoSaving}

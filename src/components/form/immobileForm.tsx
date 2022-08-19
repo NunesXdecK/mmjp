@@ -137,18 +137,16 @@ export default function ImmobileForm(props: ImmobileFormProps) {
         }
         setIsLoading(true)
         let immobileFromDB = { ...immobile }
-        if (handleDiference()) {
-            let res = await handleSaveInner(immobile, true)
-            if (res.status === "ERROR") {
-                const feedbackMessage: FeedbackMessage = { messages: ["Algo deu errado!"], messageType: "ERROR" }
-                handleShowMessage(feedbackMessage)
-                setIsLoading(false)
-                return
-            }
-            setImmobile({ ...immobile, id: res.id })
-            setImmobileOriginal({ ...immobile, id: res.id })
-            immobileFromDB = { ...res.immobile }
+        let res = await handleSaveInner(immobile, true)
+        if (res.status === "ERROR") {
+            const feedbackMessage: FeedbackMessage = { messages: ["Algo deu errado!"], messageType: "ERROR" }
+            handleShowMessage(feedbackMessage)
+            setIsLoading(false)
+            return
         }
+        setImmobile({ ...immobile, id: res.id })
+        setImmobileOriginal({ ...immobile, id: res.id })
+        immobileFromDB = { ...res.immobile }
         const feedbackMessage: FeedbackMessage = { messages: ["Sucesso!"], messageType: "SUCCESS" }
         handleShowMessage(feedbackMessage)
         if (isMultiple) {
@@ -164,6 +162,7 @@ export default function ImmobileForm(props: ImmobileFormProps) {
         return (
             <ActionButtonsForm
                 isLeftOn
+                isRightOn
                 isForBackControl
                 isDisabled={!isFormValid || isAutoSaving}
                 rightWindowText="Deseja confirmar as alterações?"

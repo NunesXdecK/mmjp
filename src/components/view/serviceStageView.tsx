@@ -123,6 +123,8 @@ export default function ServiceStageView(props: ServiceStageViewProps) {
                                         hidePaddingMargin
                                     >
                                         <InfoView title="Descrição" info={serviceStage.description} />
+                                        <InfoView title="Data criação" info={handleUTCToDateShow(serviceStage.dateInsertUTC.toString())} />
+                                        {serviceStage.dateLastUpdateUTC > 0 && <InfoView title="Data atualização" info={handleUTCToDateShow(serviceStage.dateLastUpdateUTC.toString())} />}
                                         {props.dataInside && handlePutData()}
                                     </InfoHolderView>
                                 </ScrollDownTransition>

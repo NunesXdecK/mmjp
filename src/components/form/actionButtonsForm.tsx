@@ -14,6 +14,7 @@ interface ActionButtonsFormProps {
     rightWindowText?: string,
     rightButtonText?: string,
     isLeftOn?: boolean,
+    isRightOn?: boolean,
     isLoading?: boolean,
     isDisabled?: boolean,
     isForOpenLeft?: boolean,
@@ -109,7 +110,7 @@ export default function ActionButtonsForm(props: ActionButtonsFormProps) {
                                     <span className={subtitle}>{props.centerText}</span>
                                 )}
 
-                                {props.onRightClick && (
+                                {props.isRightOn && props.onRightClick && (
                                     <Button
                                         isLoading={props.isLoading}
                                         isDisabled={props.isDisabled || props.isLoading}

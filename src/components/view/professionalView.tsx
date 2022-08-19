@@ -7,6 +7,7 @@ import PlaceholderItemList from "../list/placeholderItemList"
 import ScrollDownTransition from "../animation/scrollDownTransition"
 import { ChevronDownIcon, ChevronRightIcon } from "@heroicons/react/outline"
 import { defaultProfessional, Professional } from "../../interfaces/objectInterfaces"
+import { handleUTCToDateShow } from "../../util/dateUtils"
 
 interface ProfessionalViewProps {
     id?: string,
@@ -97,6 +98,8 @@ export default function ProfessionalView(props: ProfessionalViewProps) {
                                     >
                                         <InfoView title="CREA" info={professional.creaNumber} />
                                         <InfoView title="Código credencial" info={professional.credentialCode} />
+                                        <InfoView title="Data criação" info={handleUTCToDateShow(professional.dateInsertUTC.toString())} />
+                                        {professional.dateLastUpdateUTC > 0 && <InfoView title="Data atualização" info={handleUTCToDateShow(professional.dateLastUpdateUTC.toString())} />}
                                         {props.dataInside && handlePutData()}
                                     </InfoHolderView>
                                 </ScrollDownTransition>

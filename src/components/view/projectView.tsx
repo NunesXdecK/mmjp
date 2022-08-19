@@ -180,6 +180,8 @@ export default function ProjectView(props: ProjectViewProps) {
                                         hideBorder
                                         hidePaddingMargin
                                     >
+                                        <InfoView title="Data criação" info={handleUTCToDateShow(project.dateInsertUTC.toString())} />
+                                        {project.dateLastUpdateUTC > 0 && <InfoView title="Data atualização" info={handleUTCToDateShow(project.dateLastUpdateUTC.toString())} />}
                                         {props.dataInside && handlePutData()}
                                     </InfoHolderView>
                                 </ScrollDownTransition>

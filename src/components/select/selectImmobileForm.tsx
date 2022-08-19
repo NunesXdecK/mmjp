@@ -142,7 +142,7 @@ export default function SelectImmobileForm(props: SelectImmobileFormProps) {
 
     useEffect(() => {
         if (isOpen && isFirst) {
-            fetch("api/immobiles").then((res) => res.json()).then((res) => {
+            fetch("api/immobilesNormal").then((res) => res.json()).then((res) => {
                 setIsFirst(old => false)
                 if (res.list.length) {
                     setImmobiles(res.list)

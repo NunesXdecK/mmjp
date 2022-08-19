@@ -143,18 +143,16 @@ export default function ProfessionalForm(props: ProfessionalFormProps) {
         }
         setIsLoading(true)
         let professionalFromDB = { ...professionalForValid }
-        if (handleDiference()) {
-            let res = await handleSaveInner(professionalForValid, true)
-            if (res.status === "ERROR") {
-                const feedbackMessage: FeedbackMessage = { messages: ["Algo deu errado!"], messageType: "ERROR" }
-                handleShowMessage(feedbackMessage)
-                setIsLoading(false)
-                return
-            }
-            setProfessional({ ...professionalForValid, id: res.id })
-            setProfessionalOriginal({ ...professionalForValid, id: res.id })
-            professionalFromDB = { ...res.professional }
+        let res = await handleSaveInner(professionalForValid, true)
+        if (res.status === "ERROR") {
+            const feedbackMessage: FeedbackMessage = { messages: ["Algo deu errado!"], messageType: "ERROR" }
+            handleShowMessage(feedbackMessage)
+            setIsLoading(false)
+            return
         }
+        setProfessional({ ...professionalForValid, id: res.id })
+        setProfessionalOriginal({ ...professionalForValid, id: res.id })
+        professionalFromDB = { ...res.professional }
         const feedbackMessage: FeedbackMessage = { messages: ["Sucesso!"], messageType: "SUCCESS" }
         handleShowMessage(feedbackMessage)
         if (isMultiple) {
@@ -167,28 +165,30 @@ export default function ProfessionalForm(props: ProfessionalFormProps) {
     }
 
     const handleActionBar = () => {
-        return (<ActionButtonsForm
-            isLeftOn
-            isForBackControl
-            isDisabled={!isFormValid || isAutoSaving}
-            rightWindowText="Deseja confirmar as alterações?"
-            isForOpenLeft={professional.id !== "" && handleDiference()}
-            isForOpenRight={professional.id !== "" && handleDiference()}
-            rightButtonText={professional.id === "" ? "Salvar" : "Editar"}
-            leftWindowText="Dejesa realmente voltar e descartar as alterações?"
-            onLeftClick={(event) => {
-                if (event) {
-                    event.preventDefault()
-                }
-                handleOnBack()
-            }}
-            onRightClick={(event) => {
-                if (event) {
-                    event.preventDefault()
-                }
-                handleSave()
-            }}
-        />
+        return (
+            <ActionButtonsForm
+                isLeftOn
+                isRightOn
+                isForBackControl
+                isDisabled={!isFormValid || isAutoSaving}
+                rightWindowText="Deseja confirmar as alterações?"
+                isForOpenLeft={professional.id !== "" && handleDiference()}
+                isForOpenRight={professional.id !== "" && handleDiference()}
+                rightButtonText={professional.id === "" ? "Salvar" : "Editar"}
+                leftWindowText="Dejesa realmente voltar e descartar as alterações?"
+                onLeftClick={(event) => {
+                    if (event) {
+                        event.preventDefault()
+                    }
+                    handleOnBack()
+                }}
+                onRightClick={(event) => {
+                    if (event) {
+                        event.preventDefault()
+                    }
+                    handleSave()
+                }}
+            />
         )
     }
 

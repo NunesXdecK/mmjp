@@ -10,6 +10,7 @@ import { handleMountNumberCurrency } from "../../util/maskUtil"
 import ScrollDownTransition from "../animation/scrollDownTransition"
 import { ChevronDownIcon, ChevronRightIcon } from "@heroicons/react/outline"
 import { defaultImmobile, Immobile } from "../../interfaces/objectInterfaces"
+import { handleUTCToDateShow } from "../../util/dateUtils"
 
 interface ImmobileViewProps {
     id?: string,
@@ -143,6 +144,8 @@ export default function ImmobileView(props: ImmobileViewProps) {
                                         <InfoView title="Comarca" info={immobile.comarca} />
                                         <InfoView title="Codigo da comarca" info={immobile.comarcaCode} />
                                         <InfoView title="Matricula" info={immobile.registration} />
+                                        <InfoView title="Data criação" info={handleUTCToDateShow(immobile.dateInsertUTC.toString())} />
+                                        {immobile.dateLastUpdateUTC > 0 && <InfoView title="Data atualização" info={handleUTCToDateShow(immobile.dateLastUpdateUTC.toString())} />}
                                         {props.dataInside && handlePutData()}
                                     </InfoHolderView>
                                 </ScrollDownTransition>

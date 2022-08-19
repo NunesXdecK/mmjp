@@ -18,9 +18,9 @@ import InputTextAutoComplete from "../inputText/inputTextAutocomplete";
 import SelectPersonCompanyForm from "../select/selectPersonCompanyForm";
 import FeedbackMessageSaveText from "../modal/feedbackMessageSavingText";
 import { handleNewDateToUTC, handleUTCToDateShow } from "../../util/dateUtils";
-import { defaultProject, Project, Service, ServicePayment, ServiceStage } from "../../interfaces/objectInterfaces";
+import { defaultProject, Immobile, Project, Service, ServicePayment, ServiceStage } from "../../interfaces/objectInterfaces";
 import { handleIsEqual, handleProjectValidationForDB, handleServicesValidationForDB } from "../../util/validationUtil";
-import { defaultElementFromBase, ElementFromBase, handlePrepareProjectForDB, handlePrepareServiceForDB } from "../../util/converterUtil";
+import { defaultElementFromBase, ElementFromBase, handlePrepareImmobileForDB, handlePrepareProjectForDB, handlePrepareServiceForDB } from "../../util/converterUtil";
 
 interface ProjectFormProps {
     title?: string,
@@ -297,6 +297,48 @@ export default function ProjectForm(props: ProjectFormProps) {
         return res
     }
 
+    const handleSaveImmobilesInner = async (services, status?: "ORÇAMENTO" | "NORMAL" | "ARQUIVADO" | "FINALIZADO") => {
+        let res = { status: "ERROR", services: [] }
+        let immobilesFinal = []
+        services.map((element: Service, index) => {
+            const isUnion = element.immobilesOrigin?.length > element.immobilesTarget?.length
+            const isDismemberment = element.immobilesTarget?.length > element.immobilesOrigin?.length
+            element.immobilesOrigin?.map((immobile: Immobile, index) => {
+                let statusFinal = "NORMAL"
+                if (status === "FINALIZADO") {
+                    if (isUnion) {
+                        statusFinal = "UNIFICADO"
+                    }
+                    if (isDismemberment) {
+                        statusFinal = "DESMEMBRADO"
+                    }
+                }
+                immobilesFinal = [...immobilesFinal, { ...immobile, status: statusFinal }]
+            })
+        })
+        console.log(immobilesFinal)
+        try {
+            if (immobilesFinal.length > 0) {
+                await Promise.all(
+                    immobilesFinal.map(async (element: Immobile, index) => {
+                        let immobileForDB = handlePrepareImmobileForDB(element)
+                        const saveRes = await fetch("api/immobile", {
+                            method: "POST",
+                            body: JSON.stringify({
+                                history: true,
+                                data: immobileForDB,
+                                token: "tokenbemseguro",
+                            }),
+                        }).then((res) => res.json())
+                    }))
+            }
+            res = { ...res, status: "SUCCESS" }
+        } catch (e) {
+            console.error("Error adding document: ", e)
+        }
+        return res
+    }
+
     const handleSave = async (status?: "ORÇAMENTO" | "NORMAL" | "ARQUIVADO" | "FINALIZADO") => {
         if (isAutoSaving) {
             return
@@ -334,6 +376,10 @@ export default function ProjectForm(props: ProjectFormProps) {
         setServicesID(resServices.services)
         setServices([...servicesLastWithId])
         setServicesOriginal([...servicesLastWithId])
+        if (status) {
+            console.log("entrou")
+            await handleSaveImmobilesInner(servicesForValid, status)
+        }
         const feedbackMessage: FeedbackMessage = { messages: ["Sucesso!"], messageType: "SUCCESS" }
         handleShowMessage(feedbackMessage)
         if (!status) {
@@ -351,7 +397,6 @@ export default function ProjectForm(props: ProjectFormProps) {
     const handleCenterActionsButtons = () => {
         return (
             <div className="px-2 w-full flex flex-col sm:flex-row gap-2 items-end justify-end">
-
                 {(project.status === "ARQUIVADO" || project.status === "FINALIZADO") && (
                     <Button
                         type="button"
@@ -371,7 +416,6 @@ export default function ProjectForm(props: ProjectFormProps) {
                         Reativar projeto
                     </Button>
                 )}
-
                 {(project.status === "ORÇAMENTO" || project.status === "NORMAL") && (
                     <Button
                         type="button"
@@ -471,6 +515,7 @@ export default function ProjectForm(props: ProjectFormProps) {
                 isLoading={isLoading}
                 isDisabled={!isFormValid}
                 centerChild={handleCenterActionsButtons}
+                isRightOn={project.status !== "FINALIZADO" && project.status !== "ARQUIVADO"}
                 rightWindowText="Deseja confirmar as alterações?"
                 isForOpenLeft={project.id !== "" && handleDiference()}
                 isForOpenRight={project.id !== "" && handleDiference()}
@@ -491,8 +536,6 @@ export default function ProjectForm(props: ProjectFormProps) {
             />
         )
     }
-
-
     const handlePrintActionBar = () => {
         return (
             <ActionButtonsForm

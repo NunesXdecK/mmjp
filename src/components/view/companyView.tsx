@@ -9,6 +9,7 @@ import ScrollDownTransition from "../animation/scrollDownTransition"
 import { handleMaskCNPJ, handleMaskTelephone } from "../../util/maskUtil"
 import { defaultCompany, Company } from "../../interfaces/objectInterfaces"
 import { ChevronDownIcon, ChevronRightIcon } from "@heroicons/react/outline"
+import { handleUTCToDateShow } from "../../util/dateUtils"
 
 interface CompanyViewProps {
     id?: string,
@@ -115,9 +116,11 @@ export default function CompanyView(props: CompanyViewProps) {
                                                 <InfoView title="Telefones" info=" " />
                                                 {company.telephones?.map((element, index) => (
                                                     <InfoView key={index + element} title="" info={handleMaskTelephone(element)} />
-                                                ))}
+                                                    ))}
                                             </>
                                         )}
+                                        <InfoView title="Data criação" info={handleUTCToDateShow(company.dateInsertUTC.toString())} />
+                                        {company.dateLastUpdateUTC > 0 && <InfoView title="Data atualização" info={handleUTCToDateShow(company.dateLastUpdateUTC.toString())} />}
                                         {props.dataInside && handlePutData()}
                                     </InfoHolderView>
                                 </ScrollDownTransition>

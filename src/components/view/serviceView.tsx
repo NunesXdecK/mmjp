@@ -211,6 +211,8 @@ export default function ServiceView(props: ServiceViewProps) {
                                         hideBorder
                                         hidePaddingMargin
                                     >
+                                        <InfoView title="Data criação" info={handleUTCToDateShow(service.dateInsertUTC.toString())} />
+                                        {service.dateLastUpdateUTC > 0 && <InfoView title="Data atualização" info={handleUTCToDateShow(service.dateLastUpdateUTC.toString())} />}
                                         {props.dataInside && handlePutData()}
                                     </InfoHolderView>
                                 </ScrollDownTransition>

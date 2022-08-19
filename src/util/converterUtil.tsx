@@ -246,7 +246,7 @@ export const handlePrepareImmobileForDB = (immobile: Immobile) => {
     immobile = {
         ...immobile,
         owners: owners,
-        address: { ...immobile.address, cep: handleRemoveCEPMask(immobile.address.cep) }
+        address: { ...immobile.address, cep: handleRemoveCEPMask(immobile.address?.cep) }
     }
     return immobile
 }

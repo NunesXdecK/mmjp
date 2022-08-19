@@ -8,6 +8,7 @@ import ScrollDownTransition from "../animation/scrollDownTransition"
 import { handleMaskCPF, handleMaskTelephone } from "../../util/maskUtil"
 import { defaultPerson, Person } from "../../interfaces/objectInterfaces"
 import { ChevronDownIcon, ChevronRightIcon } from "@heroicons/react/outline"
+import { handleUTCToDateShow } from "../../util/dateUtils"
 
 interface PersonViewProps {
     id?: string,
@@ -119,6 +120,8 @@ export default function PersonView(props: PersonViewProps) {
                                                 ))}
                                             </>
                                         )}
+                                        <InfoView title="Data criação" info={handleUTCToDateShow(person.dateInsertUTC.toString())} />
+                                        {person.dateLastUpdateUTC > 0 && <InfoView title="Data atualização" info={handleUTCToDateShow(person.dateLastUpdateUTC.toString())} />}
                                         {props.dataInside && handlePutData()}
                                     </InfoHolderView>
                                 </ScrollDownTransition>

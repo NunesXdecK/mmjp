@@ -133,18 +133,16 @@ export default function PersonForm(props: PersonFormProps) {
         }
         setIsLoading(true)
         let personFromDB = { ...person }
-        if (handleDiference()) {
-            let res = await handleSaveInner(person, true)
-            if (res.status === "ERROR") {
-                const feedbackMessage: FeedbackMessage = { messages: ["Algo deu errado!"], messageType: "ERROR" }
-                handleShowMessage(feedbackMessage)
-                setIsLoading(false)
-                return
-            }
-            setPerson({ ...person, id: res.id })
-            setPersonOriginal({ ...person, id: res.id })
-            personFromDB = { ...res.person }
+        let res = await handleSaveInner(person, true)
+        if (res.status === "ERROR") {
+            const feedbackMessage: FeedbackMessage = { messages: ["Algo deu errado!"], messageType: "ERROR" }
+            handleShowMessage(feedbackMessage)
+            setIsLoading(false)
+            return
         }
+        setPerson({ ...person, id: res.id })
+        setPersonOriginal({ ...person, id: res.id })
+        personFromDB = { ...res.person }
         const feedbackMessage: FeedbackMessage = { messages: ["Sucesso!"], messageType: "SUCCESS" }
         handleShowMessage(feedbackMessage)
         if (isMultiple) {
@@ -160,6 +158,7 @@ export default function PersonForm(props: PersonFormProps) {
         return (
             <ActionButtonsForm
                 isLeftOn
+                isRightOn
                 isForBackControl
                 isLoading={isLoading}
                 isDisabled={!isFormValid || isAutoSaving}

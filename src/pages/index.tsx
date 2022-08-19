@@ -7,9 +7,11 @@ import Layout from "../components/layout/layout"
 import FormRowColumn from "../components/form/formRowColumn"
 import { ServicePayment, ServiceStage } from "../interfaces/objectInterfaces"
 import FeedbackMessageModal, { defaultFeedbackMessage, FeedbackMessage } from "../components/modal/feedbackMessageModal"
+import ServiceStageView from "../components/view/serviceStageView"
+import ServicePaymentView from "../components/view/servicePaymentView"
 
 export default function Index() {
-    const [isFirst, setIsFirst] = useState(false)
+    const [isFirst, setIsFirst] = useState(true)
     const [isLoading, setIsLoading] = useState(false)
     const [isFeedbackOpen, setIsFeedbackOpen] = useState(false)
     const [serviceStages, setServiceStages] = useState<ServiceStage[]>([])
@@ -47,12 +49,14 @@ export default function Index() {
         if (isFirst) {
             fetch("api/serviceStages").then((res) => res.json()).then((res) => {
                 setIsFirst(old => false)
+                console.log("entrou")
                 if (res.list.length) {
                     setServiceStages(res.list)
                 }
                 setIsLoading(false)
             })
             fetch("api/servicePayments").then((res) => res.json()).then((res) => {
+                console.log("entrou")
                 setIsFirst(old => false)
                 if (res.list.length) {
                     setServicePayments(res.list)
@@ -74,7 +78,7 @@ export default function Index() {
 
             <Form>
                 <FormRow>
-                    <FormRowColumn unit="2">
+                    <FormRowColumn unit="3">
                         <List
                             autoSearch
                             canSeeInfo
@@ -82,16 +86,21 @@ export default function Index() {
                             isLoading={isLoading}
                             onFilterList={handleFilterStagesList}
                             onTitle={(element: ServiceStage) => {
-                                return (<p>{element.description}</p>)
+                                return (
+                                    <ServiceStageView
+                                        title=""
+                                        hideData
+                                        hideBorder
+                                        hidePaddingMargin
+                                        serviceStage={element}
+                                    />)
                             }}
                             onInfo={(element: ServiceStage) => {
-                                return (<p>{element.description}</p>)
+                                return (<ServiceStageView id={element.id} />)
                             }}
                         />
                     </FormRowColumn>
-                    <FormRowColumn unit="2">
-                    </FormRowColumn>
-                    <FormRowColumn unit="2">
+                    <FormRowColumn unit="3">
                         <List
                             autoSearch
                             canSeeInfo
@@ -99,10 +108,17 @@ export default function Index() {
                             isLoading={isLoading}
                             onFilterList={handleFilterPaymentsList}
                             onTitle={(element: ServicePayment) => {
-                                return (<p>{element.description}</p>)
+                                return (
+                                    <ServicePaymentView
+                                        title=""
+                                        hideData
+                                        hideBorder
+                                        hidePaddingMargin
+                                        servicePayment={element}
+                                    />)
                             }}
                             onInfo={(element: ServicePayment) => {
-                                return (<p>{element.description}</p>)
+                                return (<ServicePaymentView id={element.id} />)
                             }}
                         />
 
