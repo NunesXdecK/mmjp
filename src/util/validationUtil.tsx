@@ -190,15 +190,10 @@ export const handleProjectValidationForDB = (project: Project) => {
     let validation: ValidationReturn = { validation: false, messages: [] }
     let nameCheck = handleValidationNotNull(project.title)
     let clientsCheck = project?.clients?.length > 0 ?? false
-    let professionalCheck = project?.professional?.id?.length > 0 ?? false
     let clientsOnBaseCheck = true
 
     if (!nameCheck) {
         validation = { ...validation, messages: [...validation.messages, "O campo titulo está em branco."] }
-    }
-
-    if (!professionalCheck) {
-        validation = { ...validation, messages: [...validation.messages, "O projeto precisa de ao menos um profissional."] }
     }
 
     if (!clientsCheck) {
@@ -212,7 +207,7 @@ export const handleProjectValidationForDB = (project: Project) => {
         }
     })
 
-    validation = { ...validation, validation: nameCheck && professionalCheck && clientsCheck && clientsOnBaseCheck }
+    validation = { ...validation, validation: nameCheck && clientsCheck && clientsOnBaseCheck }
     return validation
 }
 

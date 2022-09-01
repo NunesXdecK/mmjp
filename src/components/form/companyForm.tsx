@@ -160,7 +160,7 @@ export default function CompanyForm(props: CompanyFormProps) {
                 rightWindowText="Deseja confirmar as alterações?"
                 isForOpenLeft={company.id !== "" && handleDiference()}
                 isForOpenRight={company.id !== "" && handleDiference()}
-                rightButtonText={company.id === "" ? "Salvar" : "Editar"}
+                rightButtonText={"Salvar"}
                 leftWindowText="Dejesa realmente voltar e descartar as alterações?"
                 onLeftClick={(event) => {
                     if (event) {

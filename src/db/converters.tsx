@@ -146,7 +146,6 @@ export const ProjectConversor = {
             number: data.number,
             status: data.status,
             clients: data.clients,
-            professional: data.professional,
             dateInsertUTC: data.dateInsertUTC,
             dateLastUpdateUTC: data.dateLastUpdateUTC,
         }
@@ -161,7 +160,6 @@ export const ProjectConversor = {
             date: data.date ?? 0,
             dateInsertUTC: data.dateInsertUTC ?? 0,
             dateLastUpdateUTC: data.dateLastUpdateUTC ?? 0,
-            professional: data.professional ?? defaultProfessional,
             clients: data.clients ?? [],
         }
     }

@@ -21,11 +21,12 @@ interface ServiceDataFormProps {
     id?: string,
     title?: string,
     subtitle?: string,
-    status?: "ORÇAMENTO" | "NORMAL" | "ARQUIVADO" | "FINALIZADO",
+    status?: "ORÇAMENTO" | "NORMAL" | "ARQUIVADO" | "FINALIZADO" | "PENDENTE",
     index?: number,
     isBack?: boolean,
     isLoading?: boolean,
     isForSelect?: boolean,
+    isForShowAll?: boolean,
     isForDisable?: boolean,
     services?: Service[],
     onBlur?: (any) => void,
@@ -41,8 +42,8 @@ export default function ServiceDataForm(props: ServiceDataFormProps) {
     const [isFormValid, setIsFormValid] = useState(false)
     const [index, setIndex] = useState(props.index ?? 0)
 
-    const [professionals, setProfessionals] = useState((props.services[index]?.responsible && "id" in props.services[index]?.responsible
-        && props.services[index].responsible.id.length) ? [props.services[index].responsible] : [])
+    const [professionals, setProfessionals] = useState((props.services[index]?.professional && "id" in props.services[index]?.professional
+        && props.services[index].professional.id.length) ? [props.services[index].professional] : [])
 
     const handleSetServiceTitle = (value) => { handleSetText({ ...props.services[index], title: value }) }
     const handleSetServiceDate = (value) => { handleSetText({ ...props.services[index], dateString: value }) }
@@ -54,7 +55,7 @@ export default function ServiceDataForm(props: ServiceDataFormProps) {
 
     const handleSetServiceProfessional = (value) => {
         setProfessionals(value)
-        handleSetText({ ...props.services[index], responsible: value[0] })
+        handleSetText({ ...props.services[index], professional: value[0] })
     }
 
     const handleSetServiceValue = (value) => {
@@ -188,21 +189,23 @@ export default function ServiceDataForm(props: ServiceDataFormProps) {
                 */}
             <FormRow className="py-2">
                 <FormRowColumn unit="2" className="flex flex-col sm:flex-row">
-                    <Button
-                        isLight
-                        className="mr-2 sm:mt-auto"
-                        isLoading={props.isLoading}
-                        isDisabled={props.isForDisable}
-                        onClick={() => {
-                            setIsFormOpen(!isFormOpen)
-                        }}
-                    >
-                        {isFormOpen ? (
-                            <ChevronDownIcon className="text-gray-600 block h-5 w-5" aria-hidden="true" />
-                        ) : (
-                            <ChevronRightIcon className="text-gray-600 block h-5 w-5" aria-hidden="true" />
-                        )}
-                    </Button>
+                    {props.isForShowAll && (
+                        <Button
+                            isLight
+                            className="mr-2 sm:mt-auto"
+                            isLoading={props.isLoading}
+                            isDisabled={props.isForDisable}
+                            onClick={() => {
+                                setIsFormOpen(!isFormOpen)
+                            }}
+                        >
+                            {isFormOpen ? (
+                                <ChevronDownIcon className="text-gray-600 block h-5 w-5" aria-hidden="true" />
+                            ) : (
+                                <ChevronRightIcon className="text-gray-600 block h-5 w-5" aria-hidden="true" />
+                            )}
+                        </Button>
+                    )}
 
                     <InputTextAutoComplete
                         title="Titulo"

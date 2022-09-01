@@ -8,11 +8,11 @@ import InputCheckbox from "../inputText/inputCheckbox";
 import SelectPersonForm from "../select/selectPersonForm";
 import { FeedbackMessage } from "../modal/feedbackMessageModal";
 import { NOT_NULL_MARK } from "../../util/patternValidationUtil";
+import ScrollDownTransition from "../animation/scrollDownTransition";
+import FeedbackMessageSaveText from "../modal/feedbackMessageSavingText";
 import { defaultProfessional, Professional } from "../../interfaces/objectInterfaces";
 import { handleIsEqual, handleProfessionalValidationForDB } from "../../util/validationUtil";
 import { defaultElementFromBase, ElementFromBase, handlePrepareProfessionalForDB } from "../../util/converterUtil";
-import ScrollDownTransition from "../animation/scrollDownTransition";
-import FeedbackMessageSaveText from "../modal/feedbackMessageSavingText";
 
 interface ProfessionalFormProps {
     title?: string,
@@ -174,7 +174,7 @@ export default function ProfessionalForm(props: ProfessionalFormProps) {
                 rightWindowText="Deseja confirmar as alterações?"
                 isForOpenLeft={professional.id !== "" && handleDiference()}
                 isForOpenRight={professional.id !== "" && handleDiference()}
-                rightButtonText={professional.id === "" ? "Salvar" : "Editar"}
+                rightButtonText={"Salvar"}
                 leftWindowText="Dejesa realmente voltar e descartar as alterações?"
                 onLeftClick={(event) => {
                     if (event) {

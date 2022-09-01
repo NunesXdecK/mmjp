@@ -12,7 +12,7 @@ interface ServicePaymentFormProps {
     title?: string,
     subtitle?: string,
     formClassName?: string,
-    status?: "ORÇAMENTO" | "NORMAL" | "ARQUIVADO" | "FINALIZADO",
+    status?: "ORÇAMENTO" | "NORMAL" | "ARQUIVADO" | "FINALIZADO" | "PENDENTE",
     isBack?: boolean,
     isLoading?: boolean,
     servicePayments?: ServicePayment[],

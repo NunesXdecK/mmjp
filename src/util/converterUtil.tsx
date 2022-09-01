@@ -285,11 +285,6 @@ export const handlePrepareProjectForDB = (project: Project) => {
     if (project.date === 0) {
         project = { ...project, date: handleNewDateToUTC() }
     }
-    if (project.professional?.id?.length) {
-        project = { ...project, professional: { id: project.professional.id } }
-    } else {
-        project = { ...project, professional: {} }
-    }
     let clients = []
     if (project.clients && project.clients.length) {
         project.clients?.map((element, index) => {
@@ -341,10 +336,10 @@ export const handlePrepareServiceForDB = (service: Service) => {
             delete service.dateString
         }
     }
-    if (service.responsible?.id?.length) {
-        service = { ...service, responsible: { id: service.responsible.id } }
+    if (service.professional?.id?.length) {
+        service = { ...service, professional: { id: service.professional.id } }
     } else {
-        service = { ...service, responsible: {} }
+        service = { ...service, professional: {} }
     }
     if (service.project?.id?.length) {
         service = { ...service, project: { id: service.project.id } }

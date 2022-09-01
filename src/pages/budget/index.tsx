@@ -12,6 +12,7 @@ import ProjectView from "../../components/view/projectView"
 
 export default function Budget() {
     const [title, setTitle] = useState("Lista de orçamentos")
+    const [professional, setProfessional] = useState<Professional>(defaultProfessional)
     const [project, setProject] = useState<Project>(defaultProject)
     const [projects, setProjects] = useState<Project[]>([])
 
@@ -28,6 +29,7 @@ export default function Budget() {
         }
         setProjects([])
         setProject(defaultProject)
+        setProfessional(defaultProfessional)
         setIsFirst(true)
         setIsLoading(true)
         setIsRegister(false)
@@ -58,12 +60,18 @@ export default function Budget() {
 
     const handleNewClick = async () => {
         setIsLoading(true)
-        let newProject = { ...defaultProject, dateString: handleUTCToDateShow(handleNewDateToUTC().toString()) }
-        const lastProfessional = await fetch("api/lastProfessional").then((res) => res.json()).then((res) => res.professional)
-        if (lastProfessional && "id" in lastProfessional && lastProfessional.id.length) {
-            newProject = { ...newProject, professional: lastProfessional }
+        let localProfessional: Professional = defaultProfessional
+        try {
+            localProfessional = await fetch("api/lastProfessional").then((res) => res.json()).then((res) => res.professional)
+        } catch (err) {
+            console.error(err)
+        }
+        let newProject = {
+            ...defaultProject,
+            dateString: handleUTCToDateShow(handleNewDateToUTC().toString()),
         }
         setProject(newProject)
+        setProfessional(localProfessional)
         setIsRegister(true)
         setIsLoading(false)
         setTitle("Novo orçamento")
@@ -110,10 +118,10 @@ localProject = {
         setIsLoading(true)
         let localProject: Project = await fetch("api/projectview/" + project.id).then((res) => res.json()).then((res) => res.data)
         let localProfessional: Professional = defaultProfessional
-        if (localProject.professional && localProject.professional.length) {
-            localProfessional = await fetch("api/professional/" + localProject.professional).then((res) => res.json()).then((res) => res.data)
-        } else {
+        try {
             localProfessional = await fetch("api/lastProfessional").then((res) => res.json()).then((res) => res.professional)
+        } catch (err) {
+            console.error(err)
         }
         let localServices: Service[] = []
         try {
@@ -161,12 +169,12 @@ localProject = {
             ...localProject,
             clients: localClients,
             services: localServices,
-            professional: localProfessional,
             dateString: handleUTCToDateShow(localProject.date.toString()),
         }
         setIsLoading(false)
         setIsRegister(true)
         setProject({ ...defaultProject, ...localProject })
+        setProfessional(localProfessional)
         setTitle("Editar orçamento")
     }
 
@@ -244,6 +252,7 @@ localProject = {
                     isBack={true}
                     project={project}
                     onBack={handleBackClick}
+                    professional={professional}
                     onAfterSave={handleAfterSave}
                     title="Informações do orçamento"
                     onShowMessage={handleShowMessage}

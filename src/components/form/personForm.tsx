@@ -165,7 +165,7 @@ export default function PersonForm(props: PersonFormProps) {
                 rightWindowText="Deseja confirmar as alterações?"
                 isForOpenLeft={person.id !== "" && handleDiference()}
                 isForOpenRight={person.id !== "" && handleDiference()}
-                rightButtonText={person.id === "" ? "Salvar" : "Editar"}
+                rightButtonText={"Salvar"}
                 leftWindowText="Dejesa realmente voltar e descartar as alterações?"
                 onLeftClick={(event) => {
                     if (event) {

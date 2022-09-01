@@ -12,7 +12,7 @@ interface ServiceStageFormProps {
     title?: string,
     subtitle?: string,
     formClassName?: string,
-    status?: "ORÇAMENTO" | "NORMAL" | "ARQUIVADO" | "FINALIZADO",
+    status?: "ORÇAMENTO" | "NORMAL" | "ARQUIVADO" | "FINALIZADO" | "PENDENTE",
     isBack?: boolean,
     isLoading?: boolean,
     serviceStages?: ServiceStage[],

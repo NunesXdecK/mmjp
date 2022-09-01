@@ -1,11 +1,11 @@
-import { ProfessionalConversor, ProjectConversor } from "../../../db/converters"
+import { ProfessionalConversor, ServiceConversor } from "../../../db/converters"
 import { collection, doc, getDoc, getDocs, limit, orderBy, query } from "firebase/firestore"
-import { defaultProfessional, defaultProject, Professional, Project } from "../../../interfaces/objectInterfaces"
-import { db, PROFESSIONAL_COLLECTION_NAME, PROJECT_COLLECTION_NAME } from "../../../db/firebaseDB"
+import { defaultProfessional, Professional, Service } from "../../../interfaces/objectInterfaces"
+import { db, PROFESSIONAL_COLLECTION_NAME, SERVICE_COLLECTION_NAME } from "../../../db/firebaseDB"
 
 export default async function handler(req, res) {
     const { method } = req
-    const projectCollection = collection(db, PROJECT_COLLECTION_NAME).withConverter(ProjectConversor)
+    const serviceCollection = collection(db, SERVICE_COLLECTION_NAME).withConverter(ServiceConversor)
     const professionalCollection = collection(db, PROFESSIONAL_COLLECTION_NAME).withConverter(ProfessionalConversor)
 
     switch (method) {
@@ -13,14 +13,14 @@ export default async function handler(req, res) {
             let resGET = { status: "ERROR", error: {}, message: "", professional: {} }
             let professional: Professional = defaultProfessional
             try {
-                const queryProject = await query(projectCollection,
+                const queryService = await query(serviceCollection,
                     orderBy("dateInsertUTC", "desc"),
                     limit(5))
-                const querySnapshotProject = await getDocs(queryProject)
-                querySnapshotProject.forEach((doc) => {
-                    const localProject: Project = doc.data()
-                    if (localProject.professional && "id" in localProject.professional && localProject.professional.id.length) {
-                        professional = localProject.professional
+                const querySnapshotService = await getDocs(queryService)
+                querySnapshotService.forEach((doc) => {
+                    const localService: Service = doc.data()
+                    if (localService.professional && "id" in localService.professional && localService.professional.id.length) {
+                        professional = localService.professional
                     }
                 })
                 if (professional && "id" in professional && professional?.id?.length) {

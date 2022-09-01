@@ -168,7 +168,7 @@ export default function ImmobileForm(props: ImmobileFormProps) {
                 rightWindowText="Deseja confirmar as alterações?"
                 isForOpenLeft={immobile.id !== "" && handleDiference()}
                 isForOpenRight={immobile.id !== "" && handleDiference()}
-                rightButtonText={immobile.id === "" ? "Salvar" : "Editar"}
+                rightButtonText={"Salvar"}
                 leftWindowText="Dejesa realmente voltar e descartar as alterações?"
                 onLeftClick={(event) => {
                     if (event) {

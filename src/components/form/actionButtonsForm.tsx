@@ -182,7 +182,7 @@ export default function ActionButtonsForm(props: ActionButtonsFormProps) {
                             }
                         }}
                     >
-                        {props.rightButtonText ?? "Editar"}
+                        {props.rightButtonText ?? "Salvar"}
                     </Button>
                 </div>
             </WindowModal>

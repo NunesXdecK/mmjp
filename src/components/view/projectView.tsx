@@ -36,7 +36,6 @@ export default function ProjectView(props: ProjectViewProps) {
     const [services, setServices] = useState<Service[]>([])
 
     const hasHideData =
-        project.professional?.id > 0 ||
         project.clients?.length > 0
     const hasData =
         hasHideData ||
@@ -93,16 +92,6 @@ export default function ProjectView(props: ProjectViewProps) {
                         )}
                     </div>
                 ))}
-
-                {project.professional?.length && (
-                    <ProfessionalView
-                        hideData
-                        dataInside
-                        canShowHideData
-                        title="Profissional"
-                        id={project.professional}
-                    />
-                )}
 
                 {listServices?.map((service, index) => (
                     <ServiceView

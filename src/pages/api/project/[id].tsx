@@ -1,6 +1,6 @@
 import { collection, doc, getDoc } from "firebase/firestore"
-import { Company, Person, Professional, Project } from "../../../interfaces/objectInterfaces"
-import { CompanyConversor, PersonConversor, ProfessionalConversor, ProjectConversor } from "../../../db/converters"
+import { Company, Person, Project } from "../../../interfaces/objectInterfaces"
+import { CompanyConversor, PersonConversor, ProjectConversor } from "../../../db/converters"
 import { db, COMPANY_COLLECTION_NAME, PERSON_COLLECTION_NAME, PROJECT_COLLECTION_NAME, IMMOBILE_COLLECTION_NAME, PROFESSIONAL_COLLECTION_NAME } from "../../../db/firebaseDB"
 
 export default async function handler(req, res) {
@@ -9,7 +9,6 @@ export default async function handler(req, res) {
     const personCollection = collection(db, PERSON_COLLECTION_NAME).withConverter(PersonConversor)
     const projectCollection = collection(db, PROJECT_COLLECTION_NAME).withConverter(ProjectConversor)
     const companyCollection = collection(db, COMPANY_COLLECTION_NAME).withConverter(CompanyConversor)
-    const professionalCollection = collection(db, PROFESSIONAL_COLLECTION_NAME).withConverter(ProfessionalConversor)
 
     switch (method) {
         case "GET":
@@ -19,11 +18,6 @@ export default async function handler(req, res) {
                 if (id) {
                     const docRef = doc(projectCollection, id)
                     let project: Project = (await getDoc(docRef)).data()
-                    if (project.professional && "id" in project.professional && project.professional?.id.length) {
-                        const docRef = doc(professionalCollection, project.professional.id)
-                        const data: Professional = (await getDoc(docRef)).data()
-                        project = { ...project, professional: data }
-                    }
                     let clients = []
                     if (project.clients && project.clients?.length > 0) {
                         await Promise.all(project.clients?.map(async (element, index) => {

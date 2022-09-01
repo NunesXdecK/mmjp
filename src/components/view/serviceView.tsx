@@ -37,7 +37,7 @@ export default function ServiceView(props: ServiceViewProps) {
 
     const hasHideData =
         service.project?.id > 0 ||
-        service.responsible?.id > 0 ||
+        service.professional?.id > 0 ||
         service.serviceStages?.length > 0 ||
         service.servicePayments?.length > 0 ||
         service.immobilesTarget?.length > 0 ||
@@ -138,13 +138,13 @@ export default function ServiceView(props: ServiceViewProps) {
                     />
                 ))}
 
-                {service?.responsible?.length && (
+                {service?.professional?.length && (
                     <ProfessionalView
                         hideData
                         dataInside
                         canShowHideData
                         title="Profissional"
-                        id={service.responsible}
+                        id={service.professional}
                     />
                 )}
             </div>

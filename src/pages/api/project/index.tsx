@@ -1,7 +1,7 @@
 import { Project } from "../../../interfaces/objectInterfaces"
 import { addDoc, collection, deleteDoc, doc, getDocs, query, updateDoc, where } from "firebase/firestore"
-import { CompanyConversor, ImmobileConversor, PersonConversor, ProfessionalConversor, ProjectConversor, ServiceConversor, ServicePaymentConversor, ServiceStageConversor } from "../../../db/converters"
-import { db, COMPANY_COLLECTION_NAME, PERSON_COLLECTION_NAME, HISTORY_COLLECTION_NAME, PROJECT_COLLECTION_NAME, IMMOBILE_COLLECTION_NAME, PROFESSIONAL_COLLECTION_NAME, SERVICE_COLLECTION_NAME, SERVICE_STAGE_COLLECTION_NAME, SERVICE_PAYMENT_COLLECTION_NAME } from "../../../db/firebaseDB"
+import { CompanyConversor, PersonConversor, ProjectConversor, ServiceConversor, ServicePaymentConversor, ServiceStageConversor } from "../../../db/converters"
+import { db, COMPANY_COLLECTION_NAME, PERSON_COLLECTION_NAME, HISTORY_COLLECTION_NAME, PROJECT_COLLECTION_NAME, SERVICE_COLLECTION_NAME, SERVICE_STAGE_COLLECTION_NAME, SERVICE_PAYMENT_COLLECTION_NAME } from "../../../db/firebaseDB"
 
 export default async function handler(req, res) {
     const { method, body } = req
@@ -11,7 +11,6 @@ export default async function handler(req, res) {
     const projectCollection = collection(db, PROJECT_COLLECTION_NAME).withConverter(ProjectConversor)
     const companyCollection = collection(db, COMPANY_COLLECTION_NAME).withConverter(CompanyConversor)
     const serviceCollection = collection(db, SERVICE_COLLECTION_NAME).withConverter(ServiceConversor)
-    const professionalCollection = collection(db, PROFESSIONAL_COLLECTION_NAME).withConverter(ProfessionalConversor)
     const serviceStageCollection = collection(db, SERVICE_STAGE_COLLECTION_NAME).withConverter(ServiceStageConversor)
     const servicePaymentCollection = collection(db, SERVICE_PAYMENT_COLLECTION_NAME).withConverter(ServicePaymentConversor)
 
@@ -24,10 +23,6 @@ export default async function handler(req, res) {
                 if (token === "tokenbemseguro") {
                     let nowID = data?.id ?? ""
                     let clientsDocRefsForDB = []
-                    if (project.professional?.id && project.professional?.id?.length > 0) {
-                        const docRef = doc(professionalCollection, project.professional.id)
-                        project = { ...project, professional: docRef }
-                    }
                     if (project.clients?.length > 0) {
                         project.clients?.map((element, index) => {
                             if ("cpf" in element) {

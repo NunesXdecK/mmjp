@@ -20,10 +20,10 @@ export default async function handler(req, res) {
                 if (id) {
                     const docRef = doc(serviceCollection, id)
                     let service: Service = (await getDoc(docRef)).data()
-                    if (service.responsible && "id" in service.responsible && service.responsible?.id?.length) {
-                        const docRef = doc(professionalCollection, service.responsible.id)
+                    if (service.professional && "id" in service.professional && service.professional?.id?.length) {
+                        const docRef = doc(professionalCollection, service.professional.id)
                         const data: Professional = (await getDoc(docRef)).data()
-                        service = { ...service, responsible: data }
+                        service = { ...service, professional: data }
                     }
                     let listServiceStage = []
                     const queryServiceStage = query(serviceStageCollection, where("service", "==", docRef))

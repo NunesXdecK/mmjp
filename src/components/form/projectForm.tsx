@@ -13,15 +13,13 @@ import ContractPrintView from "../view/contractPrintView";
 import { FeedbackMessage } from "../modal/feedbackMessageModal";
 import { NOT_NULL_MARK } from "../../util/patternValidationUtil";
 import ScrollDownTransition from "../animation/scrollDownTransition";
-import SelectProfessionalForm from "../select/selectProfessionalForm";
 import InputTextAutoComplete from "../inputText/inputTextAutocomplete";
 import SelectPersonCompanyForm from "../select/selectPersonCompanyForm";
 import FeedbackMessageSaveText from "../modal/feedbackMessageSavingText";
 import { handleNewDateToUTC, handleUTCToDateShow } from "../../util/dateUtils";
-import { defaultProject, Immobile, Project, Service, ServicePayment, ServiceStage } from "../../interfaces/objectInterfaces";
 import { handleIsEqual, handleProjectValidationForDB, handleServicesValidationForDB } from "../../util/validationUtil";
+import { defaultProject, Immobile, Professional, Project, Service, ServicePayment, ServiceStage } from "../../interfaces/objectInterfaces";
 import { defaultElementFromBase, ElementFromBase, handlePrepareImmobileForDB, handlePrepareProjectForDB, handlePrepareServiceForDB } from "../../util/converterUtil";
-import { COMPANY_COLLECTION_NAME, PERSON_COLLECTION_NAME } from "../../db/firebaseDB";
 
 interface ProjectFormProps {
     title?: string,
@@ -33,6 +31,7 @@ interface ProjectFormProps {
     isForDisable?: boolean,
     isForOldRegister?: boolean,
     project?: Project,
+    professional?: Professional,
     onBack?: (object?) => void,
     onAfterSave?: (object, any?) => void,
     onSelectPerson?: (object) => void,
@@ -59,7 +58,6 @@ export default function ProjectForm(props: ProjectFormProps) {
     const [servicesID, setServicesID] = useState<any[]>([])
     const [services, setServices] = useState<Service[]>(props?.project?.services ? props.project.services : [])
     const [servicesOriginal, setServicesOriginal] = useState<Service[]>(props?.project?.services ? props.project.services : [])
-    const [professionals, setProfessionals] = useState(props?.project?.professional?.id ? [props.project.professional] : [])
 
     const handleSetProjectTitle = (value) => { setProject({ ...project, title: value }) }
     const handleSetProjectNumber = (value) => { setProject({ ...project, number: value }) }
@@ -117,11 +115,6 @@ export default function ProjectForm(props: ProjectFormProps) {
         let projectStatus = project.status
         if (status && status.length) {
             projectStatus = status
-        }
-        if (professionals.length > 0) {
-            projectFinal = { ...projectFinal, professional: professionals[0] }
-        } else {
-            projectFinal = { ...projectFinal, professional: {} }
         }
         projectFinal = { ...projectFinal, status: projectStatus }
         services?.map((element, index) => {
@@ -521,7 +514,7 @@ export default function ProjectForm(props: ProjectFormProps) {
                 rightWindowText="Deseja confirmar as alterações?"
                 isForOpenLeft={project.id !== "" && handleDiference()}
                 isForOpenRight={project.id !== "" && handleDiference()}
-                rightButtonText={project.id === "" ? "Salvar" : "Editar"}
+                rightButtonText={"Salvar"}
                 leftWindowText="Dejesa realmente voltar e descartar as alterações?"
                 onLeftClick={(event) => {
                     if (event) {
@@ -693,6 +686,7 @@ export default function ProjectForm(props: ProjectFormProps) {
                         validationMessageButton="Você não pode mais adicionar clientes"
                     />
 
+                    {/*
                     <SelectProfessionalForm
                         title="Profissional"
                         isLoading={isLoading}
@@ -706,6 +700,7 @@ export default function ProjectForm(props: ProjectFormProps) {
                         validationMessage="Esta pessoa já é um profissional"
                         validationMessageButton="Você não pode mais adicionar profissionais"
                     />
+                */}
 
                     <ServiceForm
                         title="Serviços"
@@ -716,7 +711,9 @@ export default function ProjectForm(props: ProjectFormProps) {
                         onSetServices={setServices}
                         onFinishAdd={handleAutoSave}
                         subtitle="Adicione os serviços"
+                        professional={props.professional}
                         onShowMessage={props.onShowMessage}
+                        isForShowAll={project.status !== "ORÇAMENTO"}
                     />
                     <form
                         onSubmit={(event) => {

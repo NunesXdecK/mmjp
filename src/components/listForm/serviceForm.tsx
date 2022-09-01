@@ -4,16 +4,18 @@ import FormRow from "../form/formRow";
 import ServiceDataForm from "./serviceDataForm";
 import FormRowColumn from "../form/formRowColumn";
 import { FeedbackMessage } from "../modal/feedbackMessageModal";
-import { defaultService, Service } from "../../interfaces/objectInterfaces";
 import { handleNewDateToUTC, handleUTCToDateShow } from "../../util/dateUtils";
+import { defaultProfessional, defaultService, Professional, Service } from "../../interfaces/objectInterfaces";
 
 interface ServiceFormProps {
     id?: string,
     title?: string,
     subtitle?: string,
-    status?: "ORÇAMENTO" | "NORMAL" | "ARQUIVADO" | "FINALIZADO",
+    status?: "ORÇAMENTO" | "NORMAL" | "ARQUIVADO" | "FINALIZADO" | "PENDENTE",
     isBack?: boolean,
     isLoading?: boolean,
+    isForShowAll?: boolean,
+    professional?: Professional,
     services?: Service[],
     onBlur?: (any) => void,
     onFinishAdd?: (any?) => void,
@@ -73,12 +75,17 @@ export default function ServiceForm(props: ServiceFormProps) {
                     <Button
                         isLoading={props.isLoading}
                         isDisabled={props.isLoading}
-                        onClick={() => {
+                        onClick={async () => {
                             if (props.onSetServices) {
+                                let professional = defaultProfessional
+                                if (props.professional) {
+                                    professional = props.professional
+                                }
                                 props.onSetServices([
                                     ...props.services,
                                     {
                                         ...defaultService,
+                                        professional: professional,
                                         index: props.services?.length,
                                         status: props.status ?? "ORÇAMENTO",
                                         dateString: handleUTCToDateShow(handleNewDateToUTC() + ""),
@@ -101,6 +108,7 @@ export default function ServiceForm(props: ServiceFormProps) {
                     services={props.services}
                     isLoading={props.isLoading}
                     onFinishAdd={props.onFinishAdd}
+                    isForShowAll={props.isForShowAll}
                     onShowMessage={props.onShowMessage}
                 />
             ))}

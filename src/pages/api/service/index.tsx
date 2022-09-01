@@ -27,11 +27,11 @@ export default async function handler(req, res) {
                 service = data
                 serviceNowID = data?.id ?? ""
                 if (token === "tokenbemseguro") {
-                    if (service && "id" in service && service.responsible?.id?.length) {
-                        const docRef = doc(professionalCollection, service.responsible.id)
-                        service = { ...service, responsible: docRef }
+                    if (service && "id" in service && service.professional?.id?.length) {
+                        const docRef = doc(professionalCollection, service.professional.id)
+                        service = { ...service, professional: docRef }
                     } else {
-                        service = { ...service, responsible: {} }
+                        service = { ...service, professional: {} }
                     }
                     if (service && "id" in service && service.project?.id?.length) {
                         const docRef = doc(projectCollection, service.project.id)

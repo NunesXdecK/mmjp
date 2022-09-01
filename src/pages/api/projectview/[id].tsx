@@ -17,9 +17,6 @@ export default async function handler(req, res) {
                     const docRef = doc(projectCollection, id)
                     let project: Project = (await getDoc(docRef)).data()
                     let professionalId = ""
-                    if (project.professional && "id" in project.professional && project.professional?.id.length) {
-                        professionalId = project.professional.id
-                    }
 
                     let clients = []
                     project.clients.map((element, index) => {
@@ -46,7 +43,6 @@ project.immobilesOrigin.map((element, index) => {
                     project = {
                         ...project,
                         clients: clients,
-                        professional: professionalId,
                     }
                     resGET = { ...resGET, status: "SUCCESS", data: project }
                 } else {
