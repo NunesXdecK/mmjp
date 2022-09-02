@@ -81,7 +81,7 @@ export default function ServicePaymentForm(props: ServicePaymentFormProps) {
                                     ...defaultServicePayment,
                                     status: props.status ?? "ORÇAMENTO",
                                     index: props.servicePayments?.length,
-                                    dateString: handleUTCToDateShow(handleNewDateToUTC() + ""),
+                                    dateString: handleUTCToDateShow((handleNewDateToUTC() + 2592000000) + ""),
                                 }])
                             }
                         }}>

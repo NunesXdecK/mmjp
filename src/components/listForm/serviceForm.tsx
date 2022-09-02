@@ -88,7 +88,7 @@ export default function ServiceForm(props: ServiceFormProps) {
                                         professional: professional,
                                         index: props.services?.length,
                                         status: props.status ?? "ORÇAMENTO",
-                                        dateString: handleUTCToDateShow(handleNewDateToUTC() + ""),
+                                        dateString: handleUTCToDateShow((handleNewDateToUTC() + 2592000000) + ""),
                                     }])
                             }
                         }}>

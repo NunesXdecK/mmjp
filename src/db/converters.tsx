@@ -177,7 +177,7 @@ export const ServiceConversor = {
             project: data.project,
             quantity: data.quantity,
             description: data.description,
-            responsible: data.responsible,
+            professional: data.professional,
             dateInsertUTC: data.dateInsertUTC,
             dateLastUpdateUTC: data.dateLastUpdateUTC,
             immobilesOrigin: data.immobilesOrigin,
@@ -199,7 +199,7 @@ export const ServiceConversor = {
             dateInsertUTC: data.dateInsertUTC ?? 0,
             dateLastUpdateUTC: data.dateLastUpdateUTC ?? 0,
             project: data.project ?? defaultProject,
-            responsible: data.responsible ?? defaultProfessional,
+            professional: data.professional ?? defaultProfessional,
             immobilesOrigin: data.immobilesOrigin ?? [],
             immobilesTarget: data.immobilesTarget ?? [],
         }

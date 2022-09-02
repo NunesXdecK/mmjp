@@ -118,17 +118,43 @@ export default function ProjectForm(props: ProjectFormProps) {
         }
         projectFinal = { ...projectFinal, status: projectStatus }
         services?.map((element, index) => {
+            let serviceStatus = element.status
+            if (serviceStatus !== "FINALIZADO") {
+                if (projectStatus === "FINALIZADO") {
+                    serviceStatus = "PENDENTE"
+                } else {
+                    serviceStatus = projectStatus
+                }
+            }
             let localServiceStages: ServiceStage[] = []
             let localServicePayments: ServicePayment[] = []
             element.serviceStages?.map((elementStages, index) => {
-                localServiceStages = [...localServiceStages, { ...elementStages, status: projectStatus }]
+                let serviceStagesStatus = elementStages.status
+                if (serviceStagesStatus !== "FINALIZADO") {
+                    if (serviceStatus === "PENDENTE"
+                        || (serviceStatus === "FINALIZADO" && serviceStagesStatus !== "FINALIZADO")) {
+                        serviceStagesStatus = "PENDENTE"
+                    } else {
+                        serviceStagesStatus = serviceStatus
+                    }
+                }
+                localServiceStages = [...localServiceStages, { ...elementStages, status: serviceStagesStatus }]
             })
             element.servicePayments?.map((elementPayments, index) => {
-                localServicePayments = [...localServicePayments, { ...elementPayments, status: projectStatus }]
+                let servicePaymentsStatus = elementPayments.status
+                if (servicePaymentsStatus !== "FINALIZADO") {
+                    if (serviceStatus === "PENDENTE"
+                        || (serviceStatus === "FINALIZADO" && servicePaymentsStatus !== "FINALIZADO")) {
+                        servicePaymentsStatus = "PENDENTE"
+                    } else {
+                        servicePaymentsStatus = serviceStatus
+                    }
+                }
+                localServicePayments = [...localServicePayments, { ...elementPayments, status: servicePaymentsStatus }]
             })
             servicesFinal = [...servicesFinal, {
                 ...element,
-                status: projectStatus,
+                status: serviceStatus,
                 serviceStages: localServiceStages,
                 servicePayments: localServicePayments,
             }]
@@ -143,19 +169,19 @@ export default function ProjectForm(props: ProjectFormProps) {
         servicesIDs.map((element, index) => {
             servicesIDsSPSorted = [...servicesIDsSPSorted, {
                 ...element,
-                stages: element.stages.sort(handleSortByIndex),
-                payments: element.payments.sort(handleSortByIndex),
+                stages: element.stages?.sort(handleSortByIndex),
+                payments: element.payments?.sort(handleSortByIndex),
             }]
         })
         services.map((element, index) => {
             servicesSPSorted = [...servicesSPSorted, {
                 ...element,
-                serviceStages: element.serviceStages.sort(handleSortByIndex),
-                servicePayments: element.servicePayments.sort(handleSortByIndex),
+                serviceStages: element.serviceStages?.sort(handleSortByIndex),
+                servicePayments: element.servicePayments?.sort(handleSortByIndex),
             }]
         })
-        let serviceIDsorted = servicesIDsSPSorted.sort(handleSortByIndex)
-        let servicesSorted = servicesSPSorted.sort(handleSortByIndex)
+        let serviceIDsorted = servicesIDsSPSorted?.sort(handleSortByIndex)
+        let servicesSorted = servicesSPSorted?.sort(handleSortByIndex)
         servicesSorted.map((element, index) => {
             let stagesWithIDs = []
             let paymentsWithIDs = []
@@ -168,7 +194,7 @@ export default function ProjectForm(props: ProjectFormProps) {
             }
             element.serviceStages.map((serviceStage, index) => {
                 let stageId = serviceStage.id ?? ""
-                if (stageId.length === 0) {
+                if (service?.stages && stageId.length === 0) {
                     let stage = service?.stages[serviceStage.index]
                     if (stage && "id" in stage && stage.id.length) {
                         stageId = stage.id
@@ -178,7 +204,7 @@ export default function ProjectForm(props: ProjectFormProps) {
             })
             element.servicePayments.map((servicePayment, index) => {
                 let paymentId = servicePayment.id ?? ""
-                if (paymentId.length === 0) {
+                if (service?.payments && paymentId.length === 0) {
                     let payment = service?.payments[servicePayment.index]
                     if (payment && "id" in payment && payment.id.length) {
                         paymentId = payment.id

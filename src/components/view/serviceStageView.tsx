@@ -115,6 +115,9 @@ export default function ServiceStageView(props: ServiceStageViewProps) {
                                 {serviceStage.status === "ARQUIVADO" && (
                                     <InfoView classNameHolder="w-full" classNameInfo="rounded-md px-3 py-1 bg-orange-600 text-white" title="Status" info={serviceStage.status} />
                                 )}
+                                {serviceStage.status === "PENDENTE" && (
+                                    <InfoView classNameHolder="w-full" classNameInfo="rounded-md px-3 py-1 bg-red-600 text-white" title="Status" info={serviceStage.status} />
+                                )}
                                 <InfoView title="Titulo" info={serviceStage.title} />
                                 <InfoView title="Data" info={handleUTCToDateShow(serviceStage.dateDue.toString())} />
                                 <ScrollDownTransition isOpen={isShowInfo}>

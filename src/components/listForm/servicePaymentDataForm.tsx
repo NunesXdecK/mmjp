@@ -1,15 +1,14 @@
 import { useState } from "react";
 import Button from "../button/button";
+import FormRow from "../form/formRow";
 import InputText from "../inputText/inputText";
+import WindowModal from "../modal/windowModal";
+import FormRowColumn from "../form/formRowColumn";
 import { TrashIcon } from "@heroicons/react/outline";
-import InputCheckbox from "../inputText/inputCheckbox";
 import { ServicePayment } from "../../interfaces/objectInterfaces";
 import InputTextAutoComplete from "../inputText/inputTextAutocomplete";
 import { NOT_NULL_MARK, NUMBER_MARK } from "../../util/patternValidationUtil";
 import { handleServicePaymentValidationForDB } from "../../util/validationUtil";
-import WindowModal from "../modal/windowModal";
-import FormRow from "../form/formRow";
-import FormRowColumn from "../form/formRowColumn";
 
 interface ServicePaymentDataFormProps {
     id?: string,

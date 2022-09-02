@@ -109,14 +109,14 @@ export default function ServiceDataForm(props: ServiceDataFormProps) {
                         ...defaultServicePayment,
                         index: 0,
                         description: "Entrada",
-                        dateString: handleUTCToDateShow(handleNewDateToUTC().toString()),
+                        dateString: handleUTCToDateShow((handleNewDateToUTC() + 2592000000) + ""),
                         value: handleMountNumberCurrency(((valueTotal / 2).toFixed(2)).toString(), ".", ",", 3, 2),
                     },
                     {
                         ...defaultServicePayment,
                         index: 1,
                         description: "Entrega",
-                        dateString: handleUTCToDateShow(handleNewDateToUTC().toString()),
+                        dateString: handleUTCToDateShow((handleNewDateToUTC() + (2592000000 * 2)) + ""),
                         value: handleMountNumberCurrency(((valueTotal / 2).toFixed(2)).toString(), ".", ",", 3, 2),
                     },
                 ]

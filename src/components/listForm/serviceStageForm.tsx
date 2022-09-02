@@ -82,7 +82,7 @@ export default function ServiceStageForm(props: ServiceStageFormProps) {
                                     ...defaultServiceStage,
                                     index: props.serviceStages?.length,
                                     status: props.status ?? "ORÇAMENTO",
-                                    dateString: handleUTCToDateShow(handleNewDateToUTC() + ""),
+                                    dateString: handleUTCToDateShow((handleNewDateToUTC() + 2592000000) + ""),
                                 }])
                             }
                         }}>

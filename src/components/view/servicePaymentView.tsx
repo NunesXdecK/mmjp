@@ -104,6 +104,9 @@ export default function ServicePaymentView(props: ServicePaymentViewProps) {
                                 {servicePayment.status === "ARQUIVADO" && (
                                     <InfoView classNameHolder="w-full" classNameInfo="rounded-md px-3 py-1 bg-orange-600 text-white" title="Status" info={servicePayment.status} />
                                 )}
+                                {servicePayment.status === "PENDENTE" && (
+                                    <InfoView classNameHolder="w-full" classNameInfo="rounded-md px-3 py-1 bg-red-600 text-white" title="Status" info={servicePayment.status} />
+                                )}
                                 <InfoView title="Descrição" info={servicePayment.description} />
                                 <InfoView title="Valor" info={handleMountNumberCurrency(servicePayment.value.toString(), ".", ",", 3, 2)} />
                                 <InfoView title="Data" info={handleUTCToDateShow(servicePayment.dateDue.toString())} />
