@@ -13,6 +13,7 @@ interface ServiceFormProps {
     subtitle?: string,
     status?: "ORÇAMENTO" | "NORMAL" | "ARQUIVADO" | "FINALIZADO" | "PENDENTE",
     isBack?: boolean,
+    isLocked?: boolean,
     isLoading?: boolean,
     isForShowAll?: boolean,
     professional?: Professional,
@@ -70,32 +71,34 @@ export default function ServiceForm(props: ServiceFormProps) {
             title={props.title}
             subtitle={props.subtitle}
         >
-            <FormRow className="mb-2">
-                <FormRowColumn unit="6" className="flex justify-end">
-                    <Button
-                        isLoading={props.isLoading}
-                        isDisabled={props.isLoading}
-                        onClick={async () => {
-                            if (props.onSetServices) {
-                                let professional = defaultProfessional
-                                if (props.professional) {
-                                    professional = props.professional
+            {!props.isLocked && (
+                <FormRow className="mb-2">
+                    <FormRowColumn unit="6" className="flex justify-end">
+                        <Button
+                            isLoading={props.isLoading}
+                            isDisabled={props.isLoading}
+                            onClick={async () => {
+                                if (props.onSetServices) {
+                                    let professional = defaultProfessional
+                                    if (props.professional) {
+                                        professional = props.professional
+                                    }
+                                    props.onSetServices([
+                                        ...props.services,
+                                        {
+                                            ...defaultService,
+                                            professional: professional,
+                                            index: props.services?.length,
+                                            status: props.status ?? "ORÇAMENTO",
+                                            dateString: handleUTCToDateShow((handleNewDateToUTC() + 2592000000) + ""),
+                                        }])
                                 }
-                                props.onSetServices([
-                                    ...props.services,
-                                    {
-                                        ...defaultService,
-                                        professional: professional,
-                                        index: props.services?.length,
-                                        status: props.status ?? "ORÇAMENTO",
-                                        dateString: handleUTCToDateShow((handleNewDateToUTC() + 2592000000) + ""),
-                                    }])
-                            }
-                        }}>
-                        Adicionar serviço
-                    </Button>
-                </FormRowColumn>
-            </FormRow>
+                            }}>
+                            Adicionar serviço
+                        </Button>
+                    </FormRowColumn>
+                </FormRow>
+            )}
 
             {props?.services?.map((element, index) => (
                 <ServiceDataForm
@@ -107,6 +110,7 @@ export default function ServiceForm(props: ServiceFormProps) {
                     onSetText={handleSetText}
                     services={props.services}
                     isLoading={props.isLoading}
+                    isForDisable={props.isLocked}
                     onFinishAdd={props.onFinishAdd}
                     isForShowAll={props.isForShowAll}
                     onShowMessage={props.onShowMessage}

@@ -102,7 +102,7 @@ export default function ServicePaymentDataForm(props: ServicePaymentDataFormProp
                         value={props.servicePayments[index].dateString}
                     />
 
-                    {props.onDelete && (
+                    {props.onDelete && !props.isForDisable && (
                         <Button
                             color="red"
                             className="ml-2 mt-2 sm:mt-0 h-fit self-end"

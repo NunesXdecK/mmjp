@@ -634,7 +634,9 @@ export default function ProjectForm(props: ProjectFormProps) {
                                             isLoading={isLoading}
                                             onSetText={setIsMultiple}
                                             title="Cadastro multiplo?"
-                                            isDisabled={props.isForDisable}
+                                            isDisabled={props.isForDisable ||
+                                                (project.status === "FINALIZADO" ||
+                                                    project.status === "ARQUIVADO")}
                                         />
                                     </FormRowColumn>
                                 </FormRow>
@@ -649,11 +651,13 @@ export default function ProjectForm(props: ProjectFormProps) {
                                         onBlur={handleAutoSave}
                                         title="Titulo do projeto"
                                         validation={NOT_NULL_MARK}
-                                        isDisabled={props.isForDisable}
                                         onSetText={handleSetProjectTitle}
                                         onValidate={handleChangeFormValidation}
-                                        sugestions={["Ambiental", "Desmembramento", "Georeferenciamento", "União", "Licenciamento"]}
                                         validationMessage="O titulo do projeto não pode ficar em branco."
+                                        sugestions={["Ambiental", "Desmembramento", "Georeferenciamento", "União", "Licenciamento"]}
+                                        isDisabled={props.isForDisable ||
+                                            (project.status === "FINALIZADO" ||
+                                                project.status === "ARQUIVADO")}
                                     />
                                 </FormRowColumn>
 
@@ -664,9 +668,11 @@ export default function ProjectForm(props: ProjectFormProps) {
                                         isLoading={isLoading}
                                         value={project.number}
                                         onBlur={handleAutoSave}
-                                        isDisabled={props.isForDisable}
                                         onSetText={handleSetProjectNumber}
                                         onValidate={handleChangeFormValidation}
+                                        isDisabled={props.isForDisable ||
+                                            (project.status === "FINALIZADO" ||
+                                                project.status === "ARQUIVADO")}
                                     />
                                 </FormRowColumn>
 
@@ -679,9 +685,11 @@ export default function ProjectForm(props: ProjectFormProps) {
                                         isLoading={isLoading}
                                         onBlur={handleAutoSave}
                                         value={project.dateString}
-                                        isDisabled={props.isForDisable}
                                         onSetText={handleSetProjectDate}
                                         onValidate={handleChangeFormValidation}
+                                        isDisabled={props.isForDisable ||
+                                            (project.status === "FINALIZADO" ||
+                                                project.status === "ARQUIVADO")}
                                     />
                                 </FormRowColumn>
                             </FormRow>
@@ -710,6 +718,9 @@ export default function ProjectForm(props: ProjectFormProps) {
                         onSetPersonsAndCompanies={handleSetProjectClients}
                         validationMessage="Esta pessoa, ou empresa já é um cliente"
                         validationMessageButton="Você não pode mais adicionar clientes"
+                        isLocked={props.isForDisable ||
+                            (project.status === "FINALIZADO" ||
+                                project.status === "ARQUIVADO")}
                     />
 
                     {/*
@@ -740,6 +751,9 @@ export default function ProjectForm(props: ProjectFormProps) {
                         professional={props.professional}
                         onShowMessage={props.onShowMessage}
                         isForShowAll={project.status !== "ORÇAMENTO"}
+                        isLocked={props.isForDisable ||
+                            (project.status === "FINALIZADO" ||
+                                project.status === "ARQUIVADO")}
                     />
                     <form
                         onSubmit={(event) => {

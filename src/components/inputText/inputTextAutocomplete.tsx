@@ -43,6 +43,11 @@ export default function InputTextAutoComplete(props: InputTextAutoCompleteProps)
         classNameHolder = classNameHolder + " " + props.holderClassName
     }
 
+    if (props.isDisabled) {
+        classNameInput = classNameInput + " opacity-60"
+        classNameLabel = classNameLabel + " opacity-60"
+    }
+
     if (props.isLoading) {
         classNameInput = classNameInput + STYLE_FOR_INPUT_LOADING
         classNameLabel = classNameLabel + STYLE_FOR_INPUT_LOADING_TRANSPARENT

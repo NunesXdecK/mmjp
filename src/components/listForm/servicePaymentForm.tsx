@@ -15,6 +15,7 @@ interface ServicePaymentFormProps {
     status?: "ORÇAMENTO" | "NORMAL" | "ARQUIVADO" | "FINALIZADO" | "PENDENTE",
     isBack?: boolean,
     isLoading?: boolean,
+    isForDisable?: boolean,
     servicePayments?: ServicePayment[],
     onBlur?: (any) => void,
     onSetServicePayments?: (any) => void,
@@ -69,26 +70,29 @@ export default function ServicePaymentForm(props: ServicePaymentFormProps) {
             subtitle={props.subtitle}
             className={props.formClassName}
         >
-            <FormRow>
-                <FormRowColumn unit="6" className="flex justify-end">
-                    <Button
-                        isLoading={props.isLoading}
-                        isDisabled={props.isLoading}
-                        onClick={() => {
-                            if (props.onSetServicePayments) {
-                                props.onSetServicePayments([...props.servicePayments,
-                                {
-                                    ...defaultServicePayment,
-                                    status: props.status ?? "ORÇAMENTO",
-                                    index: props.servicePayments?.length,
-                                    dateString: handleUTCToDateShow((handleNewDateToUTC() + 2592000000) + ""),
-                                }])
-                            }
-                        }}>
-                        Adicionar pagamento
-                    </Button>
-                </FormRowColumn>
-            </FormRow>
+
+            {!props.isForDisable && (
+                <FormRow>
+                    <FormRowColumn unit="6" className="flex justify-end">
+                        <Button
+                            isLoading={props.isLoading}
+                            isDisabled={props.isLoading}
+                            onClick={() => {
+                                if (props.onSetServicePayments) {
+                                    props.onSetServicePayments([...props.servicePayments,
+                                    {
+                                        ...defaultServicePayment,
+                                        status: props.status ?? "ORÇAMENTO",
+                                        index: props.servicePayments?.length,
+                                        dateString: handleUTCToDateShow((handleNewDateToUTC() + 2592000000) + ""),
+                                    }])
+                                }
+                            }}>
+                            Adicionar pagamento
+                        </Button>
+                    </FormRowColumn>
+                </FormRow>
+            )}
 
             {props?.servicePayments?.map((element, index) => (
                 <ServicePaymentDataForm
@@ -98,6 +102,7 @@ export default function ServicePaymentForm(props: ServicePaymentFormProps) {
                     onDelete={handeOnDelete}
                     onSetText={handleSetText}
                     isLoading={props.isLoading}
+                    isForDisable={props.isForDisable}
                     servicePayments={props.servicePayments}
                 />
             ))}

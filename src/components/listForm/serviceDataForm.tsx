@@ -194,7 +194,6 @@ export default function ServiceDataForm(props: ServiceDataFormProps) {
                             isLight
                             className="mr-2 sm:mt-auto"
                             isLoading={props.isLoading}
-                            isDisabled={props.isForDisable}
                             onClick={() => {
                                 setIsFormOpen(!isFormOpen)
                             }}
@@ -258,7 +257,7 @@ export default function ServiceDataForm(props: ServiceDataFormProps) {
                         value={props.services[index].total}
                         id={"total-service-" + index + "-" + props.id}
                     />
-                    {props.onDelete && (
+                    {!props.isForDisable && props.onDelete && (
                         <Button
                             color="red"
                             isLoading={props.isLoading}
@@ -329,6 +328,7 @@ export default function ServiceDataForm(props: ServiceDataFormProps) {
                     isMultipleSelect={false}
                     isLoading={props.isLoading}
                     professionals={professionals}
+                    isLocked={props.isForDisable}
                     subtitle="Adicione o profissional"
                     onShowMessage={props.onShowMessage}
                     buttonTitle="Adicionar profissional"
@@ -349,6 +349,7 @@ export default function ServiceDataForm(props: ServiceDataFormProps) {
                     title="Imóveis alvo"
                     formClassName="p-1 m-2"
                     isLoading={props.isLoading}
+                    isLocked={props.isForDisable}
                     buttonTitle="Adicionar imóveis"
                     subtitle="Selecione os imovéis"
                     onValidate={handleValidadeTarget}
@@ -373,6 +374,7 @@ export default function ServiceDataForm(props: ServiceDataFormProps) {
                         formClassName="p-1 m-2"
                         title="Imóveis de origem"
                         isLoading={props.isLoading}
+                        isLocked={props.isForDisable}
                         buttonTitle="Adicionar imóveis"
                         subtitle="Selecione os imovéis"
                         onValidate={handleValidadeOrigin}
@@ -399,6 +401,7 @@ export default function ServiceDataForm(props: ServiceDataFormProps) {
                     formClassName="p-1 m-2"
                     isLoading={props.isLoading}
                     subtitle="Adicione as etapas"
+                    isForDisable={props.isForDisable}
                     onShowMessage={props.onShowMessage}
                     onSetServiceStages={handleSetServiceStages}
                     serviceStages={props.services[index].serviceStages}
@@ -409,6 +412,7 @@ export default function ServiceDataForm(props: ServiceDataFormProps) {
                     status={props.status}
                     formClassName="p-1 m-2"
                     isLoading={props.isLoading}
+                    isForDisable={props.isForDisable}
                     subtitle="Adicione os pagamentos"
                     onShowMessage={props.onShowMessage}
                     onSetServicePayments={handleSetServicePayments}

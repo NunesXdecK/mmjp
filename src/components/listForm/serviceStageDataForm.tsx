@@ -73,7 +73,6 @@ export default function ServiceStageDataForm(props: ServiceStageDataFormProps) {
                         isLight
                         className="mr-2 sm:mt-auto"
                         isLoading={props.isLoading}
-                        isDisabled={props.isForDisable}
                         onClick={() => {
                             setIsFormOpen(!isFormOpen)
                         }}
@@ -113,7 +112,7 @@ export default function ServiceStageDataForm(props: ServiceStageDataFormProps) {
                         value={props.serviceStages[index].dateString}
                     />
 
-                    {props.onDelete && (
+                    {props.onDelete && !props.isForDisable && (
                         <Button
                             color="red"
                             isLoading={props.isLoading}

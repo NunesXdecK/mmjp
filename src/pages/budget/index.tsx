@@ -256,7 +256,8 @@ localProject = {
                     onAfterSave={handleAfterSave}
                     title="Informações do orçamento"
                     onShowMessage={handleShowMessage}
-                    subtitle="Dados importantes sobre o orçamento" />
+                    subtitle="Dados importantes sobre o orçamento" 
+                    />
             )}
 
             <FeedbackMessageModal

@@ -15,6 +15,7 @@ interface ServiceStageFormProps {
     status?: "ORÇAMENTO" | "NORMAL" | "ARQUIVADO" | "FINALIZADO" | "PENDENTE",
     isBack?: boolean,
     isLoading?: boolean,
+    isForDisable?: boolean,
     serviceStages?: ServiceStage[],
     onBlur?: (any) => void,
     onFinishAdd?: (any?) => void,
@@ -70,26 +71,28 @@ export default function ServiceStageForm(props: ServiceStageFormProps) {
             subtitle={props.subtitle}
             className={props.formClassName}
         >
-            <FormRow>
-                <FormRowColumn unit="6" className="flex justify-end">
-                    <Button
-                        isLoading={props.isLoading}
-                        isDisabled={props.isLoading}
-                        onClick={() => {
-                            if (props.onSetServiceStages) {
-                                props.onSetServiceStages([...props.serviceStages ?? [],
-                                {
-                                    ...defaultServiceStage,
-                                    index: props.serviceStages?.length,
-                                    status: props.status ?? "ORÇAMENTO",
-                                    dateString: handleUTCToDateShow((handleNewDateToUTC() + 2592000000) + ""),
-                                }])
-                            }
-                        }}>
-                        Adicionar etapa
-                    </Button>
-                </FormRowColumn>
-            </FormRow>
+            {!props.isForDisable && (
+                <FormRow>
+                    <FormRowColumn unit="6" className="flex justify-end">
+                        <Button
+                            isLoading={props.isLoading}
+                            isDisabled={props.isLoading}
+                            onClick={() => {
+                                if (props.onSetServiceStages) {
+                                    props.onSetServiceStages([...props.serviceStages ?? [],
+                                    {
+                                        ...defaultServiceStage,
+                                        index: props.serviceStages?.length,
+                                        status: props.status ?? "ORÇAMENTO",
+                                        dateString: handleUTCToDateShow((handleNewDateToUTC() + 2592000000) + ""),
+                                    }])
+                                }
+                            }}>
+                            Adicionar etapa
+                        </Button>
+                    </FormRowColumn>
+                </FormRow>
+            )}
 
             {props?.serviceStages?.map((element, index) => (
                 <ServiceStageDataForm
@@ -100,6 +103,7 @@ export default function ServiceStageForm(props: ServiceStageFormProps) {
                     onSetText={handleSetText}
                     isLoading={props.isLoading}
                     onFinishAdd={props.onFinishAdd}
+                    isForDisable={props.isForDisable}
                     serviceStages={props.serviceStages}
                 />
             ))}

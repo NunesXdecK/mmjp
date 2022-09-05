@@ -377,7 +377,6 @@ export default function SelectPersonCompanyForm(props: SelectPersonCompanyFormPr
                 </>
             </IOSModal>
 
-
             <WindowModal
                 isOpen={isOpenDelete}
                 setIsOpen={setIsOpenDelete}>
