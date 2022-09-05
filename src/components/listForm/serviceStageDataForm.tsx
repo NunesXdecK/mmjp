@@ -165,6 +165,7 @@ export default function ServiceStageDataForm(props: ServiceStageDataFormProps) {
                     isMultipleSelect={false}
                     isLoading={props.isLoading}
                     professionals={professionals}
+                    isLocked={props.isForDisable}
                     onShowMessage={props.onShowMessage}
                     buttonTitle="Adicionar profissional"
                     validationButton={professionals.length === 1}
