@@ -16,6 +16,7 @@ interface ServiceFormProps {
     isLocked?: boolean,
     isLoading?: boolean,
     isForShowAll?: boolean,
+    isSingle?: boolean,
     professional?: Professional,
     services?: Service[],
     onBlur?: (any) => void,
@@ -71,7 +72,7 @@ export default function ServiceForm(props: ServiceFormProps) {
             title={props.title}
             subtitle={props.subtitle}
         >
-            {!props.isLocked && (
+            {(!props.isLocked && !props.isSingle) && (
                 <FormRow className="mb-2">
                     <FormRowColumn unit="6" className="flex justify-end">
                         <Button
@@ -107,6 +108,7 @@ export default function ServiceForm(props: ServiceFormProps) {
                     status={props.status}
                     onBlur={props.onBlur}
                     onDelete={handeOnDelete}
+                    isSingle={props.isSingle}
                     onSetText={handleSetText}
                     services={props.services}
                     isLoading={props.isLoading}

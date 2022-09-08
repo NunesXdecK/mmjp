@@ -557,6 +557,7 @@ export default function ProjectForm(props: ProjectFormProps) {
             />
         )
     }
+    
     const handlePrintActionBar = () => {
         return (
             <ActionButtonsForm

@@ -82,13 +82,23 @@ export default function ServiceView(props: ServiceViewProps) {
         let listOrigin = service?.immobilesOrigin?.sort(handleSortByData) ?? []
         return (
             <div className="w-full">
-                {!props.hideProject && service?.project?.length && (
+                {!props.hideProject && service?.project?.id?.length && (
                     <ProjectView
                         hideData
                         dataInside
                         canShowHideData
                         title="Projeto"
-                        id={service.project}
+                        id={service.project.id}
+                    />
+                )}
+
+                {service?.professional?.id?.length && (
+                    <ProfessionalView
+                        hideData
+                        dataInside
+                        canShowHideData
+                        title="Profissional"
+                        id={service.professional.id}
                     />
                 )}
 
@@ -137,16 +147,6 @@ export default function ServiceView(props: ServiceViewProps) {
                         key={"origin-" + index + immobile + service.id}
                     />
                 ))}
-
-                {service?.professional?.length && (
-                    <ProfessionalView
-                        hideData
-                        dataInside
-                        canShowHideData
-                        title="Profissional"
-                        id={service.professional}
-                    />
-                )}
             </div>
         )
     }

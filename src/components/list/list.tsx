@@ -191,7 +191,7 @@ export default function List(props: ListProps) {
                         canSeeInfo={props.canSeeInfo}
                         isActive={isActiveItem === index}
                         onActiveChange={handleActiveChange}
-                        key={page.toString() + index.toString()}
+                        key={page.toString() + index.toString() + (element?.id ? element.id : element)}
                         onDeleteClick={() => {
                             setIsOpenDelete(true)
                             setElement(element)

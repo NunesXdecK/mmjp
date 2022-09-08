@@ -14,6 +14,7 @@ interface ServiceStageFormProps {
     formClassName?: string,
     status?: "ORÇAMENTO" | "NORMAL" | "ARQUIVADO" | "FINALIZADO" | "PENDENTE",
     isBack?: boolean,
+    isSingle?: boolean,
     isLoading?: boolean,
     isForDisable?: boolean,
     serviceStages?: ServiceStage[],
@@ -100,6 +101,7 @@ export default function ServiceStageForm(props: ServiceStageFormProps) {
                     index={index}
                     onBlur={props.onBlur}
                     onDelete={handeOnDelete}
+                    isSingle={props.isSingle}
                     onSetText={handleSetText}
                     isLoading={props.isLoading}
                     onFinishAdd={props.onFinishAdd}

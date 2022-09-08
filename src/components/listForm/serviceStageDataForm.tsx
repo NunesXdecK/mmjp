@@ -19,6 +19,7 @@ interface ServiceStageDataFormProps {
     subtitle?: string,
     index?: number,
     isBack?: boolean,
+    isSingle?: boolean,
     isLoading?: boolean,
     isForSelect?: boolean,
     isForDisable?: boolean,
@@ -112,7 +113,7 @@ export default function ServiceStageDataForm(props: ServiceStageDataFormProps) {
                         value={props.serviceStages[index].dateString}
                     />
 
-                    {props.onDelete && !props.isForDisable && (
+                    {!props.isSingle && props.onDelete && !props.isForDisable && (
                         <Button
                             color="red"
                             isLoading={props.isLoading}

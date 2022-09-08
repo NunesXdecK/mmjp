@@ -1,12 +1,13 @@
 import { collection, doc, getDoc, getDocs, query, where } from "firebase/firestore"
-import { Immobile, Professional, Service, ServiceStage } from "../../../interfaces/objectInterfaces"
-import { ImmobileConversor, ProfessionalConversor, ServiceConversor, ServicePaymentConversor, ServiceStageConversor } from "../../../db/converters"
-import { db, SERVICE_COLLECTION_NAME, PROFESSIONAL_COLLECTION_NAME, IMMOBILE_COLLECTION_NAME, SERVICE_PAYMENT_COLLECTION_NAME, SERVICE_STAGE_COLLECTION_NAME } from "../../../db/firebaseDB"
+import { Immobile, Professional, Project, Service, ServiceStage } from "../../../interfaces/objectInterfaces"
+import { ImmobileConversor, ProfessionalConversor, ProjectConversor, ServiceConversor, ServicePaymentConversor, ServiceStageConversor } from "../../../db/converters"
+import { db, SERVICE_COLLECTION_NAME, PROFESSIONAL_COLLECTION_NAME, IMMOBILE_COLLECTION_NAME, SERVICE_PAYMENT_COLLECTION_NAME, SERVICE_STAGE_COLLECTION_NAME, PROJECT_COLLECTION_NAME } from "../../../db/firebaseDB"
 
 export default async function handler(req, res) {
     const { method } = req
 
     const serviceCollection = collection(db, SERVICE_COLLECTION_NAME).withConverter(ServiceConversor)
+    const projectCollection = collection(db, PROJECT_COLLECTION_NAME).withConverter(ProjectConversor)
     const immobileCollection = collection(db, IMMOBILE_COLLECTION_NAME).withConverter(ImmobileConversor)
     const professionalCollection = collection(db, PROFESSIONAL_COLLECTION_NAME).withConverter(ProfessionalConversor)
     const serviceStageCollection = collection(db, SERVICE_STAGE_COLLECTION_NAME).withConverter(ServiceStageConversor)
@@ -20,6 +21,11 @@ export default async function handler(req, res) {
                 if (id) {
                     const docRef = doc(serviceCollection, id)
                     let service: Service = (await getDoc(docRef)).data()
+                    if (service.project && "id" in service.project && service.project?.id?.length) {
+                        const docRef = doc(projectCollection, service.project.id)
+                        const data: Project = (await getDoc(docRef)).data()
+                        service = { ...service, project: data }
+                    }
                     if (service.professional && "id" in service.professional && service.professional?.id?.length) {
                         const docRef = doc(professionalCollection, service.professional.id)
                         const data: Professional = (await getDoc(docRef)).data()

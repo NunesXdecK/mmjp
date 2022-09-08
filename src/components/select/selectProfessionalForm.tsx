@@ -236,8 +236,8 @@ export default function SelectProfessionalForm(props: SelectProfessionalFormProp
                                             <PencilAltIcon className="text-white block h-5 w-5" aria-hidden="true" />
                                         </Button>
                                         <Button
-                                            type="submit"
                                             color="red"
+                                            type="submit"
                                             isLoading={props.isLoading}
                                             isDisabled={props.isLoading}
                                             className="ml-2 h-fit self-end"

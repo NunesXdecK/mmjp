@@ -16,6 +16,7 @@ interface ServicePaymentDataFormProps {
     subtitle?: string,
     index?: number,
     isBack?: boolean,
+    isSingle?: boolean,
     isLoading?: boolean,
     isForSelect?: boolean,
     isForDisable?: boolean,
@@ -102,7 +103,7 @@ export default function ServicePaymentDataForm(props: ServicePaymentDataFormProp
                         value={props.servicePayments[index].dateString}
                     />
 
-                    {props.onDelete && !props.isForDisable && (
+                    {!props.isSingle && props.onDelete && !props.isForDisable && (
                         <Button
                             color="red"
                             className="ml-2 mt-2 sm:mt-0 h-fit self-end"

@@ -29,7 +29,15 @@ const menus: LayoutMenuItem[] = [
         name: "Orçamentos", href: "/budget", current: false, disabled: false,
     },
     {
-        name: "Projetos", href: "/project", current: false, disabled: false,
+        name: "Projetos", current: false, disabled: false,
+        subMenus:
+            [
+                { name: "Projetos", href: "/project", current: false, disabled: false },
+                { name: "Serviços", href: "/service", current: false, disabled: false },
+                { name: "Etapas", href: "/servicestage", current: false, disabled: false },
+                { name: "Pagamentos", href: "/servicepayment", current: false, disabled: false },
+
+            ]
     },
 ]
 

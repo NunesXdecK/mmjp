@@ -14,6 +14,7 @@ interface ServicePaymentFormProps {
     formClassName?: string,
     status?: "ORÇAMENTO" | "NORMAL" | "ARQUIVADO" | "FINALIZADO" | "PENDENTE",
     isBack?: boolean,
+    isSingle?: boolean,
     isLoading?: boolean,
     isForDisable?: boolean,
     servicePayments?: ServicePayment[],
@@ -100,6 +101,7 @@ export default function ServicePaymentForm(props: ServicePaymentFormProps) {
                     index={index}
                     onBlur={props.onBlur}
                     onDelete={handeOnDelete}
+                    isSingle={props.isSingle}
                     onSetText={handleSetText}
                     isLoading={props.isLoading}
                     isForDisable={props.isForDisable}

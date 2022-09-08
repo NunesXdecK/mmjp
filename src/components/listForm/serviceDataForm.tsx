@@ -24,6 +24,7 @@ interface ServiceDataFormProps {
     status?: "ORÇAMENTO" | "NORMAL" | "ARQUIVADO" | "FINALIZADO" | "PENDENTE",
     index?: number,
     isBack?: boolean,
+    isSingle?: boolean,
     isLoading?: boolean,
     isForSelect?: boolean,
     isForShowAll?: boolean,
@@ -38,7 +39,7 @@ interface ServiceDataFormProps {
 
 export default function ServiceDataForm(props: ServiceDataFormProps) {
     const [isOpen, setIsOpen] = useState(false)
-    const [isFormOpen, setIsFormOpen] = useState(false)
+    const [isFormOpen, setIsFormOpen] = useState(props?.isSingle ? true : false)
     const [isFormValid, setIsFormValid] = useState(false)
     const [index, setIndex] = useState(props.index ?? 0)
 
@@ -189,7 +190,7 @@ export default function ServiceDataForm(props: ServiceDataFormProps) {
                 */}
             <FormRow className="py-2">
                 <FormRowColumn unit="2" className="flex flex-col sm:flex-row">
-                    {props.isForShowAll && (
+                    {(props.isForShowAll || !props.isSingle) && (
                         <Button
                             isLight
                             className="mr-2 sm:mt-auto"
@@ -257,7 +258,7 @@ export default function ServiceDataForm(props: ServiceDataFormProps) {
                         value={props.services[index].total}
                         id={"total-service-" + index + "-" + props.id}
                     />
-                    {!props.isForDisable && props.onDelete && (
+                    {!props.isSingle && !props.isForDisable && props.onDelete && (
                         <Button
                             color="red"
                             isLoading={props.isLoading}
@@ -405,7 +406,7 @@ export default function ServiceDataForm(props: ServiceDataFormProps) {
                     onShowMessage={props.onShowMessage}
                     onSetServiceStages={handleSetServiceStages}
                     serviceStages={props.services[index].serviceStages}
-                />
+                    />
 
                 <ServicePaymentForm
                     title="Pagamento"
