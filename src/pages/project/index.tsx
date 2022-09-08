@@ -80,10 +80,64 @@ export default function Projects() {
     const handleFilterList = (string) => {
         let listItems = [...projects]
         let listItemsFiltered: Project[] = []
-        listItemsFiltered = listItems.filter((element: Project, index) => {
+        let listItemsNormal: Project[] = []
+        let listItemsArchive: Project[] = []
+        let listItemsFinished: Project[] = []
+
+        listItems.map((element, index) => {
+            let status = element.status
+            switch (status) {
+                case "NORMAL":
+                    listItemsNormal = [...listItemsNormal, element]
+                    break
+                case "ARQUIVADO":
+                    listItemsArchive = [...listItemsArchive, element]
+                    break
+                case "FINALIZADO":
+                    listItemsFinished = [...listItemsFinished, element]
+                    break
+            }
+        })
+
+        const sortByDate = (elementOne, elementTwo) => {
+            let dateOne = 0
+            let dateTwo = 0
+            if (elementOne && elementTwo) {
+                if ("dateLastUpdateUTC" in elementOne) {
+                    dateOne = elementOne.dateLastUpdateUTC
+                } else if ("dateInsertUTC" in elementOne) {
+                    dateOne = elementOne.dateInsertUTC
+                }
+                if ("dateLastUpdateUTC" in elementTwo) {
+                    dateTwo = elementTwo.dateLastUpdateUTC
+                } else if ("dateInsertUTC" in elementTwo) {
+                    dateTwo = elementTwo.dateInsertUTC
+                }
+            }
+            return dateTwo - dateOne
+        }
+        const sortByPriority = (elementOne, elementTwo) => {
+            let priorityOne = 0
+            let priorityTwo = 0
+            if (elementOne && elementTwo) {
+                if ("priority" in elementOne) {
+                    priorityOne = elementOne.priority
+                }
+                if ("priority" in elementTwo) {
+                    priorityTwo = elementTwo.priority
+                }
+            }
+            return priorityTwo - priorityOne
+        }
+        listItemsFiltered = [
+            ...listItemsNormal.sort(sortByDate).sort(sortByPriority),
+            ...listItemsFinished.sort(sortByDate).sort(sortByPriority),
+            ...listItemsArchive.sort(sortByDate).sort(sortByPriority),
+        ]
+
+        return listItemsFiltered.filter((element: Project, index) => {
             return element.title.toLowerCase().includes(string.toLowerCase())
         })
-        return listItemsFiltered
     }
 
     const handleEditClickOld = async (project) => {
@@ -142,7 +196,7 @@ localProject = {
             localServices = localServices.sort((elementOne: Service, elementTwo: Service) => {
                 let indexOne = elementOne.index
                 let indexTwo = elementTwo.index
-                return indexOne - indexTwo
+                return indexTwo - indexOne
             })
         } catch (err) {
             console.error(err)
@@ -256,7 +310,7 @@ localProject = {
                     title="Informações do projeto"
                     onShowMessage={handleShowMessage}
                     subtitle="Dados importantes sobre o projeto"
-                     />
+                />
             )}
 
             <FeedbackMessageModal

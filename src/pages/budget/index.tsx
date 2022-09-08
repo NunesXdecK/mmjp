@@ -141,7 +141,7 @@ localProject = {
             localServices = localServices.sort((elementOne: Service, elementTwo: Service) => {
                 let indexOne = elementOne.index
                 let indexTwo = elementTwo.index
-                return indexOne - indexTwo
+                return indexTwo - indexOne
             })
         } catch (err) {
             console.error(err)

@@ -105,16 +105,16 @@ export default function Services() {
         }
         const sortByPriority = (elementOne, elementTwo) => {
             let priorityOne = 0
-            let prorityTwo = 0
+            let priorityTwo = 0
             if (elementOne && elementTwo) {
                 if ("priority" in elementOne) {
                     priorityOne = elementOne.priority
                 }
                 if ("priority" in elementTwo) {
-                    prorityTwo = elementTwo.priority
+                    priorityTwo = elementTwo.priority
                 }
             }
-            return priorityOne - prorityTwo
+            return priorityTwo - priorityOne
         }
         listItemsFiltered = [
             ...listItemsPendency.sort(sortByDate).sort(sortByPriority),

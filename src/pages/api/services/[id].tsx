@@ -24,7 +24,7 @@ export default async function handler(req, res) {
                     let indexOne = elementOne.index
                     let indexTwo = elementTwo.index
 
-                    return indexOne - indexTwo
+                    return indexTwo - indexOne
                 })
                 resGET = { ...resGET, status: "SUCCESS", list: list }
             } catch (err) {

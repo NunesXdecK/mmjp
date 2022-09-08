@@ -44,7 +44,7 @@ export default async function handler(req, res) {
                 list = list.sort((elementOne: ServiceStage, elementTwo: ServiceStage) => {
                     let indexOne = elementOne.index
                     let indexTwo = elementTwo.index
-                    return indexOne - indexTwo
+                    return indexTwo - indexOne
                 })
                 resGET = { ...resGET, status: "SUCCESS", list: list }
             } catch (err) {

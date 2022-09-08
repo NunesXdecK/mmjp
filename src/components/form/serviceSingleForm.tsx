@@ -95,7 +95,7 @@ export default function ServiceSingleForm(props: ServiceSingleFormProps) {
         if (elementTwo && "index" in elementTwo) {
             indexTwo = elementTwo.index
         }
-        return indexOne - indexTwo
+        return indexTwo - indexOne
     }
 
     const handleProjectServicesToDB = (services: Service[], status?: "ORÇAMENTO" | "NORMAL" | "ARQUIVADO" | "FINALIZADO") => {
@@ -336,7 +336,7 @@ export default function ServiceSingleForm(props: ServiceSingleFormProps) {
                         Reativar
                     </Button>
                 )}
-                {(services[0].status === "ORÇAMENTO" || services[0].status === "NORMAL") && (
+                {false && (services[0].status === "ORÇAMENTO" || services[0].status === "NORMAL") && (
                     <Button
                         type="button"
                         onClick={(event) => {
@@ -418,31 +418,31 @@ export default function ServiceSingleForm(props: ServiceSingleFormProps) {
                 }}>
 
                 {handleActionBar()}
-
-                <ServiceForm
-                    isSingle
-                    title="Serviços"
-                    services={services}
-                    isLoading={isLoading}
-                    status={services[0].status}
-                    onBlur={handleAutoSave}
-                    onSetServices={setServices}
-                    onFinishAdd={handleAutoSave}
-                    professional={props.professional}
-                    onShowMessage={props.onShowMessage}
-                    subtitle="Dados básicos dos serviços"
-                    isLocked={props.isForDisable ||
-                        (services[0].status === "PENDENTE" ||
-                            services[0].status === "FINALIZADO" ||
-                            services[0].status === "ARQUIVADO")}
-                />
-
-                <ProjectFormForView
-                    title="Projeto"
-                    project={services[0].project}
-                    subtitle="informações do projeto"
-                />
             </form>
+
+            <ServiceForm
+                isSingle
+                title="Serviços"
+                services={services}
+                isLoading={isLoading}
+                status={services[0].status}
+                onBlur={handleAutoSave}
+                onSetServices={setServices}
+                onFinishAdd={handleAutoSave}
+                professional={props.professional}
+                onShowMessage={props.onShowMessage}
+                subtitle="Dados básicos dos serviços"
+                isLocked={props.isForDisable ||
+                    (services[0].status === "PENDENTE" ||
+                        services[0].status === "FINALIZADO" ||
+                        services[0].status === "ARQUIVADO")}
+            />
+
+            <ProjectFormForView
+                title="Projeto"
+                project={services[0].project}
+                subtitle="informações do projeto"
+            />
 
             <form
                 onSubmit={(event) => {

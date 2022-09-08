@@ -106,7 +106,7 @@ export default function ProjectForm(props: ProjectFormProps) {
         if (elementTwo && "index" in elementTwo) {
             indexTwo = elementTwo.index
         }
-        return indexOne - indexTwo
+        return indexTwo - indexOne
     }
 
     const handleProjectServicesToDB = (project: Project, status?: "ORÇAMENTO" | "NORMAL" | "ARQUIVADO" | "FINALIZADO") => {

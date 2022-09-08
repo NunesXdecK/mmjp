@@ -59,7 +59,7 @@ export default function ServiceView(props: ServiceViewProps) {
         if ("dateInsertUTC" in elementTwo) {
             dateTwo = elementTwo.dateInsertUTC
         }
-        return dateOne - dateTwo
+        return dateTwo - dateOne
 
     }
 
@@ -72,7 +72,7 @@ export default function ServiceView(props: ServiceViewProps) {
         if ("index" in elementTwo) {
             dateTwo = elementTwo.index
         }
-        return dateOne - dateTwo
+        return dateTwo - dateOne
     }
 
     const handlePutData = () => {

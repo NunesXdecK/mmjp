@@ -53,7 +53,7 @@ export default function ProjectView(props: ProjectViewProps) {
             if ("dateInsertUTC" in elementTwo) {
                 dateTwo = elementTwo.dateInsertUTC
             }
-            return dateOne - dateTwo
+            return dateTwo - dateOne
         }) ?? []
         let listServices = services?.sort((elementOne, elementTwo) => {
             let dateOne = 0
@@ -64,7 +64,7 @@ export default function ProjectView(props: ProjectViewProps) {
             if ("index" in elementTwo) {
                 dateTwo = elementTwo.index
             }
-            return dateOne - dateTwo
+            return dateTwo - dateOne
         }) ?? []
         return (
             <div className="w-full">

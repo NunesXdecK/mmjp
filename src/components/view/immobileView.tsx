@@ -45,7 +45,7 @@ export default function ImmobileView(props: ImmobileViewProps) {
             if ("dateInsertUTC" in elementTwo) {
                 dateTwo = elementTwo.dateInsertUTC
             }
-            return dateOne - dateTwo
+            return dateTwo - dateOne
         }) ?? []
         return (
             <div className="w-full">
