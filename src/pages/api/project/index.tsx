@@ -25,6 +25,7 @@ export default async function handler(req, res) {
                     let clientsDocRefsForDB = []
                     if (project.clients?.length > 0) {
                         project.clients?.map((element, index) => {
+                            /*
                             if ("cpf" in element) {
                                 if (element.id) {
                                     const docRef = doc(personCollection, element.id)
@@ -34,6 +35,14 @@ export default async function handler(req, res) {
                                 if (element.id) {
                                     const docRef = doc(companyCollection, element.id)
                                     clientsDocRefsForDB = [...clientsDocRefsForDB, docRef]
+                                }
+                            }
+                            */
+                            if (element.id?.length) {
+                                if ("cpf" in element) {
+                                    clientsDocRefsForDB = [...clientsDocRefsForDB, { id: element.id, cpf: "" }]
+                                } else if ("cnpj" in element) {
+                                    clientsDocRefsForDB = [...clientsDocRefsForDB, { id: element.id, cnpj: "" }]
                                 }
                             }
                             project = { ...project, clients: clientsDocRefsForDB }
@@ -68,7 +77,8 @@ export default async function handler(req, res) {
                 if (token === "tokenbemseguro") {
                     let list = []
                     const projectDocRef = doc(projectCollection, id)
-                    const queryService = query(serviceCollection, where("project", "==", projectDocRef))
+                    //const queryService = query(serviceCollection, where("project", "==", projectDocRef))
+                    const queryService = query(serviceCollection, where("project", "==", { id: id }))
                     const querySnapshot = await getDocs(queryService)
                     querySnapshot.forEach((doc) => {
                         list = [...list, doc.data()]
@@ -78,12 +88,14 @@ export default async function handler(req, res) {
                             const serviceDocRef = doc(serviceCollection, element.id)
                             let listStages = []
                             let listPayments = []
-                            const queryStages = query(serviceStageCollection, where("service", "==", serviceDocRef))
+                            //const queryStages = query(serviceStageCollection, where("service", "==", serviceDocRef))
+                            const queryStages = query(serviceStageCollection, where("service", "==", { id: element.id }))
                             const queryStagesSnapshot = await getDocs(queryStages)
                             queryStagesSnapshot.forEach((doc) => {
                                 listStages = [...listStages, doc.data()]
                             })
-                            const queryPayments = query(servicePaymentCollection, where("service", "==", serviceDocRef))
+                            //const queryPayments = query(servicePaymentCollection, where("service", "==", serviceDocRef))
+                            const queryPayments = query(servicePaymentCollection, where("service", "==", { id: element.id }))
                             const queryPaymentsSnapshot = await getDocs(queryPayments)
                             queryPaymentsSnapshot.forEach((doc) => {
                                 listPayments = [...listPayments, doc.data()]

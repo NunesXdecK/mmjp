@@ -42,7 +42,7 @@ export default function ServiceForm(props: ServiceFormProps) {
         let localService = localServices[index]
         let canDelete = true
 
-        if (localService.id && localService.id.length) {
+        if (localService.id && localService.id?.length) {
             const res = await fetch("api/service", {
                 method: "DELETE",
                 body: JSON.stringify({ token: "tokenbemseguro", id: localService.id }),

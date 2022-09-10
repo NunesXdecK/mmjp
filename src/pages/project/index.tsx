@@ -184,9 +184,9 @@ localProject = {
             if (localServicesByProject && localServicesByProject?.length > 0) {
                 await Promise.all(
                     localServicesByProject.map(async (element, index) => {
-                        if (element && "id" in element && element.id.length) {
+                        if (element && "id" in element && element?.id?.length) {
                             let service: Service = await fetch("api/service/" + element.id).then((res) => res.json()).then((res) => res.data)
-                            if (service && "id" in service && service.id.length) {
+                            if (service && "id" in service && service?.id?.length) {
                                 localServices = [...localServices, { ...defaultService, ...handlePrepareServiceForShow(service) }]
                             }
                         }
@@ -205,6 +205,18 @@ localProject = {
         if (localProject.clients && localProject.clients?.length > 0) {
             await Promise.all(
                 localProject.clients.map(async (element, index) => {
+                    if (element && element.id?.length) {
+                        let localClient: (Person | Company) = {}
+                        if ("cpf" in element) {
+                            localClient = await fetch("api/person/" + element.id).then((res) => res.json()).then((res) => res.data)
+                        } else if ("cnpj" in element) {
+                            localClient = await fetch("api/company/" + element.id).then((res) => res.json()).then((res) => res.data)
+                        }
+                        if (localClient && "id" in localClient && localClient?.id?.length) {
+                            localClients = [...localClients, localClient]
+                        }
+                    }
+                    /*
                     let array = element.split("/")
                     if (array && array.length > 0) {
                         let localClient: (Person | Company) = {}
@@ -217,6 +229,7 @@ localProject = {
                             localClients = [...localClients, localClient]
                         }
                     }
+                    */
                 })
             )
         }

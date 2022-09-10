@@ -95,7 +95,7 @@ export default function ServiceSingleForm(props: ServiceSingleFormProps) {
         if (elementTwo && "index" in elementTwo) {
             indexTwo = elementTwo.index
         }
-        return indexTwo - indexOne
+        return indexOne - indexTwo 
     }
 
     const handleProjectServicesToDB = (services: Service[], status?: "ORÇAMENTO" | "NORMAL" | "ARQUIVADO" | "FINALIZADO") => {
@@ -322,7 +322,7 @@ export default function ServiceSingleForm(props: ServiceSingleFormProps) {
                         type="button"
                         onClick={(event) => {
                             event.preventDefault()
-                            if (services[0].id.length) {
+                            if (services[0].id?.length) {
                                 setWindowText("Deseja realmente reativar o projeto " + services[0].title + "?")
                                 setProjectStatus("NORMAL")
                                 setIsOpen(true)
@@ -336,31 +336,33 @@ export default function ServiceSingleForm(props: ServiceSingleFormProps) {
                         Reativar
                     </Button>
                 )}
-                {false && (services[0].status === "ORÇAMENTO" || services[0].status === "NORMAL") && (
-                    <Button
-                        type="button"
-                        onClick={(event) => {
-                            event.preventDefault()
-                            if (services[0].id.length) {
-                                setWindowText("Deseja realmente arquivar o projeto " + services[0].title + "?")
-                                setProjectStatus("ARQUIVADO")
-                                setIsOpen(true)
-                            } else {
-                                handleSave("ARQUIVADO")
-                            }
-                        }}
-                        isLoading={isLoading}
-                        isDisabled={!isFormValid}
-                    >
-                        Arquivar
-                    </Button>
-                )}
+                {false &&
+                    (services[0].status === "ORÇAMENTO"
+                        || services[0].status === "NORMAL") && (
+                        <Button
+                            type="button"
+                            onClick={(event) => {
+                                event.preventDefault()
+                                if (services[0].id?.length) {
+                                    setWindowText("Deseja realmente arquivar o projeto " + services[0].title + "?")
+                                    setProjectStatus("ARQUIVADO")
+                                    setIsOpen(true)
+                                } else {
+                                    handleSave("ARQUIVADO")
+                                }
+                            }}
+                            isLoading={isLoading}
+                            isDisabled={!isFormValid}
+                        >
+                            Arquivar
+                        </Button>
+                    )}
                 {services[0].status === "NORMAL" && (
                     <Button
                         type="button"
                         onClick={(event) => {
                             event.preventDefault()
-                            if (services[0].id.length) {
+                            if (services[0].id?.length) {
                                 setWindowText("Deseja realmente finalizar o projeto " + services[0].title + "?")
                                 setProjectStatus("FINALIZADO")
                                 setIsOpen(true)
@@ -425,8 +427,8 @@ export default function ServiceSingleForm(props: ServiceSingleFormProps) {
                 title="Serviços"
                 services={services}
                 isLoading={isLoading}
-                status={services[0].status}
                 onBlur={handleAutoSave}
+                status={services[0].status}
                 onSetServices={setServices}
                 onFinishAdd={handleAutoSave}
                 professional={props.professional}

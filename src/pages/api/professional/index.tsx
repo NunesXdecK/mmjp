@@ -17,8 +17,11 @@ export default async function handler(req, res) {
                 if (token === "tokenbemseguro") {
                     let nowID = data?.id ?? ""
                     if (data.person && "id" in data.person && data.person?.id.length) {
+                        /*
                         const docRef = doc(personCollection, data.person.id)
                         data = { ...data, person: docRef }
+                        */
+                        data = { ...data, person: { id: data.person.id } }
                     }
                     const isSave = nowID === ""
                     if (isSave) {

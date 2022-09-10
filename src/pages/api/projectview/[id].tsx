@@ -20,7 +20,7 @@ export default async function handler(req, res) {
 
                     let clients = []
                     project.clients.map((element, index) => {
-                        clients = [...clients, element.path]
+                        clients = [...clients, element]
                     })
                     {/*
 let immobilesOrigin = []

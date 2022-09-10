@@ -46,6 +46,21 @@ export default function BudgetPrintView(props: BudgetPrintViewProps) {
                 fetch("../api/projectview/" + props.id).then((res) => res.json()).then((res) => {
                     setIsFirst(old => false)
                     let client = res.data?.clients[0] ?? {}
+                    if (client) {
+                        if ("cpf" in client) {
+                            fetch("../api/person/" + client.id).then((res) => res.json())
+                                .then((res) => {
+                                    setClient(res.data)
+                                })
+                        } else if ("cnpj" in client) {
+                            fetch("../api/company/" + client.id).then((res) => res.json())
+                                .then((res) => {
+                                    setClient(res.data)
+                                })
+                        }
+                    }
+                    setProject(res.data)
+                    /*
                     if (client && client.length) {
                         let array = client.split("/")
                         if (array && array.length > 0) {
@@ -54,15 +69,15 @@ export default function BudgetPrintView(props: BudgetPrintViewProps) {
                                     .then((res) => {
                                         setClient(res.data)
                                     })
-                            } else if (array[0].includes(COMPANY_COLLECTION_NAME)) {
+                                } else if (array[0].includes(COMPANY_COLLECTION_NAME)) {
                                 fetch("../api/company/" + array[1]).then((res) => res.json())
                                     .then((res) => {
                                         setClient(res.data)
                                     })
+                                }
                             }
                         }
-                    }
-                    setProject(res.data)
+                        */
                 })
                 fetch("../api/services/" + props.id).then((res) => res.json()).then((res) => {
                     setIsFirst(old => false)

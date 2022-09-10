@@ -15,7 +15,7 @@ export default async function handler(req, res) {
             try {
                 const { id } = req.query
                 const projectDocRef = doc(projectCollection, id)
-                const queryService = query(serviceCollection, where("project", "==", projectDocRef))
+                const queryService = query(serviceCollection, where("project", "==", { id: id }))
                 const querySnapshot = await getDocs(queryService)
                 querySnapshot.forEach((doc) => {
                     list = [...list, doc.data()]

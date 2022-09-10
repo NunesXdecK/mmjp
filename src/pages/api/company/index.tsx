@@ -19,9 +19,12 @@ export default async function handler(req, res) {
                     let docRefsForDB = []
                     if (data.owners?.length > 0) {
                         data.owners?.map((element, index) => {
-                            if (element.id) {
+                            if (element.id?.length) {
+                                /*
                                 const docRef = doc(personCollection, element.id)
                                 docRefsForDB = [...docRefsForDB, docRef]
+                                */
+                                docRefsForDB = [...docRefsForDB, { id: element.id }]
                             }
                         })
                         data = { ...data, owners: docRefsForDB }

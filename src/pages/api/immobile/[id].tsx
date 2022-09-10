@@ -20,6 +20,24 @@ export default async function handler(req, res) {
                     const docRef = doc(immobileCollection, id)
                     let data: Immobile = (await getDoc(docRef)).data()
                     await Promise.all(data.owners.map(async (element, index) => {
+                        if (element && element.id && "cpf" in element) {
+                            const docRef = doc(personCollection, element.id)
+                            if (docRef) {
+                                const data: Person = (await getDoc(docRef)).data()
+                                if (data) {
+                                    ownersArray = [...ownersArray, data]
+                                }
+                            }
+                        } else if (element && element.id && "cnpj" in element) {
+                            const docRef = doc(companyCollection, element.id)
+                            if (docRef) {
+                                const data: Company = (await getDoc(docRef)).data()
+                                if (data) {
+                                    ownersArray = [...ownersArray, data]
+                                }
+                            }
+                        }
+                        /*
                         if (element.path.includes(PERSON_COLLECTION_NAME)) {
                             const docRef = doc(personCollection, element.id)
                             if (docRef) {
@@ -37,6 +55,7 @@ export default async function handler(req, res) {
                                 }
                             }
                         }
+                        */
                     }))
                     data = { ...data, owners: ownersArray }
                     resGET = { ...resGET, status: "SUCCESS", data: data }

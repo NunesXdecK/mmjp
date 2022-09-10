@@ -64,15 +64,15 @@ export default function ServiceView(props: ServiceViewProps) {
     }
 
     const handleSortByIndex = (elementOne, elementTwo) => {
-        let dateOne = 0
-        let dateTwo = 0
+        let indexOne = 0
+        let indexTwo = 0
         if ("index" in elementOne) {
-            dateOne = elementOne.index
+            indexOne = elementOne.index
         }
         if ("index" in elementTwo) {
-            dateTwo = elementTwo.index
+            indexTwo = elementTwo.index
         }
-        return dateTwo - dateOne
+        return indexOne - indexTwo
     }
 
     const handlePutData = () => {

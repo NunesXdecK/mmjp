@@ -28,14 +28,20 @@ export default async function handler(req, res) {
                 serviceNowID = data?.id ?? ""
                 if (token === "tokenbemseguro") {
                     if (service && "id" in service && service.professional?.id?.length) {
+                        /*
                         const docRef = doc(professionalCollection, service.professional.id)
                         service = { ...service, professional: docRef }
+                        */
+                        service = { ...service, professional: { id: service.professional.id } }
                     } else {
                         service = { ...service, professional: {} }
                     }
                     if (service && "id" in service && service.project?.id?.length) {
+                        /*
                         const docRef = doc(projectCollection, service.project.id)
                         service = { ...service, project: docRef }
+                        */
+                        service = { ...service, project: { id: service.project.id } }
                     } else {
                         service = { ...service, project: {} }
                     }
@@ -43,18 +49,24 @@ export default async function handler(req, res) {
                     let immobilesOriginDocRefsForDB = []
                     if (service.immobilesTarget?.length > 0) {
                         service.immobilesTarget?.map((element, index) => {
-                            if (element.id) {
+                            if (element.id?.length) {
+                                /*
                                 const docRef = doc(immobileCollection, element.id)
                                 immobilesTargetDocRefsForDB = [...immobilesTargetDocRefsForDB, docRef]
+                                */
+                                immobilesTargetDocRefsForDB = [...immobilesTargetDocRefsForDB, { id: element.id }]
                             }
                         })
                         service = { ...service, immobilesTarget: immobilesTargetDocRefsForDB }
                     }
                     if (service.immobilesOrigin?.length > 0) {
                         service.immobilesOrigin?.map((element, index) => {
-                            if (element.id) {
+                            if (element.id?.length) {
+                                /*
                                 const docRef = doc(immobileCollection, element.id)
                                 immobilesOriginDocRefsForDB = [...immobilesOriginDocRefsForDB, docRef]
+                                */
+                                immobilesOriginDocRefsForDB = [...immobilesOriginDocRefsForDB, { id: element.id }]
                             }
                         })
                         service = { ...service, immobilesOrigin: immobilesOriginDocRefsForDB }
@@ -87,10 +99,13 @@ export default async function handler(req, res) {
                                 if (serviceDocRef) {
                                     let serviceStageNowID = serviceStage?.id ?? ""
                                     const isSave = serviceStageNowID === ""
-                                    serviceStage = { ...serviceStage, service: serviceDocRef }
-                                    if (serviceStage.responsible && "id" in serviceStage.responsible && serviceStage.responsible?.id.length) {
+                                    serviceStage = { ...serviceStage, service: { id: serviceNowID } }
+                                    if (serviceStage.responsible && "id" in serviceStage.responsible && serviceStage.responsible?.id?.length) {
+                                        /*
                                         const docRef = doc(professionalCollection, serviceStage.responsible.id)
                                         serviceStage = { ...serviceStage, responsible: docRef }
+                                        */
+                                        serviceStage = { ...serviceStage, responsible: { id: serviceStage.responsible.id } }
                                     }
                                     if (isSave) {
                                         const docRef = await addDoc(serviceStageCollection, ServiceStageConversor.toFirestore(serviceStage))
@@ -115,7 +130,7 @@ export default async function handler(req, res) {
                                 if (serviceDocRef) {
                                     let servicePaymentNowID = servicePayment?.id ?? ""
                                     const isSave = servicePaymentNowID === ""
-                                    servicePayment = { ...servicePayment, service: serviceDocRef }
+                                    servicePayment = { ...servicePayment, service: { id: serviceNowID } }
                                     if (isSave) {
                                         const docRef = await addDoc(servicePaymentCollection, ServicePaymentConversor.toFirestore(servicePayment))
                                         servicePaymentNowID = docRef.id
@@ -150,12 +165,12 @@ export default async function handler(req, res) {
                     const serviceDocRef = doc(serviceCollection, id)
                     let listStages = []
                     let listPayments = []
-                    const queryStages = query(serviceStageCollection, where("service", "==", serviceDocRef))
+                    const queryStages = query(serviceStageCollection, where("service", "==", { id: id }))
                     const queryStagesSnapshot = await getDocs(queryStages)
                     queryStagesSnapshot.forEach((doc) => {
                         listStages = [...listStages, doc.data()]
                     })
-                    const queryPayments = query(servicePaymentCollection, where("service", "==", serviceDocRef))
+                    const queryPayments = query(servicePaymentCollection, where("service", "==", { id: id }))
                     const queryPaymentsSnapshot = await getDocs(queryPayments)
                     queryPaymentsSnapshot.forEach((doc) => {
                         listPayments = [...listPayments, doc.data()]

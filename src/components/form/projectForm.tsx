@@ -106,7 +106,7 @@ export default function ProjectForm(props: ProjectFormProps) {
         if (elementTwo && "index" in elementTwo) {
             indexTwo = elementTwo.index
         }
-        return indexTwo - indexOne
+        return indexOne - indexTwo 
     }
 
     const handleProjectServicesToDB = (project: Project, status?: "ORÇAMENTO" | "NORMAL" | "ARQUIVADO" | "FINALIZADO") => {
@@ -423,7 +423,7 @@ export default function ProjectForm(props: ProjectFormProps) {
                         type="button"
                         onClick={(event) => {
                             event.preventDefault()
-                            if (project.id.length) {
+                            if (project.id?.length) {
                                 setWindowText("Deseja realmente reativar o projeto " + project.title + "?")
                                 setProjectStatus("NORMAL")
                                 setIsOpen(true)
@@ -442,7 +442,7 @@ export default function ProjectForm(props: ProjectFormProps) {
                         type="button"
                         onClick={(event) => {
                             event.preventDefault()
-                            if (project.id.length) {
+                            if (project.id?.length) {
                                 setWindowText("Deseja realmente arquivar o projeto " + project.title + "?")
                                 setProjectStatus("ARQUIVADO")
                                 setIsOpen(true)
@@ -490,7 +490,7 @@ export default function ProjectForm(props: ProjectFormProps) {
                             type="button"
                             onClick={(event) => {
                                 event.preventDefault()
-                                if (project.id.length) {
+                                if (project.id?.length) {
                                     setWindowText("Deseja realmente iniciar o projeto " + project.title + "?")
                                     setProjectStatus("NORMAL")
                                     setIsOpen(true)
@@ -510,7 +510,7 @@ export default function ProjectForm(props: ProjectFormProps) {
                         type="button"
                         onClick={(event) => {
                             event.preventDefault()
-                            if (project.id.length) {
+                            if (project.id?.length) {
                                 setWindowText("Deseja realmente finalizar o projeto " + project.title + "?")
                                 setProjectStatus("FINALIZADO")
                                 setIsOpen(true)

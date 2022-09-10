@@ -32,7 +32,7 @@ export default async function handler(req, res) {
                         service = { ...service, professional: data }
                     }
                     let listServiceStage = []
-                    const queryServiceStage = query(serviceStageCollection, where("service", "==", docRef))
+                    const queryServiceStage = query(serviceStageCollection, where("service", "==", { id: id }))
                     const queryServiceStageSnapshot = await getDocs(queryServiceStage)
                     queryServiceStageSnapshot.forEach(async (docRef) => {
                         listServiceStage = [...listServiceStage, docRef.data()]
@@ -42,10 +42,10 @@ export default async function handler(req, res) {
                         await Promise.all(
                             listServiceStage.map(async (element, index) => {
                                 let data: ServiceStage = element
-                                if (data.responsible && "id" in data.responsible && data.responsible.id.length) {
+                                if (data.responsible && "id" in data.responsible && data.responsible?.id?.length) {
                                     const professionalDocRef = doc(professionalCollection, data.responsible?.id)
                                     let professional: Professional = (await getDoc(professionalDocRef)).data()
-                                    if (professional && "id" in professional && professional?.id.length) {
+                                    if (professional && "id" in professional && professional?.id?.length) {
                                         data = { ...data, responsible: professional }
                                     }
                                 }
@@ -56,7 +56,7 @@ export default async function handler(req, res) {
                         service = { ...service, serviceStages: listServiceWithResp }
                     }
                     let listServicePayment = []
-                    const queryServicePayment = query(servicePaymentCollection, where("service", "==", docRef))
+                    const queryServicePayment = query(servicePaymentCollection, where("service", "==", { id: id }))
                     const queryServicePaymentSnapshot = await getDocs(queryServicePayment)
                     queryServicePaymentSnapshot.forEach((doc) => {
                         listServicePayment = [...listServicePayment, doc.data()]

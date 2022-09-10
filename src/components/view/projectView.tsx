@@ -70,6 +70,7 @@ export default function ProjectView(props: ProjectViewProps) {
             <div className="w-full">
                 {listClients?.map((owner, index) => (
                     <div key={index + owner}>
+                        {/*
                         {owner?.length && owner.includes(PERSON_COLLECTION_NAME) && (
                             <PersonView
                                 hideData
@@ -88,6 +89,27 @@ export default function ProjectView(props: ProjectViewProps) {
                                 addressTitle={"Endereço"}
                                 title={"Cliente"}
                                 id={owner.split("/")[1] ?? ""}
+                            />
+                        )}
+                        */}
+                        {owner && "cpf" in owner && (
+                            <PersonView
+                                hideData
+                                dataInside
+                                canShowHideData
+                                addressTitle={"Endereço"}
+                                title={"Cliente"}
+                                id={owner.id ?? ""}
+                            />
+                        )}
+                        {owner && "cnpj" in owner && (
+                            <CompanyView
+                                hideData
+                                dataInside
+                                canShowHideData
+                                addressTitle={"Endereço"}
+                                title={"Cliente"}
+                                id={owner.id ?? ""}
                             />
                         )}
                     </div>

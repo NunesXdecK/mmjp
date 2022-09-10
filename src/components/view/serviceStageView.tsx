@@ -13,6 +13,7 @@ import { defaultServiceStage, ServiceStage } from "../../interfaces/objectInterf
 interface ServiceStageViewProps {
     id?: string,
     title?: string,
+    elementId?: string,
     addressTitle?: string,
     classNameTitle?: string,
     classNameHolder?: string,

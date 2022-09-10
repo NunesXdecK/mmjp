@@ -17,10 +17,11 @@ export default async function handler(req, res) {
                 if (token === "tokenbemseguro") {
                     let nowID = data?.id ?? ""
                     const isSave = nowID === ""
-                    if (data.service && "id" in data.service && data.service.id.length) {
+                    if (data.service && "id" in data.service && data.service.id?.length) {
                         const serviceDocRef = doc(serviceCollection, data.service.id)
                         if (serviceDocRef) {
-                            data = { ...data, service: serviceDocRef }
+                            //data = { ...data, service: serviceDocRef }
+                            data = { ...data, service: { id: data.service.id } }
                             if (isSave) {
                                 const docRef = await addDoc(servicePaymentCollection, ServicePaymentConversor.toFirestore(data))
                                 nowID = docRef.id

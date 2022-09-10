@@ -523,6 +523,18 @@ export const handlePrepareServiceForShow = (service: Service) => {
     }
 }
 
+const handleSortByIndex = (elementOne, elementTwo) => {
+    let indexOne = 0
+    let indexTwo = 0
+    if (elementOne && "index" in elementOne) {
+        indexOne = elementOne.index
+    }
+    if (elementTwo && "index" in elementTwo) {
+        indexTwo = elementTwo.index
+    }
+    return indexOne - indexTwo 
+}
+
 export const handlePrepareServicePaymentStageForShow = (list: (ServicePayment | ServiceStage)[]) => {
     let localList = []
     if (list && list.length > 0) {
@@ -535,6 +547,9 @@ export const handlePrepareServicePaymentStageForShow = (list: (ServicePayment | 
                 dateString: handleUTCToDateShow(element.dateDue.toString())
             }]
         })
+        if (localList && localList.length > 0) {
+            localList = localList.sort(handleSortByIndex)
+        }
     }
     return localList
 }

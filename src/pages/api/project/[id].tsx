@@ -21,6 +21,24 @@ export default async function handler(req, res) {
                     let clients = []
                     if (project.clients && project.clients?.length > 0) {
                         await Promise.all(project.clients?.map(async (element, index) => {
+                            if (element && element.id && "cpf" in element) {
+                                const docRef = doc(personCollection, element.id)
+                                if (docRef) {
+                                    const data: Person = (await getDoc(docRef)).data()
+                                    if (data) {
+                                        clients = [...clients, data]
+                                    }
+                                }
+                            } else if (element && element.id && "cnpj" in element) {
+                                const docRef = doc(companyCollection, element.id)
+                                if (docRef) {
+                                    const data: Company = (await getDoc(docRef)).data()
+                                    if (data) {
+                                        clients = [...clients, data]
+                                    }
+                                }
+                            }
+                            /*
                             if (element.path.includes(PERSON_COLLECTION_NAME)) {
                                 const docRef = doc(personCollection, element.id)
                                 if (docRef) {
@@ -38,6 +56,7 @@ export default async function handler(req, res) {
                                     }
                                 }
                             }
+                            */
                         }))
                     }
                     project = { ...project, clients: clients }

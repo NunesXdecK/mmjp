@@ -18,12 +18,15 @@ export default async function handler(req, res) {
                 if (token === "tokenbemseguro") {
                     let nowID = data?.id ?? ""
                     const isSave = nowID === ""
-                    if (data.service && "id" in data.service && data.service.id.length) {
+                    if (data.service && "id" in data.service && data.service.id?.length) {
                         const serviceDocRef = doc(serviceCollection, data.service.id)
                         if (serviceDocRef) {
-                            if (data.responsible && "id" in data.responsible && data.responsible?.id.length) {
+                            if (data.responsible && "id" in data.responsible && data.responsible?.id?.length) {
+                                /*
                                 const docRef = doc(professionalCollection, data.responsible.id)
                                 data = { ...data, responsible: docRef }
+                                */
+                                data = { ...data, responsible: { id: data.responsible.id } }
                             }
                             data = { ...data, service: serviceDocRef }
                             if (isSave) {
