@@ -138,7 +138,7 @@ export default function Persons() {
                         )
                     }}
                     onInfo={(element: Person) => {
-                        return (<PersonView id={element.id} person={element} />)
+                        return (<PersonView elementId={element.id} person={element} />)
                     }}
                 />
             ) : (

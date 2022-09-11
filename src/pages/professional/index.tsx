@@ -137,7 +137,7 @@ export default function Professionals() {
                         )
                     }}
                     onInfo={(element: Professional) => {
-                        return (<ProfessionalView classNameContentHolder="" id={element.id} />)
+                        return (<ProfessionalView classNameContentHolder="" elementId={element.id} />)
                     }}
                 />
             ) : (

@@ -139,7 +139,7 @@ export default function Companies() {
                         )
                     }}
                     onInfo={(element: Company) => {
-                        return (<CompanyView classNameContentHolder="" id={element.id} />)
+                        return (<CompanyView classNameContentHolder="" elementId={element.id} />)
                     }}
                 />
             ) : (

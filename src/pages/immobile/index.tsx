@@ -136,7 +136,7 @@ export default function Immobiles() {
                             />)
                     }}
                     onInfo={(element: Immobile) => {
-                        return (<ImmobileView classNameContentHolder="" id={element.id} />)
+                        return (<ImmobileView classNameContentHolder="" elementId={element.id} />)
                     }}
                 />
             ) : (

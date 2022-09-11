@@ -13,6 +13,7 @@ import { defaultServicePayment, ServicePayment } from "../../interfaces/objectIn
 interface ServicePaymentViewProps {
     id?: string,
     title?: string,
+    elementId?: string,
     addressTitle?: string,
     classNameTitle?: string,
     classNameHolder?: string,
@@ -47,7 +48,7 @@ export default function ServicePaymentView(props: ServicePaymentViewProps) {
                         hideData
                         dataInside
                         canShowHideData
-                        id={servicePayment.service.id}
+                        elementId={servicePayment.service.id}
                     />
                 )}
             </div>
@@ -56,8 +57,8 @@ export default function ServicePaymentView(props: ServicePaymentViewProps) {
 
     useEffect(() => {
         if (isFirst) {
-            if (props.id && props.id.length !== 0 && servicePayment.id?.length === 0) {
-                fetch("api/servicePayment/" + props.id).then((res) => res.json()).then((res) => {
+            if (props.elementId && props.elementId.length !== 0 && servicePayment.id?.length === 0) {
+                fetch("api/servicePayment/" + props.elementId).then((res) => res.json()).then((res) => {
                     setIsFirst(old => false)
                     setServicePayment(res.data)
                 })

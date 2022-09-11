@@ -15,6 +15,7 @@ import { handleUTCToDateShow } from "../../util/dateUtils"
 interface ImmobileViewProps {
     id?: string,
     title?: string,
+    elementId?: string,
     addressTitle?: string,
     classNameTitle?: string,
     classNameHolder?: string,
@@ -67,7 +68,7 @@ export default function ImmobileView(props: ImmobileViewProps) {
                                 hideData
                                 dataInside
                                 canShowHideData
-                                id={owner.id}
+                                elementId={owner.id}
                                 addressTitle={"Endereço"}
                                 title={"Dados do proprietário " + (index + 1)}
                             />
@@ -84,8 +85,8 @@ export default function ImmobileView(props: ImmobileViewProps) {
 
     useEffect(() => {
         if (isFirst) {
-            if (props.id && props.id.length !== 0 && immobile.id?.length === 0) {
-                fetch("api/immobile/" + props.id).then((res) => res.json()).then((res) => {
+            if (props.elementId && props.elementId.length !== 0 && immobile.id?.length === 0) {
+                fetch("api/immobile/" + props.elementId).then((res) => res.json()).then((res) => {
                     setIsFirst(old => false)
                     setImmobile(res.data)
                 })

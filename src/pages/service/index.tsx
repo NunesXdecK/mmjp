@@ -203,7 +203,7 @@ export default function Services() {
                         )
                     }}
                     onInfo={(element: Service) => {
-                        return (<ServiceView id={element.id} />)
+                        return (<ServiceView elementId={element.id} />)
                     }}
                 />
             ) : (

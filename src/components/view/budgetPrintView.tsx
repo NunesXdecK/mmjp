@@ -1,14 +1,14 @@
-import { useEffect, useState } from "react"
-import InfoHolderView from "./infoHolderView"
-import PlaceholderItemList from "../list/placeholderItemList"
-import { Company, defaultProject, Person, Project, Service } from "../../interfaces/objectInterfaces"
-import { handleUTCToDateShow } from "../../util/dateUtils"
-import { COMPANY_COLLECTION_NAME, PERSON_COLLECTION_NAME } from "../../db/firebaseDB"
 import PersonView from "./personView"
 import ServicesView from "./servicesView"
+import { useEffect, useState } from "react"
+import InfoHolderView from "./infoHolderView"
+import { handleUTCToDateShow } from "../../util/dateUtils"
+import PlaceholderItemList from "../list/placeholderItemList"
+import { Company, defaultProject, Person, Project, Service } from "../../interfaces/objectInterfaces"
 
 interface BudgetPrintViewProps {
     id?: string,
+    elementId?: string,
     dataInside?: boolean,
     client?: Person | Company,
     project?: Project,
@@ -27,23 +27,25 @@ export default function BudgetPrintView(props: BudgetPrintViewProps) {
             <>
                 {client && "cpf" in client && (
                     <PersonView
+                        dataInside
                         person={client}
+                        elementId={client.id}
                         title="Dados do cliente"
-                        dataInside id={client.id}
                         classNameTitle="bg-slate-50"
                     />
                 )}
                 <ServicesView
+                    services={services}
                     classNameTitle="bg-slate-50"
-                    services={services} />
+                />
             </>
         )
     }
 
     useEffect(() => {
         if (isFirst) {
-            if (props.id && props.id?.length && project.id?.length === 0) {
-                fetch("../api/projectview/" + props.id).then((res) => res.json()).then((res) => {
+            if (props.elementId && props.elementId?.length && project.id?.length === 0) {
+                fetch("../api/projectview/" + props.elementId).then((res) => res.json()).then((res) => {
                     setIsFirst(old => false)
                     let client = res.data?.clients[0] ?? {}
                     if (client) {
@@ -79,7 +81,7 @@ export default function BudgetPrintView(props: BudgetPrintViewProps) {
                         }
                         */
                 })
-                fetch("../api/services/" + props.id).then((res) => res.json()).then((res) => {
+                fetch("../api/services/" + props.elementId).then((res) => res.json()).then((res) => {
                     setIsFirst(old => false)
                     setServices(res.list)
                 })

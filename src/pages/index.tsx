@@ -94,7 +94,7 @@ export default function Index() {
                                     />)
                             }}
                             onInfo={(element: ServiceStage) => {
-                                return (<ServiceStageView id={element.id} />)
+                                return (<ServiceStageView elementId={element.id} />)
                             }}
                         />
                     </FormRowColumn>
@@ -116,7 +116,7 @@ export default function Index() {
                                     />)
                             }}
                             onInfo={(element: ServicePayment) => {
-                                return (<ServicePaymentView id={element.id} />)
+                                return (<ServicePaymentView elementId={element.id} />)
                             }}
                         />
 

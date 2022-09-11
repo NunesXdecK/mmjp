@@ -7,6 +7,7 @@ import { handleMountNumberCurrency, handleValueStringToFloat } from "../../util/
 interface ServicesViewProps {
     id?: string,
     title?: string,
+    elementId?: string,
     classNameTitle?: string,
     classNameHolder?: string,
     classNameContentHolder?: string,

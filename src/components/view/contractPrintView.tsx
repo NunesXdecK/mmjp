@@ -9,6 +9,7 @@ import ServicesView from "./servicesView"
 
 interface ContractPrintViewProps {
     id?: string,
+    elementId?: string,
     dataInside?: boolean,
     client?: Person | Company,
     project?: Project,

@@ -17,6 +17,7 @@ import ServiceView from "./serviceView"
 interface ProjectViewProps {
     id?: string,
     title?: string,
+    elementId?: string,
     addressTitle?: string,
     classNameTitle?: string,
     classNameHolder?: string,
@@ -97,9 +98,9 @@ export default function ProjectView(props: ProjectViewProps) {
                                 hideData
                                 dataInside
                                 canShowHideData
-                                addressTitle={"Endereço"}
                                 title={"Cliente"}
-                                id={owner.id ?? ""}
+                                addressTitle={"Endereço"}
+                                elementId={owner.id ?? ""}
                             />
                         )}
                         {owner && "cnpj" in owner && (
@@ -107,9 +108,9 @@ export default function ProjectView(props: ProjectViewProps) {
                                 hideData
                                 dataInside
                                 canShowHideData
-                                addressTitle={"Endereço"}
                                 title={"Cliente"}
-                                id={owner.id ?? ""}
+                                addressTitle={"Endereço"}
+                                elementId={owner.id ?? ""}
                             />
                         )}
                     </div>
@@ -121,7 +122,7 @@ export default function ProjectView(props: ProjectViewProps) {
                         dataInside
                         hideProject
                         canShowHideData
-                        id={service.id}
+                        elementId={service.id}
                         key={index + service.id}
                         title={"Serviço " + (index + 1)}
                     />
@@ -132,8 +133,8 @@ export default function ProjectView(props: ProjectViewProps) {
 
     useEffect(() => {
         if (isFirst) {
-            if (props.id && props.id.length !== 0 && project.id?.length === 0) {
-                fetch("api/projectview/" + props.id).then((res) => res.json()).then((res) => {
+            if (props.elementId && props.elementId.length !== 0 && project.id?.length === 0) {
+                fetch("api/projectview/" + props.elementId).then((res) => res.json()).then((res) => {
                     setIsFirst(old => false)
                     setProject(res.data)
                     fetch("api/services/" + res.data.id).then((res) => res.json()).then((res) => {

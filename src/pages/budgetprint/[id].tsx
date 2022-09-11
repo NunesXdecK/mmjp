@@ -14,7 +14,7 @@ export default function BudgetPrint() {
             </Head>
 
             <BudgetPrintView
-                id={id && id + ""} />
+                elementId={id && id + ""} />
         </>
     )
 }

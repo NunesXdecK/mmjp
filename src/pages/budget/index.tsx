@@ -257,7 +257,7 @@ localProject = {
                         )
                     }}
                     onInfo={(element: Project) => {
-                        return (<ProjectView id={element.id} />)
+                        return (<ProjectView elementId={element.id} />)
                     }}
                 />
             ) : (

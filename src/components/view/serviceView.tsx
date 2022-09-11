@@ -17,6 +17,7 @@ import { ChevronDownIcon, ChevronRightIcon } from "@heroicons/react/outline"
 interface ServiceViewProps {
     id?: string,
     title?: string,
+    elementId?: string,
     addressTitle?: string,
     classNameTitle?: string,
     classNameHolder?: string,
@@ -88,7 +89,7 @@ export default function ServiceView(props: ServiceViewProps) {
                         dataInside
                         canShowHideData
                         title="Projeto"
-                        id={service.project.id}
+                        elementId={service.project.id}
                     />
                 )}
 
@@ -98,7 +99,7 @@ export default function ServiceView(props: ServiceViewProps) {
                         dataInside
                         canShowHideData
                         title="Profissional"
-                        id={service.professional.id}
+                        elementId={service.professional.id}
                     />
                 )}
 
@@ -121,8 +122,8 @@ export default function ServiceView(props: ServiceViewProps) {
                         hideService
                         canShowHideData
                         servicePayment={servicePayment}
-                        title={"Pagamento " + (index + 1)}
                         key={index + servicePayment.id}
+                        title={"Pagamento " + (index + 1)}
                     />
                 ))}
 
@@ -131,7 +132,7 @@ export default function ServiceView(props: ServiceViewProps) {
                         hideData
                         dataInside
                         canShowHideData
-                        id={immobile.id}
+                        elementId={immobile.id}
                         title={"Imóvel alvo " + (index + 1)}
                         key={"target-" + index + immobile + service.id}
                     />
@@ -142,7 +143,7 @@ export default function ServiceView(props: ServiceViewProps) {
                         hideData
                         dataInside
                         canShowHideData
-                        id={immobile.id}
+                        elementId={immobile.id}
                         title={"Imóvel de origem " + (index + 1)}
                         key={"origin-" + index + immobile + service.id}
                     />
@@ -153,8 +154,8 @@ export default function ServiceView(props: ServiceViewProps) {
 
     useEffect(() => {
         if (isFirst) {
-            if (props.id && props.id.length !== 0 && service.id?.length === 0) {
-                fetch("api/service/" + props.id).then((res) => res.json()).then((res) => {
+            if (props.elementId && props.elementId.length !== 0 && service.id?.length === 0) {
+                fetch("api/service/" + props.elementId).then((res) => res.json()).then((res) => {
                     setIsFirst(old => false)
                     setService(res.data)
                 })

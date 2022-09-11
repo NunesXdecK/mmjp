@@ -12,6 +12,7 @@ import { handleUTCToDateShow } from "../../util/dateUtils"
 interface ProfessionalViewProps {
     id?: string,
     title?: string,
+    elementId?: string,
     classNameTitle?: string,
     classNameHolder?: string,
     classNameContentHolder?: string,
@@ -48,8 +49,8 @@ export default function ProfessionalView(props: ProfessionalViewProps) {
 
     useEffect(() => {
         if (isFirst) {
-            if (props.id && props.id.length !== 0 && professional.id?.length === 0) {
-                fetch("api/professional/" + props.id).then((res) => res.json()).then((res) => {
+            if (props.elementId && props.elementId.length !== 0 && professional.id?.length === 0) {
+                fetch("api/professional/" + props.elementId).then((res) => res.json()).then((res) => {
                     setIsFirst(old => false)
                     setProfessional(res.data)
                 })

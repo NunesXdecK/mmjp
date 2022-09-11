@@ -14,6 +14,7 @@ import { handleUTCToDateShow } from "../../util/dateUtils"
 interface CompanyViewProps {
     id?: string,
     title?: string,
+    elementId?: string,
     addressTitle?: string,
     classNameTitle?: string,
     classNameHolder?: string,
@@ -61,8 +62,8 @@ export default function CompanyView(props: CompanyViewProps) {
 
     useEffect(() => {
         if (isFirst) {
-            if (props.id && props.id.length !== 0 && company.id?.length === 0) {
-                fetch("api/company/" + props.id).then((res) => res.json()).then((res) => {
+            if (props.elementId && props.elementId.length !== 0 && company.id?.length === 0) {
+                fetch("api/company/" + props.elementId).then((res) => res.json()).then((res) => {
                     setIsFirst(old => false)
                     setCompany(res.data)
                 })

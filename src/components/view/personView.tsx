@@ -13,6 +13,7 @@ import { handleUTCToDateShow } from "../../util/dateUtils"
 interface PersonViewProps {
     id?: string,
     title?: string,
+    elementId?: string,
     addressTitle?: string,
     classNameTitle?: string,
     classNameHolder?: string,
@@ -56,8 +57,8 @@ export default function PersonView(props: PersonViewProps) {
 
     useEffect(() => {
         if (isFirst) {
-            if (props.id && props.id.length !== 0 && person.id?.length === 0) {
-                fetch("api/person/" + props.id).then((res) => res.json()).then((res) => {
+            if (props.elementId && props.elementId.length !== 0 && person.id?.length === 0) {
+                fetch("api/person/" + props.elementId).then((res) => res.json()).then((res) => {
                     setIsFirst(old => false)
                     setPerson(res.data)
                 })

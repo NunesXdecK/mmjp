@@ -33,9 +33,9 @@ export default function ServiceStageView(props: ServiceStageViewProps) {
     const [serviceStage, setServiceStage] = useState<ServiceStage>(props.serviceStage ?? defaultServiceStage)
 
     const hasHideData =
+        serviceStage.responsible?.id?.length ||
         serviceStage.description?.length ||
-        serviceStage.service?.id > 0 ||
-        serviceStage.responsible?.id > 0
+        serviceStage.service?.id > 0
 
     const hasData =
         hasHideData ||
@@ -50,7 +50,8 @@ export default function ServiceStageView(props: ServiceStageViewProps) {
                         hideData
                         dataInside
                         canShowHideData
-                        id={serviceStage.service.id}
+                        elementId={serviceStage.service.id}
+                        id={serviceStage.id + "-" + serviceStage.service.id}
                     />
                 )}
 
@@ -59,7 +60,8 @@ export default function ServiceStageView(props: ServiceStageViewProps) {
                         hideData
                         dataInside
                         canShowHideData
-                        id={serviceStage.responsible.id}
+                        elementId={serviceStage.responsible.id}
+                        id={serviceStage.id + "-" + serviceStage.responsible.id}
                     />
                 )}
             </div>
@@ -68,8 +70,8 @@ export default function ServiceStageView(props: ServiceStageViewProps) {
 
     useEffect(() => {
         if (isFirst) {
-            if (props.id && props.id.length !== 0 && serviceStage.id?.length === 0) {
-                fetch("api/serviceStage/" + props.id).then((res) => res.json()).then((res) => {
+            if (props.elementId && props.elementId.length !== 0 && serviceStage.id?.length === 0) {
+                fetch("api/serviceStage/" + props.elementId).then((res) => res.json()).then((res) => {
                     setIsFirst(old => false)
                     setServiceStage(res.data)
                 })
