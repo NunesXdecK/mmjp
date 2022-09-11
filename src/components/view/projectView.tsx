@@ -184,6 +184,9 @@ export default function ProjectView(props: ProjectViewProps) {
                                 {project.status === "ARQUIVADO" && (
                                     <InfoView classNameHolder="w-full" classNameInfo="rounded-md px-3 py-1 bg-orange-600 text-white" title="Status" info={project.status} />
                                 )}
+                                {project.priorityView > 0 && (
+                                    <InfoView classNameHolder="w-full" title="Lista de espera" info={project.priorityView + ""} />
+                                )}
                                 <InfoView title="Titulo" info={project.title} />
                                 <InfoView title="Número" info={project.number} />
                                 <InfoView title="Data" info={handleUTCToDateShow(project.date.toString())} />

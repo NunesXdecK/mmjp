@@ -27,6 +27,7 @@ interface ListProps {
     onShowMessage?: (FeedbackMessage) => void,
     onInfo?: (element) => any,
     onTitle?: (element) => any,
+    onCustomButtons?: (any) => any,
     onCustomNewButton?: () => any,
     onFilterList?: (string) => any[],
 }
@@ -191,6 +192,7 @@ export default function List(props: ListProps) {
                         canSeeInfo={props.canSeeInfo}
                         isActive={isActiveItem === index}
                         onActiveChange={handleActiveChange}
+                        onCustomButtons={props.onCustomButtons}
                         key={page.toString() + index.toString() + (element?.id ? element.id : element)}
                         onDeleteClick={() => {
                             setIsOpenDelete(true)

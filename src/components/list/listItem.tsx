@@ -16,9 +16,10 @@ interface ItemListProps {
     onInfo?: (element) => any,
     onTitle?: (element) => any,
     onSelectClick?: (element) => void,
+    onActiveChange?: (any) => void,
     onEditClick?: () => void,
     onDeleteClick?: () => void,
-    onActiveChange?: (any) => void,
+    onCustomButtons?: (any) => any,
 }
 
 const buttonTitleHoverClassName = `
@@ -106,7 +107,12 @@ export default function ItemList(props: ItemListProps) {
                                     leaveFrom="opacity-100"
                                     leaveTo="opacity-0"
                                 >
-                                    <div className="mt-2 w-full text-right ">
+                                    <div className="mt-2 w-full text-right flex flex-wrap justify-end">
+                                        {props.onCustomButtons && (
+                                            <>
+                                                {props.onCustomButtons(props.element)}
+                                            </>
+                                        )}
                                         {props.canDelete && props.onDeleteClick && (
                                             <Button
                                                 color="red"
@@ -161,7 +167,7 @@ export default function ItemList(props: ItemListProps) {
 
                                         {props.canSeeInfo && (
                                             <Button
-                                                className="group"
+                                                className="mr-2 group"
                                                 onClick={(event) => {
                                                     event.stopPropagation()
                                                     setIsShowingInfo(!isShowingInfo)

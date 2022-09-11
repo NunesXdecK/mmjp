@@ -2,13 +2,16 @@ import Head from "next/head"
 import { useEffect, useState } from "react"
 import List from "../../components/list/list"
 import Layout from "../../components/layout/layout"
+import Button from "../../components/button/button"
 import ProjectForm from "../../components/form/projectForm"
 import ProjectView from "../../components/view/projectView"
-import { handlePrepareServiceForShow } from "../../util/converterUtil"
+import { ChevronDoubleUpIcon } from "@heroicons/react/outline"
 import { handleNewDateToUTC, handleUTCToDateShow } from "../../util/dateUtils"
-import { COMPANY_COLLECTION_NAME, PERSON_COLLECTION_NAME } from "../../db/firebaseDB"
+import { ChevronDoubleDownIcon, ChevronDownIcon, ChevronUpIcon } from "@heroicons/react/solid"
+import { handlePrepareProjectForDB, handlePrepareServiceForShow } from "../../util/converterUtil"
 import FeedbackMessageModal, { defaultFeedbackMessage, FeedbackMessage } from "../../components/modal/feedbackMessageModal"
 import { Company, defaultProfessional, defaultProject, defaultService, Person, Professional, Project, Service } from "../../interfaces/objectInterfaces"
+import { COMPANY_COLLECTION_NAME, PERSON_COLLECTION_NAME } from "../../db/firebaseDB"
 
 export default function Projects() {
     const [title, setTitle] = useState("Lista de projetos")
@@ -77,10 +80,43 @@ export default function Projects() {
         setTitle("Novo projeto")
     }
 
+    const sortByDate = (elementOne, elementTwo) => {
+        let dateOne = 0
+        let dateTwo = 0
+        if (elementOne && elementTwo) {
+            if ("dateLastUpdateUTC" in elementOne) {
+                dateOne = elementOne.dateLastUpdateUTC
+            } else if ("dateInsertUTC" in elementOne) {
+                dateOne = elementOne.dateInsertUTC
+            }
+            if ("dateLastUpdateUTC" in elementTwo) {
+                dateTwo = elementTwo.dateLastUpdateUTC
+            } else if ("dateInsertUTC" in elementTwo) {
+                dateTwo = elementTwo.dateInsertUTC
+            }
+        }
+        return dateTwo - dateOne
+    }
+
+    const sortByPriority = (elementOne, elementTwo) => {
+        let priorityOne = 0
+        let priorityTwo = 0
+        if (elementOne && elementTwo) {
+            if ("priority" in elementOne) {
+                priorityOne = elementOne.priority
+            }
+            if ("priority" in elementTwo) {
+                priorityTwo = elementTwo.priority
+            }
+        }
+        return priorityTwo - priorityOne
+    }
+
     const handleFilterList = (string) => {
         let listItems = [...projects]
         let listItemsFiltered: Project[] = []
         let listItemsNormal: Project[] = []
+        let listItemsNormalFinal: Project[] = []
         let listItemsArchive: Project[] = []
         let listItemsFinished: Project[] = []
 
@@ -99,38 +135,13 @@ export default function Projects() {
             }
         })
 
-        const sortByDate = (elementOne, elementTwo) => {
-            let dateOne = 0
-            let dateTwo = 0
-            if (elementOne && elementTwo) {
-                if ("dateLastUpdateUTC" in elementOne) {
-                    dateOne = elementOne.dateLastUpdateUTC
-                } else if ("dateInsertUTC" in elementOne) {
-                    dateOne = elementOne.dateInsertUTC
-                }
-                if ("dateLastUpdateUTC" in elementTwo) {
-                    dateTwo = elementTwo.dateLastUpdateUTC
-                } else if ("dateInsertUTC" in elementTwo) {
-                    dateTwo = elementTwo.dateInsertUTC
-                }
-            }
-            return dateTwo - dateOne
-        }
-        const sortByPriority = (elementOne, elementTwo) => {
-            let priorityOne = 0
-            let priorityTwo = 0
-            if (elementOne && elementTwo) {
-                if ("priority" in elementOne) {
-                    priorityOne = elementOne.priority
-                }
-                if ("priority" in elementTwo) {
-                    priorityTwo = elementTwo.priority
-                }
-            }
-            return priorityTwo - priorityOne
-        }
+        listItemsNormal = listItemsNormal.sort(sortByDate).sort(sortByPriority)
+        listItemsNormal.map((element, index) => {
+            listItemsNormalFinal = [...listItemsNormalFinal, { ...element, priorityView: index + 1 }]
+        })
+
         listItemsFiltered = [
-            ...listItemsNormal.sort(sortByDate).sort(sortByPriority),
+            ...listItemsNormalFinal,
             ...listItemsFinished.sort(sortByDate).sort(sortByPriority),
             ...listItemsArchive.sort(sortByDate).sort(sortByPriority),
         ]
@@ -259,6 +270,142 @@ localProject = {
         }
     }
 
+    const handleSaveProject = async (project, history) => {
+        let res = { status: "ERROR", id: "", project: project }
+        let projectForDB = handlePrepareProjectForDB(project)
+        try {
+            const saveRes = await fetch("api/project", {
+                method: "POST",
+                body: JSON.stringify({ token: "tokenbemseguro", data: projectForDB, history: history }),
+            }).then((res) => res.json())
+            res = { ...res, status: "SUCCESS", id: saveRes.id, project: { ...project, id: saveRes.id } }
+        } catch (e) {
+            console.error("Error adding document: ", e)
+        }
+        return res
+    }
+
+    const handleCustomButtonsClick = async (element: Project, option: "top" | "up" | "down" | "bottom") => {
+        setIsLoading(true)
+        let listItems: Project[] = []
+        projects.map((project: Project, index) => {
+            let status = project.status
+            if (status === "NORMAL") {
+                listItems = [...listItems, project]
+            }
+        })
+        let priority = -1
+        let priorityUp = -1
+        let priorityDown = -1
+        listItems = listItems.sort(sortByPriority)
+        listItems.map((project: Project, index) => {
+            if (project.id === element.id) {
+                if (listItems[index - 1]) {
+                    priorityUp = listItems[index - 1].priority
+                }
+                if (listItems[index + 1]) {
+                    priorityDown = listItems[index + 1].priority
+                }
+            }
+        })
+        switch (option) {
+            case "top":
+                priority = listItems[0].priority + 1
+                break
+            case "up":
+                /*
+                listItems.map((project, index) => {
+                    if (priority === -1) {
+                        if (element.priority === project.priority) {
+                            priority = listItems[index - 1].priority
+                        }
+                    }
+                })
+                priority = priority + 1
+                */
+                priority = priorityUp + 1
+                break
+            case "down":
+                /*
+                listItems.map((project, index) => {
+                    if (priority === -1) {
+                        if (element.priority === project.priority) {
+                            priority = listItems[index + 1].priority
+                        }
+                    }
+                })
+                if (priority > 0) {
+                    priority = priority - 1
+                }
+                */
+                priority = priorityDown - 1
+                break
+            case "bottom":
+                priority = listItems[listItems.length - 1].priority - 1
+                break
+        }
+        await handleSaveProject({ ...element, priority: priority }, true)
+        setIsFirst(true)
+    }
+
+    const handlePutCustomButtons = (element: Project) => {
+        let listItems: Project[] = []
+        projects.map((project: Project, index) => {
+            let status = project.status
+            if (status === "NORMAL") {
+                if (element.id === project.id) {
+                    localIndex = index
+                }
+                listItems = [...listItems, project]
+            }
+        })
+        let localIndex = -1
+        listItems = listItems.sort(sortByPriority)
+        listItems.map((project: Project, index) => {
+            if (element.id === project.id) {
+                localIndex = index
+            }
+        })
+        let priorityMax = listItems[0]?.priority
+        let priorityMin = listItems[listItems.length - 1]?.priority
+        return (
+            <>
+                {localIndex > 0 && (
+                    <>
+                        <Button
+                            className="mr-2 mb-2 sm:mb-0"
+                            onClick={() => handleCustomButtonsClick(element, "top")}
+                        >
+                            <ChevronDoubleUpIcon className="text-white block h-5 w-5" aria-hidden="true" />
+                        </Button>
+                        <Button
+                            className="mr-2 mb-2 sm:mb-0"
+                            onClick={() => handleCustomButtonsClick(element, "up")}
+                        >
+                            <ChevronUpIcon className="text-white block h-5 w-5" aria-hidden="true" />
+                        </Button>
+                    </>
+                )}
+                {localIndex < (listItems.length - 1) && (
+                    <>
+                        <Button
+                            className="mr-2 mb-2 sm:mb-0"
+                            onClick={() => handleCustomButtonsClick(element, "down")}
+                        >
+                            <ChevronDownIcon className="text-white block h-5 w-5" aria-hidden="true" />
+                        </Button>
+                        <Button
+                            className="mr-2 mb-2 sm:mb-0"
+                            onClick={() => handleCustomButtonsClick(element, "bottom")}
+                        >
+                            <ChevronDoubleDownIcon className="text-white block h-5 w-5" aria-hidden="true" />
+                        </Button>
+                    </>
+                )}
+            </>
+        )
+    }
+
     const handlePutLastProfessional = async () => {
     }
 
@@ -296,6 +443,7 @@ localProject = {
                     onEditClick={handleEditClick}
                     onFilterList={handleFilterList}
                     onDeleteClick={handleDeleteClick}
+                    onCustomButtons={handlePutCustomButtons}
                     deleteWindowTitle={"Deseja realmente deletar " + project.title + "?"}
                     onTitle={(element: Project) => {
                         return (

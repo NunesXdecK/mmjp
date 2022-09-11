@@ -147,7 +147,6 @@ localProject = {
             console.error(err)
         }
         let localClients = []
-        console.log(localProject.clients)
         if (localProject.clients && localProject.clients?.length > 0) {
             await Promise.all(
                 localProject.clients.map(async (element, index) => {
@@ -158,7 +157,6 @@ localProject = {
                         } else if ("cnpj" in element) {
                             localClient = await fetch("api/company/" + element.id).then((res) => res.json()).then((res) => res.data)
                         }
-                        console.log(localClient)
                         if (localClient && "id" in localClient && localClient?.id?.length) {
                             localClients = [...localClients, localClient]
                         }

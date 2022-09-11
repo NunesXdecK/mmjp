@@ -306,6 +306,7 @@ export const handlePrepareProjectForDB = (project: Project) => {
     project = {
         ...project,
         clients: clients,
+        title: project.title.trim(),
     }
     return project
 }
@@ -532,7 +533,7 @@ const handleSortByIndex = (elementOne, elementTwo) => {
     if (elementTwo && "index" in elementTwo) {
         indexTwo = elementTwo.index
     }
-    return indexOne - indexTwo 
+    return indexOne - indexTwo
 }
 
 export const handlePrepareServicePaymentStageForShow = (list: (ServicePayment | ServiceStage)[]) => {
