@@ -370,36 +370,40 @@ localProject = {
         let priorityMin = listItems[listItems.length - 1]?.priority
         return (
             <>
-                {localIndex > 0 && (
+                {element.status === "NORMAL" && (
                     <>
-                        <Button
-                            className="mr-2 mb-2 sm:mb-0"
-                            onClick={() => handleCustomButtonsClick(element, "top")}
-                        >
-                            <ChevronDoubleUpIcon className="text-white block h-5 w-5" aria-hidden="true" />
-                        </Button>
-                        <Button
-                            className="mr-2 mb-2 sm:mb-0"
-                            onClick={() => handleCustomButtonsClick(element, "up")}
-                        >
-                            <ChevronUpIcon className="text-white block h-5 w-5" aria-hidden="true" />
-                        </Button>
-                    </>
-                )}
-                {localIndex < (listItems.length - 1) && (
-                    <>
-                        <Button
-                            className="mr-2 mb-2 sm:mb-0"
-                            onClick={() => handleCustomButtonsClick(element, "down")}
-                        >
-                            <ChevronDownIcon className="text-white block h-5 w-5" aria-hidden="true" />
-                        </Button>
-                        <Button
-                            className="mr-2 mb-2 sm:mb-0"
-                            onClick={() => handleCustomButtonsClick(element, "bottom")}
-                        >
-                            <ChevronDoubleDownIcon className="text-white block h-5 w-5" aria-hidden="true" />
-                        </Button>
+                        {localIndex > 0 && (
+                            <>
+                                <Button
+                                    className="mr-2 mb-2 sm:mb-0"
+                                    onClick={() => handleCustomButtonsClick(element, "top")}
+                                >
+                                    <ChevronDoubleUpIcon className="text-white block h-5 w-5" aria-hidden="true" />
+                                </Button>
+                                <Button
+                                    className="mr-2 mb-2 sm:mb-0"
+                                    onClick={() => handleCustomButtonsClick(element, "up")}
+                                >
+                                    <ChevronUpIcon className="text-white block h-5 w-5" aria-hidden="true" />
+                                </Button>
+                            </>
+                        )}
+                        {localIndex < (listItems.length - 1) && (
+                            <>
+                                <Button
+                                    className="mr-2 mb-2 sm:mb-0"
+                                    onClick={() => handleCustomButtonsClick(element, "down")}
+                                >
+                                    <ChevronDownIcon className="text-white block h-5 w-5" aria-hidden="true" />
+                                </Button>
+                                <Button
+                                    className="mr-2 mb-2 sm:mb-0"
+                                    onClick={() => handleCustomButtonsClick(element, "bottom")}
+                                >
+                                    <ChevronDoubleDownIcon className="text-white block h-5 w-5" aria-hidden="true" />
+                                </Button>
+                            </>
+                        )}
                     </>
                 )}
             </>

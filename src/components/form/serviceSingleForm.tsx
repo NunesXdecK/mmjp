@@ -222,7 +222,7 @@ export default function ServiceSingleForm(props: ServiceSingleFormProps) {
                     let serviceForDB = handlePrepareServiceForDB(element)
                     const saveRes = await fetch("api/service", {
                         method: "POST",
-                        body: JSON.stringify({ token: "tokenbemseguro", data: serviceForDB, history: history }),
+                        body: JSON.stringify({ token: "tokenbemseguro", data: serviceForDB, history: history, changeProject: true }),
                     }).then((res) => res.json())
                     servicesFinal = [...servicesFinal, saveRes.service]
                 }))

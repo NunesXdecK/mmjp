@@ -1,5 +1,5 @@
-import { Service } from "../../../interfaces/objectInterfaces"
-import { addDoc, collection, deleteDoc, doc, getDocs, query, updateDoc, where } from "firebase/firestore"
+import { Project, Service } from "../../../interfaces/objectInterfaces"
+import { addDoc, collection, deleteDoc, doc, getDoc, getDocs, query, updateDoc, where } from "firebase/firestore"
 import { ImmobileConversor, ProfessionalConversor, ProjectConversor, ServiceConversor, ServicePaymentConversor, ServiceStageConversor } from "../../../db/converters"
 import { db, HISTORY_COLLECTION_NAME, SERVICE_COLLECTION_NAME, PROFESSIONAL_COLLECTION_NAME, PROJECT_COLLECTION_NAME, SERVICE_PAYMENT_COLLECTION_NAME, SERVICE_STAGE_COLLECTION_NAME, IMMOBILE_COLLECTION_NAME } from "../../../db/firebaseDB"
 
@@ -17,7 +17,7 @@ export default async function handler(req, res) {
     switch (method) {
         case "POST":
             let resPOST = { status: "ERROR", error: {}, id: "", message: "", service: {} }
-            let { token, data, history } = JSON.parse(body)
+            let { token, data, history, changeProject } = JSON.parse(body)
             let serviceNowID = ""
             let service: Service = {}
             let serviceRES: Service = {}
@@ -150,6 +150,45 @@ export default async function handler(req, res) {
                 } catch (err) {
                     console.error(err)
                     resPOST = { ...resPOST, status: "ERROR", error: err }
+                }
+                if (changeProject) {
+                    try {
+                        if (
+                            service?.status === "NORMAL" ||
+                            service?.status === "FINALIZADO"
+                        ) {
+                            let docRef = await doc(projectCollection, service?.project?.id)
+                            let project: Project = (await getDoc(docRef)).data()
+                            let saveStatus = project.status
+                            let isStatusDiferent = project.status !== service.status
+                            if (isStatusDiferent) {
+                                let isFinish = true
+                                const queryService = query(serviceCollection, where("project", "==", { id: service?.project?.id }))
+                                const querySnapshot = await getDocs(queryService)
+                                querySnapshot.forEach((doc) => {
+                                    let projectService = doc.data()
+                                    if (projectService?.status !== "FINALIZADO") {
+                                        isFinish = false
+                                    }
+                                })
+                                if (isFinish) {
+                                    project = { ...project, status: "FINALIZADO" }
+                                } else {
+                                    project = { ...project, status: "NORMAL" }
+                                }
+                                if (saveStatus !== project.status) {
+                                    await updateDoc(docRef, ProjectConversor.toFirestore(project))
+                                    if (history) {
+                                        const dataForHistory = { ...ProjectConversor.toFirestore(project), databaseid: project.id, databasename: PROJECT_COLLECTION_NAME }
+                                        await addDoc(historyCollection, dataForHistory)
+                                    }
+                                }
+                            }
+                        }
+                    } catch (err) {
+                        console.error(err)
+                        resPOST = { ...resPOST, status: "ERROR", error: err }
+                    }
                 }
                 resPOST = { ...resPOST, status: "SUCCESS", id: serviceNowID, service: { ...serviceRES, stages: servicesStagesIDs, payments: servicesPaymentsIDs } }
             } else {

@@ -106,7 +106,7 @@ export default function ProjectForm(props: ProjectFormProps) {
         if (elementTwo && "index" in elementTwo) {
             indexTwo = elementTwo.index
         }
-        return indexOne - indexTwo 
+        return indexOne - indexTwo
     }
 
     const handleProjectServicesToDB = (project: Project, status?: "ORÇAMENTO" | "NORMAL" | "ARQUIVADO" | "FINALIZADO") => {
@@ -306,7 +306,7 @@ export default function ProjectForm(props: ProjectFormProps) {
                     let serviceForDB = handlePrepareServiceForDB(element)
                     const saveRes = await fetch("api/service", {
                         method: "POST",
-                        body: JSON.stringify({ token: "tokenbemseguro", data: serviceForDB, history: history }),
+                        body: JSON.stringify({ token: "tokenbemseguro", data: serviceForDB, history: history, changeProject: false }),
                     }).then((res) => res.json())
                     servicesFinal = [...servicesFinal, saveRes.service]
                 }))
@@ -557,7 +557,7 @@ export default function ProjectForm(props: ProjectFormProps) {
             />
         )
     }
-    
+
     const handlePrintActionBar = () => {
         return (
             <ActionButtonsForm

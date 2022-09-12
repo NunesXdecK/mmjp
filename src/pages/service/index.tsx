@@ -3,10 +3,12 @@ import { useEffect, useState } from "react"
 import List from "../../components/list/list"
 import Layout from "../../components/layout/layout"
 import ServiceView from "../../components/view/serviceView"
-import { handlePrepareServiceForShow } from "../../util/converterUtil"
+import { handlePrepareServiceForDB, handlePrepareServiceForShow } from "../../util/converterUtil"
 import ServiceSingleForm from "../../components/form/serviceSingleForm"
 import { defaultService, Service } from "../../interfaces/objectInterfaces"
 import FeedbackMessageModal, { defaultFeedbackMessage, FeedbackMessage } from "../../components/modal/feedbackMessageModal"
+import Button from "../../components/button/button"
+import { ChevronDoubleDownIcon, ChevronDoubleUpIcon, ChevronDownIcon, ChevronUpIcon } from "@heroicons/react/solid"
 
 export default function Services() {
     const [title, setTitle] = useState("Lista de serviços")
@@ -60,10 +62,43 @@ export default function Services() {
         setTitle("Novo serviço")
     }
 
+    const sortByDate = (elementOne, elementTwo) => {
+        let dateOne = 0
+        let dateTwo = 0
+        if (elementOne && elementTwo) {
+            if ("dateLastUpdateUTC" in elementOne) {
+                dateOne = elementOne.dateLastUpdateUTC
+            } else if ("dateInsertUTC" in elementOne) {
+                dateOne = elementOne.dateInsertUTC
+            }
+            if ("dateLastUpdateUTC" in elementTwo) {
+                dateTwo = elementTwo.dateLastUpdateUTC
+            } else if ("dateInsertUTC" in elementTwo) {
+                dateTwo = elementTwo.dateInsertUTC
+            }
+        }
+        return dateTwo - dateOne
+    }
+
+    const sortByPriority = (elementOne, elementTwo) => {
+        let priorityOne = 0
+        let priorityTwo = 0
+        if (elementOne && elementTwo) {
+            if ("priority" in elementOne) {
+                priorityOne = elementOne.priority
+            }
+            if ("priority" in elementTwo) {
+                priorityTwo = elementTwo.priority
+            }
+        }
+        return priorityTwo - priorityOne
+    }
+
     const handleFilterList = (string) => {
         let listItems = [...services]
         let listItemsFiltered: Service[] = []
         let listItemsNormal: Service[] = []
+        let listItemsNormalFinal: Service[] = []
         let listItemsArchive: Service[] = []
         let listItemsFinished: Service[] = []
         let listItemsPendency: Service[] = []
@@ -86,36 +121,11 @@ export default function Services() {
             }
         })
 
-        const sortByDate = (elementOne, elementTwo) => {
-            let dateOne = 0
-            let dateTwo = 0
-            if (elementOne && elementTwo) {
-                if ("dateLastUpdateUTC" in elementOne) {
-                    dateOne = elementOne.dateLastUpdateUTC
-                } else if ("dateInsertUTC" in elementOne) {
-                    dateOne = elementOne.dateInsertUTC
-                }
-                if ("dateLastUpdateUTC" in elementTwo) {
-                    dateTwo = elementTwo.dateLastUpdateUTC
-                } else if ("dateInsertUTC" in elementTwo) {
-                    dateTwo = elementTwo.dateInsertUTC
-                }
-            }
-            return dateTwo - dateOne
-        }
-        const sortByPriority = (elementOne, elementTwo) => {
-            let priorityOne = 0
-            let priorityTwo = 0
-            if (elementOne && elementTwo) {
-                if ("priority" in elementOne) {
-                    priorityOne = elementOne.priority
-                }
-                if ("priority" in elementTwo) {
-                    priorityTwo = elementTwo.priority
-                }
-            }
-            return priorityTwo - priorityOne
-        }
+        listItemsNormal = listItemsNormal.sort(sortByDate).sort(sortByPriority)
+        listItemsNormal.map((element, index) => {
+            listItemsNormalFinal = [...listItemsNormalFinal, { ...element, priorityView: index + 1 }]
+        })
+
         listItemsFiltered = [
             ...listItemsPendency.sort(sortByDate).sort(sortByPriority),
             ...listItemsNormal.sort(sortByDate).sort(sortByPriority),
@@ -156,6 +166,146 @@ export default function Services() {
         }
     }
 
+    const handleSaveService = async (service, history) => {
+        let res = { status: "ERROR", id: "", service: service }
+        let serviceForDB = handlePrepareServiceForDB(service)
+        try {
+            const saveRes = await fetch("api/service", {
+                method: "POST",
+                body: JSON.stringify({ token: "tokenbemseguro", data: serviceForDB, history: history, changeProject: false }),
+            }).then((res) => res.json())
+            res = { ...res, status: "SUCCESS", id: saveRes.id, service: { ...service, id: saveRes.id } }
+        } catch (e) {
+            console.error("Error adding document: ", e)
+        }
+        return res
+    }
+
+    const handleCustomButtonsClick = async (element: Service, option: "top" | "up" | "down" | "bottom") => {
+        setIsLoading(true)
+        let listItems: Service[] = []
+        services.map((service: Service, index) => {
+            let status = service.status
+            if (status === "NORMAL") {
+                listItems = [...listItems, service]
+            }
+        })
+        let priority = -1
+        let priorityUp = -1
+        let priorityDown = -1
+        listItems = listItems.sort(sortByPriority)
+        listItems.map((service: Service, index) => {
+            if (service.id === element.id) {
+                if (listItems[index - 1]) {
+                    priorityUp = listItems[index - 1].priority
+                }
+                if (listItems[index + 1]) {
+                    priorityDown = listItems[index + 1].priority
+                }
+            }
+        })
+        switch (option) {
+            case "top":
+                priority = listItems[0].priority + 1
+                break
+            case "up":
+                /*
+                listItems.map((service, index) => {
+                    if (priority === -1) {
+                        if (element.priority === service.priority) {
+                            priority = listItems[index - 1].priority
+                        }
+                    }
+                })
+                priority = priority + 1
+                */
+                priority = priorityUp + 1
+                break
+            case "down":
+                /*
+                listItems.map((service, index) => {
+                    if (priority === -1) {
+                        if (element.priority === service.priority) {
+                            priority = listItems[index + 1].priority
+                        }
+                    }
+                })
+                if (priority > 0) {
+                    priority = priority - 1
+                }
+                */
+                priority = priorityDown - 1
+                break
+            case "bottom":
+                priority = listItems[listItems.length - 1].priority - 1
+                break
+        }
+        await handleSaveService({ ...element, priority: priority }, true)
+        setIsFirst(true)
+    }
+
+    const handlePutCustomButtons = (element: Service) => {
+        let listItems: Service[] = []
+        services.map((service: Service, index) => {
+            let status = service.status
+            if (status === "NORMAL") {
+                if (element.id === service.id) {
+                    localIndex = index
+                }
+                listItems = [...listItems, service]
+            }
+        })
+        let localIndex = -1
+        listItems = listItems.sort(sortByPriority)
+        listItems.map((service: Service, index) => {
+            if (element.id === service.id) {
+                localIndex = index
+            }
+        })
+        let priorityMax = listItems[0]?.priority
+        let priorityMin = listItems[listItems.length - 1]?.priority
+        return (
+            <>
+                {element.status === "NORMAL" && (
+                    <>
+                        {localIndex > 0 && (
+                            <>
+                                <Button
+                                    className="mr-2 mb-2 sm:mb-0"
+                                    onClick={() => handleCustomButtonsClick(element, "top")}
+                                >
+                                    <ChevronDoubleUpIcon className="text-white block h-5 w-5" aria-hidden="true" />
+                                </Button>
+                                <Button
+                                    className="mr-2 mb-2 sm:mb-0"
+                                    onClick={() => handleCustomButtonsClick(element, "up")}
+                                >
+                                    <ChevronUpIcon className="text-white block h-5 w-5" aria-hidden="true" />
+                                </Button>
+                            </>
+                        )}
+                        {localIndex < (listItems.length - 1) && (
+                            <>
+                                <Button
+                                    className="mr-2 mb-2 sm:mb-0"
+                                    onClick={() => handleCustomButtonsClick(element, "down")}
+                                >
+                                    <ChevronDownIcon className="text-white block h-5 w-5" aria-hidden="true" />
+                                </Button>
+                                <Button
+                                    className="mr-2 mb-2 sm:mb-0"
+                                    onClick={() => handleCustomButtonsClick(element, "bottom")}
+                                >
+                                    <ChevronDoubleDownIcon className="text-white block h-5 w-5" aria-hidden="true" />
+                                </Button>
+                            </>
+                        )}
+                    </>
+                )}
+            </>
+        )
+    }
+
     useEffect(() => {
         if (isFirst) {
             fetch("api/services").then((res) => res.json()).then((res) => {
@@ -189,6 +339,7 @@ export default function Services() {
                     onEditClick={handleEditClick}
                     onFilterList={handleFilterList}
                     onDeleteClick={handleDeleteClick}
+                    onCustomButtons={handlePutCustomButtons}
                     onSetElement={setService}
                     deleteWindowTitle={"Deseja realmente deletar " + service.title + "?"}
                     onTitle={(element: Service) => {
