@@ -15,6 +15,7 @@ export default function FeedbackPendency(props: FeedbackPendencyProps) {
                         rounded-md 
                         right-10 top-16
                         animate-bounce
+                        print:hidden
                     `
 
     return (
