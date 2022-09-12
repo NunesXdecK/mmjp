@@ -72,7 +72,7 @@ export default function ServiceStageForm(props: ServiceStageFormProps) {
             subtitle={props.subtitle}
             className={props.formClassName}
         >
-            {!props.isForDisable && (
+            {(!props.isForDisable && !props.isSingle) && (
                 <FormRow>
                     <FormRowColumn unit="6" className="flex justify-end">
                         <Button

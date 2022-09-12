@@ -7,11 +7,13 @@ import PersonView from "../../components/view/personView"
 import { handlePreparePersonForShow } from "../../util/converterUtil"
 import { defaultPerson, Person } from "../../interfaces/objectInterfaces"
 import FeedbackMessageModal, { defaultFeedbackMessage, FeedbackMessage } from "../../components/modal/feedbackMessageModal"
+import FeedbackPendency from "../../components/modal/feedbackPendencyModal"
 
 export default function Persons() {
     const [title, setTitle] = useState("Lista de pessoas")
     const [person, setPerson] = useState<Person>(defaultPerson)
     const [persons, setPersons] = useState<Person[]>([])
+    const [messages, setMessages] = useState<string[]>([])
 
     const [isFirst, setIsFirst] = useState(true)
     const [isLoading, setIsLoading] = useState(true)
@@ -99,6 +101,12 @@ export default function Persons() {
                 }
                 setIsLoading(false)
             })
+            fetch("api/checkPendencies").then((res) => res.json()).then((res) => {
+                setIsFirst(old => false)
+                if (res.messages.length) {
+                    setMessages(res.messages)
+                }
+            })
         }
     })
 
@@ -153,6 +161,8 @@ export default function Persons() {
                     onShowMessage={handleShowMessage}
                     subtitle="Dados importantes sobre a pessoa" />
             )}
+
+            <FeedbackPendency messages={messages} />
 
             <FeedbackMessageModal
                 isOpen={isFeedbackOpen}

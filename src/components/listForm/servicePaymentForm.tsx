@@ -19,6 +19,7 @@ interface ServicePaymentFormProps {
     isForDisable?: boolean,
     servicePayments?: ServicePayment[],
     onBlur?: (any) => void,
+    onFinishAdd?: (any?) => void,
     onSetServicePayments?: (any) => void,
     onShowMessage?: (FeedbackMessage) => void,
 }
@@ -72,7 +73,7 @@ export default function ServicePaymentForm(props: ServicePaymentFormProps) {
             className={props.formClassName}
         >
 
-            {!props.isForDisable && (
+            {(!props.isForDisable && !props.isSingle) && (
                 <FormRow>
                     <FormRowColumn unit="6" className="flex justify-end">
                         <Button
@@ -104,6 +105,7 @@ export default function ServicePaymentForm(props: ServicePaymentFormProps) {
                     isSingle={props.isSingle}
                     onSetText={handleSetText}
                     isLoading={props.isLoading}
+                    onFinishAdd={props.onFinishAdd}
                     isForDisable={props.isForDisable}
                     servicePayments={props.servicePayments}
                 />

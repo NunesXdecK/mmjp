@@ -12,12 +12,14 @@ import { handlePrepareProjectForDB, handlePrepareServiceForShow } from "../../ut
 import FeedbackMessageModal, { defaultFeedbackMessage, FeedbackMessage } from "../../components/modal/feedbackMessageModal"
 import { Company, defaultProfessional, defaultProject, defaultService, Person, Professional, Project, Service } from "../../interfaces/objectInterfaces"
 import { COMPANY_COLLECTION_NAME, PERSON_COLLECTION_NAME } from "../../db/firebaseDB"
+import FeedbackPendency from "../../components/modal/feedbackPendencyModal"
 
 export default function Projects() {
     const [title, setTitle] = useState("Lista de projetos")
     const [professional, setProfessional] = useState<Professional>(defaultProfessional)
     const [project, setProject] = useState<Project>(defaultProject)
     const [projects, setProjects] = useState<Project[]>([])
+    const [messages, setMessages] = useState<string[]>([])
 
     const [isFirst, setIsFirst] = useState(true)
     const [isLoading, setIsLoading] = useState(true)
@@ -422,6 +424,12 @@ localProject = {
                 }
                 setIsLoading(false)
             })
+            fetch("api/checkPendencies").then((res) => res.json()).then((res) => {
+                setIsFirst(old => false)
+                if (res.messages.length) {
+                    setMessages(res.messages)
+                }
+            })
         }
     })
 
@@ -477,6 +485,8 @@ localProject = {
                     subtitle="Dados importantes sobre o projeto"
                 />
             )}
+
+            <FeedbackPendency messages={messages} />
 
             <FeedbackMessageModal
                 isOpen={isFeedbackOpen}

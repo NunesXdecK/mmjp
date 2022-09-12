@@ -48,6 +48,7 @@ export default function ServicePaymentView(props: ServicePaymentViewProps) {
                         hideData
                         dataInside
                         canShowHideData
+                        title="Serviço"
                         elementId={servicePayment.service.id}
                     />
                 )}

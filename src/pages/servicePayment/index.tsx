@@ -2,19 +2,19 @@ import Head from "next/head"
 import { useEffect, useState } from "react"
 import List from "../../components/list/list"
 import Layout from "../../components/layout/layout"
-import ServiceView from "../../components/view/serviceView"
-import { handlePrepareServiceForDB, handlePrepareServiceForShow } from "../../util/converterUtil"
-import ServiceSingleForm from "../../components/form/serviceSingleForm"
-import { defaultService, Service } from "../../interfaces/objectInterfaces"
-import FeedbackMessageModal, { defaultFeedbackMessage, FeedbackMessage } from "../../components/modal/feedbackMessageModal"
 import Button from "../../components/button/button"
+import ServicePaymentView from "../../components/view/servicePaymentView"
+import { handlePrepareServicePaymentForDB } from "../../util/converterUtil"
+import ServicePaymentSingleForm from "../../components/form/servicePaymentSingleForm"
+import { defaultServicePayment, ServicePayment } from "../../interfaces/objectInterfaces"
+import FeedbackMessageModal, { defaultFeedbackMessage, FeedbackMessage } from "../../components/modal/feedbackMessageModal"
 import { ChevronDoubleDownIcon, ChevronDoubleUpIcon, ChevronDownIcon, ChevronUpIcon } from "@heroicons/react/solid"
 import FeedbackPendency from "../../components/modal/feedbackPendencyModal"
 
-export default function Services() {
-    const [title, setTitle] = useState("Lista de serviços")
-    const [service, setService] = useState<Service>(defaultService)
-    const [services, setServices] = useState<Service[]>([])
+export default function ServicePayments() {
+    const [title, setTitle] = useState("Lista de pagamentos")
+    const [servicePayment, setServicePayment] = useState<ServicePayment>(defaultServicePayment)
+    const [servicePayments, setServicePayments] = useState<ServicePayment[]>([])
     const [messages, setMessages] = useState<string[]>([])
 
     const [isFirst, setIsFirst] = useState(true)
@@ -28,40 +28,40 @@ export default function Services() {
         if (event) {
             event.preventDefault()
         }
-        setServices([])
-        setService(defaultService)
+        setServicePayments([])
+        setServicePayment(defaultServicePayment)
         setIsFirst(true)
         setIsLoading(true)
         setIsRegister(false)
-        setTitle("Lista de serviços")
+        setTitle("Lista de pagamentos")
     }
 
-    const handleDeleteClick = async (service) => {
+    const handleDeleteClick = async (servicePayment) => {
         setIsLoading(true)
         let feedbackMessage: FeedbackMessage = { messages: ["Algo deu errado"], messageType: "ERROR" }
-        const res = await fetch("api/service", {
+        const res = await fetch("api/servicePayment", {
             method: "DELETE",
-            body: JSON.stringify({ token: "tokenbemseguro", id: service.id }),
+            body: JSON.stringify({ token: "tokenbemseguro", id: servicePayment.id }),
         }).then((res) => res.json())
         if (res.status === "SUCCESS") {
             feedbackMessage = { messages: ["Removido com sucesso!"], messageType: "SUCCESS" }
         } else {
             feedbackMessage = { messages: ["Algo deu errado"], messageType: "ERROR" }
         }
-        const index = services.indexOf(service)
+        const index = servicePayments.indexOf(servicePayment)
         const list = [
-            ...services.slice(0, index),
-            ...services.slice(index + 1, services.length),
+            ...servicePayments.slice(0, index),
+            ...servicePayments.slice(index + 1, servicePayments.length),
         ]
-        setServices(list)
+        setServicePayments(list)
         setIsLoading(false)
         handleShowMessage(feedbackMessage)
     }
 
     const handleNewClick = () => {
         setIsRegister(true)
-        setService(defaultService)
-        setTitle("Novo serviço")
+        setServicePayment(defaultServicePayment)
+        setTitle("Novo etapa")
     }
 
     const sortByDate = (elementOne, elementTwo) => {
@@ -97,13 +97,13 @@ export default function Services() {
     }
 
     const handleFilterList = (string) => {
-        let listItems = [...services]
-        let listItemsFiltered: Service[] = []
-        let listItemsNormal: Service[] = []
-        let listItemsNormalFinal: Service[] = []
-        let listItemsArchive: Service[] = []
-        let listItemsFinished: Service[] = []
-        let listItemsPendency: Service[] = []
+        let listItems = [...servicePayments]
+        let listItemsFiltered: ServicePayment[] = []
+        let listItemsNormal: ServicePayment[] = []
+        let listItemsNormalFinal: ServicePayment[] = []
+        let listItemsArchive: ServicePayment[] = []
+        let listItemsFinished: ServicePayment[] = []
+        let listItemsPendency: ServicePayment[] = []
 
         listItems.map((element, index) => {
             let status = element.status
@@ -123,11 +123,6 @@ export default function Services() {
             }
         })
 
-        listItemsNormal = listItemsNormal.sort(sortByDate).sort(sortByPriority)
-        listItemsNormal.map((element, index) => {
-            listItemsNormalFinal = [...listItemsNormalFinal, { ...element, priorityView: index + 1 }]
-        })
-
         listItemsFiltered = [
             ...listItemsPendency.sort(sortByDate).sort(sortByPriority),
             ...listItemsNormal.sort(sortByDate).sort(sortByPriority),
@@ -135,24 +130,23 @@ export default function Services() {
             ...listItemsArchive.sort(sortByDate).sort(sortByPriority),
         ]
 
-        return listItemsFiltered.filter((element: Service, index) => {
-            return element.title.toLowerCase().includes(string.toLowerCase())
+        return listItemsFiltered.filter((element: ServicePayment, index) => {
+            return element.description.toLowerCase().includes(string.toLowerCase())
         })
     }
 
-    const handleEditClick = async (service) => {
+    const handleEditClick = async (servicePayment) => {
         setIsLoading(true)
-        let localService: Service = { ...service }
+        let localServicePayment: ServicePayment = { ...servicePayment }
         try {
-            localService = await fetch("api/service/" + localService.id).then((res) => res.json()).then((res) => res.data)
+            localServicePayment = await fetch("api/servicePayment/" + localServicePayment.id).then((res) => res.json()).then((res) => res.data)
         } catch (err) {
             console.error(err)
         }
-        localService = handlePrepareServiceForShow(localService)
         setIsLoading(false)
-        setService(localService)
+        setServicePayment(localServicePayment)
         setIsRegister(true)
-        setTitle("Editar serviço")
+        setTitle("Editar etapa")
     }
 
     const handleAfterSave = (feedbackMessage: FeedbackMessage) => {
@@ -168,36 +162,36 @@ export default function Services() {
         }
     }
 
-    const handleSaveService = async (service, history) => {
-        let res = { status: "ERROR", id: "", service: service }
-        let serviceForDB = handlePrepareServiceForDB(service)
+    const handleSaveServicePayment = async (servicePayment, history) => {
+        let res = { status: "ERROR", id: "", servicePayment: servicePayment }
+        let servicePaymentForDB = handlePrepareServicePaymentForDB(servicePayment)
         try {
-            const saveRes = await fetch("api/service", {
+            const saveRes = await fetch("api/servicePayment", {
                 method: "POST",
-                body: JSON.stringify({ token: "tokenbemseguro", data: serviceForDB, history: history, changeProject: false }),
+                body: JSON.stringify({ token: "tokenbemseguro", data: servicePaymentForDB, history: history, changeProject: false }),
             }).then((res) => res.json())
-            res = { ...res, status: "SUCCESS", id: saveRes.id, service: { ...service, id: saveRes.id } }
+            res = { ...res, status: "SUCCESS", id: saveRes.id, servicePayment: { ...servicePayment, id: saveRes.id } }
         } catch (e) {
             console.error("Error adding document: ", e)
         }
         return res
     }
 
-    const handleCustomButtonsClick = async (element: Service, option: "top" | "up" | "down" | "bottom") => {
+    const handleCustomButtonsClick = async (element: ServicePayment, option: "top" | "up" | "down" | "bottom") => {
         setIsLoading(true)
-        let listItems: Service[] = []
-        services.map((service: Service, index) => {
-            let status = service.status
+        let listItems: ServicePayment[] = []
+        servicePayments.map((servicePayment: ServicePayment, index) => {
+            let status = servicePayment.status
             if (status === "NORMAL") {
-                listItems = [...listItems, service]
+                listItems = [...listItems, servicePayment]
             }
         })
         let priority = -1
         let priorityUp = -1
         let priorityDown = -1
         listItems = listItems.sort(sortByPriority)
-        listItems.map((service: Service, index) => {
-            if (service.id === element.id) {
+        listItems.map((servicePayment: ServicePayment, index) => {
+            if (servicePayment.id === element.id) {
                 if (listItems[index - 1]) {
                     priorityUp = listItems[index - 1].priority
                 }
@@ -212,9 +206,9 @@ export default function Services() {
                 break
             case "up":
                 /*
-                listItems.map((service, index) => {
+                listItems.map((servicePayment, index) => {
                     if (priority === -1) {
-                        if (element.priority === service.priority) {
+                        if (element.priority === servicePayment.priority) {
                             priority = listItems[index - 1].priority
                         }
                     }
@@ -225,9 +219,9 @@ export default function Services() {
                 break
             case "down":
                 /*
-                listItems.map((service, index) => {
+                listItems.map((servicePayment, index) => {
                     if (priority === -1) {
-                        if (element.priority === service.priority) {
+                        if (element.priority === servicePayment.priority) {
                             priority = listItems[index + 1].priority
                         }
                     }
@@ -242,25 +236,25 @@ export default function Services() {
                 priority = listItems[listItems.length - 1].priority - 1
                 break
         }
-        await handleSaveService({ ...element, priority: priority }, true)
+        await handleSaveServicePayment({ ...element, priority: priority }, true)
         setIsFirst(true)
     }
 
-    const handlePutCustomButtons = (element: Service) => {
-        let listItems: Service[] = []
-        services.map((service: Service, index) => {
-            let status = service.status
+    const handlePutCustomButtons = (element: ServicePayment) => {
+        let listItems: ServicePayment[] = []
+        servicePayments.map((servicePayment: ServicePayment, index) => {
+            let status = servicePayment.status
             if (status === "NORMAL") {
-                if (element.id === service.id) {
+                if (element.id === servicePayment.id) {
                     localIndex = index
                 }
-                listItems = [...listItems, service]
+                listItems = [...listItems, servicePayment]
             }
         })
         let localIndex = -1
         listItems = listItems.sort(sortByPriority)
-        listItems.map((service: Service, index) => {
-            if (element.id === service.id) {
+        listItems.map((servicePayment: ServicePayment, index) => {
+            if (element.id === servicePayment.id) {
                 localIndex = index
             }
         })
@@ -310,10 +304,10 @@ export default function Services() {
 
     useEffect(() => {
         if (isFirst) {
-            fetch("api/services").then((res) => res.json()).then((res) => {
+            fetch("api/servicePayments").then((res) => res.json()).then((res) => {
                 setIsFirst(old => false)
                 if (res.list.length) {
-                    setServices(res.list)
+                    setServicePayments(res.list)
                 }
                 setIsLoading(false)
             })
@@ -348,33 +342,33 @@ export default function Services() {
                     onFilterList={handleFilterList}
                     onDeleteClick={handleDeleteClick}
                     onCustomButtons={handlePutCustomButtons}
-                    onSetElement={setService}
-                    deleteWindowTitle={"Deseja realmente deletar " + service.title + "?"}
-                    onTitle={(element: Service) => {
+                    onSetElement={setServicePayment}
+                    deleteWindowTitle={"Deseja realmente deletar " + servicePayment.description + "?"}
+                    onTitle={(element: ServicePayment) => {
                         return (
-                            <ServiceView
+                            <ServicePaymentView
                                 title=""
                                 hideData
                                 hideBorder
                                 hidePaddingMargin
-                                service={element}
+                                servicePayment={element}
                             />
                         )
                     }}
-                    onInfo={(element: Service) => {
-                        return (<ServiceView elementId={element.id} />)
+                    onInfo={(element: ServicePayment) => {
+                        return (<ServicePaymentView elementId={element.id} />)
                     }}
                 />
             ) : (
-                <ServiceSingleForm
+                <ServicePaymentSingleForm
                     canAutoSave
                     isBack={true}
-                    service={service}
+                    servicePayment={servicePayment}
                     onBack={handleBackClick}
-                    title="Informações do serviço"
+                    title="Informações do etapa"
                     onAfterSave={handleAfterSave}
                     onShowMessage={handleShowMessage}
-                    subtitle="Dados importantes sobre a serviço" />
+                    subtitle="Dados importantes sobre a etapa" />
             )}
 
             <FeedbackPendency messages={messages} />

@@ -6,11 +6,13 @@ import ProfessionalView from "../../components/view/professionalView"
 import ProfessionalForm from "../../components/form/professionalForm"
 import { defaultProfessional, Professional } from "../../interfaces/objectInterfaces"
 import FeedbackMessageModal, { defaultFeedbackMessage, FeedbackMessage } from "../../components/modal/feedbackMessageModal"
+import FeedbackPendency from "../../components/modal/feedbackPendencyModal"
 
 export default function Professionals() {
     const [title, setTitle] = useState("Lista de profissionais")
     const [professional, setProfessional] = useState<Professional>(defaultProfessional)
     const [professionals, setProfessionals] = useState<Professional[]>([])
+    const [messages, setMessages] = useState<string[]>([])
 
     const [isFirst, setIsFirst] = useState(true)
     const [isLoading, setIsLoading] = useState(true)
@@ -98,6 +100,12 @@ export default function Professionals() {
                 }
                 setIsLoading(false)
             })
+            fetch("api/checkPendencies").then((res) => res.json()).then((res) => {
+                setIsFirst(old => false)
+                if (res.messages.length) {
+                    setMessages(res.messages)
+                }
+            })
         }
     })
 
@@ -152,6 +160,8 @@ export default function Professionals() {
                     onShowMessage={handleShowMessage}
                     subtitle="Dados importantes sobre o profissional" />
             )}
+
+            <FeedbackPendency messages={messages} />
 
             <FeedbackMessageModal
                 isOpen={isFeedbackOpen}

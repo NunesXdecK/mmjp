@@ -9,12 +9,14 @@ import { ServicePayment, ServiceStage } from "../interfaces/objectInterfaces"
 import FeedbackMessageModal, { defaultFeedbackMessage, FeedbackMessage } from "../components/modal/feedbackMessageModal"
 import ServiceStageView from "../components/view/serviceStageView"
 import ServicePaymentView from "../components/view/servicePaymentView"
+import FeedbackPendency from "../components/modal/feedbackPendencyModal"
 
 export default function Index() {
     const [isFirst, setIsFirst] = useState(true)
     const [isLoading, setIsLoading] = useState(false)
     const [isFeedbackOpen, setIsFeedbackOpen] = useState(false)
     const [serviceStages, setServiceStages] = useState<ServiceStage[]>([])
+    const [messages, setMessages] = useState<string[]>([])
 
     const [feedbackMessage, setFeedbackMessage] = useState<FeedbackMessage>(defaultFeedbackMessage)
     const [servicePayments, setServicePayments] = useState<ServicePayment[]>([])
@@ -60,6 +62,12 @@ export default function Index() {
                     setServicePayments(res.list)
                 }
                 setIsLoading(false)
+            })
+            fetch("api/checkPendencies").then((res) => res.json()).then((res) => {
+                setIsFirst(old => false)
+                if (res.messages.length) {
+                    setMessages(res.messages)
+                }
             })
         }
     })
@@ -123,6 +131,8 @@ export default function Index() {
                     </FormRowColumn>
                 </FormRow>
             </Form>
+
+            <FeedbackPendency messages={messages} />
 
             <FeedbackMessageModal
                 isOpen={isFeedbackOpen}

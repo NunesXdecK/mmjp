@@ -23,6 +23,7 @@ interface ServicePaymentDataFormProps {
     servicePayments?: ServicePayment[],
     onBlur?: (any) => void,
     onDelete?: (number) => void,
+    onFinishAdd?: (any?) => void,
     onSetText?: (any, number) => void,
     onShowMessage?: (FeedbackMessage) => void,
 }

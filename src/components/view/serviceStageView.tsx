@@ -50,6 +50,7 @@ export default function ServiceStageView(props: ServiceStageViewProps) {
                         hideData
                         dataInside
                         canShowHideData
+                        title="Serviço"
                         elementId={serviceStage.service.id}
                         id={serviceStage.id + "-" + serviceStage.service.id}
                     />
@@ -120,6 +121,9 @@ export default function ServiceStageView(props: ServiceStageViewProps) {
                                 )}
                                 {serviceStage.status === "PENDENTE" && (
                                     <InfoView classNameHolder="w-full" classNameInfo="rounded-md px-3 py-1 bg-red-600 text-white" title="Status" info={serviceStage.status} />
+                                )}
+                                {serviceStage.priorityView > 0 && (
+                                    <InfoView classNameHolder="w-full" title="Lista de espera" info={serviceStage.priorityView + ""} />
                                 )}
                                 <InfoView title="Titulo" info={serviceStage.title} />
                                 <InfoView title="Data" info={handleUTCToDateShow(serviceStage.dateDue.toString())} />

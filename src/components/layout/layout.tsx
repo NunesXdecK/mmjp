@@ -34,8 +34,8 @@ const menus: LayoutMenuItem[] = [
             [
                 { name: "Projetos", href: "/project", current: false, disabled: false },
                 { name: "Serviços", href: "/service", current: false, disabled: false },
-                { name: "Etapas", href: "/servicestage", current: false, disabled: false },
-                { name: "Pagamentos", href: "/servicepayment", current: false, disabled: false },
+                { name: "Etapas", href: "/serviceStage", current: false, disabled: false },
+                { name: "Pagamentos", href: "/servicePayment", current: false, disabled: false },
 
             ]
     },

@@ -6,11 +6,13 @@ import ImmobileForm from "../../components/form/immobileForm"
 import { defaultImmobile, Immobile } from "../../interfaces/objectInterfaces"
 import FeedbackMessageModal, { defaultFeedbackMessage, FeedbackMessage } from "../../components/modal/feedbackMessageModal"
 import ImmobileView from "../../components/view/immobileView"
+import FeedbackPendency from "../../components/modal/feedbackPendencyModal"
 
 export default function Immobiles() {
     const [title, setTitle] = useState("Lista de imóveis")
     const [immobile, setImmobile] = useState<Immobile>(defaultImmobile)
     const [immobiles, setImmobiles] = useState<Immobile[]>([])
+    const [messages, setMessages] = useState<string[]>([])
 
     const [isFirst, setIsFirst] = useState(true)
     const [isLoading, setIsLoading] = useState(true)
@@ -98,6 +100,12 @@ export default function Immobiles() {
                 }
                 setIsLoading(false)
             })
+            fetch("api/checkPendencies").then((res) => res.json()).then((res) => {
+                setIsFirst(old => false)
+                if (res.messages.length) {
+                    setMessages(res.messages)
+                }
+            })
         }
     })
 
@@ -151,6 +159,8 @@ export default function Immobiles() {
                     onShowMessage={handleShowMessage}
                     subtitle="Dados importantes sobre o imóvel" />
             )}
+
+            <FeedbackPendency messages={messages} />
 
             <FeedbackMessageModal
                 isOpen={isFeedbackOpen}

@@ -205,6 +205,9 @@ export default function ServiceView(props: ServiceViewProps) {
                                 {service.status === "PENDENTE" && (
                                     <InfoView classNameHolder="w-full" classNameInfo="rounded-md px-3 py-1 bg-red-600 text-white" title="Status" info={service.status} />
                                 )}
+                                {service.priorityView > 0 && (
+                                    <InfoView classNameHolder="w-full" title="Lista de espera" info={service.priorityView + ""} />
+                                )}
                                 <InfoView title="Titulo" info={service.title} />
                                 <InfoView title="Valor" info={handleMountNumberCurrency(service.value.toString(), ".", ",", 3, 2)} />
                                 <InfoView title="Quantidade" info={service.quantity} />

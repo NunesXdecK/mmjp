@@ -2,19 +2,19 @@ import Head from "next/head"
 import { useEffect, useState } from "react"
 import List from "../../components/list/list"
 import Layout from "../../components/layout/layout"
-import ServiceView from "../../components/view/serviceView"
-import { handlePrepareServiceForDB, handlePrepareServiceForShow } from "../../util/converterUtil"
-import ServiceSingleForm from "../../components/form/serviceSingleForm"
-import { defaultService, Service } from "../../interfaces/objectInterfaces"
-import FeedbackMessageModal, { defaultFeedbackMessage, FeedbackMessage } from "../../components/modal/feedbackMessageModal"
 import Button from "../../components/button/button"
+import ServiceStageView from "../../components/view/serviceStageView"
+import { handlePrepareServiceStageForDB } from "../../util/converterUtil"
+import ServiceStageSingleForm from "../../components/form/serviceStageSingleForm"
+import { defaultServiceStage, ServiceStage } from "../../interfaces/objectInterfaces"
+import FeedbackMessageModal, { defaultFeedbackMessage, FeedbackMessage } from "../../components/modal/feedbackMessageModal"
 import { ChevronDoubleDownIcon, ChevronDoubleUpIcon, ChevronDownIcon, ChevronUpIcon } from "@heroicons/react/solid"
 import FeedbackPendency from "../../components/modal/feedbackPendencyModal"
 
-export default function Services() {
-    const [title, setTitle] = useState("Lista de serviços")
-    const [service, setService] = useState<Service>(defaultService)
-    const [services, setServices] = useState<Service[]>([])
+export default function ServiceStages() {
+    const [title, setTitle] = useState("Lista de etapas")
+    const [serviceStage, setServiceStage] = useState<ServiceStage>(defaultServiceStage)
+    const [serviceStages, setServiceStages] = useState<ServiceStage[]>([])
     const [messages, setMessages] = useState<string[]>([])
 
     const [isFirst, setIsFirst] = useState(true)
@@ -28,40 +28,40 @@ export default function Services() {
         if (event) {
             event.preventDefault()
         }
-        setServices([])
-        setService(defaultService)
+        setServiceStages([])
+        setServiceStage(defaultServiceStage)
         setIsFirst(true)
         setIsLoading(true)
         setIsRegister(false)
-        setTitle("Lista de serviços")
+        setTitle("Lista de etapas")
     }
 
-    const handleDeleteClick = async (service) => {
+    const handleDeleteClick = async (serviceStage) => {
         setIsLoading(true)
         let feedbackMessage: FeedbackMessage = { messages: ["Algo deu errado"], messageType: "ERROR" }
-        const res = await fetch("api/service", {
+        const res = await fetch("api/serviceStage", {
             method: "DELETE",
-            body: JSON.stringify({ token: "tokenbemseguro", id: service.id }),
+            body: JSON.stringify({ token: "tokenbemseguro", id: serviceStage.id }),
         }).then((res) => res.json())
         if (res.status === "SUCCESS") {
             feedbackMessage = { messages: ["Removido com sucesso!"], messageType: "SUCCESS" }
         } else {
             feedbackMessage = { messages: ["Algo deu errado"], messageType: "ERROR" }
         }
-        const index = services.indexOf(service)
+        const index = serviceStages.indexOf(serviceStage)
         const list = [
-            ...services.slice(0, index),
-            ...services.slice(index + 1, services.length),
+            ...serviceStages.slice(0, index),
+            ...serviceStages.slice(index + 1, serviceStages.length),
         ]
-        setServices(list)
+        setServiceStages(list)
         setIsLoading(false)
         handleShowMessage(feedbackMessage)
     }
 
     const handleNewClick = () => {
         setIsRegister(true)
-        setService(defaultService)
-        setTitle("Novo serviço")
+        setServiceStage(defaultServiceStage)
+        setTitle("Novo etapa")
     }
 
     const sortByDate = (elementOne, elementTwo) => {
@@ -97,13 +97,13 @@ export default function Services() {
     }
 
     const handleFilterList = (string) => {
-        let listItems = [...services]
-        let listItemsFiltered: Service[] = []
-        let listItemsNormal: Service[] = []
-        let listItemsNormalFinal: Service[] = []
-        let listItemsArchive: Service[] = []
-        let listItemsFinished: Service[] = []
-        let listItemsPendency: Service[] = []
+        let listItems = [...serviceStages]
+        let listItemsFiltered: ServiceStage[] = []
+        let listItemsNormal: ServiceStage[] = []
+        let listItemsNormalFinal: ServiceStage[] = []
+        let listItemsArchive: ServiceStage[] = []
+        let listItemsFinished: ServiceStage[] = []
+        let listItemsPendency: ServiceStage[] = []
 
         listItems.map((element, index) => {
             let status = element.status
@@ -130,29 +130,28 @@ export default function Services() {
 
         listItemsFiltered = [
             ...listItemsPendency.sort(sortByDate).sort(sortByPriority),
-            ...listItemsNormal.sort(sortByDate).sort(sortByPriority),
+            ...listItemsNormalFinal.sort(sortByDate).sort(sortByPriority),
             ...listItemsFinished.sort(sortByDate).sort(sortByPriority),
             ...listItemsArchive.sort(sortByDate).sort(sortByPriority),
         ]
 
-        return listItemsFiltered.filter((element: Service, index) => {
+        return listItemsFiltered.filter((element: ServiceStage, index) => {
             return element.title.toLowerCase().includes(string.toLowerCase())
         })
     }
 
-    const handleEditClick = async (service) => {
+    const handleEditClick = async (serviceStage) => {
         setIsLoading(true)
-        let localService: Service = { ...service }
+        let localServiceStage: ServiceStage = { ...serviceStage }
         try {
-            localService = await fetch("api/service/" + localService.id).then((res) => res.json()).then((res) => res.data)
+            localServiceStage = await fetch("api/serviceStage/" + localServiceStage.id).then((res) => res.json()).then((res) => res.data)
         } catch (err) {
             console.error(err)
         }
-        localService = handlePrepareServiceForShow(localService)
         setIsLoading(false)
-        setService(localService)
+        setServiceStage(localServiceStage)
         setIsRegister(true)
-        setTitle("Editar serviço")
+        setTitle("Editar etapa")
     }
 
     const handleAfterSave = (feedbackMessage: FeedbackMessage) => {
@@ -168,36 +167,36 @@ export default function Services() {
         }
     }
 
-    const handleSaveService = async (service, history) => {
-        let res = { status: "ERROR", id: "", service: service }
-        let serviceForDB = handlePrepareServiceForDB(service)
+    const handleSaveServiceStage = async (serviceStage, history) => {
+        let res = { status: "ERROR", id: "", serviceStage: serviceStage }
+        let serviceStageForDB = handlePrepareServiceStageForDB(serviceStage)
         try {
-            const saveRes = await fetch("api/service", {
+            const saveRes = await fetch("api/serviceStage", {
                 method: "POST",
-                body: JSON.stringify({ token: "tokenbemseguro", data: serviceForDB, history: history, changeProject: false }),
+                body: JSON.stringify({ token: "tokenbemseguro", data: serviceStageForDB, history: history, changeProject: false }),
             }).then((res) => res.json())
-            res = { ...res, status: "SUCCESS", id: saveRes.id, service: { ...service, id: saveRes.id } }
+            res = { ...res, status: "SUCCESS", id: saveRes.id, serviceStage: { ...serviceStage, id: saveRes.id } }
         } catch (e) {
             console.error("Error adding document: ", e)
         }
         return res
     }
 
-    const handleCustomButtonsClick = async (element: Service, option: "top" | "up" | "down" | "bottom") => {
+    const handleCustomButtonsClick = async (element: ServiceStage, option: "top" | "up" | "down" | "bottom") => {
         setIsLoading(true)
-        let listItems: Service[] = []
-        services.map((service: Service, index) => {
-            let status = service.status
+        let listItems: ServiceStage[] = []
+        serviceStages.map((serviceStage: ServiceStage, index) => {
+            let status = serviceStage.status
             if (status === "NORMAL") {
-                listItems = [...listItems, service]
+                listItems = [...listItems, serviceStage]
             }
         })
         let priority = -1
         let priorityUp = -1
         let priorityDown = -1
         listItems = listItems.sort(sortByPriority)
-        listItems.map((service: Service, index) => {
-            if (service.id === element.id) {
+        listItems.map((serviceStage: ServiceStage, index) => {
+            if (serviceStage.id === element.id) {
                 if (listItems[index - 1]) {
                     priorityUp = listItems[index - 1].priority
                 }
@@ -212,9 +211,9 @@ export default function Services() {
                 break
             case "up":
                 /*
-                listItems.map((service, index) => {
+                listItems.map((serviceStage, index) => {
                     if (priority === -1) {
-                        if (element.priority === service.priority) {
+                        if (element.priority === serviceStage.priority) {
                             priority = listItems[index - 1].priority
                         }
                     }
@@ -225,9 +224,9 @@ export default function Services() {
                 break
             case "down":
                 /*
-                listItems.map((service, index) => {
+                listItems.map((serviceStage, index) => {
                     if (priority === -1) {
-                        if (element.priority === service.priority) {
+                        if (element.priority === serviceStage.priority) {
                             priority = listItems[index + 1].priority
                         }
                     }
@@ -242,25 +241,25 @@ export default function Services() {
                 priority = listItems[listItems.length - 1].priority - 1
                 break
         }
-        await handleSaveService({ ...element, priority: priority }, true)
+        await handleSaveServiceStage({ ...element, priority: priority }, true)
         setIsFirst(true)
     }
 
-    const handlePutCustomButtons = (element: Service) => {
-        let listItems: Service[] = []
-        services.map((service: Service, index) => {
-            let status = service.status
+    const handlePutCustomButtons = (element: ServiceStage) => {
+        let listItems: ServiceStage[] = []
+        serviceStages.map((serviceStage: ServiceStage, index) => {
+            let status = serviceStage.status
             if (status === "NORMAL") {
-                if (element.id === service.id) {
+                if (element.id === serviceStage.id) {
                     localIndex = index
                 }
-                listItems = [...listItems, service]
+                listItems = [...listItems, serviceStage]
             }
         })
         let localIndex = -1
         listItems = listItems.sort(sortByPriority)
-        listItems.map((service: Service, index) => {
-            if (element.id === service.id) {
+        listItems.map((serviceStage: ServiceStage, index) => {
+            if (element.id === serviceStage.id) {
                 localIndex = index
             }
         })
@@ -310,10 +309,10 @@ export default function Services() {
 
     useEffect(() => {
         if (isFirst) {
-            fetch("api/services").then((res) => res.json()).then((res) => {
+            fetch("api/serviceStages").then((res) => res.json()).then((res) => {
                 setIsFirst(old => false)
                 if (res.list.length) {
-                    setServices(res.list)
+                    setServiceStages(res.list)
                 }
                 setIsLoading(false)
             })
@@ -348,33 +347,33 @@ export default function Services() {
                     onFilterList={handleFilterList}
                     onDeleteClick={handleDeleteClick}
                     onCustomButtons={handlePutCustomButtons}
-                    onSetElement={setService}
-                    deleteWindowTitle={"Deseja realmente deletar " + service.title + "?"}
-                    onTitle={(element: Service) => {
+                    onSetElement={setServiceStage}
+                    deleteWindowTitle={"Deseja realmente deletar " + serviceStage.title + "?"}
+                    onTitle={(element: ServiceStage) => {
                         return (
-                            <ServiceView
+                            <ServiceStageView
                                 title=""
                                 hideData
                                 hideBorder
                                 hidePaddingMargin
-                                service={element}
+                                serviceStage={element}
                             />
                         )
                     }}
-                    onInfo={(element: Service) => {
-                        return (<ServiceView elementId={element.id} />)
+                    onInfo={(element: ServiceStage) => {
+                        return (<ServiceStageView elementId={element.id} />)
                     }}
                 />
             ) : (
-                <ServiceSingleForm
+                <ServiceStageSingleForm
                     canAutoSave
                     isBack={true}
-                    service={service}
+                    serviceStage={serviceStage}
                     onBack={handleBackClick}
-                    title="Informações do serviço"
+                    title="Informações do etapa"
                     onAfterSave={handleAfterSave}
                     onShowMessage={handleShowMessage}
-                    subtitle="Dados importantes sobre a serviço" />
+                    subtitle="Dados importantes sobre a etapa" />
             )}
 
             <FeedbackPendency messages={messages} />

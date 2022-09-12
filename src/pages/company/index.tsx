@@ -7,11 +7,13 @@ import CompanyView from "../../components/view/companyView"
 import { handlePrepareCompanyForShow } from "../../util/converterUtil"
 import { defaultCompany, Company } from "../../interfaces/objectInterfaces"
 import FeedbackMessageModal, { defaultFeedbackMessage, FeedbackMessage } from "../../components/modal/feedbackMessageModal"
+import FeedbackPendency from "../../components/modal/feedbackPendencyModal"
 
 export default function Companies() {
     const [title, setTitle] = useState("Lista de empresas")
     const [company, setCompany] = useState<Company>(defaultCompany)
     const [companies, setCompanies] = useState<Company[]>([])
+    const [messages, setMessages] = useState<string[]>([])
 
     const [isFirst, setIsFirst] = useState(true)
     const [isLoading, setIsLoading] = useState(true)
@@ -100,6 +102,12 @@ export default function Companies() {
                 }
                 setIsLoading(false)
             })
+            fetch("api/checkPendencies").then((res) => res.json()).then((res) => {
+                setIsFirst(old => false)
+                if (res.messages.length) {
+                    setMessages(res.messages)
+                }
+            })
         }
     })
 
@@ -154,6 +162,8 @@ export default function Companies() {
                     onShowMessage={handleShowMessage}
                     subtitle="Dados importantes sobre a empresa" />
             )}
+
+            <FeedbackPendency messages={messages} />
 
             <FeedbackMessageModal
                 isOpen={isFeedbackOpen}

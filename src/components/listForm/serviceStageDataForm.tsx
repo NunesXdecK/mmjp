@@ -22,6 +22,7 @@ interface ServiceStageDataFormProps {
     isSingle?: boolean,
     isLoading?: boolean,
     isForSelect?: boolean,
+    isForShowAll?: boolean,
     isForDisable?: boolean,
     serviceStages?: ServiceStage[],
     onBlur?: (any) => void,
@@ -33,7 +34,7 @@ interface ServiceStageDataFormProps {
 
 export default function ServiceStageDataForm(props: ServiceStageDataFormProps) {
     const [isOpen, setIsOpen] = useState(false)
-    const [isFormOpen, setIsFormOpen] = useState(false)
+    const [isFormOpen, setIsFormOpen] = useState(props?.isSingle ? true : false)
     const [index, setIndex] = useState(props.index ?? 0)
 
     const [isFormValid, setIsFormValid] = useState(handleServiceStageValidationForDB(props.serviceStages[index]).validation)
@@ -70,20 +71,23 @@ export default function ServiceStageDataForm(props: ServiceStageDataFormProps) {
                 */}
             <FormRow className="py-2">
                 <FormRowColumn unit="4" className="flex flex-col sm:flex-row">
-                    <Button
-                        isLight
-                        className="mr-2 sm:mt-auto"
-                        isLoading={props.isLoading}
-                        onClick={() => {
-                            setIsFormOpen(!isFormOpen)
-                        }}
-                    >
-                        {isFormOpen ? (
-                            <ChevronDownIcon className="text-gray-600 block h-5 w-5" aria-hidden="true" />
-                        ) : (
-                            <ChevronRightIcon className="text-gray-600 block h-5 w-5" aria-hidden="true" />
-                        )}
-                    </Button>
+                    {(props.isForShowAll || !props.isSingle) && (
+                        <Button
+                            isLight
+                            className="mr-2 sm:mt-auto"
+                            isLoading={props.isLoading}
+                            onClick={() => {
+                                setIsFormOpen(!isFormOpen)
+                            }}
+                        >
+                            {isFormOpen ? (
+                                <ChevronDownIcon className="text-gray-600 block h-5 w-5" aria-hidden="true" />
+                            ) : (
+                                <ChevronRightIcon className="text-gray-600 block h-5 w-5" aria-hidden="true" />
+                            )}
+                        </Button>
+                    )}
+
                     <InputTextAutoComplete
                         title="Titulo"
                         onBlur={props.onBlur}

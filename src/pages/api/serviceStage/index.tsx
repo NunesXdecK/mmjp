@@ -1,6 +1,7 @@
-import { ProfessionalConversor, ServiceConversor, ServiceStageConversor } from "../../../db/converters"
-import { addDoc, collection, deleteDoc, doc, updateDoc } from "firebase/firestore"
-import { db, HISTORY_COLLECTION_NAME, PROFESSIONAL_COLLECTION_NAME, SERVICE_COLLECTION_NAME, SERVICE_STAGE_COLLECTION_NAME } from "../../../db/firebaseDB"
+import { ProfessionalConversor, ServiceConversor, ServicePaymentConversor, ServiceStageConversor } from "../../../db/converters"
+import { addDoc, collection, deleteDoc, doc, getDoc, getDocs, query, updateDoc, where } from "firebase/firestore"
+import { db, HISTORY_COLLECTION_NAME, PROFESSIONAL_COLLECTION_NAME, SERVICE_COLLECTION_NAME, SERVICE_PAYMENT_COLLECTION_NAME, SERVICE_STAGE_COLLECTION_NAME } from "../../../db/firebaseDB"
+import { Service, ServicePayment, ServiceStage } from "../../../interfaces/objectInterfaces"
 
 export default async function handler(req, res) {
     const { method, body } = req
@@ -9,12 +10,13 @@ export default async function handler(req, res) {
     const serviceCollection = collection(db, SERVICE_COLLECTION_NAME).withConverter(ServiceConversor)
     const professionalCollection = collection(db, PROFESSIONAL_COLLECTION_NAME).withConverter(ProfessionalConversor)
     const serviceStageCollection = collection(db, SERVICE_STAGE_COLLECTION_NAME).withConverter(ServiceStageConversor)
+    const servicePaymentCollection = collection(db, SERVICE_PAYMENT_COLLECTION_NAME).withConverter(ServicePaymentConversor)
 
     switch (method) {
         case "POST":
             let resPOST = { status: "ERROR", error: {}, id: "", message: "" }
             try {
-                let { token, data, history } = JSON.parse(body)
+                let { token, data, history, changeProject } = JSON.parse(body)
                 if (token === "tokenbemseguro") {
                     let nowID = data?.id ?? ""
                     const isSave = nowID === ""
@@ -28,7 +30,7 @@ export default async function handler(req, res) {
                                 */
                                 data = { ...data, responsible: { id: data.responsible.id } }
                             }
-                            data = { ...data, service: serviceDocRef }
+                            data = { ...data, service: { id: data.service.id } }
                             if (isSave) {
                                 const docRef = await addDoc(serviceStageCollection, ServiceStageConversor.toFirestore(data))
                                 nowID = docRef.id
@@ -39,6 +41,44 @@ export default async function handler(req, res) {
                             if (history) {
                                 const dataForHistory = { ...ServiceStageConversor.toFirestore(data), databaseid: nowID, databasename: SERVICE_STAGE_COLLECTION_NAME }
                                 await addDoc(historyCollection, dataForHistory)
+                            }
+
+                            if (changeProject && (data?.status === "NORMAL" || data?.status === "FINALIZADO")) {
+                                let docRef = await doc(serviceCollection, data?.service?.id)
+                                let service: Service = (await getDoc(docRef)).data()
+                                let saveStatus = service.status
+                                let isStatusDiferent = saveStatus !== data.status
+                                if (isStatusDiferent) {
+                                    let isFinish = true
+                                    const queryServiceStage = query(serviceStageCollection, where("service", "==", { id: data?.service?.id }))
+                                    const querySnapshotStage = await getDocs(queryServiceStage)
+                                    querySnapshotStage.forEach((doc) => {
+                                        let s: ServiceStage = doc.data()
+                                        if (s?.status !== "FINALIZADO") {
+                                            isFinish = false
+                                        }
+                                    })
+                                    const queryServicePayment = query(servicePaymentCollection, where("service", "==", { id: data?.service?.id }))
+                                    const querySnapshotPayment = await getDocs(queryServicePayment)
+                                    querySnapshotPayment.forEach((doc) => {
+                                        let s: ServicePayment = doc.data()
+                                        if (s?.status !== "FINALIZADO") {
+                                            isFinish = false
+                                        }
+                                    })
+                                    if (isFinish) {
+                                        service = { ...service, status: "FINALIZADO" }
+                                    } else {
+                                        service = { ...service, status: "NORMAL" }
+                                    }
+                                    if (saveStatus !== service.status) {
+                                        await updateDoc(docRef, ServiceConversor.toFirestore(service))
+                                        if (history) {
+                                            const dataForHistory = { ...ServiceConversor.toFirestore(service), databaseid: service.id, databasename: SERVICE_COLLECTION_NAME }
+                                            await addDoc(historyCollection, dataForHistory)
+                                        }
+                                    }
+                                }
                             }
                             resPOST = { ...resPOST, status: "SUCCESS", id: nowID }
                         } else {
