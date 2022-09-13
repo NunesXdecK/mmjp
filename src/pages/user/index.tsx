@@ -73,6 +73,7 @@ export default function Users() {
     const handleEditClick = async (user) => {
         setIsLoading(true)
         let localUser = await fetch("api/user/" + user.id).then((res) => res.json()).then((res) => res.data)
+        console.log(localUser)
         setIsRegister(true)
         setUser({ ...defaultUser, ...localUser })
         setTitle("Editar usuário")

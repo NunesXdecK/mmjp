@@ -43,9 +43,11 @@ export const UserConversor = {
     toFirestore(data) {
         return {
             email: data.email,
+            office: data.office,
             person: data.person,
             password: data.password,
             username: data.username,
+            isBlocked: data.isBlocked,
             dateInsertUTC: data.dateInsertUTC,
             dateLastUpdateUTC: data.dateLastUpdateUTC,
         }
@@ -57,8 +59,10 @@ export const UserConversor = {
             email: data.email ?? "",
             username: data.username ?? "",
             password: data.password ?? "",
+            office: data?.office ?? "visitante",
             dateInsertUTC: data.dateInsertUTC ?? 0,
             dateLastUpdateUTC: data.dateLastUpdateUTC ?? 0,
+            isBlocked: data?.isBlocked,
             person: data.person ?? defaultPerson,
         }
     }

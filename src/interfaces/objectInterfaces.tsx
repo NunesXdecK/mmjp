@@ -41,12 +41,14 @@ export interface Company {
 
 export interface User {
     id?: string,
+    email?: string,
     username?: string,
     password?: string,
     passwordConfirm?: string,
-    email?: string,
+    office?: "visitante" | "secretaria" | "projetista" | "gerente" | "administrador",
     dateInsertUTC?: number,
     dateLastUpdateUTC?: number,
+    isBlocked?: boolean,
     person?: any,
 }
 
@@ -212,11 +214,13 @@ export const defaultCompany: Company = {
 
 export const defaultUser: User = {
     id: "",
+    email: "",
     username: "",
     password: "",
-    email: "",
+    office: "visitante",
     dateInsertUTC: 0,
     dateLastUpdateUTC: 0,
+    isBlocked: true,
     person: {},
 }
 

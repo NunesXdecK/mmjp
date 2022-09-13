@@ -3,11 +3,11 @@ import Button from "../button/button"
 import PersonView from "./personView"
 import { useEffect, useState } from "react"
 import InfoHolderView from "./infoHolderView"
+import { handleUTCToDateShow } from "../../util/dateUtils"
 import PlaceholderItemList from "../list/placeholderItemList"
 import ScrollDownTransition from "../animation/scrollDownTransition"
-import { ChevronDownIcon, ChevronRightIcon } from "@heroicons/react/outline"
 import { defaultUser, User } from "../../interfaces/objectInterfaces"
-import { handleUTCToDateShow } from "../../util/dateUtils"
+import { ChevronDownIcon, ChevronRightIcon } from "@heroicons/react/outline"
 
 interface UserViewProps {
     id?: string,
@@ -91,6 +91,9 @@ export default function UserView(props: UserViewProps) {
                                         )}
                                     </Button>
                                 )}
+                                {user.isBlocked && (
+                                    <InfoView classNameHolder="w-full" classNameInfo="rounded-md px-3 py-1 bg-red-600 text-white" info="BLOQUEADO" />
+                                )}
                                 <InfoView title="Titulo" info={user.username} />
                                 <InfoView title="E-mail" info={user.email} />
                                 <ScrollDownTransition isOpen={isShowInfo}>
@@ -98,6 +101,7 @@ export default function UserView(props: UserViewProps) {
                                         hideBorder
                                         hidePaddingMargin
                                     >
+                                        <InfoView title="Cargo" info={user.office} />
                                         {user.dateInsertUTC > 0 && <InfoView title="Data inserção" info={handleUTCToDateShow(user.dateInsertUTC.toString())} />}
                                         {user.dateLastUpdateUTC > 0 && <InfoView title="Data atualização" info={handleUTCToDateShow(user.dateLastUpdateUTC.toString())} />}
                                         {props.dataInside && handlePutData()}

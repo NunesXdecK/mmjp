@@ -13,6 +13,7 @@ import FeedbackMessageSaveText from "../modal/feedbackMessageSavingText";
 import { defaultUser, User } from "../../interfaces/objectInterfaces";
 import { handleIsEqual, handleUserValidationForDB } from "../../util/validationUtil";
 import { handlePrepareUserForDB } from "../../util/converterUtil";
+import InputSelect from "../inputText/inputSelect";
 
 interface UserFormProps {
     title?: string,
@@ -43,8 +44,10 @@ export default function UserForm(props: UserFormProps) {
     const [persons, setPersons] = useState((props?.user?.person && "id" in props?.user?.person && props?.user?.person.id.length) ? [props.user.person] : [])
 
     const handleSetUserEmail = (value) => { setUser({ ...user, email: value }) }
+    const handleSetUserOffice = (value) => { setUser({ ...user, office: value }) }
     const handleSetUserUsername = (value) => { setUser({ ...user, username: value }) }
     const handleSetUserPassword = (value) => { setUser({ ...user, password: value }) }
+    const handleSetUserIsBlocked = (value) => { setUser({ ...user, isBlocked: value }) }
     const handleSetUserPasswordConfirm = (value) => { setUser({ ...user, passwordConfirm: value }) }
 
     const handleOnBack = () => {
@@ -232,6 +235,19 @@ export default function UserForm(props: UserFormProps) {
 
                     <FormRow>
                         <FormRowColumn unit="6">
+                            <InputCheckbox
+                                title="bloqueado?"
+                                id="user-is-blocked"
+                                isLoading={isLoading}
+                                value={user.isBlocked}
+                                isDisabled={props.isForDisable}
+                                onSetText={handleSetUserIsBlocked}
+                            />
+                        </FormRowColumn>
+                    </FormRow>
+
+                    <FormRow>
+                        <FormRowColumn unit="6">
                             <InputText
                                 id="user-name"
                                 isLoading={isLoading}
@@ -262,7 +278,20 @@ export default function UserForm(props: UserFormProps) {
                             />
                         </FormRowColumn>
                     </FormRow>
-
+                    <FormRow>
+                        <FormRowColumn unit="6">
+                            <InputSelect
+                                title="Cargo"
+                                id="user-office"
+                                value={user.office}
+                                isLoading={isLoading}
+                                onBlur={handleAutoSave}
+                                isDisabled={props.isForDisable}
+                                onSetText={handleSetUserOffice}
+                                options={["visitante", "secretaria", "projetista", "gerente", "administrador"]}
+                            />
+                        </FormRowColumn>
+                    </FormRow>
                     <FormRow>
                         <FormRowColumn unit="6">
                             <InputText
