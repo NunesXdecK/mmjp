@@ -39,6 +39,31 @@ export const PersonConversor = {
     }
 }
 
+export const UserConversor = {
+    toFirestore(data) {
+        return {
+            email: data.email,
+            person: data.person,
+            password: data.password,
+            username: data.username,
+            dateInsertUTC: data.dateInsertUTC,
+            dateLastUpdateUTC: data.dateLastUpdateUTC,
+        }
+    },
+    fromFirestore(snapshot, options) {
+        const data = snapshot?.data(options)
+        return {
+            id: snapshot?.id ?? "",
+            email: data.email ?? "",
+            username: data.username ?? "",
+            password: data.password ?? "",
+            dateInsertUTC: data.dateInsertUTC ?? 0,
+            dateLastUpdateUTC: data.dateLastUpdateUTC ?? 0,
+            person: data.person ?? defaultPerson,
+        }
+    }
+}
+
 export const ProfessionalConversor = {
     toFirestore(data) {
         return {

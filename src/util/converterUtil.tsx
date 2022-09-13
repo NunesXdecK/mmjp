@@ -1,5 +1,5 @@
 import { handleNewDateToUTC, handleUTCToDateShow } from "./dateUtils"
-import { defaultPerson, defaultAddress, defaultProfessional, defaultImmobile, Person, Address, Professional, Immobile, Company, defaultCompany, Project, ServiceStage, ServicePayment, Service } from "../interfaces/objectInterfaces"
+import { defaultPerson, defaultAddress, defaultProfessional, defaultImmobile, Person, Address, Professional, Immobile, Company, defaultCompany, Project, ServiceStage, ServicePayment, Service, User } from "../interfaces/objectInterfaces"
 import { handleMaskCNPJ, handleMaskCPF, handleMaskTelephone, handleMountMask, handleMountNumberCurrency, handleRemoveCEPMask, handleRemoveCNPJMask, handleRemoveCPFMask, handleRemoveCurrencyMask, handleRemoveDateMask, handleRemoveTelephoneMask, handleValueStringToFloat } from "./maskUtil"
 import { COMPANY_COLLECTION_NAME, PERSON_COLLECTION_NAME } from "../db/firebaseDB"
 
@@ -199,6 +199,21 @@ export const handlePrepareCompanyForDB = (company: Company) => {
         cnpj: handleRemoveCNPJMask(company.cnpj),
     }
     return company
+}
+
+export const handlePrepareUserForDB = (user: User) => {
+    if (user.dateInsertUTC === 0) {
+        user = { ...user, dateInsertUTC: handleNewDateToUTC() }
+    }
+    if (user && "id" in user && user.id.length) {
+        user = { ...user, dateLastUpdateUTC: handleNewDateToUTC() }
+    }
+    if (user.person?.id?.length) {
+        user = { ...user, person: { id: user.person.id } }
+    } else {
+        user = { ...user, person: {} }
+    }
+    return user
 }
 
 export const handlePrepareProfessionalForDB = (professional: Professional) => {

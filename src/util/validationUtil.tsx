@@ -1,4 +1,4 @@
-import { Company, Person, Professional, Project, ServicePayment, ServiceStage, Immobile, Service } from "../interfaces/objectInterfaces"
+import { Company, Person, Professional, Project, ServicePayment, ServiceStage, Immobile, Service, User } from "../interfaces/objectInterfaces"
 import { handleRemoveCNPJMask } from "./maskUtil"
 import { CNPJ_PATTERN, CPF_PATTERN, ONLY_CHARACTERS_PATTERN, ONLY_CHARACTERS_PATTERN_TWO, ONLY_SPECIAL_FOR_NUMBER_PATTERN } from "./patternValidationUtil"
 
@@ -121,6 +121,36 @@ export const handlePersonValidationForDB = (person: Person) => {
 
     validation = { ...validation, validation: nameCheck && codeCheck && cpfCheck }
 
+    return validation
+}
+
+export const handleUserValidationForDB = (user: User) => {
+    let validation: ValidationReturn = { validation: false, messages: [] }
+    let userNameCheck = handleValidationNotNull(user.username)
+    let emailCheck = handleValidationNotNull(user.email)
+    let passwordCheck = handleValidationNotNull(user.password)
+    let passwordConfirmCheck = handleValidationNotNull(user.passwordConfirm)
+    let passwordsEqual = user.password === user.passwordConfirm
+    let personCheck = user?.person?.id?.length > 0 ?? false
+    if (!userNameCheck) {
+        validation = { ...validation, messages: [...validation.messages, "O campo Username está em branco."] }
+    }
+    if (!emailCheck) {
+        validation = { ...validation, messages: [...validation.messages, "O campo E-mail está em branco."] }
+    }
+    if (!passwordCheck) {
+        validation = { ...validation, messages: [...validation.messages, "O campo Senha está em branco."] }
+    }
+    if (!passwordConfirmCheck) {
+        validation = { ...validation, messages: [...validation.messages, "O campo Confirme a senha está em branco."] }
+    }
+    if (passwordCheck && passwordConfirmCheck && !passwordsEqual) {
+        validation = { ...validation, messages: [...validation.messages, "As senhas estão diferentes"] }
+    }
+    if (!personCheck) {
+        validation = { ...validation, messages: [...validation.messages, "O usuário precisa de dados básicos."] }
+    }
+    validation = { ...validation, validation: userNameCheck && personCheck }
     return validation
 }
 

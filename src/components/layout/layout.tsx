@@ -22,6 +22,7 @@ const menus: LayoutMenuItem[] = [
                 { name: "Empresas", href: "/company", current: false, disabled: false },
                 { name: "Profissionais", href: "/professional", current: false, disabled: false },
                 { name: "Imóveis", href: "/immobile", current: false, disabled: false },
+                { name: "Usuários", href: "/user", current: false, disabled: false },
 
             ]
     },

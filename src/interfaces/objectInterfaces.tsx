@@ -39,6 +39,17 @@ export interface Company {
     telephones?: string[],
 }
 
+export interface User {
+    id?: string,
+    username?: string,
+    password?: string,
+    passwordConfirm?: string,
+    email?: string,
+    dateInsertUTC?: number,
+    dateLastUpdateUTC?: number,
+    person?: any,
+}
+
 export interface Professional {
     id?: string,
     title?: string,
@@ -197,6 +208,16 @@ export const defaultCompany: Company = {
     owners: [],
     telephones: [],
     address: defaultAddress,
+}
+
+export const defaultUser: User = {
+    id: "",
+    username: "",
+    password: "",
+    email: "",
+    dateInsertUTC: 0,
+    dateLastUpdateUTC: 0,
+    person: {},
 }
 
 export const defaultProfessional: Professional = {
