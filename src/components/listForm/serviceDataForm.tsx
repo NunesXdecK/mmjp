@@ -13,9 +13,9 @@ import SelectProfessionalForm from "../select/selectProfessionalForm";
 import InputTextAutoComplete from "../inputText/inputTextAutocomplete";
 import { NOT_NULL_MARK, NUMBER_MARK } from "../../util/patternValidationUtil";
 import { handleNewDateToUTC, handleUTCToDateShow } from "../../util/dateUtils";
-import { defaultServicePayment, Service } from "../../interfaces/objectInterfaces";
 import { ChevronDownIcon, ChevronRightIcon, TrashIcon } from "@heroicons/react/outline";
 import { handleMountNumberCurrency, handleValueStringToFloat } from "../../util/maskUtil";
+import { defaultServicePayment, Service, ServicePayment } from "../../interfaces/objectInterfaces";
 
 interface ServiceDataFormProps {
     id?: string,
@@ -92,6 +92,42 @@ export default function ServiceDataForm(props: ServiceDataFormProps) {
         }
         const v = (valueFinal * quantityFinal).toFixed(2)
         return v
+    }
+
+    const handleUpdateValueByPayments = (value, i) => {
+        let unit
+        let valueFinal = 0
+        let quantityFinal = 0
+        let servicePayments = []
+        try {
+            const service = props.services[index]
+            servicePayments = service.servicePayments
+            servicePayments?.map((element: ServicePayment, ii) => {
+                if (ii !== i) {
+                    valueFinal = valueFinal + handleValueStringToFloat(element?.value)
+                } else {
+                    valueFinal = valueFinal + handleValueStringToFloat(value)
+                }
+            })
+            quantityFinal = parseInt(service.quantity)
+            unit = (valueFinal / quantityFinal).toFixed(2)
+            servicePayments = [
+                ...servicePayments.slice(0, i),
+                {
+                    ...servicePayments[i],
+                    value: handleMountNumberCurrency(value.toString(), ".", ",", 3, 2)
+                },
+                ...servicePayments.slice(i + 1, servicePayments.length),
+            ]
+        } catch (err) {
+            console.error(err)
+        }
+        handleSetText({
+            ...props.services[index],
+            servicePayments: servicePayments,
+            value: handleMountNumberCurrency(unit.toString(), ".", ",", 3, 2),
+            total: handleMountNumberCurrency(valueFinal.toFixed(2).toString(), ".", ",", 3, 2),
+        })
     }
 
     const handlePutPayment = (valueTotal) => {
@@ -405,8 +441,9 @@ export default function ServiceDataForm(props: ServiceDataFormProps) {
                     isForDisable={props.isForDisable}
                     onShowMessage={props.onShowMessage}
                     onSetServiceStages={handleSetServiceStages}
+                    id={"service-stages-" + props.services[index].id}
                     serviceStages={props.services[index].serviceStages}
-                    />
+                />
 
                 <ServicePaymentForm
                     title="Pagamento"
@@ -417,6 +454,8 @@ export default function ServiceDataForm(props: ServiceDataFormProps) {
                     subtitle="Adicione os pagamentos"
                     onShowMessage={props.onShowMessage}
                     onSetServicePayments={handleSetServicePayments}
+                    onUpdateServiceValue={handleUpdateValueByPayments}
+                    id={"service-payments-" + props.services[index].id}
                     servicePayments={props.services[index].servicePayments}
                 />
             </ScrollDownTransition>

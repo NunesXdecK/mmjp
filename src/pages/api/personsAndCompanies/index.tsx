@@ -1,4 +1,4 @@
-import { collection, getDoc, getDocs } from "firebase/firestore"
+import { collection, getDoc, getDocs, query, where } from "firebase/firestore"
 import { Company, Person } from "../../../interfaces/objectInterfaces"
 import { CompanyConversor, PersonConversor } from "../../../db/converters"
 import { COMPANY_COLLECTION_NAME, db, PERSON_COLLECTION_NAME } from "../../../db/firebaseDB"
@@ -14,8 +14,10 @@ export default async function handler(req, res) {
             let list = []
             let listCompanies = []
             try {
-                const querySnapshot = await getDocs(personCollection)
-                const querySnapshotCompany = await getDocs(companyCollection)
+                const qPerson = await query(personCollection, where("clientCode", "!=", ""))
+                const querySnapshot = await getDocs(qPerson)
+                const qCompany = await query(companyCollection, where("clientCode", "!=", ""))
+                const querySnapshotCompany = await getDocs(qCompany)
                 querySnapshot.forEach((doc) => {
                     list = [...list, doc.data()]
                 })

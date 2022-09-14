@@ -22,6 +22,7 @@ interface ServicePaymentFormProps {
     onFinishAdd?: (any?) => void,
     onSetServicePayments?: (any) => void,
     onShowMessage?: (FeedbackMessage) => void,
+    onUpdateServiceValue?: (any, number) => void,
 }
 
 export default function ServicePaymentForm(props: ServicePaymentFormProps) {
@@ -98,7 +99,7 @@ export default function ServicePaymentForm(props: ServicePaymentFormProps) {
 
             {props?.servicePayments?.map((element, index) => (
                 <ServicePaymentDataForm
-                    key={index}
+                    key={index + props.id}
                     index={index}
                     onBlur={props.onBlur}
                     onDelete={handeOnDelete}
@@ -108,6 +109,7 @@ export default function ServicePaymentForm(props: ServicePaymentFormProps) {
                     onFinishAdd={props.onFinishAdd}
                     isForDisable={props.isForDisable}
                     servicePayments={props.servicePayments}
+                    onUpdateServiceValue={props.onUpdateServiceValue}
                 />
             ))}
 

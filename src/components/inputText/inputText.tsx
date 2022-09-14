@@ -8,16 +8,19 @@ interface InputTextProps {
     type?: string,
     value?: string,
     title?: string,
+    message?: string,
     validation?: string,
     classNameInput?: string,
     classNameLabel?: string,
     holderClassName?: string,
     validationMessage?: string,
     maxLength?: number,
+    isInvalid?: boolean,
     isLoading?: boolean,
     isDisabled?: boolean,
     isRequired?: boolean,
     isAutoFocus?: boolean,
+    isForShowMessage?: boolean,
     children?: any,
     mask?: "cpf" | "rg" | "cnpj" | "currency" | "telephone" | "cep" | "perimeter" | "area" | "date" | "ccir",
     onBlur?: (any?) => void,
@@ -111,7 +114,7 @@ export default function InputText(props: InputTextProps) {
         classNameHolder = classNameHolder + " " + props.holderClassName
     }
 
-    if (!isValid) {
+    if (props.isInvalid || !isValid) {
         classNameInputLocal = classNameInputLocal + " ring-red-600 border-red-600  focus:ring-red-600 focus:border-red-600"
     }
 
@@ -247,8 +250,11 @@ export default function InputText(props: InputTextProps) {
                     }
                 }}
             />
-            {!isValid && (
+            {(props.isInvalid || !isValid) && (
                 <p className="text-red-600">{props.validationMessage}</p>
+            )}
+            {(props.isForShowMessage) && (
+                <p className="text-indigo-600">{props.message}</p>
             )}
         </div>
     )

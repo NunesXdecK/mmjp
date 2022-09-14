@@ -34,6 +34,7 @@ interface CompanyFormProps {
 
 export default function CompanyForm(props: CompanyFormProps) {
     const [companyID, setCompanyID] = useState(props?.company?.id?.length ? props?.company?.id : "")
+    const [originalClientCode, setOriginalClientCode] = useState(props?.company?.clientCode ?? "")
     const [company, setCompany] = useState<Company>(props?.company ?? defaultCompany)
     const [companyOriginal, setCompanyOriginal] = useState<Company>(props?.company ?? defaultCompany)
     const [isFormValid, setIsFormValid] = useState(handleCompanyValidationForDB(company).validation)
@@ -41,6 +42,8 @@ export default function CompanyForm(props: CompanyFormProps) {
     const [isLoading, setIsLoading] = useState(false)
     const [isMultiple, setIsMultiple] = useState(false)
     const [isAutoSaving, setIsAutoSaving] = useState(false)
+    const [isClientCodeInvalid, setIsClientCodeInvalid] = useState(false)
+    const [isCheckingClientCode, setIsCheckingClientCode] = useState(false)
 
     const [oldData, setOldData] = useState<ElementFromBase>(props?.company?.oldData ?? defaultElementFromBase)
 
@@ -48,8 +51,11 @@ export default function CompanyForm(props: CompanyFormProps) {
     const handleSetCompanyCnpj = (value) => { setCompany({ ...company, cnpj: value }) }
     const handleSetCompanyOwners = (value) => { setCompany({ ...company, owners: value }) }
     const handleSetCompanyAddress = (value) => { setCompany({ ...company, address: value }) }
-    const handleSetCompanyClientCode = (value) => { setCompany({ ...company, clientCode: value }) }
     const handleSetCompanyTelephones = (value) => { setCompany({ ...company, telephones: value }) }
+    const handleSetCompanyClientCode = (value) => {
+        handleValidClientCode(value)
+        setCompany({ ...company, clientCode: value })
+    }
 
     const handleOnBack = () => {
         if (props.onBack) {
@@ -71,6 +77,32 @@ export default function CompanyForm(props: CompanyFormProps) {
         }
     }
 
+    const handleValidClientCode = async (code) => {
+        if (code?.length && originalClientCode !== code) {
+            setIsCheckingClientCode(true)
+            fetch("api/isClientCodeAvaliable/" + code).then(res => res.json()).then((res) => {
+                setIsCheckingClientCode(false)
+                setIsClientCodeInvalid(res.data)
+            })
+        } else {
+            setIsClientCodeInvalid(false)
+        }
+    }
+
+    const handleCompanyValidationForDBInner = (company) => {
+        let isValid = handleCompanyValidationForDB(company)
+        if (company.clientCode.length > 0) {
+            if (isCheckingClientCode || isClientCodeInvalid) {
+                isValid = {
+                    ...isValid,
+                    validation: false,
+                    messages: [...isValid.messages, "O codigo do cliente já está em uso."]
+                }
+            }
+        }
+        return isValid
+    }
+
     const handleAutoSave = async (event?) => {
         if (!props.canAutoSave) {
             return
@@ -84,7 +116,7 @@ export default function CompanyForm(props: CompanyFormProps) {
         if (!handleDiference()) {
             return
         }
-        const isValid = handleCompanyValidationForDB(company)
+        const isValid = handleCompanyValidationForDBInner(company)
         if (!isValid.validation) {
             return
         }
@@ -120,7 +152,7 @@ export default function CompanyForm(props: CompanyFormProps) {
         if (isAutoSaving) {
             return
         }
-        const isValid = handleCompanyValidationForDB(company)
+        const isValid = handleCompanyValidationForDBInner(company)
         if (!isValid.validation) {
             const feedbackMessage: FeedbackMessage = { messages: isValid.messages, messageType: "ERROR" }
             handleShowMessage(feedbackMessage)
@@ -239,11 +271,12 @@ export default function CompanyForm(props: CompanyFormProps) {
                                 onBlur={handleAutoSave}
                                 title="Codigo de cliente"
                                 value={company.clientCode}
-                                validation={NOT_NULL_MARK}
+                                isInvalid={isClientCodeInvalid}
                                 isDisabled={props.isForDisable}
+                                message="Verificando o codigo..."
                                 onSetText={handleSetCompanyClientCode}
-                                onValidate={handleChangeFormValidation}
-                                validationMessage="O código não pode ficar em branco."
+                                isForShowMessage={isCheckingClientCode}
+                                validationMessage="O código já está em uso."
                             />
                         </FormRowColumn>
                     </FormRow>
@@ -284,17 +317,17 @@ export default function CompanyForm(props: CompanyFormProps) {
             />
 
             <SelectPersonForm
-                title="Proprietários"
+                title="Representantes"
                 isLoading={isLoading}
                 isMultipleSelect={true}
                 persons={company.owners}
                 formClassName="p-1 m-3"
                 onSetLoading={setIsLoading}
                 onShowMessage={props.onShowMessage}
-                buttonTitle="Adicionar proprietário"
-                subtitle="Selecione os proprietários"
+                buttonTitle="Adicionar representante"
+                subtitle="Selecione os representante"
                 onSetPersons={handleSetCompanyOwners}
-                validationMessage="Esta pessoa já é um proprietário"
+                validationMessage="Esta pessoa já é um representante"
             />
 
             <form

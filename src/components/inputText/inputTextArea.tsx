@@ -8,6 +8,7 @@ interface InputTextAreaProps {
     value?: string,
     title?: string,
     validation?: string,
+    placeholder?: string,
     holderClassName?: string,
     validationMessage?: string,
     maxLength?: number,
@@ -90,6 +91,7 @@ export default function InputTextArea(props: InputTextAreaProps) {
                 maxLength={props.maxLength}
                 required={props.isRequired}
                 autoFocus={props.isAutoFocus}
+                placeholder={props.placeholder}
                 disabled={props.isDisabled || props.isLoading}
                 onBlur={(event) => {
                     if (props.onBlur) {

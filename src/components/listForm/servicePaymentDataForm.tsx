@@ -26,6 +26,7 @@ interface ServicePaymentDataFormProps {
     onFinishAdd?: (any?) => void,
     onSetText?: (any, number) => void,
     onShowMessage?: (FeedbackMessage) => void,
+    onUpdateServiceValue?: (any, number) => void,
 }
 
 export default function ServicePaymentDataForm(props: ServicePaymentDataFormProps) {
@@ -34,7 +35,13 @@ export default function ServicePaymentDataForm(props: ServicePaymentDataFormProp
 
     const [isFormValid, setIsFormValid] = useState(handleServicePaymentValidationForDB(props.servicePayments[index]).validation)
 
-    const handleSetServicePaymentValue = (value) => { handleSetText({ ...props.servicePayments[index], value: value }) }
+    const handleSetServicePaymentValue = (value) => {
+        if (props.onUpdateServiceValue) {
+            props.onUpdateServiceValue(value, index)
+        } else {
+            handleSetText({ ...props.servicePayments[index], value: value })
+        }
+    }
     const handleSetServicePaymentDate = (value) => { handleSetText({ ...props.servicePayments[index], dateString: value }) }
     const handleSetServicePaymentDescription = (value) => { handleSetText({ ...props.servicePayments[index], description: value }) }
 

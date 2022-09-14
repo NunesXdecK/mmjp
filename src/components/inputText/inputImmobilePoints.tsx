@@ -69,6 +69,7 @@ export default function InputImmobilePoints(props: InputImmobilePointsProps) {
                         onChange={handleChangeText}
                         id={"text-for-points-" + props.id}
                         validationMessage="Formato errado"
+                        placeholder="{ description: 'exemplo', latitude: 0.0, longitude: 0.0 }"
                     />
                 </FormRowColumn>
             </FormRow>

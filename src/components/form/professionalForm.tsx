@@ -290,7 +290,7 @@ export default function ProfessionalForm(props: ProfessionalFormProps) {
                 buttonTitle="Adicionar pessoa"
                 onShowMessage={props.onShowMessage}
                 validationButton={persons.length === 1}
-                validationMessage="Esta pessoa já é um proprietário"
+                validationMessage="Esta pessoa já está selecionada"
                 validationMessageButton="Você não pode mais adicionar pessoas"
             />
 
