@@ -130,7 +130,7 @@ export default function Services() {
 
         listItemsFiltered = [
             ...listItemsPendency.sort(sortByDate).sort(sortByPriority),
-            ...listItemsNormal.sort(sortByDate).sort(sortByPriority),
+            ...listItemsNormalFinal.sort(sortByDate).sort(sortByPriority),
             ...listItemsFinished.sort(sortByDate).sort(sortByPriority),
             ...listItemsArchive.sort(sortByDate).sort(sortByPriority),
         ]

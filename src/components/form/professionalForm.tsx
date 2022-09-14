@@ -157,6 +157,8 @@ export default function ProfessionalForm(props: ProfessionalFormProps) {
         handleShowMessage(feedbackMessage)
         if (isMultiple) {
             setProfessional(defaultProfessional)
+            setProfessionalOriginal(defaultProfessional)
+            setProfessionalID("")
         }
         if (!isMultiple && props.onAfterSave) {
             props.onAfterSave(feedbackMessage, professionalFromDB)

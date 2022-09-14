@@ -163,9 +163,11 @@ export interface ServicePayment {
     service?: any,
 }
 
-export interface Update {
-    dateString?: string,
-    description?: string,
+export interface SubjectMessage {
+    id?: string,
+    text?: string,
+    referenceId?: string,
+    referenceBase?: string,
     dateInsertUTC?: number,
     dateLastUpdateUTC?: number,
     user?: any,
@@ -330,4 +332,14 @@ export const defaultServicePayment: ServicePayment = {
     dateInsertUTC: 0,
     dateLastUpdateUTC: 0,
     service: defaultService,
+}
+
+export const defaultSubjectMessage: SubjectMessage = {
+    id: "",
+    text: "",
+    referenceId: "",
+    referenceBase: "",
+    dateInsertUTC: 0,
+    dateLastUpdateUTC: 0,
+    user: defaultUser,
 }

@@ -1,43 +1,29 @@
 import Head from "next/head"
-import List from "../components/list/list"
-import Form from "../components/form/form"
 import { useEffect, useState } from "react"
-import FormRow from "../components/form/formRow"
+import Form from "../components/form/form"
+import Button from "../components/button/button"
 import Layout from "../components/layout/layout"
-import FormRowColumn from "../components/form/formRowColumn"
-import { ServicePayment, ServiceStage } from "../interfaces/objectInterfaces"
-import FeedbackMessageModal, { defaultFeedbackMessage, FeedbackMessage } from "../components/modal/feedbackMessageModal"
-import ServiceStageView from "../components/view/serviceStageView"
-import ServicePaymentView from "../components/view/servicePaymentView"
 import FeedbackPendency from "../components/modal/feedbackPendencyModal"
+import FeedbackMessageModal, { defaultFeedbackMessage, FeedbackMessage } from "../components/modal/feedbackMessageModal"
+import { defaultSubjectMessage, SubjectMessage } from "../interfaces/objectInterfaces"
+import { PERSON_COLLECTION_NAME } from "../db/firebaseDB"
+import SubjectMessageFormModal from "../components/modal/subjectMessageFormModal"
+import { ChatAlt2Icon, ChatAltIcon, QuestionMarkCircleIcon } from "@heroicons/react/solid"
 
 export default function Index() {
     const [isFirst, setIsFirst] = useState(true)
     const [isLoading, setIsLoading] = useState(false)
     const [isFeedbackOpen, setIsFeedbackOpen] = useState(false)
-    const [serviceStages, setServiceStages] = useState<ServiceStage[]>([])
     const [messages, setMessages] = useState<string[]>([])
 
+    const [subjectMessage, setSubjectMessage] = useState<SubjectMessage>({
+        ...defaultSubjectMessage,
+        referenceId: "M8Kvcag59gggzvesKOV2",
+        user: { id: "mj89plpPDa8Tl0f93Pvo" },
+        referenceBase: PERSON_COLLECTION_NAME,
+    })
+
     const [feedbackMessage, setFeedbackMessage] = useState<FeedbackMessage>(defaultFeedbackMessage)
-    const [servicePayments, setServicePayments] = useState<ServicePayment[]>([])
-
-    const handleFilterStagesList = (string) => {
-        let listItems = [...serviceStages]
-        let listItemsFiltered: ServiceStage[] = []
-        listItemsFiltered = listItems.filter((element: ServiceStage, index) => {
-            return element.description.toLowerCase().includes(string.toLowerCase())
-        })
-        return listItemsFiltered
-    }
-
-    const handleFilterPaymentsList = (string) => {
-        let listItems = [...servicePayments]
-        let listItemsFiltered: ServicePayment[] = []
-        listItemsFiltered = listItems.filter((element: ServicePayment, index) => {
-            return element.description.toLowerCase().includes(string.toLowerCase())
-        })
-        return listItemsFiltered
-    }
 
     const handleShowMessage = (feedbackMessage: FeedbackMessage) => {
         if (isFeedbackOpen === false) {
@@ -49,20 +35,6 @@ export default function Index() {
 
     useEffect(() => {
         if (isFirst) {
-            fetch("api/serviceStages").then((res) => res.json()).then((res) => {
-                setIsFirst(old => false)
-                if (res.list.length) {
-                    setServiceStages(res.list)
-                }
-                setIsLoading(false)
-            })
-            fetch("api/servicePayments").then((res) => res.json()).then((res) => {
-                setIsFirst(old => false)
-                if (res.list.length) {
-                    setServicePayments(res.list)
-                }
-                setIsLoading(false)
-            })
             fetch("api/checkPendencies").then((res) => res.json()).then((res) => {
                 setIsFirst(old => false)
                 if (res.messages.length) {
@@ -71,7 +43,6 @@ export default function Index() {
             })
         }
     })
-
 
     return (
         <Layout
@@ -83,54 +54,24 @@ export default function Index() {
             </Head>
 
             <Form>
-                <FormRow>
-                    <FormRowColumn unit="3">
-                        <List
-                            autoSearch
-                            canSeeInfo
-                            title="Etapas"
-                            isLoading={isLoading}
-                            onFilterList={handleFilterStagesList}
-                            onTitle={(element: ServiceStage) => {
-                                return (
-                                    <ServiceStageView
-                                        title=""
-                                        hideData
-                                        hideBorder
-                                        hidePaddingMargin
-                                        serviceStage={element}
-                                    />)
-                            }}
-                            onInfo={(element: ServiceStage) => {
-                                return (<ServiceStageView elementId={element.id} />)
-                            }}
-                        />
-                    </FormRowColumn>
-                    <FormRowColumn unit="3">
-                        <List
-                            autoSearch
-                            canSeeInfo
-                            title="Pagamentos"
-                            isLoading={isLoading}
-                            onFilterList={handleFilterPaymentsList}
-                            onTitle={(element: ServicePayment) => {
-                                return (
-                                    <ServicePaymentView
-                                        title=""
-                                        hideData
-                                        hideBorder
-                                        hidePaddingMargin
-                                        servicePayment={element}
-                                    />)
-                            }}
-                            onInfo={(element: ServicePayment) => {
-                                return (<ServicePaymentView elementId={element.id} />)
-                            }}
-                        />
-
-                    </FormRowColumn>
-                </FormRow>
+                <Button
+                    isLight
+                    onClick={() => {
+                        setIsLoading(!isFeedbackOpen)
+                    }}
+                >
+                    <ChatAltIcon
+                        aria-hidden="true"
+                        className="block text-indigo-600 h-6 w-6"
+                    />
+                </Button>
             </Form>
+
+            <SubjectMessageFormModal
+                isOpen={isLoading}
+                setIsOpen={setIsLoading}
+                subjectMessage={subjectMessage}
+            />
 
             <FeedbackPendency messages={messages} />
 
@@ -139,6 +80,6 @@ export default function Index() {
                 feedbackMessage={feedbackMessage}
                 setIsOpen={setIsFeedbackOpen}
             />
-        </Layout>
+        </Layout >
     )
 }

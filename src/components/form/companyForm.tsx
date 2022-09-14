@@ -169,11 +169,15 @@ export default function CompanyForm(props: CompanyFormProps) {
         }
         setCompany({ ...company, id: res.id })
         setCompanyOriginal({ ...company, id: res.id })
+        setOriginalClientCode(company.clientCode)
         companyFromDB = { ...res.company }
         const feedbackMessage: FeedbackMessage = { messages: ["Sucesso!"], messageType: "SUCCESS" }
         handleShowMessage(feedbackMessage)
         if (isMultiple) {
             setCompany(defaultCompany)
+            setCompanyOriginal(defaultCompany)
+            setCompanyID("")
+            setOriginalClientCode("")
         }
         if (!isMultiple && props.onAfterSave) {
             props.onAfterSave(feedbackMessage, companyFromDB)

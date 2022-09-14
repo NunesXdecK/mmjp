@@ -1,4 +1,4 @@
-import { defaultAddress, defaultPerson, defaultProfessional, defaultProject, defaultService } from "../interfaces/objectInterfaces"
+import { defaultAddress, defaultPerson, defaultProfessional, defaultProject, defaultService, defaultUser } from "../interfaces/objectInterfaces"
 
 export const PersonConversor = {
     toFirestore(data) {
@@ -299,6 +299,31 @@ export const ServicePaymentConversor = {
             dateInsertUTC: data.dateInsertUTC ?? 0,
             dateLastUpdateUTC: data.dateLastUpdateUTC ?? 0,
             service: data.service ?? defaultService,
+        }
+    }
+}
+
+export const SubjectMessageConversor = {
+    toFirestore(data) {
+        return {
+            user: data.user,
+            text: data.text,
+            referenceId: data.referenceId,
+            referenceBase: data.referenceBase,
+            dateInsertUTC: data.dateInsertUTC,
+            dateLastUpdateUTC: data.dateLastUpdateUTC,
+        }
+    },
+    fromFirestore(snapshot, options) {
+        const data = snapshot?.data(options)
+        return {
+            id: snapshot?.id ?? "",
+            text: data.text ?? "",
+            referenceId: data.referenceId ?? "ORÇAMENTO",
+            referenceBase: data.referenceBase ?? "",
+            dateInsertUTC: data.dateInsertUTC ?? 0,
+            dateLastUpdateUTC: data.dateLastUpdateUTC ?? 0,
+            user: data.user ?? defaultUser,
         }
     }
 }

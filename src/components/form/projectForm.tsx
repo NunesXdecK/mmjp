@@ -39,6 +39,7 @@ interface ProjectFormProps {
 }
 
 export default function ProjectForm(props: ProjectFormProps) {
+    const [projectID, setProjectID] = useState(props?.project?.id?.length ? props?.project?.id : "")
     const [project, setProject] = useState<Project>(props?.project ?? defaultProject)
     const [projectOriginal, setProjectOriginal] = useState<Project>(props?.project ?? defaultProject)
     const [isFormValid, setIsFormValid] = useState(handleProjectValidationForDB(project).validation)
@@ -252,7 +253,7 @@ export default function ProjectForm(props: ProjectFormProps) {
                 return
             }
             projectID = resProject.id
-            setProject({ ...project, id: resProject.id })
+            setProjectID(resProject.id)
             setProjectOriginal(old => resProject.project)
         }
         let servicesForValid: Service[] = projectServiceFinal.services
@@ -275,6 +276,9 @@ export default function ProjectForm(props: ProjectFormProps) {
     const handleSaveProjectInner = async (project, history) => {
         let res = { status: "ERROR", id: "", project: project }
         let projectForDB = handlePrepareProjectForDB(project)
+        if (!projectForDB?.id?.length && projectID?.length) {
+            projectForDB = { ...projectForDB, id: projectID }
+        }
         try {
             const saveRes = await fetch("api/project", {
                 method: "POST",
@@ -406,7 +410,10 @@ export default function ProjectForm(props: ProjectFormProps) {
         if (!status) {
             if (isMultiple) {
                 setServices([])
+                setServicesOriginal([])
+                setServicesID([])
                 setProject({ ...defaultProject, dateString: handleUTCToDateShow(handleNewDateToUTC().toString()) })
+                setProjectOriginal({ ...defaultProject, dateString: handleUTCToDateShow(handleNewDateToUTC().toString()) })
             }
             if (!isMultiple && props.onAfterSave) {
                 props.onAfterSave(feedbackMessage, projectFromDB)

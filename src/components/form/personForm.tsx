@@ -181,6 +181,9 @@ export default function PersonForm(props: PersonFormProps) {
         handleShowMessage(feedbackMessage)
         if (isMultiple) {
             setPerson(defaultPerson)
+            setPersonOriginal(defaultPerson)
+            setPersonID("")
+            setOriginalClientCode("")
         }
         if (!isMultiple && props.onAfterSave) {
             props.onAfterSave(feedbackMessage, personFromDB)

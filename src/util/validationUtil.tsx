@@ -1,4 +1,4 @@
-import { Company, Person, Professional, Project, ServicePayment, ServiceStage, Immobile, Service, User } from "../interfaces/objectInterfaces"
+import { Company, Person, Professional, Project, ServicePayment, ServiceStage, Immobile, Service, User, SubjectMessage } from "../interfaces/objectInterfaces"
 import { handleRemoveCNPJMask } from "./maskUtil"
 import { CNPJ_PATTERN, CPF_PATTERN, ONLY_CHARACTERS_PATTERN, ONLY_CHARACTERS_PATTERN_TWO, ONLY_SPECIAL_FOR_NUMBER_PATTERN } from "./patternValidationUtil"
 
@@ -96,6 +96,17 @@ export const handleValidationNotNull = (text) => {
         test = text?.trim() !== ""
     }
     return test
+}
+
+export const handleSubjectMessageValidationForDB = (subjectMessage: SubjectMessage) => {
+    let validation: ValidationReturn = { validation: false, messages: [] }
+    let textCheck = true
+    if (!handleValidationOnlyTextNotNull(subjectMessage?.text)) {
+        validation = { ...validation, messages: [...validation.messages, "O mensagem está em branco."] }
+        textCheck = false
+    }
+    validation = { ...validation, validation: textCheck }
+    return validation
 }
 
 export const handlePersonValidationForDB = (person: Person) => {

@@ -151,6 +151,8 @@ export default function ImmobileForm(props: ImmobileFormProps) {
         handleShowMessage(feedbackMessage)
         if (isMultiple) {
             setImmobile(defaultImmobile)
+            setImmobileOriginal(defaultImmobile)
+            setImmobileID("")
         }
         if (!isMultiple && props.onAfterSave) {
             props.onAfterSave(feedbackMessage, immobileFromDB)

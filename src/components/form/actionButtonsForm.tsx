@@ -13,6 +13,7 @@ interface ActionButtonsFormProps {
     leftButtonText?: string,
     rightWindowText?: string,
     rightButtonText?: string,
+    actionBarClassName?: string,
     isLeftOn?: boolean,
     isRightOn?: boolean,
     isLoading?: boolean,
@@ -79,7 +80,7 @@ export default function ActionButtonsForm(props: ActionButtonsFormProps) {
 
     return (
         <div className="print:hidden">
-            <Form>
+            <Form className={props.actionBarClassName}>
                 <FormRow>
                     <FormRowColumn unit="6">
                         <div className={navigationBarClassName}>

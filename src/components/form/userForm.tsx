@@ -159,6 +159,8 @@ export default function UserForm(props: UserFormProps) {
         handleShowMessage(feedbackMessage)
         if (isMultiple) {
             setUser(defaultUser)
+            setUserOriginal(defaultUser)
+            setUserID("")
         }
         if (!isMultiple && props.onAfterSave) {
             props.onAfterSave(feedbackMessage, userFromDB)
