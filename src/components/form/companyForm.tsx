@@ -53,7 +53,6 @@ export default function CompanyForm(props: CompanyFormProps) {
     const handleSetCompanyAddress = (value) => { setCompany({ ...company, address: value }) }
     const handleSetCompanyTelephones = (value) => { setCompany({ ...company, telephones: value }) }
     const handleSetCompanyClientCode = (value) => {
-        handleValidClientCode(value)
         setCompany({ ...company, clientCode: value })
     }
 
@@ -77,7 +76,8 @@ export default function CompanyForm(props: CompanyFormProps) {
         }
     }
 
-    const handleValidClientCode = async (code) => {
+    const handleValidClientCode = async () => {
+        let code = company.clientCode
         if (code?.length && originalClientCode !== code) {
             setIsCheckingClientCode(true)
             fetch("api/isClientCodeAvaliable/" + code).then(res => res.json()).then((res) => {
@@ -272,7 +272,10 @@ export default function CompanyForm(props: CompanyFormProps) {
                             <InputText
                                 id="code"
                                 isLoading={isLoading}
-                                onBlur={handleAutoSave}
+                                onBlur={(event) => {
+                                    handleValidClientCode()
+                                    handleAutoSave(event)
+                                }}
                                 title="Codigo de cliente"
                                 value={company.clientCode}
                                 isInvalid={isClientCodeInvalid}

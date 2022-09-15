@@ -15,7 +15,7 @@ import ScrollDownTransition from "../animation/scrollDownTransition"
 import FeedbackMessageSaveText from "../modal/feedbackMessageSavingText"
 import { defaultPerson, Person } from "../../interfaces/objectInterfaces"
 import { handleIsEqual, handlePersonValidationForDB } from "../../util/validationUtil"
-import { CPF_MARK, NOT_NULL_MARK, TELEPHONE_MARK, TEXT_NOT_NULL_MARK } from "../../util/patternValidationUtil"
+import { CPF_MARK, TELEPHONE_MARK, TEXT_NOT_NULL_MARK } from "../../util/patternValidationUtil"
 
 interface PersonFormProps {
     title?: string,
@@ -58,7 +58,6 @@ export default function PersonForm(props: PersonFormProps) {
     const handleSetPersonTelephones = (values) => { setPerson({ ...person, telephones: values }) }
     const handleSetPersonMaritalStatus = (value) => { setPerson({ ...person, maritalStatus: value }) }
     const handleSetPersonClientCode = (value) => {
-        handleValidClientCode(value)
         setPerson({ ...person, clientCode: value })
     }
 
@@ -82,7 +81,8 @@ export default function PersonForm(props: PersonFormProps) {
         }
     }
 
-    const handleValidClientCode = async (code) => {
+    const handleValidClientCode = async () => {
+        let code = person.clientCode
         if (code?.length && originalClientCode !== code) {
             setIsCheckingClientCode(true)
             fetch("api/isClientCodeAvaliable/" + code).then(res => res.json()).then((res) => {
@@ -287,7 +287,10 @@ export default function PersonForm(props: PersonFormProps) {
                             <InputText
                                 id="code"
                                 isLoading={isLoading}
-                                onBlur={handleAutoSave}
+                                onBlur={(event) => {
+                                    handleValidClientCode()
+                                    handleAutoSave(event)
+                                }}
                                 title="Codigo de cliente"
                                 value={person.clientCode}
                                 isInvalid={isClientCodeInvalid}

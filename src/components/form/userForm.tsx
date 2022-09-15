@@ -41,14 +41,23 @@ export default function UserForm(props: UserFormProps) {
     const [isMultiple, setIsMultiple] = useState(false)
     const [isAutoSaving, setIsAutoSaving] = useState(false)
 
+    const [isEmailInvalid, setIsEmailInvalid] = useState(false)
+    const [isCheckingEmail, setIsCheckingEmail] = useState(false)
+    const [isUserNameInvalid, setIsUserNameInvalid] = useState(false)
+    const [isCheckingUserName, setIsCheckingUserName] = useState(false)
+
     const [persons, setPersons] = useState((props?.user?.person && "id" in props?.user?.person && props?.user?.person.id.length) ? [props.user.person] : [])
 
-    const handleSetUserEmail = (value) => { setUser({ ...user, email: value }) }
     const handleSetUserOffice = (value) => { setUser({ ...user, office: value }) }
-    const handleSetUserUsername = (value) => { setUser({ ...user, username: value }) }
     const handleSetUserPassword = (value) => { setUser({ ...user, password: value }) }
     const handleSetUserIsBlocked = (value) => { setUser({ ...user, isBlocked: value }) }
     const handleSetUserPasswordConfirm = (value) => { setUser({ ...user, passwordConfirm: value }) }
+    const handleSetUserEmail = (value) => {
+        setUser({ ...user, email: value })
+    }
+    const handleSetUserUsername = (value) => {
+        setUser({ ...user, username: value })
+    }
 
     const handleOnBack = () => {
         if (props.onBack) {
@@ -76,6 +85,59 @@ export default function UserForm(props: UserFormProps) {
         }
     }
 
+    const handleValidEmail = async () => {
+        let email = user.email
+        if (!isCheckingEmail) {
+            if (email?.length && userOriginal.email !== email) {
+                setIsCheckingEmail(true)
+                fetch("api/isUserEmailAvaliable/" + email).then(res => res.json()).then((res) => {
+                    setIsCheckingEmail(false)
+                    setIsEmailInvalid(res.data)
+                })
+            } else {
+                setIsCheckingEmail(false)
+            }
+        }
+    }
+
+    const handleValidUsername = async () => {
+        let username = user.username
+        if (!isCheckingUserName) {
+            if (username?.length && userOriginal.username !== username) {
+                setIsCheckingUserName(true)
+                fetch("api/isUsernameAvaliable/" + username).then(res => res.json()).then((res) => {
+                    setIsCheckingUserName(false)
+                    setIsUserNameInvalid(res.data)
+                })
+            } else {
+                setIsCheckingUserName(false)
+            }
+        }
+    }
+
+    const handleUserValidationForDBInner = (user) => {
+        let isValid = handleUserValidationForDB(user)
+        if (user.email.length > 0) {
+            if (isCheckingEmail || isEmailInvalid) {
+                isValid = {
+                    ...isValid,
+                    validation: false,
+                    messages: [...isValid.messages, "O e-mail já está em uso."]
+                }
+            }
+        }
+        if (user.username.length > 0) {
+            if (isCheckingUserName || isUserNameInvalid) {
+                isValid = {
+                    ...isValid,
+                    validation: false,
+                    messages: [...isValid.messages, "O username já está em uso."]
+                }
+            }
+        }
+        return isValid
+    }
+
     const handleUserToDB = (user) => {
         let userFinal = { ...user }
         if (persons.length > 0) {
@@ -100,7 +162,7 @@ export default function UserForm(props: UserFormProps) {
             return
         }
         let userForValid = handleUserToDB(user)
-        const isValid = handleUserValidationForDB(userForValid)
+        const isValid = handleUserValidationForDBInner(userForValid)
         if (!isValid.validation) {
             return
         }
@@ -137,7 +199,7 @@ export default function UserForm(props: UserFormProps) {
             return
         }
         let userForValid = handleUserToDB(user)
-        const isValid = handleUserValidationForDB(userForValid)
+        const isValid = handleUserValidationForDBInner(userForValid)
         if (!isValid.validation) {
             const feedbackMessage: FeedbackMessage = { messages: isValid.messages, messageType: "ERROR" }
             handleShowMessage(feedbackMessage)
@@ -252,15 +314,21 @@ export default function UserForm(props: UserFormProps) {
                         <FormRowColumn unit="6">
                             <InputText
                                 id="user-name"
-                                isLoading={isLoading}
-                                onBlur={handleAutoSave}
-                                value={user.username}
-                                validation={NOT_NULL_MARK}
                                 title="Username"
+                                isLoading={isLoading}
+                                value={user.username}
+                                onBlur={(event) => {
+                                    handleValidUsername()
+                                    handleAutoSave(event)
+                                }}
+                                validation={NOT_NULL_MARK}
+                                isInvalid={isUserNameInvalid}
                                 isDisabled={props.isForDisable}
                                 onSetText={handleSetUserUsername}
+                                message="Verificando o username..."
+                                isForShowMessage={isCheckingUserName}
                                 onValidate={handleChangeFormValidation}
-                                validationMessage="O username não pode ficar em branco."
+                                validationMessage="O username não pode ficar em branco, ou inválido."
                             />
                         </FormRowColumn>
                     </FormRow>
@@ -272,11 +340,17 @@ export default function UserForm(props: UserFormProps) {
                                 id="user-e-mail"
                                 value={user.email}
                                 isLoading={isLoading}
-                                onBlur={handleAutoSave}
+                                onBlur={(event) => {
+                                    handleValidEmail()
+                                    handleAutoSave(event)
+                                }}
+                                isInvalid={isEmailInvalid}
                                 onSetText={handleSetUserEmail}
                                 isDisabled={props.isForDisable}
+                                message="Verificando o e-mail..."
+                                isForShowMessage={isCheckingEmail}
                                 onValidate={handleChangeFormValidation}
-                                validationMessage="O e-mail não pode ficar em branco."
+                                validationMessage="O e-mail não pode ficar em branco, ou inválido."
                             />
                         </FormRowColumn>
                     </FormRow>
