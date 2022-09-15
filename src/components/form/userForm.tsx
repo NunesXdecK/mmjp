@@ -155,7 +155,7 @@ export default function UserForm(props: UserFormProps) {
         if (event && event.relatedTarget?.tagName?.toLowerCase() !== ("input" || "select" || "textarea")) {
             return
         }
-        if (isAutoSaving) {
+        if (isAutoSaving || isCheckingEmail || isCheckingUserName) {
             return
         }
         if (!handleDiference()) {

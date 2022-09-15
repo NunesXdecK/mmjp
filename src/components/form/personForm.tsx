@@ -115,7 +115,7 @@ export default function PersonForm(props: PersonFormProps) {
         if (event && event.relatedTarget?.tagName?.toLowerCase() !== ("input" || "select" || "textarea")) {
             return
         }
-        if (isAutoSaving) {
+        if (isAutoSaving || isCheckingClientCode) {
             return
         }
         if (!handleDiference()) {

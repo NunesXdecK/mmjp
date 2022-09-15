@@ -110,7 +110,7 @@ export default function CompanyForm(props: CompanyFormProps) {
         if (event && event.relatedTarget?.tagName?.toLowerCase() !== ("input" || "select" || "textarea")) {
             return
         }
-        if (isAutoSaving) {
+        if (isAutoSaving || isCheckingClientCode) {
             return
         }
         if (!handleDiference()) {
