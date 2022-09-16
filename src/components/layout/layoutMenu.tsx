@@ -1,5 +1,5 @@
-import { Menu, Transition } from "@headlessui/react"
 import { LayoutMenuItem } from "./layout"
+import { Menu, Transition } from "@headlessui/react"
 
 
 interface LayoutMenuProps {
@@ -7,7 +7,6 @@ interface LayoutMenuProps {
 }
 
 export default function LayoutMenu(props: LayoutMenuProps) {
-
     const aClassName = "block px-3 py-2 text-gray-300 hover:bg-gray-700 hover:text-white disabled:opacity-75"
     return (
         <>
@@ -15,7 +14,8 @@ export default function LayoutMenu(props: LayoutMenuProps) {
                 <Menu as="div" className="relative" key={index + element.name}>
                     {element.subMenus ?
                         (<>
-                            <Menu.Button>
+                            <Menu.Button
+                            >
                                 <a
                                     className={aClassName}>
                                     {element.name}

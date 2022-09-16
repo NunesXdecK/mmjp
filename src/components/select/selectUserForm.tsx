@@ -2,19 +2,19 @@ import Form from "../form/form";
 import List from "../list/list";
 import FormRow from "../form/formRow";
 import Button from "../button/button";
+import UserForm from "../form/userForm";
 import IOSModal from "../modal/iosModal";
 import { useEffect, useState } from "react";
 import InputText from "../inputText/inputText";
 import WindowModal from "../modal/windowModal";
 import FormRowColumn from "../form/formRowColumn";
-import ProfessionalForm from "../form/professionalForm";
 import FeedbackMessageText from "../modal/feedbackMessageText";
 import { PencilAltIcon, TrashIcon } from "@heroicons/react/outline";
-import { defaultProfessional, Professional } from "../../interfaces/objectInterfaces";
+import { defaultUser, User } from "../../interfaces/objectInterfaces";
 import { defaultFeedbackMessage, FeedbackMessage } from "../modal/feedbackMessageModal";
-import ProfessionalView from "../view/professionalView";
+import UserView from "../view/userView";
 
-interface SelectProfessionalFormProps {
+interface SelectUserFormProps {
     id?: string,
     title?: string,
     subtitle?: string,
@@ -28,15 +28,15 @@ interface SelectProfessionalFormProps {
     isLoading?: boolean,
     validationButton?: boolean,
     isMultipleSelect?: boolean,
-    professionals?: Professional[],
+    users?: User[],
     onFinishAdd?: (any?) => void,
     onSetLoading?: (any) => void,
-    onSetProfessionals?: (array) => void,
+    onSetUsers?: (array) => void,
     onShowMessage?: (FeedbackMessage) => void,
     onValidate?: (any) => boolean,
 }
 
-export default function SelectProfessionalForm(props: SelectProfessionalFormProps) {
+export default function SelectUserForm(props: SelectUserFormProps) {
     const [isFirst, setIsFirst] = useState(true)
     const [isOpen, setIsOpen] = useState(false)
     const [isOpenDelete, setIsOpenDelete] = useState(false)
@@ -45,73 +45,75 @@ export default function SelectProfessionalForm(props: SelectProfessionalFormProp
 
     const [editIndex, setEditIndex] = useState(-1)
 
-    const [professional, setProfessional] = useState<Professional>(defaultProfessional)
+    const [user, setUser] = useState<User>(defaultUser)
 
-    const [professionals, setProfessionals] = useState<Professional[]>([])
+    const [users, setUsers] = useState<User[]>([])
 
     const handleNewClick = () => {
         setIsRegister(true)
-        setProfessional(defaultProfessional)
+        setUser(defaultUser)
     }
 
     const handleBackClick = (event?) => {
         if (event) {
             event.preventDefault()
         }
-        setProfessionals([])
-        setProfessional(defaultProfessional)
+        setUsers([])
+        setUser(defaultUser)
         setIsFirst(true)
         setIsRegister(false)
     }
 
     const handleFilterList = (string) => {
-        let listItems = [...professionals]
-        let listItemsFiltered: Professional[] = []
-        listItemsFiltered = listItems.filter((element: Professional, index) => {
-            return element.title.toLowerCase().includes(string.toLowerCase())
+        let listItems = [...users]
+        let listItemsFiltered: User[] = []
+        listItemsFiltered = listItems.filter((element: User, index) => {
+            return element.username.toLowerCase().includes(string.toLowerCase())
+                || element.email.toLowerCase().includes(string.toLowerCase())
         })
         return listItemsFiltered
     }
 
-    const handleAfterSave = (feedbackMessage: FeedbackMessage, professional) => {
-        handleAdd(professional)
+    const handleAfterSave = (feedbackMessage: FeedbackMessage, user) => {
+        handleAdd(user)
         handleBackClick()
         if (props.onShowMessage) {
             props.onShowMessage(feedbackMessage)
         }
     }
 
-    const handleAdd = (professional) => {
-        let localProfessionals = props.professionals
+    const handleAdd = (user) => {
+        let localUsers = props.users
         let canAdd = true
 
-        localProfessionals?.map((element, index) => {
-            if (element.creaNumber === professional.creaNumber) {
+        localUsers?.map((element, index) => {
+            if (element.username === user.username
+                || element.email === user.email) {
                 canAdd = false
             }
         })
 
         if (props.onValidate) {
-            canAdd = props.onValidate(professional)
+            canAdd = props.onValidate(user)
         }
 
         if (canAdd) {
             if (props.isMultipleSelect) {
                 if (editIndex > -1) {
-                    localProfessionals = [
-                        ...localProfessionals.slice(0, editIndex),
-                        professional,
-                        ...localProfessionals.slice(editIndex + 1, localProfessionals.length),
+                    localUsers = [
+                        ...localUsers.slice(0, editIndex),
+                        user,
+                        ...localUsers.slice(editIndex + 1, localUsers.length),
                     ]
                 } else {
-                    localProfessionals = [...localProfessionals, professional]
+                    localUsers = [...localUsers, user]
                 }
             } else {
-                localProfessionals = [professional]
+                localUsers = [user]
             }
             setEditIndex(-1)
-            if (props.onSetProfessionals) {
-                props.onSetProfessionals(localProfessionals)
+            if (props.onSetUsers) {
+                props.onSetUsers(localUsers)
                 setIsOpen(false)
             }
             if (props.onFinishAdd) {
@@ -125,28 +127,28 @@ export default function SelectProfessionalForm(props: SelectProfessionalFormProp
         }
     }
 
-    const handleRemoveProfessional = () => {
+    const handleRemoveUser = () => {
         if (!props.isMultipleSelect) {
-            props.onSetProfessionals([])
+            props.onSetUsers([])
         } else {
-            let localProfessionals = props.professionals
-            if (localProfessionals.length > -1) {
-                let index = localProfessionals.indexOf(professional)
-                localProfessionals.splice(index, 1)
-                if (props.onSetProfessionals) {
-                    props.onSetProfessionals(localProfessionals)
+            let localUsers = props.users
+            if (localUsers.length > -1) {
+                let index = localUsers.indexOf(user)
+                localUsers.splice(index, 1)
+                if (props.onSetUsers) {
+                    props.onSetUsers(localUsers)
                 }
             }
         }
-        setProfessional(defaultProfessional)
+        setUser(defaultUser)
     }
 
     useEffect(() => {
         if (isOpen && isFirst) {
-            fetch("api/professionals").then((res) => res.json()).then((res) => {
+            fetch("api/users").then((res) => res.json()).then((res) => {
                 setIsFirst(old => false)
                 if (res.list.length) {
-                    setProfessionals(res.list)
+                    setUsers(res.list)
                 }
                 if (props.onSetLoading) {
                     props.onSetLoading(false)
@@ -194,31 +196,31 @@ export default function SelectProfessionalForm(props: SelectProfessionalFormProp
                     </FormRow>
                 )}
 
-                {props.professionals?.map((element, index) => (
+                {props.users?.map((element, index) => (
                     <form key={index + element.dateInsertUTC}
                         onSubmit={(event) => {
                             event.preventDefault()
-                            setProfessional(element)
+                            setUser(element)
                             setIsOpenDelete(true)
                         }}>
                         <FormRow>
                             <FormRowColumn unit="3">
                                 <InputText
-                                    title="Titulo"
+                                    title="Username"
                                     isDisabled={true}
-                                    value={element.title}
+                                    value={element.username}
                                     isLoading={props.isLoading}
-                                    id={"professional-title-" + index}
+                                    id={"user-name-" + index}
                                 />
                             </FormRowColumn>
 
                             <FormRowColumn unit="3" className="flex flex-col sm:flex-row">
                                 <InputText
                                     isDisabled={true}
-                                    title="Número do CREA"
+                                    title="E-mail"
                                     isLoading={props.isLoading}
-                                    value={element.creaNumber}
-                                    id={"professional-crea-number-" + index}
+                                    value={element.email}
+                                    id={"user-email-" + index}
                                 />
 
                                 {!props.isLocked && (
@@ -269,27 +271,27 @@ export default function SelectProfessionalForm(props: SelectProfessionalFormProp
                                     onNewClick={handleNewClick}
                                     onFilterList={handleFilterList}
                                     title={"Lista de profissionais"}
-                                    onTitle={(element: Professional) => {
+                                    onTitle={(element: User) => {
                                         return (
-                                            <ProfessionalView
+                                            <UserView
                                                 title=""
                                                 hideData
                                                 hideBorder
                                                 hidePaddingMargin
-                                                professional={element}
+                                                user={element}
                                             />)
                                     }}
-                                    onInfo={(element: Professional) => {
-                                        return (<p>{element.title}</p>)
+                                    onInfo={(element: User) => {
+                                        return (<p>{element.username}</p>)
                                     }}
                                     onShowMessage={props.onShowMessage}
                                 />
                             ) : (
-                                <ProfessionalForm
+                                <UserForm
                                     isBack={true}
                                     canMultiple={false}
                                     onBack={handleBackClick}
-                                    professional={professional}
+                                    user={user}
                                     onAfterSave={handleAfterSave}
                                     title="Informações do profisisonal"
                                     onShowMessage={props.onShowMessage}
@@ -303,7 +305,7 @@ export default function SelectProfessionalForm(props: SelectProfessionalFormProp
             <WindowModal
                 isOpen={isOpenDelete}
                 setIsOpen={setIsOpenDelete}>
-                <p className="text-center">Deseja realmente deletar {professional.title}?</p>
+                <p className="text-center">Deseja realmente deletar {user.username}?</p>
                 <div className="flex mt-10 justify-between content-between">
                     <Button
                         onClick={(event) => {
@@ -318,7 +320,7 @@ export default function SelectProfessionalForm(props: SelectProfessionalFormProp
                         type="submit"
                         onClick={(event) => {
                             event.preventDefault()
-                            handleRemoveProfessional()
+                            handleRemoveUser()
                             setIsOpenDelete(false)
                         }}
                     >

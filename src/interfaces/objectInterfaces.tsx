@@ -52,6 +52,16 @@ export interface User {
     person?: any,
 }
 
+export interface LoginToken {
+    id?: string,
+    token?: string,
+    validationDue?: number,
+    dateInsertUTC?: number,
+    dateLastUpdateUTC?: number,
+    isBlocked?: boolean,
+    user?: any,
+}
+
 export interface Professional {
     id?: string,
     title?: string,
@@ -212,6 +222,16 @@ export const defaultCompany: Company = {
     owners: [],
     telephones: [],
     address: defaultAddress,
+}
+
+export const defaultLoginToken: LoginToken = {
+    id: "",
+    token: "",
+    validationDue: 0,
+    dateInsertUTC: 0,
+    dateLastUpdateUTC: 0,
+    isBlocked: false,
+    user: {},
 }
 
 export const defaultUser: User = {

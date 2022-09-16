@@ -57,7 +57,7 @@ export default function SubjectMessageView(props: SubjectMessageViewProps) {
     return (
         <>
             {subjectMessage.id?.length === 0 ? (
-                <div className="mt-6 text-gray-400">
+                <div className="mt-4">
                     <PlaceholderItemList />
                 </div>
             ) : (

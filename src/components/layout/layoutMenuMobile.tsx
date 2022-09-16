@@ -1,5 +1,5 @@
-import { Disclosure, Menu, Transition } from "@headlessui/react"
 import { LayoutMenuItem } from "./layout"
+import { Disclosure, Transition } from "@headlessui/react"
 
 
 interface LayoutMenuMobileProps {
@@ -20,8 +20,9 @@ export default function LayoutMenuMobile(props: LayoutMenuMobileProps) {
                                     as="div"
                                     className={aClassName}
                                     key={index + element.name}>
-                                    <Disclosure.Button className="w-full text-left">
-                                            {element.name}
+                                    <Disclosure.Button
+                                        className="w-full text-left">
+                                        {element.name}
                                     </Disclosure.Button>
 
                                     <Transition

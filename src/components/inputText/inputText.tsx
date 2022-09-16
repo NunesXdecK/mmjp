@@ -10,6 +10,7 @@ interface InputTextProps {
     title?: string,
     message?: string,
     validation?: string,
+    placeholder?: string,
     classNameInput?: string,
     classNameLabel?: string,
     holderClassName?: string,
@@ -239,6 +240,7 @@ export default function InputText(props: InputTextProps) {
                 required={props.isRequired}
                 autoFocus={props.isAutoFocus}
                 className={classNameInputLocal}
+                placeholder={props.placeholder}
                 disabled={props.isDisabled || props.isLoading}
                 onBlur={(event) => {
                     if (props.onBlur) {

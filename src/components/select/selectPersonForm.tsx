@@ -13,6 +13,7 @@ import { PencilAltIcon, TrashIcon } from "@heroicons/react/outline";
 import { handleMaskCPF, handleRemoveCPFMask } from "../../util/maskUtil";
 import { defaultPerson, Person } from "../../interfaces/objectInterfaces";
 import { defaultFeedbackMessage, FeedbackMessage } from "../modal/feedbackMessageModal";
+import PersonView from "../view/personView";
 
 interface SelectPersonFormProps {
     id?: string,
@@ -275,7 +276,14 @@ export default function SelectPersonForm(props: SelectPersonFormProps) {
                                     onNewClick={handleNewClick}
                                     onFilterList={handleFilterList}
                                     onTitle={(element: Person) => {
-                                        return (<p>{element.name}</p>)
+                                        return (
+                                            <PersonView
+                                                title=""
+                                                hideData
+                                                hideBorder
+                                                hidePaddingMargin
+                                                person={element}
+                                            />)
                                     }}
                                     onInfo={(element: Person) => {
                                         return (<p>{element.name}</p>)

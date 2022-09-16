@@ -15,6 +15,8 @@ import { defaultFeedbackMessage, FeedbackMessage } from "../modal/feedbackMessag
 import { Company, defaultCompany, defaultPerson, Person } from "../../interfaces/objectInterfaces";
 import { handleMaskCNPJ, handleMaskCPF, handleRemoveCNPJMask, handleRemoveCPFMask } from "../../util/maskUtil";
 import { handleValidationOnlyNumbersNotNull, handleValidationOnlyTextNotNull } from "../../util/validationUtil";
+import PersonView from "../view/personView";
+import CompanyView from "../view/companyView";
 
 interface SelectPersonCompanyFormProps {
     id?: string,
@@ -342,7 +344,28 @@ export default function SelectPersonCompanyForm(props: SelectPersonCompanyFormPr
                                             </div>)
                                     }}
                                     onTitle={(element: (Person | Company)) => {
-                                        return (<p>{element.name}</p>)
+                                        return (
+                                            <>
+                                                {element && "cpf" in element && (
+                                                    <PersonView
+                                                        title=""
+                                                        hideData
+                                                        hideBorder
+                                                        hidePaddingMargin
+                                                        person={element}
+                                                    />
+                                                )}
+                                                {element && "cnpj" in element && (
+                                                    <CompanyView
+                                                        title=""
+                                                        hideData
+                                                        hideBorder
+                                                        company={element}
+                                                        hidePaddingMargin
+                                                    />
+                                                )}
+                                            </>
+                                        )
                                     }}
                                     onInfo={(element: (Person | Company)) => {
                                         return (<p>{element.name}</p>)

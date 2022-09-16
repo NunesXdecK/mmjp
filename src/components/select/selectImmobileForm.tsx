@@ -12,6 +12,7 @@ import FeedbackMessageText from "../modal/feedbackMessageText";
 import { PencilAltIcon, TrashIcon } from "@heroicons/react/outline";
 import { defaultImmobile, Immobile } from "../../interfaces/objectInterfaces";
 import { defaultFeedbackMessage, FeedbackMessage } from "../modal/feedbackMessageModal";
+import ImmobileView from "../view/immobileView";
 
 interface SelectImmobileFormProps {
     id?: string,
@@ -262,7 +263,14 @@ export default function SelectImmobileForm(props: SelectImmobileFormProps) {
                                     onNewClick={handleNewClick}
                                     onFilterList={handleFilterList}
                                     onTitle={(element: Immobile) => {
-                                        return (<p>{element.name}</p>)
+                                        return (
+                                            <ImmobileView
+                                                title=""
+                                                hideData
+                                                hideBorder
+                                                hidePaddingMargin
+                                                immobile={element}
+                                            />)
                                     }}
                                     onInfo={(element: Immobile) => {
                                         return (<p>{element.name}</p>)

@@ -3,12 +3,12 @@ import { useEffect, useState } from "react"
 import Form from "../components/form/form"
 import Button from "../components/button/button"
 import Layout from "../components/layout/layout"
-import FeedbackPendency from "../components/modal/feedbackPendencyModal"
-import FeedbackMessageModal, { defaultFeedbackMessage, FeedbackMessage } from "../components/modal/feedbackMessageModal"
-import { defaultSubjectMessage, SubjectMessage } from "../interfaces/objectInterfaces"
+import { ChatAltIcon } from "@heroicons/react/solid"
 import { PERSON_COLLECTION_NAME } from "../db/firebaseDB"
+import FeedbackPendency from "../components/modal/feedbackPendencyModal"
 import SubjectMessageFormModal from "../components/modal/subjectMessageFormModal"
-import { ChatAlt2Icon, ChatAltIcon, QuestionMarkCircleIcon } from "@heroicons/react/solid"
+import { defaultSubjectMessage, SubjectMessage } from "../interfaces/objectInterfaces"
+import FeedbackMessageModal, { defaultFeedbackMessage, FeedbackMessage } from "../components/modal/feedbackMessageModal"
 
 export default function Index() {
     const [isFirst, setIsFirst] = useState(true)

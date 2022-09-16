@@ -75,28 +75,29 @@ export default function SubjectMessageFormModal(props: SubjectMessageFormModalPr
                     className="pt-10 sm:pt-28"
                     onAfterSave={handleAfterSave}
                     subjectMessage={props.subjectMessage} />
-
-                {isLoading ? (
-                    <PlaceholderItemList />
-                ) : (
-                    <>
-                        {subjectMessages.map((element, index) => (
-                            <SubjectMessageView
-                                title=""
-                                onDelete={(event) => {
-                                    //setIsOpen(true)
-                                    //setSubjectMessage(element)
-                                    handleDeleteClick(element)
-                                }}
-                                hidePaddingMargin
-                                elementId={element.id}
-                                key={element.id + index}
-                                classNameContentHolder="gap-0"
-                                classNameHolder="px-4 py-2 my-2"
-                            />
-                        ))}
-                    </>
-                )}
+                <div className="mt-4">
+                    {isLoading ? (
+                        <PlaceholderItemList />
+                    ) : (
+                        <>
+                            {subjectMessages.map((element, index) => (
+                                <SubjectMessageView
+                                    title=""
+                                    onDelete={(event) => {
+                                        //setIsOpen(true)
+                                        //setSubjectMessage(element)
+                                        handleDeleteClick(element)
+                                    }}
+                                    hidePaddingMargin
+                                    elementId={element.id}
+                                    key={element.id + index}
+                                    classNameContentHolder="gap-0"
+                                    classNameHolder="px-4 py-2 my-2"
+                                />
+                            ))}
+                        </>
+                    )}
+                </div>
             </SubjectMessageLayoutModal>
 
             <WindowModal

@@ -94,7 +94,7 @@ export default function UserView(props: UserViewProps) {
                                 {user.isBlocked && (
                                     <InfoView classNameHolder="w-full" classNameInfo="rounded-md px-3 py-1 bg-red-600 text-white" info="BLOQUEADO" />
                                 )}
-                                <InfoView title="Titulo" info={user.username} />
+                                <InfoView title="Username" info={user.username} />
                                 <InfoView title="E-mail" info={user.email} />
                                 <ScrollDownTransition isOpen={isShowInfo}>
                                     <InfoHolderView

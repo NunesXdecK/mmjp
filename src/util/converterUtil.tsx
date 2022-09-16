@@ -1,5 +1,5 @@
 import { handleNewDateToUTC, handleUTCToDateShow } from "./dateUtils"
-import { defaultPerson, defaultAddress, defaultProfessional, defaultImmobile, Person, Address, Professional, Immobile, Company, defaultCompany, Project, ServiceStage, ServicePayment, Service, User, SubjectMessage } from "../interfaces/objectInterfaces"
+import { defaultPerson, defaultAddress, defaultProfessional, defaultImmobile, Person, Address, Professional, Immobile, Company, defaultCompany, Project, ServiceStage, ServicePayment, Service, User, SubjectMessage, LoginToken } from "../interfaces/objectInterfaces"
 import { handleMaskCNPJ, handleMaskCPF, handleMaskTelephone, handleMountMask, handleMountNumberCurrency, handleRemoveCEPMask, handleRemoveCNPJMask, handleRemoveCPFMask, handleRemoveCurrencyMask, handleRemoveDateMask, handleRemoveTelephoneMask, handleValueStringToFloat } from "./maskUtil"
 import { COMPANY_COLLECTION_NAME, PERSON_COLLECTION_NAME } from "../db/firebaseDB"
 
@@ -229,6 +229,21 @@ export const handlePrepareUserForDB = (user: User) => {
         user = { ...user, person: {} }
     }
     return user
+}
+
+export const handlePrepareLoginTokenForDB = (loginToken: LoginToken) => {
+    if (loginToken.dateInsertUTC === 0) {
+        loginToken = { ...loginToken, dateInsertUTC: handleNewDateToUTC() }
+    }
+    if (loginToken && "id" in loginToken && loginToken.id.length) {
+        loginToken = { ...loginToken, dateLastUpdateUTC: handleNewDateToUTC() }
+    }
+    if (loginToken.user?.id?.length) {
+        loginToken = { ...loginToken, user: { id: loginToken.user.id } }
+    } else {
+        loginToken = { ...loginToken, user: {} }
+    }
+    return loginToken
 }
 
 export const handlePrepareProfessionalForDB = (professional: Professional) => {

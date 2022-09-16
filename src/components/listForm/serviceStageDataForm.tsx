@@ -8,7 +8,7 @@ import InputTextArea from "../inputText/inputTextArea";
 import { NOT_NULL_MARK } from "../../util/patternValidationUtil";
 import { ServiceStage } from "../../interfaces/objectInterfaces";
 import ScrollDownTransition from "../animation/scrollDownTransition";
-import SelectProfessionalForm from "../select/selectProfessionalForm";
+import SelectUserForm from "../select/selectUserForm";
 import InputTextAutoComplete from "../inputText/inputTextAutocomplete";
 import { handleServiceStageValidationForDB } from "../../util/validationUtil";
 import { ChevronDownIcon, ChevronRightIcon, TrashIcon } from "@heroicons/react/outline";
@@ -39,10 +39,10 @@ export default function ServiceStageDataForm(props: ServiceStageDataFormProps) {
 
     const [isFormValid, setIsFormValid] = useState(handleServiceStageValidationForDB(props.serviceStages[index]).validation)
 
-    const [professionals, setProfessionals] = useState(props.serviceStages[index].responsible?.id ? [props.serviceStages[index].responsible] : [])
+    const [users, setUsers] = useState(props.serviceStages[index].responsible?.id ? [props.serviceStages[index].responsible] : [])
 
-    const handleSetServiceStageProfessional = (value) => {
-        setProfessionals(value)
+    const handleSetServiceStageUser = (value) => {
+        setUsers(value)
         handleSetText({ ...props.serviceStages[index], responsible: value[0] })
     }
     const handleSetServiceStageTitle = (value) => { handleSetText({ ...props.serviceStages[index], title: value }) }
@@ -165,18 +165,18 @@ export default function ServiceStageDataForm(props: ServiceStageDataFormProps) {
 
             <ScrollDownTransition
                 isOpen={isFormOpen}>
-                <SelectProfessionalForm
+                <SelectUserForm
                     formClassName="p-1 m-2"
                     isMultipleSelect={false}
                     isLoading={props.isLoading}
-                    professionals={professionals}
+                    users={users}
                     isLocked={props.isForDisable}
+                    buttonTitle="Adicionar responsável"
                     onShowMessage={props.onShowMessage}
-                    buttonTitle="Adicionar profissional"
-                    validationButton={professionals.length === 1}
-                    validationMessage="Esta pessoa já é um profissional"
-                    onSetProfessionals={handleSetServiceStageProfessional}
-                    validationMessageButton="Você não pode mais adicionar profissionais"
+                    validationButton={users.length === 1}
+                    onSetUsers={handleSetServiceStageUser}
+                    validationMessage="Este responsavel já está selecionada"
+                    validationMessageButton="Você não pode mais adicionar responsaveis"
                     onFinishAdd={() => {
                         {/*
                         if (props.onFinishAdd) {

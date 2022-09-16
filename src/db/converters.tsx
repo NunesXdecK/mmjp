@@ -68,6 +68,31 @@ export const UserConversor = {
     }
 }
 
+export const LoginTokenConversor = {
+    toFirestore(data) {
+        return {
+            user: data.user,
+            token: data.token,
+            isBlocked: data.isBlocked,
+            validationDue: data.validationDue,
+            dateInsertUTC: data.dateInsertUTC,
+            dateLastUpdateUTC: data.dateLastUpdateUTC,
+        }
+    },
+    fromFirestore(snapshot, options) {
+        const data = snapshot?.data(options)
+        return {
+            id: snapshot?.id ?? "",
+            token: data.token ?? "",
+            validationDue: data.validationDue ?? 0,
+            dateInsertUTC: data.dateInsertUTC ?? 0,
+            dateLastUpdateUTC: data.dateLastUpdateUTC ?? 0,
+            isBlocked: data?.isBlocked,
+            user: data.user ?? defaultUser,
+        }
+    }
+}
+
 export const ProfessionalConversor = {
     toFirestore(data) {
         return {

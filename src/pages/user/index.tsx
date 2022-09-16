@@ -128,9 +128,9 @@ export default function Users() {
                     autoSearch
                     title={title}
                     isLoading={isLoading}
+                    onSetElement={setUser}
                     onNewClick={handleNewClick}
                     onEditClick={handleEditClick}
-                    onSetElement={setUser}
                     onFilterList={handleFilterList}
                     onDeleteClick={handleDeleteClick}
                     deleteWindowTitle={"Deseja realmente deletar " + user.username + "?"}

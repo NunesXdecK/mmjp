@@ -1,9 +1,9 @@
 import InfoView from "./infoView"
+import UserView from "./userView"
 import Button from "../button/button"
 import ServiceView from "./serviceView"
 import { useEffect, useState } from "react"
 import InfoHolderView from "./infoHolderView"
-import ProfessionalView from "./professionalView"
 import { handleUTCToDateShow } from "../../util/dateUtils"
 import PlaceholderItemList from "../list/placeholderItemList"
 import ScrollDownTransition from "../animation/scrollDownTransition"
@@ -57,10 +57,11 @@ export default function ServiceStageView(props: ServiceStageViewProps) {
                 )}
 
                 {serviceStage?.responsible?.id?.length && (
-                    <ProfessionalView
+                    <UserView
                         hideData
                         dataInside
                         canShowHideData
+                        title="Responsável"
                         elementId={serviceStage.responsible.id}
                         id={serviceStage.id + "-" + serviceStage.responsible.id}
                     />

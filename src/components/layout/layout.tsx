@@ -1,6 +1,8 @@
 import { Fragment } from "react"
 import LayoutMenu from "./layoutMenu"
+import Button from "../button/button"
 import LayoutMenuMobile from "./layoutMenuMobile"
+import { setCookie, parseCookies } from "nookies";
 import { Disclosure, Menu, Transition } from "@headlessui/react"
 import { BellIcon, MenuIcon, XIcon } from "@heroicons/react/outline"
 
@@ -74,6 +76,21 @@ function classNames(...classes) {
 interface LayoutMenuProps { }
 
 export default function Layout(props) {
+
+    const handleDeleteClick = async () => {
+        const { "mmjp.token": token } = parseCookies()
+        const res = await fetch("api/loginToken", {
+            method: "DELETE",
+            body: JSON.stringify({ token: "tokenbemseguro", id: token }),
+        }).then((res) => res.json())
+        if (res.status === "SUCCESS") {
+            setCookie(undefined, "mmjp.token", "", {
+                maxAge: 60 * 60 * 12, //12 horas
+            })
+            location.reload()
+        }
+    }
+
     return (
         <>
             {/*
@@ -88,28 +105,29 @@ export default function Layout(props) {
                 <div className="hidden">
                     <span className="animate-pulse">hidden</span>
                 </div>
-                <Disclosure as="nav" className="bg-gray-800 print:hidden">
-                    {({ open }) => (
-                        <>
-                            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                                <div className="flex items-center justify-between h-16">
-                                    <div className="flex items-center">
-                                        <h1 className="text-xl font-bold text-white block sm:hidden">{props.title}</h1>
+                <div className="bg-gray-800 flex flex-row justify-between print:hidden">
+                    <Disclosure as="nav" >
+                        {({ open }) => (
+                            <>
+                                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                                    <div className="flex items-center justify-between h-16">
+                                        <div className="flex items-center">
+                                            <h1 className="text-xl font-bold text-white block sm:hidden">{props.title}</h1>
 
-                                        <div className="flex-shrink-0">
-                                            {/*
+                                            <div className="flex-shrink-0">
+                                                {/*
                                             <img
                                                 className="h-8 w-8"
                                                 src="https://tailwindui.com/img/logos/workflow-mark-indigo-500.svg"
                                                 alt="Workflow"
                                             />
                                              */}
-                                        </div>
-                                        <div className="hidden md:block">
-                                            <div className="ml-10 flex items-baseline space-x-4">
-                                                <LayoutMenu menus={menus} />
+                                            </div>
+                                            <div className="hidden md:block">
+                                                <div className="ml-10 flex items-baseline space-x-4">
+                                                    <LayoutMenu menus={menus} />
 
-                                                {/*
+                                                    {/*
                                                 {navigation.map((item) => (
                                                     <a
                                                         key={item.name}
@@ -126,11 +144,11 @@ export default function Layout(props) {
                                                     </a>
                                                 ))}
                                             */}
+                                                </div>
                                             </div>
                                         </div>
-                                    </div>
 
-                                    {/*
+                                        {/*
                                     <div className="hidden md:block">
                                         <div className="ml-4 flex items-center md:ml-6">
                                             <button
@@ -182,24 +200,24 @@ export default function Layout(props) {
                                     </div>
                                             */}
 
-                                    <div className="-mr-2 flex md:hidden">
-                                        {/* Mobile menu button */}
-                                        <Disclosure.Button className="bg-gray-800 inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-white hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-800 focus:ring-white">
-                                            <span className="sr-only">Abrir menu</span>
-                                            {open ? (
-                                                <XIcon className="block h-6 w-6" aria-hidden="true" />
-                                            ) : (
-                                                <MenuIcon className="block h-6 w-6" aria-hidden="true" />
-                                            )}
-                                        </Disclosure.Button>
+                                        <div className="-mr-2 flex md:hidden">
+                                            {/* Mobile menu button */}
+                                            <Disclosure.Button className="bg-gray-800 inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-white hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-800 focus:ring-white">
+                                                <span className="sr-only">Abrir menu</span>
+                                                {open ? (
+                                                    <XIcon className="block h-6 w-6" aria-hidden="true" />
+                                                ) : (
+                                                    <MenuIcon className="block h-6 w-6" aria-hidden="true" />
+                                                )}
+                                            </Disclosure.Button>
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
 
-                            <Disclosure.Panel className="md:hidden">
-                                <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3">
-                                    <LayoutMenuMobile menus={menus} />
-                                    {/*
+                                <Disclosure.Panel className="md:hidden">
+                                    <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3">
+                                        <LayoutMenuMobile menus={menus} />
+                                        {/*
                                     {navigation.map((item) => (
                                         <Disclosure.Button
                                         key={item.name}
@@ -216,9 +234,9 @@ export default function Layout(props) {
                                         </Disclosure.Button>
                                         ))}
                                     */}
-                                </div>
+                                    </div>
 
-                                {/*
+                                    {/*
                                 <div className="pt-4 pb-3 border-t border-gray-700">
                                     <div className="flex items-center px-5">
                                         <div className="flex-shrink-0">
@@ -251,10 +269,20 @@ export default function Layout(props) {
                                     </div>
                                 </div>
                                     */}
-                            </Disclosure.Panel>
-                        </>
-                    )}
-                </Disclosure>
+                                </Disclosure.Panel>
+                            </>
+                        )}
+
+                    </Disclosure>
+                    <div className="p-3">
+                        <Button
+                            isLight
+                            onClick={handleDeleteClick}
+                            className="bg-transparent hover:bg-transparent hover:opacity-70"
+                        >Logoff
+                        </Button>
+                    </div>
+                </div>
 
                 <header className="bg-gray-800">
                     <div className="max-w-7xl mx-auto py-6 px-4 pb-32 sm:pb-40 sm:px-6 lg:px-8">
