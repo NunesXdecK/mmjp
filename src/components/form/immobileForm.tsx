@@ -80,6 +80,15 @@ export default function ImmobileForm(props: ImmobileFormProps) {
         }
     }
 
+    const handlePrepareImmobileForDBInner = (immobile) => {
+        let immobileForDB = { ...immobile }
+        if (!immobileForDB?.id?.length && immobileID?.length) {
+            immobileForDB = { ...immobileForDB, id: immobileID }
+        }
+        immobileForDB = handlePrepareImmobileForDB(immobileForDB)
+        return immobileForDB
+    }
+
     const handleAutoSave = async (event?) => {
         if (!props.canAutoSave) {
             return
@@ -109,10 +118,7 @@ export default function ImmobileForm(props: ImmobileFormProps) {
 
     const handleSaveInner = async (immobile, history) => {
         let res = { status: "ERROR", id: "", immobile: immobile }
-        let immobileForDB = handlePrepareImmobileForDB(immobile)
-        if (!immobileForDB?.id?.length && immobileID?.length) {
-            immobileForDB = { ...immobileForDB, id: immobileID }
-        }
+        let immobileForDB = handlePrepareImmobileForDBInner(immobile)
         try {
             const saveRes = await fetch("api/immobile", {
                 method: "POST",

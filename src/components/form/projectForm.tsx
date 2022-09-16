@@ -225,6 +225,15 @@ export default function ProjectForm(props: ProjectFormProps) {
         return servicesRES
     }
 
+    const handlePrepareProjectForDBInner = (project) => {
+        let projectForDB = { ...project }
+        if (!projectForDB?.id?.length && projectID?.length) {
+            projectForDB = { ...projectForDB, id: projectID }
+        }
+        projectForDB = handlePrepareProjectForDB(projectForDB)
+        return projectForDB
+    }
+
     const handleAutoSave = async (event?) => {
         if (!props.canAutoSave) {
             return
@@ -275,10 +284,7 @@ export default function ProjectForm(props: ProjectFormProps) {
 
     const handleSaveProjectInner = async (project, history) => {
         let res = { status: "ERROR", id: "", project: project }
-        let projectForDB = handlePrepareProjectForDB(project)
-        if (!projectForDB?.id?.length && projectID?.length) {
-            projectForDB = { ...projectForDB, id: projectID }
-        }
+        let projectForDB = handlePrepareProjectForDBInner(project)
         try {
             const saveRes = await fetch("api/project", {
                 method: "POST",

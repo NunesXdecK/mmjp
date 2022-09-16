@@ -367,7 +367,6 @@ export default function Services() {
                 />
             ) : (
                 <ServiceSingleForm
-                    canAutoSave
                     isBack={true}
                     service={service}
                     onBack={handleBackClick}

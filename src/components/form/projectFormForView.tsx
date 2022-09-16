@@ -3,6 +3,7 @@ import FormRow from "./formRow";
 import { useState } from "react";
 import FormRowColumn from "./formRowColumn";
 import InputText from "../inputText/inputText";
+import { handleUTCToDateShow } from "../../util/dateUtils";
 import InputTextAutoComplete from "../inputText/inputTextAutocomplete";
 import { defaultProject, Project } from "../../interfaces/objectInterfaces";
 
@@ -45,7 +46,7 @@ export default function ProjectFormForView(props: ProjectFormForViewProps) {
                         title="Data"
                         maxLength={10}
                         id="project-date"
-                        value={project.dateString}
+                        value={handleUTCToDateShow(project.date.toString())}
                     />
                 </FormRowColumn>
             </FormRow>

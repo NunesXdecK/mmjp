@@ -62,6 +62,15 @@ export default function SubjectMessageForm(props: SubjectMessageFormProps) {
         }
     }
 
+    const handlePrepareSubjectMessageForDBInner = (subjectMessage) => {
+        let subjectMessageForDB = { ...subjectMessage }
+        if (!subjectMessageForDB?.id?.length && subjectMessageID?.length) {
+            subjectMessageForDB = { ...subjectMessageForDB, id: subjectMessageID }
+        }
+        subjectMessageForDB = handlePrepareSubjectMessageForDB(subjectMessageForDB)
+        return subjectMessageForDB
+    }
+
     const handleAutoSave = async (event?) => {
         if (!props.canAutoSave) {
             return
@@ -91,10 +100,7 @@ export default function SubjectMessageForm(props: SubjectMessageFormProps) {
 
     const handleSaveInner = async (subjectMessage, history) => {
         let res = { status: "ERROR", id: "", subjectMessage: subjectMessage }
-        let subjectMessageForDB = handlePrepareSubjectMessageForDB(subjectMessage)
-        if (!subjectMessageForDB?.id?.length && subjectMessageID?.length) {
-            subjectMessageForDB = { ...subjectMessageForDB, id: subjectMessageID }
-        }
+        let subjectMessageForDB = handlePrepareSubjectMessageForDBInner(subjectMessage)
         try {
             const saveRes = await fetch("api/subjectMessage", {
                 method: "POST",

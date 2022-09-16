@@ -3,6 +3,7 @@ import FormRow from "./formRow";
 import { useState } from "react";
 import FormRowColumn from "./formRowColumn";
 import InputText from "../inputText/inputText";
+import { handleUTCToDateShow } from "../../util/dateUtils";
 import InputTextAutoComplete from "../inputText/inputTextAutocomplete";
 import { defaultService, Service } from "../../interfaces/objectInterfaces";
 
@@ -45,7 +46,7 @@ export default function ServiceFormForView(props: ServiceFormForViewProps) {
                         title="Data"
                         maxLength={10}
                         id="service-date"
-                        value={service.dateString}
+                        value={handleUTCToDateShow(service.date.toString())}
                     />
                 </FormRowColumn>
             </FormRow>

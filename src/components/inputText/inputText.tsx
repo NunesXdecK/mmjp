@@ -1,7 +1,7 @@
 import { useState } from "react"
 import { handleValidationNotNull } from "../../util/validationUtil"
 import { handleMaskCEP, handleMaskCPF, handleMaskTelephone, handleMountCCIRMask, handleMountCNPJMask, handleMountDateMask, handleMountMask, handleMountNumberCurrency, handleRemoveCEPMask, handleRemoveCNPJMask, handleRemoveCPFMask, handleRemoveDateMask } from "../../util/maskUtil"
-import { CCIR_MARK, CCIR_PATTERN, CEP_MARK, CNPJ_MARK, CNPJ_PATTERN, CPF_MARK, CPF_PATTERN, DATE_MARK, DATE_PATTERN, NOT_NULL_MARK, NUMBER_MARK, ONLY_CHARACTERS_PATTERN, ONLY_CHARACTERS_PATTERN_TWO, ONLY_SPECIAL_FOR_NUMBER_PATTERN, STYLE_FOR_INPUT_LOADING, STYLE_FOR_INPUT_LOADING_TRANSPARENT, TELEPHONE_MARK, TEXT_NOT_NULL_MARK } from "../../util/patternValidationUtil"
+import { CCIR_MARK, CCIR_PATTERN, CEP_MARK, CNPJ_MARK, CNPJ_PATTERN, CPF_MARK, CPF_PATTERN, DATE_MARK, DATE_PATTERN, EMAIL_MARK, EMAIL_PATTERN, NOT_NULL_MARK, NUMBER_MARK, ONLY_CHARACTERS_PATTERN, ONLY_CHARACTERS_PATTERN_TWO, ONLY_SPECIAL_FOR_NUMBER_PATTERN, STYLE_FOR_INPUT_LOADING, STYLE_FOR_INPUT_LOADING_TRANSPARENT, TELEPHONE_MARK, TEXT_NOT_NULL_MARK } from "../../util/patternValidationUtil"
 
 interface InputTextProps {
     id?: string,
@@ -156,6 +156,10 @@ export default function InputText(props: InputTextProps) {
                 text = text?.replace(new RegExp(ONLY_SPECIAL_FOR_NUMBER_PATTERN), "")
                 text = text?.replace(new RegExp(ONLY_CHARACTERS_PATTERN), "")
                 test = new RegExp(CNPJ_PATTERN).test(text)
+                break
+            case EMAIL_MARK:
+                text = text?.trim()
+                test = new RegExp(EMAIL_PATTERN).test(text)
                 break
             case CCIR_MARK:
                 text = text?.trim()

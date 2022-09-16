@@ -269,7 +269,6 @@ localProject = {
                 />
             ) : (
                 <ProjectForm
-                    canAutoSave
                     canMultiple
                     isBack={true}
                     project={project}

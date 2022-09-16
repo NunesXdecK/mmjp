@@ -84,6 +84,15 @@ export default function ProfessionalForm(props: ProfessionalFormProps) {
         return professionalFinal
     }
 
+    const handlePrepareProfessionalForDBInner = (professional) => {
+        let professionalForDB = { ...professional }
+        if (!professionalForDB?.id?.length && professionalID?.length) {
+            professionalForDB = { ...professionalForDB, id: professionalID }
+        }
+        professionalForDB = handlePrepareProfessionalForDB(professionalForDB)
+        return professionalForDB
+    }
+
     const handleAutoSave = async (event?) => {
         if (!props.canAutoSave) {
             return
@@ -114,10 +123,7 @@ export default function ProfessionalForm(props: ProfessionalFormProps) {
 
     const handleSaveInner = async (professional, history) => {
         let res = { status: "ERROR", id: "", professional: professional }
-        let professionalForDB = handlePrepareProfessionalForDB(professional)
-        if (!professionalForDB?.id?.length && professionalID?.length) {
-            professionalForDB = { ...professionalForDB, id: professionalID }
-        }
+        let professionalForDB = handlePrepareProfessionalForDBInner(professional)
         try {
             const saveRes = await fetch("api/professional", {
                 method: "POST",

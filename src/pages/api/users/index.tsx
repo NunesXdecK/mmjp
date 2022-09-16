@@ -15,7 +15,8 @@ export default async function handler(req, res) {
             try {
                 const querySnapshot = await getDocs(userCollection)
                 querySnapshot.forEach((doc) => {
-                    list = [...list, doc.data()]
+                    let user: User = doc.data()
+                    list = [...list, { ...user, password: "" }]
                 })
                 list = list.sort((elementOne: User, elementTwo: User) => {
                     let dateOne = elementOne.dateInsertUTC

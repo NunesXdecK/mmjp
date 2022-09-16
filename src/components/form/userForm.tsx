@@ -3,17 +3,17 @@ import FormRow from "./formRow";
 import { useState } from "react";
 import FormRowColumn from "./formRowColumn";
 import InputText from "../inputText/inputText";
+import InputSelect from "../inputText/inputSelect";
 import ActionButtonsForm from "./actionButtonsForm";
 import InputCheckbox from "../inputText/inputCheckbox";
 import SelectPersonForm from "../select/selectPersonForm";
 import { FeedbackMessage } from "../modal/feedbackMessageModal";
-import { NOT_NULL_MARK } from "../../util/patternValidationUtil";
-import ScrollDownTransition from "../animation/scrollDownTransition";
-import FeedbackMessageSaveText from "../modal/feedbackMessageSavingText";
-import { defaultUser, User } from "../../interfaces/objectInterfaces";
-import { handleIsEqual, handleUserValidationForDB } from "../../util/validationUtil";
+import { EMAIL_MARK, NOT_NULL_MARK } from "../../util/patternValidationUtil";
 import { handlePrepareUserForDB } from "../../util/converterUtil";
-import InputSelect from "../inputText/inputSelect";
+import ScrollDownTransition from "../animation/scrollDownTransition";
+import { defaultUser, User } from "../../interfaces/objectInterfaces";
+import FeedbackMessageSaveText from "../modal/feedbackMessageSavingText";
+import { handleIsEqual, handleUserValidationForDB } from "../../util/validationUtil";
 
 interface UserFormProps {
     title?: string,
@@ -85,40 +85,58 @@ export default function UserForm(props: UserFormProps) {
         }
     }
 
-    const handleValidEmail = async () => {
+    const handleValidEmail = async (event, show?) => {
+        if (event && event.relatedTarget?.tagName?.toLowerCase() !== ("input" || "select" || "textarea")) {
+            return
+        }
+        if (false && isCheckingEmail) {
+            return
+        }
         let email = user.email
-        if (!isCheckingEmail) {
-            if (email?.length && userOriginal.email !== email) {
+        if (email?.length && userOriginal.email !== email) {
+            if (!show) {
                 setIsCheckingEmail(true)
-                fetch("api/isUserEmailAvaliable/" + email).then(res => res.json()).then((res) => {
-                    setIsCheckingEmail(false)
-                    setIsEmailInvalid(res.data)
-                })
-            } else {
+            }
+            let res = await fetch("api/isUserEmailAvaliable/" + email).then(res => res.json())
+            if (!show) {
                 setIsCheckingEmail(false)
             }
+            setIsEmailInvalid(res.data)
+            return res.data
+        } else {
+            setIsCheckingEmail(false)
+            return false
         }
     }
 
-    const handleValidUsername = async () => {
+    const handleValidUsername = async (event, show?) => {
+        if (event && event.relatedTarget?.tagName?.toLowerCase() !== ("input" || "select" || "textarea")) {
+            return
+        }
+        if (false && isCheckingUserName) {
+            return
+        }
         let username = user.username
-        if (!isCheckingUserName) {
-            if (username?.length && userOriginal.username !== username) {
+        if (username?.length && userOriginal.username !== username) {
+            if (!show) {
                 setIsCheckingUserName(true)
-                fetch("api/isUsernameAvaliable/" + username).then(res => res.json()).then((res) => {
-                    setIsCheckingUserName(false)
-                    setIsUserNameInvalid(res.data)
-                })
-            } else {
+            }
+            let res = await fetch("api/isUsernameAvaliable/" + username).then(res => res.json())
+            if (!show) {
                 setIsCheckingUserName(false)
             }
+            setIsUserNameInvalid(res.data)
+            return res.data
+        } else {
+            setIsCheckingUserName(false)
+            return false
         }
     }
 
-    const handleUserValidationForDBInner = (user) => {
+    const handleUserValidationForDBInner = (user, isSearchingUN, isSearchingEM) => {
         let isValid = handleUserValidationForDB(user)
         if (user.email.length > 0) {
-            if (isCheckingEmail || isEmailInvalid) {
+            if (isSearchingUN) {
                 isValid = {
                     ...isValid,
                     validation: false,
@@ -127,7 +145,7 @@ export default function UserForm(props: UserFormProps) {
             }
         }
         if (user.username.length > 0) {
-            if (isCheckingUserName || isUserNameInvalid) {
+            if (isSearchingEM) {
                 isValid = {
                     ...isValid,
                     validation: false,
@@ -155,14 +173,14 @@ export default function UserForm(props: UserFormProps) {
         if (event && event.relatedTarget?.tagName?.toLowerCase() !== ("input" || "select" || "textarea")) {
             return
         }
-        if (isAutoSaving || isCheckingEmail || isCheckingUserName) {
+        if (isAutoSaving || isCheckingEmail || isCheckingUserName || isUserNameInvalid || isEmailInvalid) {
             return
         }
         if (!handleDiference()) {
             return
         }
         let userForValid = handleUserToDB(user)
-        const isValid = handleUserValidationForDBInner(userForValid)
+        const isValid = handleUserValidationForDBInner(userForValid, (isCheckingEmail || isCheckingUserName), (isUserNameInvalid || isEmailInvalid))
         if (!isValid.validation) {
             return
         }
@@ -176,12 +194,18 @@ export default function UserForm(props: UserFormProps) {
         setUserOriginal(res.user)
     }
 
-    const handleSaveInner = async (user, history) => {
-        let res = { status: "ERROR", id: "", user: user }
-        let userForDB = handlePrepareUserForDB(user)
+    const handlePrepareUserForDBInner = (user) => {
+        let userForDB = { ...user }
         if (!userForDB?.id?.length && userID?.length) {
             userForDB = { ...userForDB, id: userID }
         }
+        userForDB = handlePrepareUserForDB(userForDB)
+        return userForDB
+    }
+
+    const handleSaveInner = async (user, history) => {
+        let res = { status: "ERROR", id: "", user: user }
+        let userForDB = handlePrepareUserForDBInner(user)
         try {
             const saveRes = await fetch("api/user", {
                 method: "POST",
@@ -198,14 +222,17 @@ export default function UserForm(props: UserFormProps) {
         if (isAutoSaving) {
             return
         }
+        setIsLoading(true)
+        let resUN = await handleValidUsername(null, true)
+        let resEM = await handleValidEmail(null, true)
         let userForValid = handleUserToDB(user)
-        const isValid = handleUserValidationForDBInner(userForValid)
+        const isValid = handleUserValidationForDBInner(userForValid, resUN, resEM)
         if (!isValid.validation) {
+            setIsLoading(false)
             const feedbackMessage: FeedbackMessage = { messages: isValid.messages, messageType: "ERROR" }
             handleShowMessage(feedbackMessage)
             return
         }
-        setIsLoading(true)
         let userFromDB = { ...userForValid }
         let res = await handleSaveInner(userForValid, true)
         if (res.status === "ERROR") {
@@ -318,7 +345,7 @@ export default function UserForm(props: UserFormProps) {
                                 isLoading={isLoading}
                                 value={user.username}
                                 onBlur={(event) => {
-                                    handleValidUsername()
+                                    handleValidUsername(event)
                                     handleAutoSave(event)
                                 }}
                                 validation={NOT_NULL_MARK}
@@ -340,10 +367,7 @@ export default function UserForm(props: UserFormProps) {
                                 id="user-e-mail"
                                 value={user.email}
                                 isLoading={isLoading}
-                                onBlur={(event) => {
-                                    handleValidEmail()
-                                    handleAutoSave(event)
-                                }}
+                                validation={EMAIL_MARK}
                                 isInvalid={isEmailInvalid}
                                 onSetText={handleSetUserEmail}
                                 isDisabled={props.isForDisable}
@@ -351,6 +375,10 @@ export default function UserForm(props: UserFormProps) {
                                 isForShowMessage={isCheckingEmail}
                                 onValidate={handleChangeFormValidation}
                                 validationMessage="O e-mail não pode ficar em branco, ou inválido."
+                                onBlur={(event) => {
+                                    handleValidEmail(event)
+                                    handleAutoSave(event)
+                                }}
                             />
                         </FormRowColumn>
                     </FormRow>

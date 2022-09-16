@@ -4,7 +4,7 @@ import List from "../../components/list/list"
 import Layout from "../../components/layout/layout"
 import Button from "../../components/button/button"
 import ServiceStageView from "../../components/view/serviceStageView"
-import { handlePrepareServiceStageForDB } from "../../util/converterUtil"
+import { handlePrepareServicePaymentStageForShow, handlePrepareServiceStageForDB } from "../../util/converterUtil"
 import ServiceStageSingleForm from "../../components/form/serviceStageSingleForm"
 import { defaultServiceStage, ServiceStage } from "../../interfaces/objectInterfaces"
 import FeedbackMessageModal, { defaultFeedbackMessage, FeedbackMessage } from "../../components/modal/feedbackMessageModal"
@@ -148,6 +148,7 @@ export default function ServiceStages() {
         } catch (err) {
             console.error(err)
         }
+        localServiceStage = handlePrepareServicePaymentStageForShow([localServiceStage])[0]
         setIsLoading(false)
         setServiceStage(localServiceStage)
         setIsRegister(true)
@@ -366,7 +367,6 @@ export default function ServiceStages() {
                 />
             ) : (
                 <ServiceStageSingleForm
-                    canAutoSave
                     isBack={true}
                     serviceStage={serviceStage}
                     onBack={handleBackClick}

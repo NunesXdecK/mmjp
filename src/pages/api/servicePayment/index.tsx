@@ -1,13 +1,14 @@
-import { Service, ServicePayment, ServiceStage } from "../../../interfaces/objectInterfaces"
-import { ServiceConversor, ServicePaymentConversor, ServiceStageConversor } from "../../../db/converters"
+import { Immobile, Service, ServicePayment, ServiceStage } from "../../../interfaces/objectInterfaces"
+import { ImmobileConversor, ServiceConversor, ServicePaymentConversor, ServiceStageConversor } from "../../../db/converters"
 import { addDoc, collection, deleteDoc, doc, getDoc, getDocs, query, updateDoc, where } from "firebase/firestore"
-import { db, HISTORY_COLLECTION_NAME, SERVICE_COLLECTION_NAME, SERVICE_PAYMENT_COLLECTION_NAME, SERVICE_STAGE_COLLECTION_NAME } from "../../../db/firebaseDB"
+import { db, HISTORY_COLLECTION_NAME, IMMOBILE_COLLECTION_NAME, SERVICE_COLLECTION_NAME, SERVICE_PAYMENT_COLLECTION_NAME, SERVICE_STAGE_COLLECTION_NAME } from "../../../db/firebaseDB"
 
 export default async function handler(req, res) {
     const { method, body } = req
 
     const historyCollection = collection(db, HISTORY_COLLECTION_NAME)
     const serviceCollection = collection(db, SERVICE_COLLECTION_NAME).withConverter(ServiceConversor)
+    const immobileCollection = collection(db, IMMOBILE_COLLECTION_NAME).withConverter(ImmobileConversor)
     const serviceStageCollection = collection(db, SERVICE_STAGE_COLLECTION_NAME).withConverter(ServiceStageConversor)
     const servicePaymentCollection = collection(db, SERVICE_PAYMENT_COLLECTION_NAME).withConverter(ServicePaymentConversor)
 
@@ -69,6 +70,36 @@ export default async function handler(req, res) {
                                         if (history) {
                                             const dataForHistory = { ...ServiceConversor.toFirestore(service), databaseid: service.id, databasename: SERVICE_COLLECTION_NAME }
                                             await addDoc(historyCollection, dataForHistory)
+                                        }
+                                        if (service?.immobilesOrigin?.length > 0) {
+                                            const isUnion = service.immobilesOrigin?.length > service.immobilesTarget?.length
+                                            const isDismemberment = service.immobilesOrigin?.length < service.immobilesTarget?.length
+                                            let immobilesFinal = []
+                                            service.immobilesOrigin?.map((immobile: Immobile, index) => {
+                                                let statusFinal = "NORMAL"
+                                                if (service.status === "FINALIZADO") {
+                                                    if (isUnion) {
+                                                        statusFinal = "UNIFICADO"
+                                                    }
+                                                    if (isDismemberment) {
+                                                        statusFinal = "DESMEMBRADO"
+                                                    }
+                                                }
+                                                immobilesFinal = [...immobilesFinal, {
+                                                    ...immobile,
+                                                    status: statusFinal
+                                                }]
+                                            })
+                                            await Promise.all(
+                                                immobilesFinal.map(async (element: Immobile, index) => {
+                                                    const docRef = doc(immobileCollection, element.id)
+                                                    const data = (await getDoc(docRef)).data()
+                                                    await updateDoc(docRef, { ...data, status: element.status })
+                                                    if (history) {
+                                                        const dataForHistory = { ...ImmobileConversor.toFirestore({ ...data, status: element.status }), databaseid: element.id, databasename: IMMOBILE_COLLECTION_NAME }
+                                                        await addDoc(historyCollection, dataForHistory)
+                                                    }
+                                                }))
                                         }
                                     }
                                 }

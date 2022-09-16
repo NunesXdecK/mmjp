@@ -219,6 +219,7 @@ export const defaultUser: User = {
     email: "",
     username: "",
     password: "",
+    passwordConfirm: "",
     office: "visitante",
     dateInsertUTC: 0,
     dateLastUpdateUTC: 0,

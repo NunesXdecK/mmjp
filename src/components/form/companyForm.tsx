@@ -76,23 +76,31 @@ export default function CompanyForm(props: CompanyFormProps) {
         }
     }
 
-    const handleValidClientCode = async () => {
+    const handleValidClientCode = async (event, show?) => {
+        if (event && event.relatedTarget?.tagName?.toLowerCase() !== ("input" || "select" || "textarea")) {
+            return
+        }
         let code = company.clientCode
         if (code?.length && originalClientCode !== code) {
-            setIsCheckingClientCode(true)
-            fetch("api/isClientCodeAvaliable/" + code).then(res => res.json()).then((res) => {
+            if (!show) {
+                setIsCheckingClientCode(true)
+            }
+            let res = await fetch("api/isClientCodeAvaliable/" + code).then(res => res.json())
+            if (!show) {
                 setIsCheckingClientCode(false)
-                setIsClientCodeInvalid(res.data)
-            })
+            }
+            setIsClientCodeInvalid(res.data)
+            return res.data
         } else {
             setIsClientCodeInvalid(false)
+            return false
         }
     }
 
-    const handleCompanyValidationForDBInner = (company) => {
+    const handleCompanyValidationForDBInner = (company, isSearching) => {
         let isValid = handleCompanyValidationForDB(company)
-        if (company.clientCode.length > 0) {
-            if (isCheckingClientCode || isClientCodeInvalid) {
+        if (company.clientCode.length > 0 && company.clientCode !== originalClientCode) {
+            if (isSearching) {
                 isValid = {
                     ...isValid,
                     validation: false,
@@ -103,6 +111,15 @@ export default function CompanyForm(props: CompanyFormProps) {
         return isValid
     }
 
+    const handlePrepareCompanyForDBInner = (company) => {
+        let companyForDB = { ...company }
+        if (!companyForDB?.id?.length && companyID?.length) {
+            companyForDB = { ...companyForDB, id: companyID }
+        }
+        companyForDB = handlePrepareCompanyForDB(companyForDB)
+        return companyForDB
+    }
+
     const handleAutoSave = async (event?) => {
         if (!props.canAutoSave) {
             return
@@ -110,13 +127,13 @@ export default function CompanyForm(props: CompanyFormProps) {
         if (event && event.relatedTarget?.tagName?.toLowerCase() !== ("input" || "select" || "textarea")) {
             return
         }
-        if (isAutoSaving || isCheckingClientCode) {
+        if (isAutoSaving || isCheckingClientCode || isClientCodeInvalid) {
             return
         }
         if (!handleDiference()) {
             return
         }
-        const isValid = handleCompanyValidationForDBInner(company)
+        const isValid = handleCompanyValidationForDBInner(company, isCheckingClientCode || isClientCodeInvalid)
         if (!isValid.validation) {
             return
         }
@@ -132,10 +149,7 @@ export default function CompanyForm(props: CompanyFormProps) {
 
     const handleSaveInner = async (company, history) => {
         let res = { status: "ERROR", id: "", company: company }
-        let companyForDB = handlePrepareCompanyForDB(company)
-        if (!companyForDB?.id?.length && companyID?.length) {
-            companyForDB = { ...companyForDB, id: companyID }
-        }
+        let companyForDB = handlePrepareCompanyForDBInner(company)
         try {
             const saveRes = await fetch("api/company", {
                 method: "POST",
@@ -152,13 +166,15 @@ export default function CompanyForm(props: CompanyFormProps) {
         if (isAutoSaving) {
             return
         }
-        const isValid = handleCompanyValidationForDBInner(company)
+        setIsLoading(true)
+        let resCC = await handleValidClientCode(null, true)
+        const isValid = handleCompanyValidationForDBInner(company, resCC)
         if (!isValid.validation) {
             const feedbackMessage: FeedbackMessage = { messages: isValid.messages, messageType: "ERROR" }
             handleShowMessage(feedbackMessage)
+            setIsLoading(false)
             return
         }
-        setIsLoading(true)
         let companyFromDB = { ...company }
         let res = await handleSaveInner(company, true)
         if (res.status === "ERROR") {
@@ -273,7 +289,7 @@ export default function CompanyForm(props: CompanyFormProps) {
                                 id="code"
                                 isLoading={isLoading}
                                 onBlur={(event) => {
-                                    handleValidClientCode()
+                                    handleValidClientCode(event)
                                     handleAutoSave(event)
                                 }}
                                 title="Codigo de cliente"

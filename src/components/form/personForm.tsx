@@ -81,23 +81,31 @@ export default function PersonForm(props: PersonFormProps) {
         }
     }
 
-    const handleValidClientCode = async () => {
+    const handleValidClientCode = async (event, show?) => {
+        if (event && event.relatedTarget?.tagName?.toLowerCase() !== ("input" || "select" || "textarea")) {
+            return
+        }
         let code = person.clientCode
         if (code?.length && originalClientCode !== code) {
-            setIsCheckingClientCode(true)
-            fetch("api/isClientCodeAvaliable/" + code).then(res => res.json()).then((res) => {
+            if (!show) {
+                setIsCheckingClientCode(true)
+            }
+            let res = await fetch("api/isClientCodeAvaliable/" + code).then(res => res.json())
+            if (!show) {
                 setIsCheckingClientCode(false)
-                setIsClientCodeInvalid(res.data)
-            })
+            }
+            setIsClientCodeInvalid(res.data)
+            return res.data
         } else {
             setIsClientCodeInvalid(false)
+            return false
         }
     }
 
-    const handlePersonValidationForDBInner = (person) => {
+    const handlePersonValidationForDBInner = (person, isSearching) => {
         let isValid = handlePersonValidationForDB(person)
-        if (person.clientCode.length > 0) {
-            if (isCheckingClientCode || isClientCodeInvalid) {
+        if (person.clientCode.length > 0 && person.clientCode !== originalClientCode) {
+            if (isSearching) {
                 isValid = {
                     ...isValid,
                     validation: false,
@@ -108,6 +116,15 @@ export default function PersonForm(props: PersonFormProps) {
         return isValid
     }
 
+    const handlePreparePersonForDBInner = (person) => {
+        let personForDB = { ...person }
+        if (!personForDB?.id?.length && personID?.length) {
+            personForDB = { ...personForDB, id: personID }
+        }
+        personForDB = handlePreparePersonForDB(personForDB)
+        return personForDB
+    }
+
     const handleAutoSave = async (event?) => {
         if (!props.canAutoSave) {
             return
@@ -115,33 +132,31 @@ export default function PersonForm(props: PersonFormProps) {
         if (event && event.relatedTarget?.tagName?.toLowerCase() !== ("input" || "select" || "textarea")) {
             return
         }
-        if (isAutoSaving || isCheckingClientCode) {
+        if (isAutoSaving || isCheckingClientCode || isClientCodeInvalid) {
             return
         }
         if (!handleDiference()) {
             return
         }
-        const isValid = handlePersonValidationForDBInner(person)
+        const isValid = handlePersonValidationForDBInner(person, isCheckingClientCode || isClientCodeInvalid)
         if (!isValid.validation) {
             return
         }
         setIsAutoSaving(old => true)
-        const res = await handleSaveInner(person, false)
+        let personForDB = handlePreparePersonForDBInner(person)
+        const res = await handleSaveInner(personForDB, false)
         if (res.status === "ERROR") {
             return
         }
         setIsAutoSaving(old => false)
         setPersonID(res.id)
-        setPersonOriginal(old => res.person)
+        setPersonOriginal(person)
         setOriginalClientCode(res.person.clientCode)
     }
 
     const handleSaveInner = async (person, history) => {
         let res = { status: "ERROR", id: "", person: person }
-        let personForDB = handlePreparePersonForDB(person)
-        if (!personForDB?.id?.length && personID?.length) {
-            personForDB = { ...personForDB, id: personID }
-        }
+        let personForDB = handlePreparePersonForDBInner(person)
         try {
             const saveRes = await fetch("api/person", {
                 method: "POST",
@@ -158,13 +173,15 @@ export default function PersonForm(props: PersonFormProps) {
         if (isAutoSaving) {
             return
         }
-        const isValid = handlePersonValidationForDBInner(person)
+        setIsLoading(true)
+        let resCC = await handleValidClientCode(null, true)
+        const isValid = handlePersonValidationForDBInner(person, resCC)
         if (!isValid.validation) {
+            setIsLoading(false)
             const feedbackMessage: FeedbackMessage = { messages: isValid.messages, messageType: "ERROR" }
             handleShowMessage(feedbackMessage)
             return
         }
-        setIsLoading(true)
         let personFromDB = { ...person }
         let res = await handleSaveInner(person, true)
         if (res.status === "ERROR") {
@@ -287,10 +304,6 @@ export default function PersonForm(props: PersonFormProps) {
                             <InputText
                                 id="code"
                                 isLoading={isLoading}
-                                onBlur={(event) => {
-                                    handleValidClientCode()
-                                    handleAutoSave(event)
-                                }}
                                 title="Codigo de cliente"
                                 value={person.clientCode}
                                 isInvalid={isClientCodeInvalid}
@@ -299,6 +312,10 @@ export default function PersonForm(props: PersonFormProps) {
                                 onSetText={handleSetPersonClientCode}
                                 isForShowMessage={isCheckingClientCode}
                                 validationMessage="O código já está em uso."
+                                onBlur={(event) => {
+                                    handleValidClientCode(event)
+                                    handleAutoSave(event)
+                                }}
                             />
                         </FormRowColumn>
                     </FormRow>

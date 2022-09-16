@@ -4,7 +4,7 @@ import List from "../../components/list/list"
 import Layout from "../../components/layout/layout"
 import Button from "../../components/button/button"
 import ServicePaymentView from "../../components/view/servicePaymentView"
-import { handlePrepareServicePaymentForDB } from "../../util/converterUtil"
+import { handlePrepareServicePaymentForDB, handlePrepareServicePaymentStageForShow } from "../../util/converterUtil"
 import ServicePaymentSingleForm from "../../components/form/servicePaymentSingleForm"
 import { defaultServicePayment, ServicePayment } from "../../interfaces/objectInterfaces"
 import FeedbackMessageModal, { defaultFeedbackMessage, FeedbackMessage } from "../../components/modal/feedbackMessageModal"
@@ -143,6 +143,7 @@ export default function ServicePayments() {
         } catch (err) {
             console.error(err)
         }
+        localServicePayment = handlePrepareServicePaymentStageForShow([localServicePayment])[0]
         setIsLoading(false)
         setServicePayment(localServicePayment)
         setIsRegister(true)
@@ -361,7 +362,6 @@ export default function ServicePayments() {
                 />
             ) : (
                 <ServicePaymentSingleForm
-                    canAutoSave
                     isBack={true}
                     servicePayment={servicePayment}
                     onBack={handleBackClick}

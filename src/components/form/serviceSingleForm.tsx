@@ -95,7 +95,7 @@ export default function ServiceSingleForm(props: ServiceSingleFormProps) {
         if (elementTwo && "index" in elementTwo) {
             indexTwo = elementTwo.index
         }
-        return indexOne - indexTwo 
+        return indexOne - indexTwo
     }
 
     const handleProjectServicesToDB = (services: Service[], status?: "ORÇAMENTO" | "NORMAL" | "ARQUIVADO" | "FINALIZADO") => {
@@ -238,7 +238,7 @@ export default function ServiceSingleForm(props: ServiceSingleFormProps) {
         let immobilesFinal = []
         services.map((element: Service, index) => {
             const isUnion = element.immobilesOrigin?.length > element.immobilesTarget?.length
-            const isDismemberment = element.immobilesTarget?.length > element.immobilesOrigin?.length
+            const isDismemberment = element.immobilesOrigin?.length < element.immobilesTarget?.length
             element.immobilesOrigin?.map((immobile: Immobile, index) => {
                 let statusFinal = "NORMAL"
                 if (status === "FINALIZADO") {

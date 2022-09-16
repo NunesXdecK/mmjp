@@ -5,8 +5,8 @@ import Layout from "../../components/layout/layout"
 import UserView from "../../components/view/userView"
 import UserForm from "../../components/form/userForm"
 import { defaultUser, User } from "../../interfaces/objectInterfaces"
-import FeedbackMessageModal, { defaultFeedbackMessage, FeedbackMessage } from "../../components/modal/feedbackMessageModal"
 import FeedbackPendency from "../../components/modal/feedbackPendencyModal"
+import FeedbackMessageModal, { defaultFeedbackMessage, FeedbackMessage } from "../../components/modal/feedbackMessageModal"
 
 export default function Users() {
     const [title, setTitle] = useState("Lista de usuários")
@@ -66,6 +66,7 @@ export default function Users() {
         let listItemsFiltered: User[] = []
         listItemsFiltered = listItems.filter((element: User, index) => {
             return element.username.toLowerCase().includes(string.toLowerCase())
+                || element.email.toLowerCase().includes(string.toLowerCase())
         })
         return listItemsFiltered
     }
@@ -151,7 +152,6 @@ export default function Users() {
             ) : (
                 <UserForm
                     canMultiple
-                    canAutoSave
                     isBack={true}
                     onBack={handleBackClick}
                     user={user}
