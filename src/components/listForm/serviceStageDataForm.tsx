@@ -60,6 +60,28 @@ export default function ServiceStageDataForm(props: ServiceStageDataFormProps) {
         setIsFormValid(isValid)
     }
 
+    const handleShowButton = () => {
+        return (
+            <>
+                {(props.isForShowAll || !props.isSingle) && (
+                    <Button
+                        isLight
+                        isLoading={props.isLoading}
+                        onClick={() => {
+                            setIsFormOpen(!isFormOpen)
+                        }}
+                    >
+                        {isFormOpen ? (
+                            <ChevronDownIcon className="text-gray-600 block h-5 w-5" aria-hidden="true" />
+                        ) : (
+                            <ChevronRightIcon className="text-gray-600 block h-5 w-5" aria-hidden="true" />
+                        )}
+                    </Button>
+                )}
+            </>
+        )
+    }
+
     return (
         <>
             {/*
@@ -70,23 +92,13 @@ export default function ServiceStageDataForm(props: ServiceStageDataFormProps) {
             </FormRow>
                 */}
             <FormRow className="py-2">
-                <FormRowColumn unit="4" className="flex flex-col sm:flex-row">
-                    {(props.isForShowAll || !props.isSingle) && (
-                        <Button
-                            isLight
-                            className="mr-2 sm:mt-auto"
-                            isLoading={props.isLoading}
-                            onClick={() => {
-                                setIsFormOpen(!isFormOpen)
-                            }}
-                        >
-                            {isFormOpen ? (
-                                <ChevronDownIcon className="text-gray-600 block h-5 w-5" aria-hidden="true" />
-                            ) : (
-                                <ChevronRightIcon className="text-gray-600 block h-5 w-5" aria-hidden="true" />
-                            )}
-                        </Button>
-                    )}
+                <FormRowColumn unit="6" className="sm:hidden block">
+                    {handleShowButton()}
+                </FormRowColumn>
+                <FormRowColumn unit="2" className="flex flex-col sm:flex-row">
+                    <div className="hidden sm:block mr-2 sm:mt-auto">
+                        {handleShowButton()}
+                    </div>
 
                     <InputTextAutoComplete
                         title="Titulo"

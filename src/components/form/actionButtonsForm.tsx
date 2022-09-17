@@ -14,6 +14,7 @@ interface ActionButtonsFormProps {
     rightWindowText?: string,
     rightButtonText?: string,
     actionBarClassName?: string,
+    buttonHolderClassName?: string,
     isLeftOn?: boolean,
     isRightOn?: boolean,
     isLoading?: boolean,
@@ -29,12 +30,15 @@ interface ActionButtonsFormProps {
 
 export default function ActionButtonsForm(props: ActionButtonsFormProps) {
     const navigationBarClassName = "bg-slate-50"
-    let buttonHolderClassName = "flex"
+    let buttonHolderClassName = "flex "
 
     if (props.isLeftOn && props.onLeftClick) {
-        buttonHolderClassName = buttonHolderClassName + " justify-between items-end"
+        buttonHolderClassName = buttonHolderClassName + " justify-between sm:items-end"
     } else {
-        buttonHolderClassName = buttonHolderClassName + " justify-end items-end"
+        buttonHolderClassName = buttonHolderClassName + "sm:justify-end sm:items-end"
+    }
+    if (props.buttonHolderClassName) {
+        buttonHolderClassName = buttonHolderClassName + " " + props.buttonHolderClassName
     }
 
     const [isOpenLeft, setIsOpenLeft] = useState(false)

@@ -19,7 +19,6 @@ export default function Index() {
     const [subjectMessage, setSubjectMessage] = useState<SubjectMessage>({
         ...defaultSubjectMessage,
         referenceId: "M8Kvcag59gggzvesKOV2",
-        user: { id: "mj89plpPDa8Tl0f93Pvo" },
         referenceBase: PERSON_COLLECTION_NAME,
     })
 

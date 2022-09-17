@@ -16,6 +16,7 @@ interface SubjectMessageViewProps {
     classNameTitle?: string,
     classNameHolder?: string,
     classNameContentHolder?: string,
+    canDelete?: boolean,
     dataInside?: boolean,
     hideBorder?: boolean,
     hidePaddingMargin?: boolean,
@@ -103,17 +104,19 @@ export default function SubjectMessageView(props: SubjectMessageViewProps) {
                                         classNameHolder="w-full text-xs italic"
                                         info={"Ás " + handleUTCToDateFullShow(subjectMessage.dateLastUpdateUTC.toString())} />}
                             </div>
-                            <Button
-                                isLight
-                                onClick={() => {
-                                    setIsOpen(!isOpen)
-                                }}
-                            >
-                                <TrashIcon
-                                    aria-hidden="true"
-                                    className="block text-red-600 h-6 w-6"
-                                />
-                            </Button>
+                            {props.canDelete && (
+                                <Button
+                                    isLight
+                                    onClick={() => {
+                                        setIsOpen(!isOpen)
+                                    }}
+                                >
+                                    <TrashIcon
+                                        aria-hidden="true"
+                                        className="block text-red-600 h-6 w-6"
+                                    />
+                                </Button>
+                            )}
                         </div>
                         <InfoView classNameHolder="w-full p-2"
                             info={subjectMessage.text} />

@@ -13,7 +13,7 @@ export default function FeedbackPendency(props: FeedbackPendencyProps) {
                         bg-red-600
                         text-white
                         rounded-md 
-                        right-10 top-16
+                        right-16 lg:right-60 top-16
                         animate-bounce
                         print:hidden
                     `

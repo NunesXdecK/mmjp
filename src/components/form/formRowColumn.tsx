@@ -7,10 +7,10 @@ export default function FormRowColumn(props: FormRowColumnProps) {
     let colSpanClassName = ""
     switch (props.unit) {
         case "1":
-            colSpanClassName = "col-span-3 sm:col-span-1"
+            colSpanClassName = "col-span-6 sm:col-span-1"
             break;
         case "2":
-            colSpanClassName = "col-span-3 sm:col-span-2"
+            colSpanClassName = "col-span-6 sm:col-span-2"
             break
         case "3":
             colSpanClassName = "col-span-3 sm:col-span-3"

@@ -8,6 +8,7 @@ interface AuthProviderProps {
 }
 
 interface AuthContextData {
+    token?: string,
     user?: User,
     isAuthenticaded?: boolean,
 }
@@ -15,6 +16,7 @@ interface AuthContextData {
 export const AuthContext = createContext({} as AuthContextData)
 
 export default function AuthProvider(props: AuthProviderProps) {
+    const [token, setToken] = useState<string>("")
     const [user, setUser] = useState<User | null>(null)
     const [isFirst, setIsFirst] = useState(true)
     const isAuthenticaded = !!user
@@ -44,6 +46,7 @@ export default function AuthProvider(props: AuthProviderProps) {
                 }).then(res => res.json()).then(res => {
                     setIsFirst(false)
                     if (res.isAuth) {
+                        setToken(token)
                         setUser(res.data)
                     }
                 })
@@ -54,6 +57,7 @@ export default function AuthProvider(props: AuthProviderProps) {
     return (
         <AuthContext.Provider value={{
             user,
+            token,
             isAuthenticaded
         }}>
             {isAuthenticaded ? (

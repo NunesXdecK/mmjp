@@ -430,7 +430,7 @@ export default function ProjectForm(props: ProjectFormProps) {
 
     const handleCenterActionsButtons = () => {
         return (
-            <div className="px-2 w-full flex flex-col sm:flex-row gap-2 items-end justify-end">
+            <div className="px-0 sm:px-2 w-full flex flex-col sm:flex-row gap-2 items-start sm:items-end justify-end">
                 {(project.status === "ARQUIVADO" || project.status === "FINALIZADO") && (
                     <Button
                         type="button"
@@ -548,13 +548,14 @@ export default function ProjectForm(props: ProjectFormProps) {
                 isForBackControl
                 isLoading={isLoading}
                 isDisabled={!isFormValid}
+                rightButtonText={"Salvar"}
                 centerChild={handleCenterActionsButtons}
-                isRightOn={project.status !== "FINALIZADO" && project.status !== "ARQUIVADO"}
                 rightWindowText="Deseja confirmar as alterações?"
                 isForOpenLeft={project.id !== "" && handleDiference()}
                 isForOpenRight={project.id !== "" && handleDiference()}
-                rightButtonText={"Salvar"}
                 leftWindowText="Dejesa realmente voltar e descartar as alterações?"
+                buttonHolderClassName="flex-col gap-1 items-start sm:flex-row sm:gap-0"
+                isRightOn={project.status !== "FINALIZADO" && project.status !== "ARQUIVADO"}
                 onLeftClick={(event) => {
                     if (event) {
                         event.preventDefault()

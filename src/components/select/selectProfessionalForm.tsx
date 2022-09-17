@@ -141,6 +141,39 @@ export default function SelectProfessionalForm(props: SelectProfessionalFormProp
         setProfessional(defaultProfessional)
     }
 
+    const handlePutActions = (index) => {
+        return (
+            <>
+                {!props.isLocked && (
+                    <>
+                        <Button
+                            type="button"
+                            isLoading={props.isLoading}
+                            isDisabled={props.isLoading}
+                            className="ml-2 h-fit self-end"
+                            onClick={(event) => {
+                                event.preventDefault()
+                                setEditIndex(index)
+                                setIsOpen(true)
+                            }}
+                        >
+                            <PencilAltIcon className="text-white block h-5 w-5" aria-hidden="true" />
+                        </Button>
+                        <Button
+                            type="submit"
+                            color="red"
+                            isLoading={props.isLoading}
+                            isDisabled={props.isLoading}
+                            className="ml-2 h-fit self-end"
+                        >
+                            <TrashIcon className="text-white block h-5 w-5" aria-hidden="true" />
+                        </Button>
+                    </>
+                )}
+            </>
+        )
+    }
+
     useEffect(() => {
         if (isOpen && isFirst) {
             fetch("api/professionals").then((res) => res.json()).then((res) => {
@@ -221,32 +254,12 @@ export default function SelectProfessionalForm(props: SelectProfessionalFormProp
                                     id={"professional-crea-number-" + index}
                                 />
 
-                                {!props.isLocked && (
-                                    <div className="min-w-fit flex-col mt-4 sm:mt-0 self-end">
-                                        <Button
-                                            type="button"
-                                            isLoading={props.isLoading}
-                                            isDisabled={props.isLoading}
-                                            className="ml-2 h-fit self-end"
-                                            onClick={(event) => {
-                                                event.preventDefault()
-                                                setEditIndex(index)
-                                                setIsOpen(true)
-                                            }}
-                                        >
-                                            <PencilAltIcon className="text-white block h-5 w-5" aria-hidden="true" />
-                                        </Button>
-                                        <Button
-                                            color="red"
-                                            type="submit"
-                                            isLoading={props.isLoading}
-                                            isDisabled={props.isLoading}
-                                            className="ml-2 h-fit self-end"
-                                        >
-                                            <TrashIcon className="text-white block h-5 w-5" aria-hidden="true" />
-                                        </Button>
-                                    </div>
-                                )}
+                                <div className="min-w-fit flex-col mt-4 sm:mt-0 self-end hidden sm:block">
+                                    {handlePutActions(index)}
+                                </div>
+                            </FormRowColumn>
+                            <FormRowColumn unit="6" className="flex justify-end sm:hidden">
+                                {handlePutActions(index)}
                             </FormRowColumn>
                         </FormRow>
                     </form>

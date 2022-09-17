@@ -1,12 +1,13 @@
 import Button from '../button/button'
 import WindowModal from './windowModal'
-import { useEffect, useState } from 'react'
+import { useContext, useEffect, useState } from 'react'
 import { FeedbackMessage } from './feedbackMessageModal'
+import { AuthContext } from '../../contexts/authContext'
 import SubjectMessageForm from '../form/subjectMessageForm'
 import SubjectMessageView from '../view/subjectMessageView'
 import PlaceholderItemList from '../list/placeholderItemList'
 import SubjectMessageLayoutModal from './subjectMessageLayoutModal'
-import { defaultSubjectMessage, SubjectMessage } from '../../interfaces/objectInterfaces'
+import { defaultSubjectMessage, defaultUser, SubjectMessage } from '../../interfaces/objectInterfaces'
 
 interface SubjectMessageFormModalProps {
     title?: string,
@@ -18,6 +19,8 @@ interface SubjectMessageFormModalProps {
 }
 
 export default function SubjectMessageFormModal(props: SubjectMessageFormModalProps) {
+    const { user } = useContext(AuthContext)
+    console.log(user.id)
     const [isOpen, setIsOpen] = useState(false)
     const [isFirst, setIsFirst] = useState(true)
     const [isLoading, setIsLoading] = useState(true)
@@ -74,7 +77,7 @@ export default function SubjectMessageFormModal(props: SubjectMessageFormModalPr
                     haveActionButtons
                     className="pt-10 sm:pt-28"
                     onAfterSave={handleAfterSave}
-                    subjectMessage={props.subjectMessage} />
+                    subjectMessage={{ ...props.subjectMessage, user: user ?? defaultUser }} />
                 <div className="mt-4">
                     {isLoading ? (
                         <PlaceholderItemList />
@@ -83,16 +86,17 @@ export default function SubjectMessageFormModal(props: SubjectMessageFormModalPr
                             {subjectMessages.map((element, index) => (
                                 <SubjectMessageView
                                     title=""
-                                    onDelete={(event) => {
-                                        //setIsOpen(true)
-                                        //setSubjectMessage(element)
-                                        handleDeleteClick(element)
-                                    }}
                                     hidePaddingMargin
                                     elementId={element.id}
                                     key={element.id + index}
                                     classNameContentHolder="gap-0"
                                     classNameHolder="px-4 py-2 my-2"
+                                    canDelete={element.user.id === user.id}
+                                    onDelete={(event) => {
+                                        //setIsOpen(true)
+                                        //setSubjectMessage(element)
+                                        handleDeleteClick(element)
+                                    }}
                                 />
                             ))}
                         </>
