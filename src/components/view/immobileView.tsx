@@ -130,7 +130,7 @@ export default function ImmobileView(props: ImmobileViewProps) {
                                 {(immobile.status === "DESMEMBRADO" || immobile.status === "UNIFICADO") && (
                                     <InfoView classNameHolder="w-full" classNameInfo="rounded-md px-3 py-1 bg-green-600 text-white" title="Status" info={immobile.status} />
                                 )}
-                                <InfoView title="Nome" info={immobile.name} />
+                                <InfoView title="Nome do imóvel" info={immobile.name} />
                                 <ScrollDownTransition isOpen={isShowInfo}>
                                     <InfoHolderView
                                         hideBorder

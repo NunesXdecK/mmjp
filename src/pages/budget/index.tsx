@@ -258,6 +258,7 @@ localProject = {
                                 title=""
                                 hideData
                                 hideBorder
+                                showMoreInfo
                                 hidePaddingMargin
                                 project={element}
                             />

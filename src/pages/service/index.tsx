@@ -356,6 +356,7 @@ export default function Services() {
                                 title=""
                                 hideData
                                 hideBorder
+                                showMoreInfo
                                 hidePaddingMargin
                                 service={element}
                             />

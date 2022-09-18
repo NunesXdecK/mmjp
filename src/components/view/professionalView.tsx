@@ -91,7 +91,7 @@ export default function ProfessionalView(props: ProfessionalViewProps) {
                                         )}
                                     </Button>
                                 )}
-                                <InfoView title="Titulo" info={professional.title} />
+                                <InfoView title="Titulo do profissional" info={professional.title} />
                                 <ScrollDownTransition isOpen={isShowInfo}>
                                     <InfoHolderView
                                         hideBorder

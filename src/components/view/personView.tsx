@@ -68,7 +68,7 @@ export default function PersonView(props: PersonViewProps) {
     return (
         <>
             {person.id?.length === 0 ? (
-                <div className="mt-6">
+                <div className="mt-6 w-full">
                     <PlaceholderItemList />
                 </div>
             ) : (
@@ -99,7 +99,7 @@ export default function PersonView(props: PersonViewProps) {
                                     </Button>
                                 )}
                                 <InfoView title="Codigo de cliente" info={person.clientCode} />
-                                <InfoView title="Nome" info={person.name} />
+                                <InfoView title="Nome da pessoa" info={person.name} />
                                 <InfoView title="CPF" info={handleMaskCPF(person.cpf)} />
                                 <ScrollDownTransition isOpen={isShowInfo}>
                                     <InfoHolderView

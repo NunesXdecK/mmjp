@@ -351,6 +351,7 @@ export default function ServicePayments() {
                                 title=""
                                 hideData
                                 hideBorder
+                                showMoreInfo
                                 hidePaddingMargin
                                 servicePayment={element}
                             />

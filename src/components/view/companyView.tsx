@@ -74,7 +74,7 @@ export default function CompanyView(props: CompanyViewProps) {
     return (
         <>
             {company.id?.length === 0 ? (
-                <div className="mt-6">
+                <div className="mt-6 w-full">
                     <PlaceholderItemList />
                 </div>
             ) : (
@@ -105,7 +105,7 @@ export default function CompanyView(props: CompanyViewProps) {
                                     </Button>
                                 )}
                                 <InfoView title="Codigo de cliente" info={company.clientCode} />
-                                <InfoView title="Nome" info={company.name} />
+                                <InfoView title="Nome da empresa" info={company.name} />
                                 <InfoView title="CNPJ" info={handleMaskCNPJ(company.cnpj)} />
                                 <ScrollDownTransition isOpen={isShowInfo}>
                                     <InfoHolderView

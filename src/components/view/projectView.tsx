@@ -5,13 +5,10 @@ import CompanyView from "./companyView"
 import { useEffect, useState } from "react"
 import InfoHolderView from "./infoHolderView"
 import PlaceholderItemList from "../list/placeholderItemList"
-import { handleMountNumberCurrency } from "../../util/maskUtil"
 import ScrollDownTransition from "../animation/scrollDownTransition"
 import { ChevronDownIcon, ChevronRightIcon } from "@heroicons/react/outline"
 import { defaultProject, Project, Service } from "../../interfaces/objectInterfaces"
 import { handleUTCToDateShow } from "../../util/dateUtils"
-import { COMPANY_COLLECTION_NAME, PERSON_COLLECTION_NAME } from "../../db/firebaseDB"
-import ProfessionalView from "./professionalView"
 import ServiceView from "./serviceView"
 
 interface ProjectViewProps {
@@ -25,6 +22,7 @@ interface ProjectViewProps {
     hideData?: boolean,
     dataInside?: boolean,
     hideBorder?: boolean,
+    showMoreInfo?: boolean,
     canShowHideData?: boolean,
     hidePaddingMargin?: boolean,
     project?: Project,
@@ -44,6 +42,36 @@ export default function ProjectView(props: ProjectViewProps) {
         project?.number?.length ||
         project?.title?.length
 
+    const handlePutOwner = (owner) => {
+        return (
+            <>
+                {owner && "cpf" in owner && (
+                    <PersonView
+                        hideData
+                        dataInside
+                        addressTitle={"Endereço"}
+                        elementId={owner.id ?? ""}
+                        hideBorder={props.showMoreInfo}
+                        canShowHideData={!props.showMoreInfo}
+                        hidePaddingMargin={props.showMoreInfo}
+                        title={props.showMoreInfo ? "" : "Cliente"}
+                    />
+                )}
+                {owner && "cnpj" in owner && (
+                    <CompanyView
+                        hideData
+                        dataInside
+                        addressTitle={"Endereço"}
+                        elementId={owner.id ?? ""}
+                        hideBorder={props.showMoreInfo}
+                        canShowHideData={!props.showMoreInfo}
+                        hidePaddingMargin={props.showMoreInfo}
+                        title={props.showMoreInfo ? "" : "Cliente"}
+                    />
+                )}
+            </>
+        )
+    }
     const handlePutData = () => {
         let listClients = project?.clients?.sort((elementOne, elementTwo) => {
             let dateOne = 0
@@ -93,28 +121,10 @@ export default function ProjectView(props: ProjectViewProps) {
                             />
                         )}
                         */}
-                        {owner && "cpf" in owner && (
-                            <PersonView
-                                hideData
-                                dataInside
-                                canShowHideData
-                                title={"Cliente"}
-                                addressTitle={"Endereço"}
-                                elementId={owner.id ?? ""}
-                            />
-                        )}
-                        {owner && "cnpj" in owner && (
-                            <CompanyView
-                                hideData
-                                dataInside
-                                canShowHideData
-                                title={"Cliente"}
-                                addressTitle={"Endereço"}
-                                elementId={owner.id ?? ""}
-                            />
-                        )}
+                        {handlePutOwner(owner)}
                     </div>
                 ))}
+
 
                 {listServices?.map((service, index) => (
                     <ServiceView
@@ -148,7 +158,7 @@ export default function ProjectView(props: ProjectViewProps) {
     return (
         <>
             {project.id?.length === 0 ? (
-                <div className="mt-6">
+                <div className="mt-6 w-full">
                     <PlaceholderItemList />
                 </div>
             ) : (
@@ -187,9 +197,12 @@ export default function ProjectView(props: ProjectViewProps) {
                                 {project.priorityView > 0 && (
                                     <InfoView classNameHolder="w-full" title="Lista de espera" info={project.priorityView + ""} />
                                 )}
-                                <InfoView title="Titulo" info={project.title} />
+                                <InfoView title="Projeto" info={project.title} />
                                 <InfoView title="Número" info={project.number} />
                                 <InfoView title="Data" info={handleUTCToDateShow(project.date.toString())} />
+                                {props.showMoreInfo && (
+                                    handlePutOwner(project.clients[0])
+                                )}
                                 <ScrollDownTransition isOpen={isShowInfo}>
                                     <InfoHolderView
                                         hideBorder

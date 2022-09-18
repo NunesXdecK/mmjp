@@ -22,6 +22,7 @@ interface ServiceStageViewProps {
     dataInside?: boolean,
     hideBorder?: boolean,
     hideService?: boolean,
+    showMoreInfo?: boolean,
     canShowHideData?: boolean,
     hidePaddingMargin?: boolean,
     serviceStage?: ServiceStage,
@@ -42,19 +43,28 @@ export default function ServiceStageView(props: ServiceStageViewProps) {
         serviceStage?.dateDue > 0 ||
         serviceStage?.title?.length
 
-    const handlePutData = () => {
+    const handlePutService = () => {
         return (
-            <div className="w-full">
-                {!props.hideService && serviceStage?.service?.id?.length && (
+            <>
+                {serviceStage?.service?.id?.length && (
                     <ServiceView
                         hideData
                         dataInside
-                        canShowHideData
-                        title="Serviço"
+                        hideBorder={props.showMoreInfo}
                         elementId={serviceStage.service.id}
+                        canShowHideData={!props.showMoreInfo}
+                        hidePaddingMargin={props.showMoreInfo}
+                        title={props.showMoreInfo ? "" : "Serviço"}
                         id={serviceStage.id + "-" + serviceStage.service.id}
                     />
                 )}
+            </>
+        )
+    }
+    const handlePutData = () => {
+        return (
+            <div className="w-full">
+                {!props.hideService && handlePutService()}
 
                 {serviceStage?.responsible?.id?.length && (
                     <UserView
@@ -84,7 +94,7 @@ export default function ServiceStageView(props: ServiceStageViewProps) {
     return (
         <>
             {serviceStage.id?.length === 0 ? (
-                <div className="mt-6">
+                <div className="mt-6 w-full">
                     <PlaceholderItemList />
                 </div>
             ) : (
@@ -126,8 +136,11 @@ export default function ServiceStageView(props: ServiceStageViewProps) {
                                 {serviceStage.priorityView > 0 && (
                                     <InfoView classNameHolder="w-full" title="Lista de espera" info={serviceStage.priorityView + ""} />
                                 )}
-                                <InfoView title="Titulo" info={serviceStage.title} />
+                                <InfoView title="Etapa" info={serviceStage.title} />
                                 <InfoView title="Data" info={handleUTCToDateShow(serviceStage.dateDue.toString())} />
+                                {props.showMoreInfo && (
+                                    handlePutService()
+                                )}
                                 <ScrollDownTransition isOpen={isShowInfo}>
                                     <InfoHolderView
                                         hideBorder

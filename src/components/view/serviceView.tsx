@@ -26,6 +26,7 @@ interface ServiceViewProps {
     dataInside?: boolean,
     hideBorder?: boolean,
     hideProject?: boolean,
+    showMoreInfo?: boolean,
     canShowHideData?: boolean,
     hidePaddingMargin?: boolean,
     service?: Service,
@@ -76,6 +77,25 @@ export default function ServiceView(props: ServiceViewProps) {
         return indexOne - indexTwo
     }
 
+    const handlePutProject = () => {
+        return (
+            <>
+                {service?.project?.id?.length && (
+                    <ProjectView
+                        hideData
+                        dataInside
+                        addressTitle={"Endereço"}
+                        elementId={service.project.id ?? ""}
+                        hideBorder={props.showMoreInfo}
+                        canShowHideData={!props.showMoreInfo}
+                        hidePaddingMargin={props.showMoreInfo}
+                        id={service.id + "-" + service.project.id}
+                        title={props.showMoreInfo ? "" : "Projeto"}
+                    />
+                )}
+            </>
+        )
+    }
     const handlePutData = () => {
         let listServiceStage = service?.serviceStages?.sort(handleSortByIndex) ?? []
         let listServicePayment = service?.servicePayments?.sort(handleSortByIndex) ?? []
@@ -83,15 +103,7 @@ export default function ServiceView(props: ServiceViewProps) {
         let listOrigin = service?.immobilesOrigin?.sort(handleSortByData) ?? []
         return (
             <div className="w-full">
-                {!props.hideProject && service?.project?.id?.length && (
-                    <ProjectView
-                        hideData
-                        dataInside
-                        canShowHideData
-                        title="Projeto"
-                        elementId={service.project.id}
-                    />
-                )}
+                {!props.hideProject && handlePutProject()}
 
                 {service?.professional?.id?.length && (
                     <ProfessionalView
@@ -166,7 +178,7 @@ export default function ServiceView(props: ServiceViewProps) {
     return (
         <>
             {service.id?.length === 0 ? (
-                <div className="mt-6">
+                <div className="mt-6 w-full">
                     <PlaceholderItemList />
                 </div>
             ) : (
@@ -208,11 +220,14 @@ export default function ServiceView(props: ServiceViewProps) {
                                 {service.priorityView > 0 && (
                                     <InfoView classNameHolder="w-full" title="Lista de espera" info={service.priorityView + ""} />
                                 )}
-                                <InfoView title="Titulo" info={service.title} />
+                                <InfoView title="Serviço" info={service.title} />
                                 <InfoView title="Valor" info={handleMountNumberCurrency(service.value.toString(), ".", ",", 3, 2)} />
                                 <InfoView title="Quantidade" info={service.quantity} />
                                 <InfoView title="Total" info={handleMountNumberCurrency(service.total.toString(), ".", ",", 3, 2)} />
                                 <InfoView title="Data" info={handleUTCToDateShow(service.date.toString())} />
+                                {props.showMoreInfo && (
+                                    handlePutProject()
+                                )}
                                 <ScrollDownTransition isOpen={isShowInfo}>
                                     <InfoHolderView
                                         hideBorder

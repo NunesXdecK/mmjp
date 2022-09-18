@@ -356,6 +356,7 @@ export default function ServiceStages() {
                                 title=""
                                 hideData
                                 hideBorder
+                                showMoreInfo
                                 hidePaddingMargin
                                 serviceStage={element}
                             />

@@ -22,6 +22,7 @@ interface ServicePaymentViewProps {
     dataInside?: boolean,
     hideBorder?: boolean,
     hideService?: boolean,
+    showMoreInfo?: boolean,
     canShowHideData?: boolean,
     hidePaddingMargin?: boolean,
     servicePayment?: ServicePayment,
@@ -40,18 +41,31 @@ export default function ServicePaymentView(props: ServicePaymentViewProps) {
         servicePayment?.dateDue > 0 ||
         servicePayment?.description?.length
 
-    const handlePutData = () => {
+    const handlePutService = () => {
         return (
-            <div className="w-full">
-                {!props.hideService && servicePayment?.service?.id?.length && (
+            <>
+                {servicePayment?.service?.id?.length && (
                     <ServiceView
                         hideData
                         dataInside
-                        canShowHideData
-                        title="Serviço"
+                        classNameHolder="min-w-full"
+                        hideBorder={props.showMoreInfo}
+                        classNameContentHolder="min-w-full"
                         elementId={servicePayment.service.id}
+                        canShowHideData={!props.showMoreInfo}
+                        hidePaddingMargin={props.showMoreInfo}
+                        title={props.showMoreInfo ? "" : "Serviço"}
+                        id={servicePayment.id + "-" + servicePayment.service.id}
                     />
                 )}
+            </>
+        )
+    }
+
+    const handlePutData = () => {
+        return (
+            <div className="w-full">
+                {!props.hideService && handlePutService()}
             </div>
         )
     }
@@ -70,7 +84,7 @@ export default function ServicePaymentView(props: ServicePaymentViewProps) {
     return (
         <>
             {servicePayment.id?.length === 0 ? (
-                <div className="mt-6">
+                <div className="mt-6 w-full">
                     <PlaceholderItemList />
                 </div>
             ) : (
@@ -109,9 +123,14 @@ export default function ServicePaymentView(props: ServicePaymentViewProps) {
                                 {servicePayment.status === "PENDENTE" && (
                                     <InfoView classNameHolder="w-full" classNameInfo="rounded-md px-3 py-1 bg-red-600 text-white" title="Status" info={servicePayment.status} />
                                 )}
-                                <InfoView title="Descrição" info={servicePayment.description} />
+                                <InfoView title="Pagamento" info={servicePayment.description} />
                                 <InfoView title="Valor" info={handleMountNumberCurrency(servicePayment.value.toString(), ".", ",", 3, 2)} />
                                 <InfoView title="Data" info={handleUTCToDateShow(servicePayment.dateDue.toString())} />
+                                {props.showMoreInfo && (
+                                    <>
+                                        {handlePutService()}
+                                    </>
+                                )}
                                 <ScrollDownTransition isOpen={isShowInfo}>
                                     <InfoHolderView
                                         hideBorder
