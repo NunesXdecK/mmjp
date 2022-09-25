@@ -51,7 +51,7 @@ export default function ProjectForm(props: ProjectFormProps) {
     const [isMultiple, setIsMultiple] = useState(false)
     const [isAutoSaving, setIsAutoSaving] = useState(false)
 
-    const [isPrint, setIsPrint] = useState(false)
+    const [isPrint, setIsPrint] = useState(project.id && project.id?.length > 0 && project.status === "ORÇAMENTO" ? true : false)
     const [isContract, setIsContract] = useState(false)
 
     const [oldData, setOldData] = useState<ElementFromBase>(props?.project?.oldData ?? defaultElementFromBase)
@@ -466,7 +466,7 @@ export default function ProjectForm(props: ProjectFormProps) {
                         isLoading={isLoading}
                         isDisabled={!isFormValid}
                     >
-                        Arquivar projeto
+                        Arquivar {project.status === "ORÇAMENTO" ? "orçamento" : "projeto"}
                     </Button>
                 )}
                 {project.status === "ORÇAMENTO" && (
@@ -576,13 +576,21 @@ export default function ProjectForm(props: ProjectFormProps) {
         return (
             <ActionButtonsForm
                 isLeftOn
+                isRightOn
+                rightButtonText="Editar"
                 leftWindowText="Dejesa realmente voltar?"
-                onLeftClick={(event) => {
+                onRightClick={(event) => {
                     if (event) {
                         event.preventDefault()
                     }
                     setIsPrint(false)
                     setIsContract(false)
+                }}
+                onLeftClick={(event) => {
+                    if (event) {
+                        event.preventDefault()
+                    }
+                    handleOnBack()
                 }}
             />
         )
@@ -658,7 +666,7 @@ export default function ProjectForm(props: ProjectFormProps) {
                             )}
 
                             <FormRow>
-                                <FormRowColumn unit="3">
+                                <FormRowColumn unit={project?.status !== "ORÇAMENTO" ? "3" : "4"}>
                                     <InputTextAutoComplete
                                         id="title"
                                         isLoading={isLoading}
@@ -675,23 +683,24 @@ export default function ProjectForm(props: ProjectFormProps) {
                                                 project.status === "ARQUIVADO")}
                                     />
                                 </FormRowColumn>
+                                {project?.status !== "ORÇAMENTO" && (
+                                    <FormRowColumn unit="2">
+                                        <InputText
+                                            id="number"
+                                            title="Numero"
+                                            isLoading={isLoading}
+                                            value={project.number}
+                                            onBlur={handleAutoSave}
+                                            onSetText={handleSetProjectNumber}
+                                            onValidate={handleChangeFormValidation}
+                                            isDisabled={props.isForDisable ||
+                                                (project.status === "FINALIZADO" ||
+                                                    project.status === "ARQUIVADO")}
+                                        />
+                                    </FormRowColumn>
+                                )}
 
-                                <FormRowColumn unit="2">
-                                    <InputText
-                                        id="number"
-                                        title="Numero"
-                                        isLoading={isLoading}
-                                        value={project.number}
-                                        onBlur={handleAutoSave}
-                                        onSetText={handleSetProjectNumber}
-                                        onValidate={handleChangeFormValidation}
-                                        isDisabled={props.isForDisable ||
-                                            (project.status === "FINALIZADO" ||
-                                                project.status === "ARQUIVADO")}
-                                    />
-                                </FormRowColumn>
-
-                                <FormRowColumn unit="1">
+                                <FormRowColumn unit={project?.status !== "ORÇAMENTO" ? "1" : "2"}>
                                     <InputText
                                         mask="date"
                                         title="Data"
@@ -708,35 +717,39 @@ export default function ProjectForm(props: ProjectFormProps) {
                                     />
                                 </FormRowColumn>
                             </FormRow>
-                            <FormRow>
-                                <FormRowColumn unit="2">
-                                    <InputText
-                                        id="status"
-                                        title="Status"
-                                        isDisabled={true}
-                                        value={project.status}
-                                    />
-                                </FormRowColumn>
-                            </FormRow>
+
+                            {project?.status !== "ORÇAMENTO" && (
+                                <FormRow>
+                                    <FormRowColumn unit="2">
+                                        <InputText
+                                            id="status"
+                                            title="Status"
+                                            isDisabled={true}
+                                            value={project.status}
+                                        />
+                                    </FormRowColumn>
+                                </FormRow>
+                            )}
                         </Form>
                     </form>
-
-                    <SelectPersonCompanyForm
-                        title="Clientes"
-                        isLoading={isLoading}
-                        formClassName="p-1 m-3"
-                        subtitle="Selecione o cliente"
-                        buttonTitle="Adicionar cliente"
-                        onShowMessage={props.onShowMessage}
-                        personsAndCompanies={project.clients}
-                        validationButton={project.clients.length === 1}
-                        onSetPersonsAndCompanies={handleSetProjectClients}
-                        validationMessage="Esta pessoa, ou empresa já é um cliente"
-                        validationMessageButton="Você não pode mais adicionar clientes"
-                        isLocked={props.isForDisable ||
-                            (project.status === "FINALIZADO" ||
-                                project.status === "ARQUIVADO")}
-                    />
+                    {project?.status !== "ORÇAMENTO" && (
+                        <SelectPersonCompanyForm
+                            title="Clientes"
+                            isLoading={isLoading}
+                            formClassName="p-1 m-3"
+                            subtitle="Selecione o cliente"
+                            buttonTitle="Adicionar cliente"
+                            onShowMessage={props.onShowMessage}
+                            personsAndCompanies={project.clients}
+                            validationButton={project.clients.length === 1}
+                            onSetPersonsAndCompanies={handleSetProjectClients}
+                            validationMessage="Esta pessoa, ou empresa já é um cliente"
+                            validationMessageButton="Você não pode mais adicionar clientes"
+                            isLocked={props.isForDisable ||
+                                (project.status === "FINALIZADO" ||
+                                    project.status === "ARQUIVADO")}
+                        />
+                    )}
 
                     {/*
                     <SelectProfessionalForm

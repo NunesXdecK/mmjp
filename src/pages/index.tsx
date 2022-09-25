@@ -9,6 +9,7 @@ import FeedbackPendency from "../components/modal/feedbackPendencyModal"
 import SubjectMessageFormModal from "../components/modal/subjectMessageFormModal"
 import { defaultSubjectMessage, SubjectMessage } from "../interfaces/objectInterfaces"
 import FeedbackMessageModal, { defaultFeedbackMessage, FeedbackMessage } from "../components/modal/feedbackMessageModal"
+import InputTextAutoComplete from "../components/inputText/inputTextAutocomplete"
 
 export default function Index() {
     const [isFirst, setIsFirst] = useState(true)

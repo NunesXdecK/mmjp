@@ -7,6 +7,7 @@ import { Disclosure, Menu, Transition } from "@headlessui/react"
 import { BellIcon, MenuIcon, XIcon } from "@heroicons/react/outline"
 import { UserCircleIcon } from "@heroicons/react/solid";
 import { AuthContext } from "../../contexts/authContext";
+import { defaultUser } from "../../interfaces/objectInterfaces";
 
 export interface LayoutMenuItem {
     name?: string,
@@ -80,7 +81,6 @@ interface LayoutMenuProps { }
 
 export default function Layout(props) {
     const { user } = useContext(AuthContext)
-
     const handleDeleteClick = async () => {
         const { "mmjp.token": token } = parseCookies()
         const res = await fetch("api/loginToken", {
@@ -276,7 +276,7 @@ export default function Layout(props) {
                     <div className="p-3 hidden md:block">
                         <div className="hidden md:block">
                             <div className="ml-4 flex items-center md:ml-6">
-                               {/*
+                                {/*
                                 Profile dropdown
                                */}
                                 <Menu as="div" className="ml-3 relative">

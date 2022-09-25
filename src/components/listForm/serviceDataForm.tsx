@@ -218,7 +218,7 @@ export default function ServiceDataForm(props: ServiceDataFormProps) {
     const handleShowButton = () => {
         return (
             <>
-                {(props.isForShowAll || !props.isSingle) && (
+                {props.isForShowAll && (
                     <Button
                         isLight
                         isLoading={props.isLoading}

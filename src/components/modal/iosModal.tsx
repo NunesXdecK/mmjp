@@ -21,7 +21,7 @@ export default function IOSModal(props: IOSModalProps) {
                     }
                 }}
                 open={props.isOpen}
-                className="fixed inset-0 z-10"
+                className="fixed inset-0 z-30"
                 initialFocus={cancelButtonRef}
             >
 

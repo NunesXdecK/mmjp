@@ -51,6 +51,14 @@ export default function AuthProvider(props: AuthProviderProps) {
                     }
                 })
             }
+            {/*
+window.onunload = (e) => {
+    e.preventDefault();
+    setCookie(undefined, "mmjp.token", "", {
+        maxAge: 60 * 60 * 12, //12 horas
+    })
+}
+*/}
         }
     })
 

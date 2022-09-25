@@ -18,8 +18,10 @@ interface InputTextAutoCompleteProps {
     sugestions?: any[],
     onBlur?: (any?) => void,
     onChange?: (any) => void,
+    onClickItem?: (any) => void,
     onSetText?: (string) => void,
     onValidate?: (boolean) => void,
+    onListOptions?: (any) => any,
 }
 
 export default function InputTextAutoComplete(props: InputTextAutoCompleteProps) {
@@ -60,10 +62,22 @@ export default function InputTextAutoComplete(props: InputTextAutoCompleteProps)
     const handleCheckSugestion = (text) => {
         let finalSugestions = []
         if (text.length > 0) {
-            props.sugestions?.map((element, index) => {
-                if (element.toString().toLowerCase().includes(text.toString().toLowerCase())) {
-                    finalSugestions = [...finalSugestions, element]
+            finalSugestions = props?.sugestions?.filter((element, index) => {
+                let name = ""
+                if (element) {
+                    if (typeof element === "string") {
+                        name = element
+                    } else if (typeof element === "object") {
+                        if ("name" in element) {
+                            name = element.name
+                        }
+                        if ("title" in element) {
+                            name = element.title
+                            name = element.title
+                        }
+                    }
                 }
+                return name.toLowerCase().includes(text.toLowerCase())
             })
         }
         setSugestions(sugestions => finalSugestions)
@@ -86,61 +100,70 @@ export default function InputTextAutoComplete(props: InputTextAutoCompleteProps)
 
     return (
         <div className={classNameHolder}>
-            <label
-                htmlFor={props.id}
-                className={classNameLabel}>
-                {props.title}
-            </label>
+            <div>
 
-            <input
-                type="text"
-                id={props.id}
-                ref={inputRef}
-                name={props.title}
-                value={props.value}
-                className={classNameInput}
-                maxLength={props.maxLength}
-                required={props.isRequired}
-                disabled={props.isDisabled || props.isLoading}
-                onBlur={(event) => {
-                    if (props.onBlur) {
-                        props.onBlur(event)
-                    }
-                }}
-                onChange={(event) => {
-                    let text = event.target.value
-                    text = handleValidation(text)
-                    if (!text.includes(" ")) {
-                        handleCheckSugestion(text)
-                    } else {
-                        handleCheckSugestion("")
-                    }
-                    props.onSetText(text)
-                }}
-            />
+                <label
+                    htmlFor={props.id}
+                    className={classNameLabel}>
+                    {props.title}
+                </label>
+
+                <input
+                    type="text"
+                    ref={inputRef}
+                    name={props.title}
+                    value={props.value}
+                    className={classNameInput}
+                    maxLength={props.maxLength}
+                    required={props.isRequired}
+                    id={props.id + "-auto-complete"}
+                    disabled={props.isDisabled || props.isLoading}
+                    onBlur={(event) => {
+                        if (props.onBlur) {
+                            props.onBlur(event)
+                        }
+                    }}
+                    onChange={(event) => {
+                        let text = event.target.value
+                        text = handleValidation(text)
+                        if (!text.includes(" ")) {
+                            handleCheckSugestion(text)
+                        } else {
+                            handleCheckSugestion("")
+                        }
+                        props.onSetText(text)
+                    }}
+                />
+
+                {!isValid && (
+                    <span className="text-sm whitespace-nowrap text-red-600">{props.validationMessage}</span>
+                )}
+            </div>
 
             {sugestions.length > 0 && (
                 <div
                     ref={divRef}
-                    className="absolute bg-slate-50 shadow-md mt-2 z-20">
+                    className="absolute bg-slate-50 shadow-m mt-2 z-20">
+                    {props?.onListOptions && props?.onListOptions(handleCheckSugestion)}
                     {sugestions.map((element, index) => (
-                        <div key={index + element}>
-                            <button
-                                onClick={() => {
-                                    props.onSetText(element + " ")
-                                    inputRef.current.focus()
-                                    handleCheckSugestion("")
-                                }}
-                                type="button"
-                                className="text-left text-gray-600 w-full px-2 py-4"> {element}
-                            </button>
-                        </div>
+                        <button
+                            key={props.id + index + (typeof element === "string" ? element
+                                : ("id" in element && element?.id?.length > 0 ? element.id : ""))}
+                            onClick={() => {
+                                if (props?.onClickItem) {
+                                    props.onClickItem(element)
+                                } else if (props?.onSetText) {
+                                    props.onSetText(element)
+                                }
+                                inputRef.current.focus()
+                                handleCheckSugestion("")
+                            }}
+                            type="button"
+                            className="text-left text-gray-600 w-full px-2 py-4">
+                            {element && typeof element === "string" ? element : "name" in element && element.name}
+                        </button>
                     ))}
                 </div>
-            )}
-
-            {!isValid && (
-                <span className="text-sm whitespace-nowrap text-red-600">{props.validationMessage}</span>
             )}
         </div>
     )

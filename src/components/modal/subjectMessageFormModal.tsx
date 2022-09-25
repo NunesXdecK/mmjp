@@ -20,7 +20,6 @@ interface SubjectMessageFormModalProps {
 
 export default function SubjectMessageFormModal(props: SubjectMessageFormModalProps) {
     const { user } = useContext(AuthContext)
-    console.log(user.id)
     const [isOpen, setIsOpen] = useState(false)
     const [isFirst, setIsFirst] = useState(true)
     const [isLoading, setIsLoading] = useState(true)

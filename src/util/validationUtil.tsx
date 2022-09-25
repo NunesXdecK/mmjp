@@ -218,15 +218,18 @@ export const handleImmobileValidationForDB = (immobile: Immobile) => {
 export const handleProjectValidationForDB = (project: Project) => {
     let validation: ValidationReturn = { validation: false, messages: [] }
     let nameCheck = handleValidationNotNull(project.title)
-    let clientsCheck = project?.clients?.length > 0 ?? false
+    let clientsCheck = true
     let clientsOnBaseCheck = true
 
     if (!nameCheck) {
         validation = { ...validation, messages: [...validation.messages, "O campo titulo está em branco."] }
     }
 
-    if (!clientsCheck) {
-        validation = { ...validation, messages: [...validation.messages, "O projeto precisa de ao menos um cliente."] }
+    if (project.status !== "ORÇAMENTO") {
+        clientsCheck = project?.clients?.length > 0 ?? false
+        if (!clientsCheck) {
+            validation = { ...validation, messages: [...validation.messages, "O projeto precisa de ao menos um cliente."] }
+        }
     }
 
     project.clients.map((element, index) => {

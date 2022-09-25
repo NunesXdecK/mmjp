@@ -5,6 +5,7 @@ import { Dialog, Transition } from "@headlessui/react";
 interface WindowModalProps {
     isOpen?: boolean,
     children?: any,
+    onClose?: () => void,
     setIsOpen?: (boolean) => void,
 }
 
@@ -14,10 +15,15 @@ export default function WindowModal(props: WindowModalProps) {
     return (
         <Transition.Root show={props.isOpen} as={Fragment}>
             <Dialog
-                className="relative z-10"
+                className="relative z-30"
                 initialFocus={cancelButtonRef}
                 open={props.isOpen}
-                onClose={() => { }}>
+                onClose={() => {
+                    if (props.onClose) {
+                        props.onClose()
+                    }
+                }}
+            >
                 <Transition.Child
                     as={Fragment}
                     enter="ease-out duration-300"
