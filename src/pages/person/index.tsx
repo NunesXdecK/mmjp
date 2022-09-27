@@ -6,8 +6,8 @@ import PersonForm from "../../components/form/personForm"
 import PersonView from "../../components/view/personView"
 import { handlePreparePersonForShow } from "../../util/converterUtil"
 import { defaultPerson, Person } from "../../interfaces/objectInterfaces"
-import FeedbackMessageModal, { defaultFeedbackMessage, FeedbackMessage } from "../../components/modal/feedbackMessageModal"
 import FeedbackPendency from "../../components/modal/feedbackPendencyModal"
+import FeedbackMessageModal, { defaultFeedbackMessage, FeedbackMessage } from "../../components/modal/feedbackMessageModal"
 
 export default function Persons() {
     const [title, setTitle] = useState("Lista de pessoas")

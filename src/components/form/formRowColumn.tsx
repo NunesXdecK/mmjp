@@ -1,11 +1,14 @@
 interface FormRowColumnProps {
-    unit: "1" | "2" | "3" | "4" | "5" | "6",
+    unit: "1" | "2" | "3" | "4" | "5" | "6" | "1/1",
     children?: any,
     className?: any,
 }
 export default function FormRowColumn(props: FormRowColumnProps) {
     let colSpanClassName = ""
     switch (props.unit) {
+        case "1/1":
+            colSpanClassName = "col-span-3 sm:col-span-1"
+            break;
         case "1":
             colSpanClassName = "col-span-6 sm:col-span-1"
             break;
