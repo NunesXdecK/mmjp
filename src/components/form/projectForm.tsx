@@ -518,7 +518,7 @@ export default function ProjectForm(props: ProjectFormProps) {
                         </Button>
                     </>
                 )}
-                {project.status === "NORMAL" && (
+                {false && project.status === "NORMAL" && (
                     <Button
                         type="button"
                         onClick={(event) => {

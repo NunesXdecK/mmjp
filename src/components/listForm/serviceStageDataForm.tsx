@@ -95,7 +95,7 @@ export default function ServiceStageDataForm(props: ServiceStageDataFormProps) {
                 <FormRowColumn unit="6" className="sm:hidden block">
                     {handleShowButton()}
                 </FormRowColumn>
-                <FormRowColumn unit="2" className="flex flex-col sm:flex-row">
+                <FormRowColumn unit="4" className="flex flex-col sm:flex-row">
                     <div className="hidden sm:block mr-2 sm:mt-auto">
                         {handleShowButton()}
                     </div>

@@ -208,15 +208,6 @@ export default function ServiceView(props: ServiceViewProps) {
                                         )}
                                     </Button>
                                 )}
-                                {service.status === "FINALIZADO" && (
-                                    <InfoView classNameHolder="w-full" classNameInfo="rounded-md px-3 py-1 bg-green-600 text-white" title="Status" info={service.status} />
-                                )}
-                                {service.status === "ARQUIVADO" && (
-                                    <InfoView classNameHolder="w-full" classNameInfo="rounded-md px-3 py-1 bg-orange-600 text-white" title="Status" info={service.status} />
-                                )}
-                                {service.status === "PENDENTE" && (
-                                    <InfoView classNameHolder="w-full" classNameInfo="rounded-md px-3 py-1 bg-red-600 text-white" title="Status" info={service.status} />
-                                )}
                                 {service.priorityView > 0 && (
                                     <InfoView classNameHolder="w-full" title="Lista de espera" info={service.priorityView + ""} />
                                 )}
@@ -225,6 +216,15 @@ export default function ServiceView(props: ServiceViewProps) {
                                 <InfoView title="Quantidade" info={service.quantity} />
                                 <InfoView title="Total" info={handleMountNumberCurrency(service.total.toString(), ".", ",", 3, 2)} />
                                 <InfoView title="Data" info={handleUTCToDateShow(service.date.toString())} />
+                                {service.status === "FINALIZADO" && (
+                                    <InfoView classNameHolder="w-full" classNameInfo="rounded-sm px-2 py-1 text-green-100 bg-green-600 text-[0.8rem] font-bold" title="" info={service.status} />
+                                )}
+                                {service.status === "ARQUIVADO" && (
+                                    <InfoView classNameHolder="w-full" classNameInfo="rounded-sm px-2 py-1 text-orange-100 bg-orange-600 text-[0.8rem] font-bold" title="" info={service.status} />
+                                )}
+                                {service.status === "PENDENTE" && (
+                                    <InfoView classNameHolder="w-full" classNameInfo="rounded-sm px-2 py-1 text-red-100 bg-red-600 text-[0.8rem] font-bold" title="" info={service.status} />
+                                )}
                                 {props.showMoreInfo && (
                                     handlePutProject()
                                 )}

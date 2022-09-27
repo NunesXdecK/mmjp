@@ -19,27 +19,30 @@ export default async function handler(req, res) {
                 //await delay()
                 let { token } = JSON.parse(body)
                 let loginToken: LoginToken = defaultLoginToken
-                const nowTime = handleNewDateToUTC()
-                const queryLoginToken = query(loginTokenCollection,
-                    where("token", "==", token),
-                    where("validationDue", ">", nowTime),
-                    where("isBlocked", "==", false)
-                )
-                const querySnapshot = await getDocs(queryLoginToken)
-                querySnapshot.forEach((doc) => {
-                    loginToken = doc.data()
-                })
-                if (loginToken?.id?.length > 0 && loginToken?.user?.id?.length > 0) {
-                    const userDocRef = doc(userCollection, loginToken.user.id)
-                    const loginTokenDoc = doc(loginTokenCollection, loginToken.id)
-                    let user: User = (await getDoc(userDocRef)).data()
-                    loginToken = handlePrepareLoginTokenForDB(loginToken)
-                    await updateDoc(loginTokenDoc, LoginTokenConversor.toFirestore(loginToken))
-                    resPOST = {
-                        ...resPOST,
-                        isAuth: true,
-                        status: "SUCCESS",
-                        data: { ...user, password: "" },
+                if (token) {
+
+                    const nowTime = handleNewDateToUTC()
+                    const queryLoginToken = query(loginTokenCollection,
+                        where("token", "==", token),
+                        where("validationDue", ">", nowTime),
+                        where("isBlocked", "==", false)
+                    )
+                    const querySnapshot = await getDocs(queryLoginToken)
+                    querySnapshot.forEach((doc) => {
+                        loginToken = doc.data()
+                    })
+                    if (loginToken?.id?.length > 0 && loginToken?.user?.id?.length > 0) {
+                        const userDocRef = doc(userCollection, loginToken.user.id)
+                        const loginTokenDoc = doc(loginTokenCollection, loginToken.id)
+                        let user: User = (await getDoc(userDocRef)).data()
+                        loginToken = handlePrepareLoginTokenForDB(loginToken)
+                        await updateDoc(loginTokenDoc, LoginTokenConversor.toFirestore(loginToken))
+                        resPOST = {
+                            ...resPOST,
+                            isAuth: true,
+                            status: "SUCCESS",
+                            data: { ...user, password: "" },
+                        }
                     }
                 }
             } catch (err) {

@@ -114,18 +114,18 @@ export default function ServicePaymentView(props: ServicePaymentViewProps) {
                                         )}
                                     </Button>
                                 )}
-                                {servicePayment.status === "FINALIZADO" && (
-                                    <InfoView classNameHolder="w-full" classNameInfo="rounded-md px-3 py-1 bg-green-600 text-white" title="Status" info={servicePayment.status} />
-                                )}
-                                {servicePayment.status === "ARQUIVADO" && (
-                                    <InfoView classNameHolder="w-full" classNameInfo="rounded-md px-3 py-1 bg-orange-600 text-white" title="Status" info={servicePayment.status} />
-                                )}
-                                {servicePayment.status === "PENDENTE" && (
-                                    <InfoView classNameHolder="w-full" classNameInfo="rounded-md px-3 py-1 bg-red-600 text-white" title="Status" info={servicePayment.status} />
-                                )}
                                 <InfoView title="Pagamento" info={servicePayment.description} />
                                 <InfoView title="Valor" info={handleMountNumberCurrency(servicePayment.value.toString(), ".", ",", 3, 2)} />
                                 <InfoView title="Data" info={handleUTCToDateShow(servicePayment.dateDue.toString())} />
+                                {servicePayment.status === "FINALIZADO" && (
+                                    <InfoView classNameHolder="w-full" classNameInfo="rounded-sm px-2 py-1 text-green-100 bg-green-600 text-[0.8rem] font-bold" title="" info={servicePayment.status} />
+                                )}
+                                {servicePayment.status === "ARQUIVADO" && (
+                                    <InfoView classNameHolder="w-full" classNameInfo="rounded-sm px-2 py-1 text-orange-100 bg-orange-600 text-[0.8rem] font-bold" title="" info={servicePayment.status} />
+                                )}
+                                {servicePayment.status === "PENDENTE" && (
+                                    <InfoView classNameHolder="w-full" classNameInfo="rounded-sm px-2 py-1 text-red-100 bg-red-600 text-[0.8rem] font-bold" title="" info={servicePayment.status} />
+                                )}
                                 {props.showMoreInfo && (
                                     <>
                                         {handlePutService()}

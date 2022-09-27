@@ -188,18 +188,18 @@ export default function ProjectView(props: ProjectViewProps) {
                                         )}
                                     </Button>
                                 )}
-                                {project.status === "FINALIZADO" && (
-                                    <InfoView classNameHolder="w-full" classNameInfo="rounded-md px-3 py-1 bg-green-600 text-white" title="Status" info={project.status} />
-                                )}
-                                {project.status === "ARQUIVADO" && (
-                                    <InfoView classNameHolder="w-full" classNameInfo="rounded-md px-3 py-1 bg-orange-600 text-white" title="Status" info={project.status} />
-                                )}
                                 {project.priorityView > 0 && (
                                     <InfoView classNameHolder="w-full" title="Lista de espera" info={project.priorityView + ""} />
                                 )}
                                 <InfoView title="Projeto" info={project.title} />
                                 <InfoView title="Número" info={project.number} />
                                 <InfoView title="Data" info={handleUTCToDateShow(project.date.toString())} />
+                                {project.status === "FINALIZADO" && (
+                                    <InfoView classNameHolder="w-full" classNameInfo="rounded-sm px-2 py-1 text-green-100 bg-green-600 text-[0.8rem] font-bold" title="" info={project.status} />
+                                )}
+                                {project.status === "ARQUIVADO" && (
+                                    <InfoView classNameHolder="w-full" classNameInfo="rounded-sm px-2 py-1 text-orange-100 bg-orange-600 text-[0.8rem] font-bold" title="" info={project.status} />
+                                )}
                                 {props.showMoreInfo && (
                                     handlePutOwner(project.clients[0])
                                 )}

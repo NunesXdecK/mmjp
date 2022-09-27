@@ -124,20 +124,20 @@ export default function ServiceStageView(props: ServiceStageViewProps) {
                                         )}
                                     </Button>
                                 )}
-                                {serviceStage.status === "FINALIZADO" && (
-                                    <InfoView classNameHolder="w-full" classNameInfo="rounded-md px-3 py-1 bg-green-600 text-white" title="Status" info={serviceStage.status} />
-                                )}
-                                {serviceStage.status === "ARQUIVADO" && (
-                                    <InfoView classNameHolder="w-full" classNameInfo="rounded-md px-3 py-1 bg-orange-600 text-white" title="Status" info={serviceStage.status} />
-                                )}
-                                {serviceStage.status === "PENDENTE" && (
-                                    <InfoView classNameHolder="w-full" classNameInfo="rounded-md px-3 py-1 bg-red-600 text-white" title="Status" info={serviceStage.status} />
-                                )}
                                 {serviceStage.priorityView > 0 && (
                                     <InfoView classNameHolder="w-full" title="Lista de espera" info={serviceStage.priorityView + ""} />
                                 )}
                                 <InfoView title="Etapa" info={serviceStage.title} />
                                 <InfoView title="Data" info={handleUTCToDateShow(serviceStage.dateDue.toString())} />
+                                {serviceStage.status === "FINALIZADO" && (
+                                    <InfoView classNameHolder="w-full" classNameInfo="rounded-sm px-2 py-1 text-green-100 bg-green-600 text-[0.8rem] font-bold" title="" info={serviceStage.status} />
+                                )}
+                                {serviceStage.status === "ARQUIVADO" && (
+                                    <InfoView classNameHolder="w-full" classNameInfo="rounded-sm px-2 py-1 text-orange-100 bg-orange-600 text-[0.8rem] font-bold" title="" info={serviceStage.status} />
+                                )}
+                                {serviceStage.status === "PENDENTE" && (
+                                    <InfoView classNameHolder="w-full" classNameInfo="rounded-sm px-2 py-1 text-red-100 bg-red-600 text-[0.8rem] font-bold" title="" info={serviceStage.status} />
+                                )}
                                 {props.showMoreInfo && (
                                     handlePutService()
                                 )}
