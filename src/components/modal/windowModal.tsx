@@ -34,8 +34,8 @@ export default function WindowModal(props: WindowModalProps) {
                     leaveTo="opacity-0">
                     <div className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" />
                 </Transition.Child>
-                <div className="fixed z-10 inset-0 overflow-y-auto">
-                    <div className="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+                <div className="fixed z-10 inset-0 overflow-hidden">
+                    <div className="flex h-screen items-center justify-center text-center p-6 sm:block">
                         <span className="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">
                             &#8203;
                         </span>
@@ -51,9 +51,10 @@ export default function WindowModal(props: WindowModalProps) {
                             <Dialog.Panel className={`
                                 relative inline-block align-bottom
                                 bg-slate-50 rounded-lg text-left 
-                                overflow-hidden shadow-xl 
-                                transform transition-all 
-                                sm:my-8 sm:align-middle sm:max-w-lg sm:w-full
+                                overflow-y-auto shadow-xl 
+                                transform transition-all
+                                max-h-[30rem] sm:max-h-[40rem]
+                                sm:my-8 sm:align-middle sm:max-w-4xl
                                 p-4
                                 `}>
                                 <HeaderModal
