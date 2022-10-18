@@ -20,6 +20,7 @@ import { handleNewDateToUTC, handleUTCToDateShow } from "../../util/dateUtils";
 import { handleIsEqual, handleProjectValidationForDB, handleServicesValidationForDB } from "../../util/validationUtil";
 import { defaultProject, Immobile, Professional, Project, Service, ServicePayment, ServiceStage } from "../../interfaces/objectInterfaces";
 import { defaultElementFromBase, ElementFromBase, handlePrepareImmobileForDB, handlePrepareProjectForDB, handlePrepareServiceForDB } from "../../util/converterUtil";
+import InputSelectPersonCompany from "../inputText/inputSelectPersonCompany";
 
 interface ProjectFormProps {
     title?: string,
@@ -544,9 +545,9 @@ export default function ProjectForm(props: ProjectFormProps) {
     const handleActionBar = () => {
         return (
             <ActionButtonsForm
-                isLeftOn
                 isForBackControl
                 isLoading={isLoading}
+                isLeftOn={props.isBack}
                 isDisabled={!isFormValid}
                 rightButtonText={"Salvar"}
                 centerChild={handleCenterActionsButtons}
@@ -575,8 +576,8 @@ export default function ProjectForm(props: ProjectFormProps) {
     const handlePrintActionBar = () => {
         return (
             <ActionButtonsForm
-                isLeftOn
                 isRightOn
+                isLeftOn={props.isBack}
                 rightButtonText="Editar"
                 leftWindowText="Dejesa realmente voltar?"
                 onRightClick={(event) => {
@@ -683,6 +684,8 @@ export default function ProjectForm(props: ProjectFormProps) {
                                                 project.status === "ARQUIVADO")}
                                     />
                                 </FormRowColumn>
+
+
                                 {project?.status !== "ORÇAMENTO" && (
                                     <FormRowColumn unit="2">
                                         <InputText
@@ -714,6 +717,17 @@ export default function ProjectForm(props: ProjectFormProps) {
                                         isDisabled={props.isForDisable ||
                                             (project.status === "FINALIZADO" ||
                                                 project.status === "ARQUIVADO")}
+                                    />
+                                </FormRowColumn>
+                            </FormRow>
+
+                            <FormRow>
+                                <FormRowColumn unit="6">
+                                    <InputSelectPersonCompany
+                                        title="Cliente"
+                                        id="input-select"
+                                        value={project.clients[0]?.name}
+                                        onSetPersonsAndCompanies={handleSetProjectClients}
                                     />
                                 </FormRowColumn>
                             </FormRow>

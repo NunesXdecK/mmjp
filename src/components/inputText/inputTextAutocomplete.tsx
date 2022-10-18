@@ -73,7 +73,6 @@ export default function InputTextAutoComplete(props: InputTextAutoCompleteProps)
                         }
                         if ("title" in element) {
                             name = element.title
-                            name = element.title
                         }
                     }
                 }

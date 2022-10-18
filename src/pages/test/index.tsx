@@ -11,6 +11,7 @@ import { PencilIcon, TrashIcon } from "@heroicons/react/solid";
 import IOSModal from "../../components/modal/iosModal";
 import WindowModal from "../../components/modal/windowModal";
 import PersonForm from "../../components/form/personForm";
+import InputSelectPersonCompany from "../../components/inputText/inputSelectPersonCompany";
 
 export default function Users() {
     let title = "Teste"
@@ -41,6 +42,20 @@ export default function Users() {
                     <meta name="description" content={title} />
                     <link rel="icon" href="/favicon.ico" />
                 </Head>
+
+
+                <div className="p-4">
+                    <InputSelectPersonCompany
+                        title="Cliente"
+                        id="input-select"
+                    />
+
+                    <InputText
+                        id="test"
+                        title="test"
+                        value="Haha-ha"
+                    />
+                </div>
 
                 <div className="rounded p-4">
                     <div className="rounded border shadow p-4 flex gap-2">

@@ -7,10 +7,12 @@ import { PlusCircleIcon } from "@heroicons/react/solid";
 import InputTextAutoComplete from "./inputTextAutocomplete";
 import { FeedbackMessage } from "../modal/feedbackMessageModal";
 import { Company, defaultCompany, defaultPerson, Person } from "../../interfaces/objectInterfaces";
+import WindowModal from "../modal/windowModal";
 
 interface InputSelectPersonCompanyProps {
     id?: string,
     title?: string,
+    value?: string,
     subtitle?: string,
     inputTitle?: string,
     validation?: string,
@@ -36,7 +38,7 @@ export default function InputSelectPersonCompany(props: InputSelectPersonCompany
     const [isRegisterPerson, setIsRegisterPerson] = useState(false)
     const [isRegisterCompany, setIsRegisterCompany] = useState(false)
 
-    const [text, setText] = useState<string>("")
+    const [text, setText] = useState<string>(props.value ?? "")
     const [person, setPerson] = useState<Person>(defaultPerson)
     const [company, setCompany] = useState<Company>(defaultCompany)
 
@@ -86,7 +88,7 @@ export default function InputSelectPersonCompany(props: InputSelectPersonCompany
         if (canAdd) {
             setText(personOrCompany.name)
             if (props.onSetPersonsAndCompanies) {
-                props.onSetPersonsAndCompanies(personOrCompany)
+                props.onSetPersonsAndCompanies([personOrCompany])
                 setIsOpen(false)
             }
             if (props.onFinishAdd) {
@@ -167,7 +169,7 @@ export default function InputSelectPersonCompany(props: InputSelectPersonCompany
                 sugestions={personsAndCompanies}
             />
 
-            <IOSModal
+            <WindowModal
                 isOpen={isOpen}
                 setIsOpen={setIsOpen}
                 onClose={() => {
@@ -203,7 +205,7 @@ export default function InputSelectPersonCompany(props: InputSelectPersonCompany
                         </>
                     )}
                 </>
-            </IOSModal>
+            </WindowModal>
         </>
     )
 }

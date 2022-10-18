@@ -5,6 +5,7 @@ import InfoHolderView from "./infoHolderView"
 import { handleUTCToDateShow } from "../../util/dateUtils"
 import PlaceholderItemList from "../list/placeholderItemList"
 import { Company, defaultProject, Person, Project, Service } from "../../interfaces/objectInterfaces"
+import CompanyView from "./companyView"
 
 interface BudgetPrintViewProps {
     id?: string,
@@ -29,6 +30,15 @@ export default function BudgetPrintView(props: BudgetPrintViewProps) {
                     <PersonView
                         dataInside
                         person={client}
+                        elementId={client.id}
+                        title="Dados do cliente"
+                        classNameTitle="bg-slate-50"
+                    />
+                )}
+                {client && "cnpj" in client && (
+                    <CompanyView
+                        dataInside
+                        company={client}
                         elementId={client.id}
                         title="Dados do cliente"
                         classNameTitle="bg-slate-50"
