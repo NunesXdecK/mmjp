@@ -166,7 +166,6 @@ export default function Budget() {
             services: localServices,
             dateString: handleUTCToDateShow(localProject.date.toString()),
         }
-        console.log(localProject)
         setIsLoading(false)
         setIsRegister(true)
         setProject({ ...defaultProject, ...localProject })
@@ -181,7 +180,6 @@ export default function Budget() {
             ...projects,
         ]
         const index = projects.indexOf(budget)
-        console.log(index)
         if (index > -1) {
             list = [
                 ...projects.slice(0, index),
@@ -282,6 +280,7 @@ export default function Budget() {
 */}
 
             <WindowModal
+                max
                 isOpen={isRegister}
                 setIsOpen={setIsRegister}>
                 <ProjectForm
@@ -296,6 +295,7 @@ export default function Budget() {
             </WindowModal>
 
             <WindowModal
+                max
                 isOpen={isForShow}
                 setIsOpen={setIsForShow}>
                 <ProjectView elementId={project.id} />

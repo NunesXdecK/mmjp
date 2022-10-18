@@ -3,6 +3,8 @@ import InfoHolderView from "./infoHolderView"
 import { Service } from "../../interfaces/objectInterfaces"
 import PlaceholderItemList from "../list/placeholderItemList"
 import { handleMountNumberCurrency, handleValueStringToFloat } from "../../util/maskUtil"
+import FormRow from "../form/formRow"
+import FormRowColumn from "../form/formRowColumn"
 
 interface ServicesViewProps {
     id?: string,
@@ -22,6 +24,7 @@ export default function ServicesView(props: ServicesViewProps) {
     const classNameHolder = "flex flex-row justify-between w-full break-all"
     const classNameContent = "px-1 text-center w-full self-center"
     const classNameContentTitle = "px-1 text-left w-full"
+    const classNameCenter = "text-center"
 
     const handleCalculateTotal = (value: string, quantity: string) => {
         let valueFinal = 0
@@ -57,6 +60,39 @@ export default function ServicesView(props: ServicesViewProps) {
                 </>
             ) : (
                 <>
+                    <div>
+                        <FormRow>
+                            <FormRowColumn unit="3" >
+                                <strong>Titulo</strong>
+                            </FormRowColumn>
+                            <FormRowColumn unit="1" className={classNameCenter}>
+                                <strong>Valor</strong>
+                            </FormRowColumn>
+                            <FormRowColumn unit="1" className={classNameCenter}>
+                                <strong>Quantidade</strong>
+                            </FormRowColumn>
+                            <FormRowColumn unit="1" className={classNameCenter}>
+                                <strong>Total</strong>
+                            </FormRowColumn>
+                        </FormRow>
+                        {services.map((element, index) => (
+                            <FormRow key={index}>
+                                <FormRowColumn unit="3">
+                                    {element.title && (<p>{element.title}</p>)}
+                                </FormRowColumn>
+                                <FormRowColumn unit="1" className={classNameCenter}>
+                                    {element.value && (<p>{element.value}</p>)}
+                                </FormRowColumn>
+                                <FormRowColumn unit="1" className={classNameCenter}>
+                                    {element.quantity && (<p>{element.quantity}</p>)}
+                                </FormRowColumn>
+                                <FormRowColumn unit="1" className={classNameCenter}>
+                                    {handleMountNumberCurrency(handleCalculateTotal(element.value, element.quantity), ".", ",", 3, 2)}
+                                </FormRowColumn>
+                            </FormRow>
+                        ))}
+                    </div>
+                    {/*
                     <div className={classNameHolder}>
                         <div className={classNameContentTitle}>
                             <strong>Titulo</strong>
@@ -87,6 +123,7 @@ export default function ServicesView(props: ServicesViewProps) {
                             </div>
                         </div>
                     ))}
+                            */}
                 </>
             )}
         </InfoHolderView>

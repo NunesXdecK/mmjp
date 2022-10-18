@@ -9,9 +9,9 @@ interface InfoViewProps {
 
 export default function InfoView(props: InfoViewProps) {
 
-    let classNameTitle = "font-semibold"
-    let classNameInfo = ""
-    let classNameHolder = ""
+    let classNameTitle = "text-sm font-medium text-gray-500"
+    let classNameInfo = "mt-1 text-sm text-gray-900 sm:col-span-2 sm:mt-0 print:col-span-2 print:mt-0"
+    let classNameHolder = "bg-gray-50 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6 print:grid print:grid-cols-3 print:gap-4 print:px-6"
 
     if (props.classNameHolder) {
         classNameHolder = classNameHolder + " " + props.classNameHolder
@@ -27,10 +27,8 @@ export default function InfoView(props: InfoViewProps) {
         <>
             {props.info?.length > 0 && (
                 <div className={classNameHolder}>
-                    <span className={classNameInfo}>
-                        {props.title?.length > 0 && (<span className={classNameTitle}>{props.title}: </span>)}
-                        {props.info}
-                    </span>
+                    <dt className={classNameTitle}>{props.title}</dt>
+                    <dd className={classNameInfo}>{props.info}</dd>
                 </div>
             )}
         </>

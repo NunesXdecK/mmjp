@@ -6,6 +6,7 @@ import { handleUTCToDateShow } from "../../util/dateUtils"
 import PlaceholderItemList from "../list/placeholderItemList"
 import { Company, defaultProject, Person, Project, Service } from "../../interfaces/objectInterfaces"
 import CompanyView from "./companyView"
+import InfoView from "./infoView"
 
 interface BudgetPrintViewProps {
     id?: string,
@@ -28,25 +29,24 @@ export default function BudgetPrintView(props: BudgetPrintViewProps) {
             <>
                 {client && "cpf" in client && (
                     <PersonView
+                        hideData
                         dataInside
                         person={client}
                         elementId={client.id}
                         title="Dados do cliente"
-                        classNameTitle="bg-slate-50"
                     />
                 )}
                 {client && "cnpj" in client && (
                     <CompanyView
+                        hideData
                         dataInside
                         company={client}
                         elementId={client.id}
                         title="Dados do cliente"
-                        classNameTitle="bg-slate-50"
                     />
                 )}
                 <ServicesView
                     services={services}
-                    classNameTitle="bg-slate-50"
                 />
             </>
         )
@@ -108,12 +108,11 @@ export default function BudgetPrintView(props: BudgetPrintViewProps) {
             ) : (
                 <>
                     <InfoHolderView
-                        classNameTitle="bg-slate-50"
                         title="Dados do orçamento">
-                        {project.number && (<p><span className="font-semibold">Codigo:</span> {project.number}</p>)}
-                        {project.title && (<p><span className="font-semibold">Titulo:</span> {project.title}</p>)}
-                        {project.date === 0 && project.dateString?.length && (<p><span className="font-semibold">Data:</span> {project.dateString}</p>)}
-                        {project.date > 0 && (<p><span className="font-semibold">Data:</span> {handleUTCToDateShow(project.date.toString())}</p>)}
+                        {project.number && (<InfoView title="Codigo" info={project.number} />)}
+                        {project.title && (<InfoView title="Titulo" info={project.title} />)}
+                        {project.date === 0 && project.dateString?.length && (<InfoView title="Data" info={project.dateString} />)}
+                        {project.date > 0 && (<InfoView title="Data" info={handleUTCToDateShow(project.date.toString())} />)}
                         {props.dataInside && handlePutData()}
                     </InfoHolderView>
                     {!props.dataInside && handlePutData()}

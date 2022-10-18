@@ -1,5 +1,6 @@
 interface InfoHolderViewProps {
     title?: string,
+    subtitle?: string,
     classNameTitle?: string,
     classNameHolder?: string,
     classNameContentHolder?: string,
@@ -9,19 +10,19 @@ interface InfoHolderViewProps {
 }
 
 export default function InfoHolderView(props: InfoHolderViewProps) {
-
-    let classNameHolder = "w-full border-2 border-indigo-200 rounded-lg"
-    let classNameTitle = "text-lg font-semibold absolute bg-indigo-50"
-    let classNameContentHolder = "gap-2 flex flex-row flex-wrap place-items-center"
+    let classNameHolder = "w-full bg-white shadow sm:rounded-lg mb-2"
+    let classNameTitle = "text-lg font-medium leading-6 text-gray-900 bg-transparent "
+    let classNameSubtitle = "mt-1 max-w-2xl text-sm text-gray-500 bg-transparent "
+    let classNameContentHolder = "border-t border-gray-200 p-2"
 
     if (props.hideBorder) {
         classNameHolder = classNameHolder + " border-none"
     }
 
     if (!props.hidePaddingMargin) {
-        classNameHolder = "mt-6 px-4 pt-2 pb-4 " + classNameHolder
-        classNameTitle = "px-2 -mt-6 " + classNameTitle
-        classNameContentHolder = "mt-6 " + classNameContentHolder
+        classNameHolder = " " + classNameHolder
+        classNameTitle = " " + classNameTitle
+        classNameContentHolder = " " + classNameContentHolder
     }
 
     if (props.classNameHolder) {
@@ -37,13 +38,16 @@ export default function InfoHolderView(props: InfoHolderViewProps) {
     }
 
     return (
-        <>
-            <div className={classNameHolder}>
-                {props.title && (<span className={classNameTitle}>{props.title}</span>)}
-                <div className={classNameContentHolder}>
-                    {props.children}
-                </div>
+        <div className={classNameHolder}>
+            <div className="bg-gray-200 px-4 py-5 sm:px-6">
+                {props.title && (<p className={classNameTitle}>{props.title}</p>)}
+                {props.subtitle && (<p className={classNameSubtitle}>{props.subtitle}</p>)}
             </div>
-        </>
+            <div className={classNameContentHolder}>
+                <dl>
+                    {props.children}
+                </dl>
+            </div>
+        </div>
     )
 }

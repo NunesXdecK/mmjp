@@ -204,14 +204,9 @@ export default function ProjectView(props: ProjectViewProps) {
                                     handlePutOwner(project.clients[0])
                                 )}
                                 <ScrollDownTransition isOpen={isShowInfo}>
-                                    <InfoHolderView
-                                        hideBorder
-                                        hidePaddingMargin
-                                    >
-                                        <InfoView title="Data criação" info={handleUTCToDateShow(project.dateInsertUTC.toString())} />
-                                        {project.dateLastUpdateUTC > 0 && <InfoView title="Data atualização" info={handleUTCToDateShow(project.dateLastUpdateUTC.toString())} />}
-                                        {props.dataInside && handlePutData()}
-                                    </InfoHolderView>
+                                    <InfoView title="Data criação" info={handleUTCToDateShow(project.dateInsertUTC.toString())} />
+                                    {project.dateLastUpdateUTC > 0 && <InfoView title="Data atualização" info={handleUTCToDateShow(project.dateLastUpdateUTC.toString())} />}
+                                    {props.dataInside && handlePutData()}
                                 </ScrollDownTransition>
                             </InfoHolderView>
                             <ScrollDownTransition isOpen={isShowInfo}>

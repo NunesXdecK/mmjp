@@ -3,6 +3,7 @@ import { Fragment, useRef } from "react";
 import { Dialog, Transition } from "@headlessui/react";
 
 interface WindowModalProps {
+    max?: boolean,
     isOpen?: boolean,
     children?: any,
     onClose?: () => void,
@@ -12,6 +13,19 @@ interface WindowModalProps {
 export default function WindowModal(props: WindowModalProps) {
     let cancelButtonRef = useRef(null)
 
+    let panelClass = `
+            relative inline-block align-bottom
+            bg-slate-50 rounded-lg text-left 
+            overflow-y-auto shadow-xl 
+            transform transition-all
+            print:h-max print:max-h-full print:shadow-none
+            max-h-[30rem] sm:max-h-[40rem]
+            sm:my-8 sm:align-middle sm:max-w-4xl
+            p-4
+        `
+    if (props.max) {
+        panelClass = panelClass + `w-full`
+    }
     return (
         <Transition.Root show={props.isOpen} as={Fragment}>
             <Dialog
@@ -35,7 +49,7 @@ export default function WindowModal(props: WindowModalProps) {
                     <div className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" />
                 </Transition.Child>
                 <div className="fixed z-10 inset-0 overflow-hidden">
-                    <div className="flex h-screen items-center justify-center text-center p-6 sm:block">
+                    <div className="flex h-screen items-center justify-center text-center p-6 sm:block print:justify-start print:items-start print:h-max">
                         <span className="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">
                             &#8203;
                         </span>
@@ -48,15 +62,7 @@ export default function WindowModal(props: WindowModalProps) {
                             leaveFrom="opacity-100 translate-y-0 sm:scale-100"
                             leaveTo="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95">
 
-                            <Dialog.Panel className={`
-                                relative inline-block align-bottom
-                                bg-slate-50 rounded-lg text-left 
-                                overflow-y-auto shadow-xl 
-                                transform transition-all
-                                max-h-[30rem] sm:max-h-[40rem]
-                                sm:my-8 sm:align-middle sm:max-w-4xl
-                                p-4
-                                `}>
+                            <Dialog.Panel className={panelClass}>
                                 <HeaderModal
                                     onClose={() => props.setIsOpen(false)} />
                                 <div ref={cancelButtonRef}>

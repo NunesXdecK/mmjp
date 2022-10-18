@@ -132,14 +132,9 @@ export default function ServicePaymentView(props: ServicePaymentViewProps) {
                                     </>
                                 )}
                                 <ScrollDownTransition isOpen={isShowInfo}>
-                                    <InfoHolderView
-                                        hideBorder
-                                        hidePaddingMargin
-                                    >
-                                        <InfoView title="Data criação" info={handleUTCToDateShow(servicePayment.dateInsertUTC.toString())} />
-                                        {servicePayment.dateLastUpdateUTC > 0 && <InfoView title="Data atualização" info={handleUTCToDateShow(servicePayment.dateLastUpdateUTC.toString())} />}
-                                        {props.dataInside && handlePutData()}
-                                    </InfoHolderView>
+                                    <InfoView title="Data criação" info={handleUTCToDateShow(servicePayment.dateInsertUTC.toString())} />
+                                    {servicePayment.dateLastUpdateUTC > 0 && <InfoView title="Data atualização" info={handleUTCToDateShow(servicePayment.dateLastUpdateUTC.toString())} />}
+                                    {props.dataInside && handlePutData()}
                                 </ScrollDownTransition>
                             </InfoHolderView>
                             <ScrollDownTransition isOpen={isShowInfo}>

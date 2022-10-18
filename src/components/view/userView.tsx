@@ -97,15 +97,10 @@ export default function UserView(props: UserViewProps) {
                                 <InfoView title="Username" info={user.username} />
                                 <InfoView title="E-mail" info={user.email} />
                                 <ScrollDownTransition isOpen={isShowInfo}>
-                                    <InfoHolderView
-                                        hideBorder
-                                        hidePaddingMargin
-                                    >
-                                        <InfoView title="Cargo" info={user.office} />
-                                        {user.dateInsertUTC > 0 && <InfoView title="Data inserção" info={handleUTCToDateShow(user.dateInsertUTC.toString())} />}
-                                        {user.dateLastUpdateUTC > 0 && <InfoView title="Data atualização" info={handleUTCToDateShow(user.dateLastUpdateUTC.toString())} />}
-                                        {props.dataInside && handlePutData()}
-                                    </InfoHolderView>
+                                    <InfoView title="Cargo" info={user.office} />
+                                    {user.dateInsertUTC > 0 && <InfoView title="Data inserção" info={handleUTCToDateShow(user.dateInsertUTC.toString())} />}
+                                    {user.dateLastUpdateUTC > 0 && <InfoView title="Data atualização" info={handleUTCToDateShow(user.dateLastUpdateUTC.toString())} />}
+                                    {props.dataInside && handlePutData()}
                                 </ScrollDownTransition>
                             </InfoHolderView>
                             <ScrollDownTransition isOpen={isShowInfo}>

@@ -142,15 +142,10 @@ export default function ServiceStageView(props: ServiceStageViewProps) {
                                     handlePutService()
                                 )}
                                 <ScrollDownTransition isOpen={isShowInfo}>
-                                    <InfoHolderView
-                                        hideBorder
-                                        hidePaddingMargin
-                                    >
-                                        <InfoView title="Descrição" info={serviceStage.description} />
-                                        <InfoView title="Data criação" info={handleUTCToDateShow(serviceStage.dateInsertUTC.toString())} />
-                                        {serviceStage.dateLastUpdateUTC > 0 && <InfoView title="Data atualização" info={handleUTCToDateShow(serviceStage.dateLastUpdateUTC.toString())} />}
-                                        {props.dataInside && handlePutData()}
-                                    </InfoHolderView>
+                                    <InfoView title="Descrição" info={serviceStage.description} />
+                                    <InfoView title="Data criação" info={handleUTCToDateShow(serviceStage.dateInsertUTC.toString())} />
+                                    {serviceStage.dateLastUpdateUTC > 0 && <InfoView title="Data atualização" info={handleUTCToDateShow(serviceStage.dateLastUpdateUTC.toString())} />}
+                                    {props.dataInside && handlePutData()}
                                 </ScrollDownTransition>
                             </InfoHolderView>
                             <ScrollDownTransition isOpen={isShowInfo}>
