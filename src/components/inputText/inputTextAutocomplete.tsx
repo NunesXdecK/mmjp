@@ -121,49 +121,64 @@ export default function InputTextAutoComplete(props: InputTextAutoCompleteProps)
                         if (props.onBlur) {
                             props.onBlur(event)
                         }
+                        if (!event?.relatedTarget?.id ||
+                            event?.relatedTarget?.id.indexOf(props.id + "-auto-complete-option-") < 0) {
+                            handleCheckSugestion("")
+                        }
                     }}
                     onChange={(event) => {
                         let text = event.target.value
                         text = handleValidation(text)
                         if (!text.includes(" ")) {
                             handleCheckSugestion(text)
+                            let input: HTMLInputElement = document.querySelector("#" + props.id + "-auto-complete")
+                            let suggestionHolder: HTMLDivElement = document.querySelector("#" + props.id + "-suggestions-holder")
+                            if (input && suggestionHolder) {
+                                suggestionHolder.style.width = input.offsetWidth + "px"
+                            }
                         } else {
                             handleCheckSugestion("")
                         }
                         props.onSetText(text)
                     }}
                 />
-
                 {!isValid && (
                     <span className="text-sm whitespace-nowrap text-red-600">{props.validationMessage}</span>
                 )}
             </div>
 
-            {sugestions.length > 0 && (
-                <div
-                    ref={divRef}
-                    className="absolute bg-slate-50 shadow-m mt-2 z-20">
-                    {props?.onListOptions && props?.onListOptions(handleCheckSugestion)}
-                    {sugestions.map((element, index) => (
-                        <button
-                            key={props.id + index + (typeof element === "string" ? element
-                                : ("id" in element && element?.id?.length > 0 ? element.id : ""))}
-                            onClick={() => {
-                                if (props?.onClickItem) {
-                                    props.onClickItem(element)
-                                } else if (props?.onSetText) {
-                                    props.onSetText(element)
-                                }
-                                inputRef.current.focus()
-                                handleCheckSugestion("")
-                            }}
-                            type="button"
-                            className="text-left text-gray-600 w-full px-2 py-4">
-                            {element && typeof element === "string" ? element : "name" in element && element.name}
-                        </button>
-                    ))}
-                </div>
-            )}
+            <div
+                id={props.id + "-suggestions-holder"}
+                className="absolute shadow-m mt-2 z-20 bg-slate-50 rounded"
+            >
+                {sugestions.length > 0 && (
+                    <div
+                        ref={divRef}
+                        className="rounded w-full">
+                        {props?.onListOptions && props?.onListOptions(handleCheckSugestion)}
+                        {sugestions.map((element, index) => (
+                            <button
+                                id={props.id + "-auto-complete-option-" + index}
+                                key={props.id + index + (typeof element === "string" ? element
+                                    : ("id" in element && element?.id?.length > 0 ? element.id : ""))}
+                                onClick={() => {
+                                    if (props?.onClickItem) {
+                                        props.onClickItem(element)
+                                    } else if (props?.onSetText) {
+                                        props.onSetText(element)
+                                    }
+                                    inputRef.current.focus()
+                                    handleCheckSugestion("")
+                                }}
+                                type="button"
+                                className="text-left text-gray-600 w-full px-2 py-4 hover:bg-gray-300">
+                                {element && typeof element === "string" ? element : "name" in element && element.name}
+                            </button>
+                        ))}
+                    </div>
+                )}
+            </div>
+
         </div>
     )
 }
