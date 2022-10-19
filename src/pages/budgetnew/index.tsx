@@ -21,6 +21,7 @@ export default function Budget() {
     const [projects, setProjects] = useState<Project[]>([])
     const [messages, setMessages] = useState<string[]>([])
 
+    const [index, setIndex] = useState(-1)
     const [isFirst, setIsFirst] = useState(true)
     const [isLoading, setIsLoading] = useState(true)
     const [isForShow, setIsForShow] = useState(false)
@@ -40,7 +41,7 @@ export default function Budget() {
         setTitle("Lista de orçamentos")
     }
 
-    const handleDeleteClick = async (project) => {
+    const handleDeleteClick = async (project, index) => {
         setIsLoading(true)
         let feedbackMessage: FeedbackMessage = { messages: ["Algo deu errado"], messageType: "ERROR" }
         const res = await fetch("api/project", {
@@ -52,7 +53,6 @@ export default function Budget() {
         } else {
             feedbackMessage = { messages: ["Algo deu errado"], messageType: "ERROR" }
         }
-        const index = projects.indexOf(project)
         const list = [
             ...projects.slice(0, index),
             ...projects.slice(index + 1, projects.length),
@@ -179,13 +179,13 @@ export default function Budget() {
             budget,
             ...projects,
         ]
-        const index = projects.indexOf(budget)
         if (index > -1) {
             list = [
                 ...projects.slice(0, index),
                 budget,
                 ...projects.slice(index + 1, projects.length),
             ]
+            setIndex(-1)
         }
         setProjects(list)
         handleShowMessage(feedbackMessage)
@@ -261,6 +261,16 @@ export default function Budget() {
                     >
                         Novo
                     </Button>
+                    <Button
+                        isLoading={isLoading}
+                        onClick={() => {
+                            setIsFirst(true)
+                            setIsLoading(true)
+                            handleBackClick()
+                        }}
+                    >
+                        Atualizar
+                    </Button>
                 </div>
             </div>
 
@@ -268,6 +278,7 @@ export default function Budget() {
                 list={projects}
                 title="Orçamento"
                 isLoading={isLoading}
+                onSetIndex={setIndex}
                 onTableRow={handlePutRows}
                 onShowClick={handleShowClick}
                 onEditClick={handleEditClick}
@@ -283,22 +294,30 @@ export default function Budget() {
                 max
                 isOpen={isRegister}
                 setIsOpen={setIsRegister}>
-                <ProjectForm
-                    isBack={false}
-                    project={project}
-                    professional={professional}
-                    onAfterSave={handleAfterSave}
-                    title="Informações do orçamento"
-                    onShowMessage={handleShowMessage}
-                    subtitle="Dados importantes sobre o orçamento"
-                />
+                {isRegister && (
+                    <>
+                        <ProjectForm
+                            isBack={false}
+                            project={project}
+                            professional={professional}
+                            onAfterSave={handleAfterSave}
+                            title="Informações do orçamento"
+                            onShowMessage={handleShowMessage}
+                            subtitle="Dados importantes sobre o orçamento"
+                        />
+                    </>
+                )}
             </WindowModal>
 
             <WindowModal
                 max
                 isOpen={isForShow}
                 setIsOpen={setIsForShow}>
-                <ProjectView elementId={project.id} />
+                {isForShow && (
+                    <>
+                        <ProjectView elementId={project.id} />
+                    </>
+                )}
             </WindowModal>
 
             <FeedbackMessageModal

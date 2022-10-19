@@ -11,7 +11,7 @@ interface ListTableItemProps {
     onRowClick?: () => void,
     onEditClick?: (any, number?) => void,
     onShowClick?: (any, number?) => void,
-    onDeleteClick?: (any) => void,
+    onDeleteClick?: (any,number?) => void,
     onTableRow?: (any) => any,
 }
 
