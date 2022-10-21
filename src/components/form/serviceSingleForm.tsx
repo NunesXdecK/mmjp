@@ -18,7 +18,7 @@ interface ServiceSingleFormProps {
     subtitle?: string,
     isBack?: boolean,
     canAutoSave?: boolean,
-    isForDisable?: boolean,
+    isDisabled?: boolean,
     isForOldRegister?: boolean,
     service?: Service,
     professional?: Professional,
@@ -434,7 +434,7 @@ export default function ServiceSingleForm(props: ServiceSingleFormProps) {
                 professional={props.professional}
                 onShowMessage={props.onShowMessage}
                 subtitle="Dados básicos dos serviços"
-                isLocked={props.isForDisable ||
+                isLocked={props.isDisabled ||
                     (services[0].status === "PENDENTE" ||
                         services[0].status === "FINALIZADO" ||
                         services[0].status === "ARQUIVADO")}

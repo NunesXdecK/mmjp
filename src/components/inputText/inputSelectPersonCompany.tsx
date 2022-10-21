@@ -22,9 +22,11 @@ interface InputSelectPersonCompanyProps {
     validationMessageButton?: string,
     isLocked?: boolean,
     isLoading?: boolean,
+    isDisabled?: boolean,
     validationButton?: boolean,
     isMultipleSelect?: boolean,
     personsAndCompanies?: Person[],
+    onBlur?: (any?) => void,
     onFinishAdd?: (any?) => void,
     onSetLoading?: (any) => void,
     onShowMessage?: (FeedbackMessage) => void,
@@ -88,7 +90,7 @@ export default function InputSelectPersonCompany(props: InputSelectPersonCompany
         if (canAdd) {
             setText(personOrCompany.name)
             if (props.onSetPersonsAndCompanies) {
-                props.onSetPersonsAndCompanies([personOrCompany])
+                props.onSetPersonsAndCompanies(personOrCompany)
                 setIsOpen(false)
             }
             if (props.onFinishAdd) {
@@ -164,7 +166,10 @@ export default function InputSelectPersonCompany(props: InputSelectPersonCompany
                 id={props.id}
                 title={props.title}
                 onSetText={setText}
+                onBlur={props.onBlur}
                 onClickItem={handleAdd}
+                isLoading={props.isLoading}
+                isDisabled={props.isDisabled}
                 onListOptions={handlePutActions}
                 sugestions={personsAndCompanies}
             />

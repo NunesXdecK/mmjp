@@ -20,7 +20,7 @@ interface SubjectMessageFormProps {
     isMultiple?: boolean,
     canAutoSave?: boolean,
     canMultiple?: boolean,
-    isForDisable?: boolean,
+    isDisabled?: boolean,
     isForOldRegister?: boolean,
     haveActionButtons?: boolean,
     subjectMessage?: SubjectMessage,
@@ -212,7 +212,7 @@ export default function SubjectMessageForm(props: SubjectMessageFormProps) {
                                     isLoading={isLoading}
                                     onSetText={setIsMultiple}
                                     title="Cadastro multiplo?"
-                                    isDisabled={props.isForDisable}
+                                    isDisabled={props.isDisabled}
                                 />
                             </FormRowColumn>
                         </FormRow>
@@ -226,7 +226,7 @@ export default function SubjectMessageForm(props: SubjectMessageFormProps) {
                                 onBlur={handleAutoSave}
                                 id="subject-message-text"
                                 value={subjectMessage.text}
-                                isDisabled={props.isForDisable}
+                                isDisabled={props.isDisabled}
                                 onSetText={handleSetSubjectMessageText}
                                 onValidate={handleChangeFormValidation}
                             />

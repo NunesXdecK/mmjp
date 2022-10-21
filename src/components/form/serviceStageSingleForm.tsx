@@ -14,7 +14,7 @@ interface ServiceStageSingleFormProps {
     subtitle?: string,
     isBack?: boolean,
     canAutoSave?: boolean,
-    isForDisable?: boolean,
+    isDisabled?: boolean,
     isForOldRegister?: boolean,
     serviceStage?: ServiceStage,
     professional?: Professional,
@@ -314,7 +314,7 @@ export default function ServiceStageSingleForm(props: ServiceStageSingleFormProp
                 onShowMessage={props.onShowMessage}
                 onSetServiceStages={setServiceStages}
                 subtitle="Dados básicos dos serviços"
-                isForDisable={props.isForDisable ||
+                isDisabled={props.isDisabled ||
                     (serviceStages[0].status === "PENDENTE" ||
                         serviceStages[0].status === "FINALIZADO" ||
                         serviceStages[0].status === "ARQUIVADO")}

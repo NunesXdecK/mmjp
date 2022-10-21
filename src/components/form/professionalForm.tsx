@@ -21,7 +21,7 @@ interface ProfessionalFormProps {
     canAutoSave?: boolean,
     canMultiple?: boolean,
     isForSelect?: boolean,
-    isForDisable?: boolean,
+    isDisabled?: boolean,
     isForOldRegister?: boolean,
     professional?: Professional,
     onBack?: (object?) => void,
@@ -233,7 +233,7 @@ export default function ProfessionalForm(props: ProfessionalFormProps) {
                                     isLoading={isLoading}
                                     onSetText={setIsMultiple}
                                     title="Cadastro multiplo?"
-                                    isDisabled={props.isForDisable}
+                                    isDisabled={props.isDisabled}
                                 />
                             </FormRowColumn>
                         </FormRow>
@@ -248,7 +248,7 @@ export default function ProfessionalForm(props: ProfessionalFormProps) {
                                 value={professional.title}
                                 validation={NOT_NULL_MARK}
                                 title="Titulo do profissional"
-                                isDisabled={props.isForDisable}
+                                isDisabled={props.isDisabled}
                                 onSetText={handleSetProfessionalTitle}
                                 onValidate={handleChangeFormValidation}
                                 validationMessage="O titulo do profissional não pode ficar em branco."
@@ -264,7 +264,7 @@ export default function ProfessionalForm(props: ProfessionalFormProps) {
                                 onBlur={handleAutoSave}
                                 isLoading={isLoading}
                                 value={professional.creaNumber}
-                                isDisabled={props.isForDisable}
+                                isDisabled={props.isDisabled}
                                 onSetText={handleSetProfessionalCreaNumber}
                                 onValidate={handleChangeFormValidation}
                                 validationMessage="O numero do crea não pode ficar em branco."
@@ -277,7 +277,7 @@ export default function ProfessionalForm(props: ProfessionalFormProps) {
                                 isLoading={isLoading}
                                 onBlur={handleAutoSave}
                                 title="Codigo credencial"
-                                isDisabled={props.isForDisable}
+                                isDisabled={props.isDisabled}
                                 value={professional.credentialCode}
                                 onSetText={handleSetProfessionalCredentialCode}
                                 onValidate={handleChangeFormValidation}

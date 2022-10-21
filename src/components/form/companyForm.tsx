@@ -23,7 +23,7 @@ interface CompanyFormProps {
     canAutoSave?: boolean,
     canMultiple?: boolean,
     isForSelect?: boolean,
-    isForDisable?: boolean,
+    isDisabled?: boolean,
     isForOldRegister?: boolean,
     company?: Company,
     onBack?: (object?) => void,
@@ -262,7 +262,7 @@ export default function CompanyForm(props: CompanyFormProps) {
                                     isLoading={isLoading}
                                     onSetText={setIsMultiple}
                                     title="Cadastro multiplo?"
-                                    isDisabled={props.isForDisable}
+                                    isDisabled={props.isDisabled}
                                 />
                             </FormRowColumn>
                         </FormRow>
@@ -277,7 +277,7 @@ export default function CompanyForm(props: CompanyFormProps) {
                                 title="Nome da empresa"
                                 onBlur={handleAutoSave}
                                 validation={NOT_NULL_MARK}
-                                isDisabled={props.isForDisable}
+                                isDisabled={props.isDisabled}
                                 onSetText={handleSetCompanyName}
                                 onValidate={handleChangeFormValidation}
                                 validationMessage="O nome da empresa não pode ficar em branco."
@@ -295,7 +295,7 @@ export default function CompanyForm(props: CompanyFormProps) {
                                 title="Codigo de cliente"
                                 value={company.clientCode}
                                 isInvalid={isClientCodeInvalid}
-                                isDisabled={props.isForDisable}
+                                isDisabled={props.isDisabled}
                                 message="Verificando o codigo..."
                                 onSetText={handleSetCompanyClientCode}
                                 isForShowMessage={isCheckingClientCode}
@@ -315,7 +315,7 @@ export default function CompanyForm(props: CompanyFormProps) {
                                 isLoading={isLoading}
                                 validation={CNPJ_MARK}
                                 onBlur={handleAutoSave}
-                                isDisabled={props.isForDisable}
+                                isDisabled={props.isDisabled}
                                 onSetText={handleSetCompanyCnpj}
                                 onValidate={handleChangeFormValidation}
                                 validationMessage="O CPNPJ não pode ficar em branco."

@@ -24,7 +24,7 @@ interface ImmobileFormProps {
     canAutoSave?: boolean,
     canMultiple?: boolean,
     isForSelect?: boolean,
-    isForDisable?: boolean,
+    isDisabled?: boolean,
     isForOldRegister?: boolean,
     immobile?: Immobile,
     onBack?: (object?) => void,
@@ -227,7 +227,7 @@ export default function ImmobileForm(props: ImmobileFormProps) {
                                     isLoading={isLoading}
                                     onSetText={setIsMultiple}
                                     title="Cadastro multiplo?"
-                                    isDisabled={props.isForDisable}
+                                    isDisabled={props.isDisabled}
                                 />
                             </FormRowColumn>
                         </FormRow>
@@ -242,7 +242,7 @@ export default function ImmobileForm(props: ImmobileFormProps) {
                                 title="Nome do imóvel"
                                 onBlur={handleAutoSave}
                                 validation={NOT_NULL_MARK}
-                                isDisabled={props.isForDisable}
+                                isDisabled={props.isDisabled}
                                 onSetText={handleSetImmobileName}
                                 onValidate={handleChangeFormValidation}
                                 validationMessage="O nome do imóvel não pode ficar em branco."
@@ -267,7 +267,7 @@ export default function ImmobileForm(props: ImmobileFormProps) {
                                 value={immobile.land}
                                 isLoading={isLoading}
                                 onBlur={handleAutoSave}
-                                isDisabled={props.isForDisable}
+                                isDisabled={props.isDisabled}
                                 onSetText={handleSetImmobileLand}
                                 onValidate={handleChangeFormValidation}
                                 validationMessage="A gleba não pode ficar em branco."
@@ -281,7 +281,7 @@ export default function ImmobileForm(props: ImmobileFormProps) {
                                 isLoading={isLoading}
                                 value={immobile.county}
                                 onBlur={handleAutoSave}
-                                isDisabled={props.isForDisable}
+                                isDisabled={props.isDisabled}
                                 onSetText={handleSetImmobileCounty}
                                 onValidate={handleChangeFormValidation}
                                 validationMessage="O município não pode ficar em branco."
@@ -299,7 +299,7 @@ export default function ImmobileForm(props: ImmobileFormProps) {
                                 value={immobile.area}
                                 onBlur={handleAutoSave}
                                 validation={NUMBER_MARK}
-                                isDisabled={props.isForDisable}
+                                isDisabled={props.isDisabled}
                                 onSetText={handleSetImmobileArea}
                                 onValidate={handleChangeFormValidation}
                                 validationMessage="A área não pode ficar em branco."
@@ -315,7 +315,7 @@ export default function ImmobileForm(props: ImmobileFormProps) {
                                 onBlur={handleAutoSave}
                                 validation={NUMBER_MARK}
                                 value={immobile.perimeter}
-                                isDisabled={props.isForDisable}
+                                isDisabled={props.isDisabled}
                                 onSetText={handleSetImmobilePerimeter}
                                 onValidate={handleChangeFormValidation}
                                 validationMessage="O perímetro não pode ficar em branco."
@@ -331,7 +331,7 @@ export default function ImmobileForm(props: ImmobileFormProps) {
                                 isLoading={isLoading}
                                 onBlur={handleAutoSave}
                                 value={immobile.comarca}
-                                isDisabled={props.isForDisable}
+                                isDisabled={props.isDisabled}
                                 onSetText={handleSetImmobileComarca}
                             />
                         </FormRowColumn>
@@ -343,7 +343,7 @@ export default function ImmobileForm(props: ImmobileFormProps) {
                                 onBlur={handleAutoSave}
                                 title="Codigo da comarca"
                                 value={immobile.comarcaCode}
-                                isDisabled={props.isForDisable}
+                                isDisabled={props.isDisabled}
                                 onSetText={handleSetImmobileComarcaCode}
                                 options={["123654", "752132", "875643", "8775643", "132161"]}
                             />
@@ -358,7 +358,7 @@ export default function ImmobileForm(props: ImmobileFormProps) {
                                 isLoading={isLoading}
                                 onBlur={handleAutoSave}
                                 value={immobile.process}
-                                isDisabled={props.isForDisable}
+                                isDisabled={props.isDisabled}
                                 onSetText={handleSetImmobileProcess}
                             />
                         </FormRowColumn>
@@ -373,7 +373,7 @@ export default function ImmobileForm(props: ImmobileFormProps) {
                                 validation={CCIR_MARK}
                                 onBlur={handleAutoSave}
                                 value={immobile.ccirNumber}
-                                isDisabled={props.isForDisable}
+                                isDisabled={props.isDisabled}
                                 onSetText={handleSetImmobileCCRINumber}
                                 onValidate={handleChangeFormValidation}
                                 validationMessage="O CCIR está invalido"
@@ -389,7 +389,7 @@ export default function ImmobileForm(props: ImmobileFormProps) {
                                 isLoading={isLoading}
                                 onBlur={handleAutoSave}
                                 value={immobile.registration}
-                                isDisabled={props.isForDisable}
+                                isDisabled={props.isDisabled}
                                 onSetText={handleSetImmobileRegistration}
                             />
                         </FormRowColumn>

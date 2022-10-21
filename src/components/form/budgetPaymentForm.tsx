@@ -1,26 +1,22 @@
+import FormRow from "./formRow";
 import { useState } from "react";
 import Button from "../button/button";
-import FormRow from "../form/formRow";
+import FormRowColumn from "./formRowColumn";
 import InputText from "../inputText/inputText";
 import WindowModal from "../modal/windowModal";
-import FormRowColumn from "../form/formRowColumn";
 import { TrashIcon } from "@heroicons/react/outline";
-import { ServicePayment } from "../../interfaces/objectInterfaces";
+import { BudgetPayment } from "../../interfaces/objectInterfaces";
 import InputTextAutoComplete from "../inputText/inputTextAutocomplete";
 import { NOT_NULL_MARK, NUMBER_MARK } from "../../util/patternValidationUtil";
-import { handleServicePaymentValidationForDB } from "../../util/validationUtil";
 
-interface ServicePaymentDataFormProps {
+interface BudgetPaymentFormProps {
     id?: string,
     title?: string,
     subtitle?: string,
     index?: number,
-    isBack?: boolean,
-    isSingle?: boolean,
     isLoading?: boolean,
-    isForSelect?: boolean,
     isDisabled?: boolean,
-    servicePayment: ServicePayment,
+    budgetPayment: BudgetPayment,
     onBlur?: (any) => void,
     onDelete?: (number) => void,
     onFinishAdd?: (any?) => void,
@@ -29,20 +25,20 @@ interface ServicePaymentDataFormProps {
     onUpdateServiceValue?: (any, number) => void,
 }
 
-export default function ServicePaymentDataForm(props: ServicePaymentDataFormProps) {
+export default function BudgetPaymentForm(props: BudgetPaymentFormProps) {
     const [isOpen, setIsOpen] = useState(false)
 
-    const [isFormValid, setIsFormValid] = useState(handleServicePaymentValidationForDB(props.servicePayment).validation)
+    const [isFormValid, setIsFormValid] = useState(false)
 
     const handleSetServicePaymentValue = (value) => {
         if (props.onUpdateServiceValue) {
             props.onUpdateServiceValue(value, props.index)
         } else {
-            handleSet({ ...props.servicePayment, value: value })
+            handleSet({ ...props.budgetPayment, value: value })
         }
     }
-    const handleSetServicePaymentDate = (value) => { handleSet({ ...props.servicePayment, dateString: value }) }
-    const handleSetServicePaymentDescription = (value) => { handleSet({ ...props.servicePayment, description: value }) }
+    const handleSetServicePaymentDate = (value) => { handleSet({ ...props.budgetPayment, dateString: value }) }
+    const handleSetServicePaymentDescription = (value) => { handleSet({ ...props.budgetPayment, description: value }) }
 
     const handleSet = (element) => {
         if (props.onSet) {
@@ -60,13 +56,6 @@ export default function ServicePaymentDataForm(props: ServicePaymentDataFormProp
 
     return (
         <>
-            {/*
-            <FormRow>
-                <FormRowColumn unit="6">
-                    <span>{index + 1}</span>
-                </FormRowColumn>
-            </FormRow>
-                */}
             <FormRow>
                 <FormRowColumn unit="2">
                     <InputTextAutoComplete
@@ -79,7 +68,7 @@ export default function ServicePaymentDataForm(props: ServicePaymentDataFormProp
                         onValidate={handleChangeFormValidation}
                         id={"description-payment" + props.index + "-" + props.id}
                         onSetText={handleSetServicePaymentDescription}
-                        value={props.servicePayment.description}
+                        value={props.budgetPayment.description}
                         validationMessage="A descrição não pode ficar em branco."
                     />
                 </FormRowColumn>
@@ -95,7 +84,7 @@ export default function ServicePaymentDataForm(props: ServicePaymentDataFormProp
                         id={"value-payment-" + props.index + "-" + props.id}
                         onValidate={handleChangeFormValidation}
                         onSetText={handleSetServicePaymentValue}
-                        value={props.servicePayment.value}
+                        value={props.budgetPayment.value}
                         validationMessage="O titulo da etapa não pode ficar em branco."
                     />
                 </FormRowColumn>
@@ -111,10 +100,10 @@ export default function ServicePaymentDataForm(props: ServicePaymentDataFormProp
                         onSetText={handleSetServicePaymentDate}
                         onValidate={handleChangeFormValidation}
                         id={"date-due-payment-" + props.index + "-" + props.id}
-                        value={props.servicePayment.dateString}
+                        value={props.budgetPayment.dateString}
                     />
 
-                    {!props.isSingle && props.onDelete && !props.isDisabled && (
+                    {props.onDelete && !props.isDisabled && (
                         <Button
                             color="red"
                             className="ml-2 mt-2 sm:mt-0 h-fit self-end"
@@ -135,7 +124,7 @@ export default function ServicePaymentDataForm(props: ServicePaymentDataFormProp
             <WindowModal
                 isOpen={isOpen}
                 setIsOpen={setIsOpen}>
-                <p className="text-center">Deseja realmente deletar {props.servicePayment.description}?</p>
+                <p className="text-center">Deseja realmente deletar {props.budgetPayment.description}?</p>
                 <div className="flex mt-10 justify-between content-between">
                     <Button
                         onClick={(event) => {

@@ -25,15 +25,15 @@ interface ServiceDataFormProps {
     index?: number,
     isBack?: boolean,
     isSingle?: boolean,
+    isSelect?: boolean,
     isLoading?: boolean,
-    isForSelect?: boolean,
+    isDisabled?: boolean,
     isForShowAll?: boolean,
-    isForDisable?: boolean,
-    services?: Service[],
+    service?: Service,
     onBlur?: (any) => void,
     onDelete?: (number) => void,
     onFinishAdd?: (any?) => void,
-    onSetText?: (any, number) => void,
+    onSet?: (any, number?) => void,
     onShowMessage?: (FeedbackMessage) => void,
 }
 
@@ -41,36 +41,35 @@ export default function ServiceDataForm(props: ServiceDataFormProps) {
     const [isOpen, setIsOpen] = useState(false)
     const [isFormOpen, setIsFormOpen] = useState(props?.isSingle ? true : false)
     const [isFormValid, setIsFormValid] = useState(false)
-    const [index, setIndex] = useState(props.index ?? 0)
 
-    const [professionals, setProfessionals] = useState((props.services[index]?.professional && "id" in props.services[index]?.professional
-        && props.services[index].professional.id.length) ? [props.services[index].professional] : [])
+    const [professionals, setProfessionals] = useState((props.service?.professional && "id" in props.service?.professional
+        && props.service.professional.id.length) ? [props.service.professional] : [])
 
-    const handleSetServiceTitle = (value) => { handleSetText({ ...props.services[index], title: value }) }
-    const handleSetServiceDate = (value) => { handleSetText({ ...props.services[index], dateString: value }) }
-    const handleSetServiceStages = (value) => { handleSetText({ ...props.services[index], serviceStages: value }) }
-    const handleSetServiceDescription = (value) => { handleSetText({ ...props.services[index], description: value }) }
-    const handleSetServiceImmobilesTarget = (value) => { handleSetText({ ...props.services[index], immobilesTarget: value }) }
-    const handleSetServiceImmobilesOrigin = (value) => { handleSetText({ ...props.services[index], immobilesOrigin: value }) }
-    const handleSetServicePayments = (value) => { handleSetText({ ...props.services[index], servicePayments: value }) }
+    const handleSetServiceTitle = (value) => { handleSet({ ...props.service, title: value }) }
+    const handleSetServiceDate = (value) => { handleSet({ ...props.service, dateString: value }) }
+    const handleSetServiceStages = (value) => { handleSet({ ...props.service, serviceStages: value }) }
+    const handleSetServiceDescription = (value) => { handleSet({ ...props.service, description: value }) }
+    const handleSetServiceImmobilesTarget = (value) => { handleSet({ ...props.service, immobilesTarget: value }) }
+    const handleSetServiceImmobilesOrigin = (value) => { handleSet({ ...props.service, immobilesOrigin: value }) }
+    const handleSetServicePayments = (value) => { handleSet({ ...props.service, servicePayments: value }) }
 
     const handleSetServiceProfessional = (value) => {
         setProfessionals(value)
-        handleSetText({ ...props.services[index], professional: value[0] })
+        handleSet({ ...props.service, professional: value[0] })
     }
 
     const handleSetServiceValue = (value) => {
-        const total = handleCalculateTotal(value, props.services[index].quantity)
+        const total = handleCalculateTotal(value, props.service.quantity)
         const totalFormated = handleMountNumberCurrency(total.toString(), ".", ",", 3, 2)
         const list = handlePutPayment(total)
-        handleSetText({ ...props.services[index], value: value, servicePayments: list, total: totalFormated })
+        handleSet({ ...props.service, value: value, servicePayments: list, total: totalFormated })
     }
 
     const handleSetServiceQuantity = (value) => {
-        const total = handleCalculateTotal(props.services[index].value, value)
+        const total = handleCalculateTotal(props.service.value, value)
         const totalFormated = handleMountNumberCurrency(total.toString(), ".", ",", 3, 2)
         const list = handlePutPayment(total)
-        handleSetText({ ...props.services[index], quantity: value, servicePayments: list, total: totalFormated })
+        handleSet({ ...props.service, quantity: value, servicePayments: list, total: totalFormated })
     }
 
     const handleCalculateTotal = (value: string, quantity: string) => {
@@ -100,7 +99,7 @@ export default function ServiceDataForm(props: ServiceDataFormProps) {
         let quantityFinal = 0
         let servicePayments = []
         try {
-            const service = props.services[index]
+            const service = props.service
             servicePayments = service.servicePayments
             servicePayments?.map((element: ServicePayment, ii) => {
                 if (ii !== i) {
@@ -122,8 +121,8 @@ export default function ServiceDataForm(props: ServiceDataFormProps) {
         } catch (err) {
             console.error(err)
         }
-        handleSetText({
-            ...props.services[index],
+        handleSet({
+            ...props.service,
             servicePayments: servicePayments,
             value: handleMountNumberCurrency(unit.toString(), ".", ",", 3, 2),
             total: handleMountNumberCurrency(valueFinal.toFixed(2).toString(), ".", ",", 3, 2),
@@ -132,7 +131,7 @@ export default function ServiceDataForm(props: ServiceDataFormProps) {
 
     const handlePutPayment = (valueTotal) => {
         if (valueTotal > -1) {
-            const actualList = props.services[index].servicePayments
+            const actualList = props.service.servicePayments
             if (actualList.length && actualList.length > 0) {
                 let returnList = []
                 const value = (valueTotal / actualList.length).toFixed(2)
@@ -164,8 +163,8 @@ export default function ServiceDataForm(props: ServiceDataFormProps) {
     const handleValidadeTargetForAddButton = () => {
         let canAdd = true
         try {
-            const targetLenght = props.services[index].immobilesTarget?.length ?? 0
-            const originLenght = props.services[index].immobilesOrigin?.length ?? 0
+            const targetLenght = props.service.immobilesTarget?.length ?? 0
+            const originLenght = props.service.immobilesOrigin?.length ?? 0
             canAdd = targetLenght > 0 && originLenght > 1
         } catch (err) {
             console.error(err)
@@ -175,7 +174,7 @@ export default function ServiceDataForm(props: ServiceDataFormProps) {
 
     const handleValidadeTarget = (immobile) => {
         let canAdd = true
-        props.services[index]?.immobilesOrigin?.map((element, index) => {
+        props.service?.immobilesOrigin?.map((element, index) => {
             if (immobile.id === element.id) {
                 canAdd = false
             }
@@ -186,8 +185,8 @@ export default function ServiceDataForm(props: ServiceDataFormProps) {
     const handleValidadeOriginForAddButton = () => {
         let canAdd = true
         try {
-            const targetLenght = props.services[index].immobilesTarget?.length ?? 0
-            const originLenght = props.services[index].immobilesOrigin?.length ?? 0
+            const targetLenght = props.service.immobilesTarget?.length ?? 0
+            const originLenght = props.service.immobilesOrigin?.length ?? 0
             canAdd = originLenght > 0 && targetLenght > 1
         } catch (err) {
             console.error(err)
@@ -197,7 +196,7 @@ export default function ServiceDataForm(props: ServiceDataFormProps) {
 
     const handleValidadeOrigin = (immobile) => {
         let canAdd = true
-        props.services[index].immobilesTarget.map((element, index) => {
+        props.service.immobilesTarget.map((element, index) => {
             if (immobile.id === element.id) {
                 canAdd = false
             }
@@ -205,9 +204,13 @@ export default function ServiceDataForm(props: ServiceDataFormProps) {
         return canAdd
     }
 
-    const handleSetText = (element) => {
-        if (props.onSetText) {
-            props.onSetText(element, index)
+    const handleSet = (element) => {
+        if (props.onSet) {
+            if (props.index > -1) {
+                props.onSet(element, props.index)
+            } else {
+                props.onSet(element)
+            }
         }
     }
 
@@ -260,12 +263,12 @@ export default function ServiceDataForm(props: ServiceDataFormProps) {
                         onBlur={props.onBlur}
                         validation={NOT_NULL_MARK}
                         isLoading={props.isLoading}
-                        isDisabled={props.isForDisable}
+                        isDisabled={props.isDisabled}
                         onSetText={handleSetServiceTitle}
-                        value={props.services[index].title}
+                        value={props.service.title}
                         validationMessage="Titulo em branco."
                         onValidate={handleChangeFormValidation}
-                        id={"title-service-" + index + "-" + props.id}
+                        id={"title-service-" + props.index + "-" + props.id}
                         sugestions={["Ambiental", "Desmembramento", "Georeferenciamento", "União", "Licenciamento"]}
                     />
                 </FormRowColumn>
@@ -276,10 +279,10 @@ export default function ServiceDataForm(props: ServiceDataFormProps) {
                         onBlur={props.onBlur}
                         validation={NUMBER_MARK}
                         isLoading={props.isLoading}
-                        isDisabled={props.isForDisable}
+                        isDisabled={props.isDisabled}
                         onSetText={handleSetServiceValue}
-                        value={props.services[index].value}
-                        id={"value-service-" + index + "-" + props.id}
+                        value={props.service.value}
+                        id={"value-service-" + props.index + "-" + props.id}
                         onValidate={handleChangeFormValidation}
                     />
                 </FormRowColumn>
@@ -289,11 +292,11 @@ export default function ServiceDataForm(props: ServiceDataFormProps) {
                         onBlur={props.onBlur}
                         validation={NUMBER_MARK}
                         isLoading={props.isLoading}
-                        isDisabled={props.isForDisable}
+                        isDisabled={props.isDisabled}
                         onSetText={handleSetServiceQuantity}
-                        value={props.services[index].quantity}
+                        value={props.service.quantity}
                         onValidate={handleChangeFormValidation}
-                        id={"quantity-service-" + index + "-" + props.id}
+                        id={"quantity-service-" + props.index + "-" + props.id}
                     />
                 </FormRowColumn>
                 <FormRowColumn unit="2" className="flex flex-col sm:flex-row">
@@ -303,15 +306,15 @@ export default function ServiceDataForm(props: ServiceDataFormProps) {
                         mask="currency"
                         validation={NUMBER_MARK}
                         isLoading={props.isLoading}
-                        value={props.services[index].total}
-                        id={"total-service-" + index + "-" + props.id}
+                        value={props.service.total}
+                        id={"total-service-" + props.index + "-" + props.id}
                     />
-                    {!props.isSingle && !props.isForDisable && props.onDelete && (
+                    {!props.isSingle && !props.isDisabled && props.onDelete && (
                         <Button
                             color="red"
                             isLoading={props.isLoading}
                             className="mt-2 sm:mt-0 ml-2 h-fit self-end"
-                            isDisabled={props.isForDisable}
+                            isDisabled={props.isDisabled}
                             onClick={() => {
                                 setIsOpen(true)
                             }}
@@ -334,11 +337,11 @@ export default function ServiceDataForm(props: ServiceDataFormProps) {
                                 maxLength={10}
                                 onBlur={props.onBlur}
                                 isLoading={props.isLoading}
-                                isDisabled={props.isForDisable}
+                                isDisabled={props.isDisabled}
                                 onSetText={handleSetServiceDate}
                                 onValidate={handleChangeFormValidation}
-                                id={"date-due-service-" + index + "-" + props.id}
-                                value={props.services[index].dateString}
+                                id={"date-due-service-" + props.index + "-" + props.id}
+                                value={props.service.dateString}
                             />
                         </FormRowColumn>
 
@@ -347,7 +350,7 @@ export default function ServiceDataForm(props: ServiceDataFormProps) {
                                 title="Status"
                                 isDisabled={true}
                                 id="status-service"
-                                value={props.services[index].status}
+                                value={props.service.status}
                             />
                         </FormRowColumn>
                     </FormRow>
@@ -358,10 +361,10 @@ export default function ServiceDataForm(props: ServiceDataFormProps) {
                                 title="Descrição"
                                 onBlur={props.onBlur}
                                 isLoading={props.isLoading}
-                                isDisabled={props.isForDisable}
+                                isDisabled={props.isDisabled}
                                 onSetText={handleSetServiceDescription}
-                                id={"description-service-" + index + "-" + props.id}
-                                value={props.services[index].description}
+                                id={"description-service-" + props.index + "-" + props.id}
+                                value={props.service.description}
                             />
                         </FormRowColumn>
                     </FormRow>
@@ -377,7 +380,7 @@ export default function ServiceDataForm(props: ServiceDataFormProps) {
                     isMultipleSelect={false}
                     isLoading={props.isLoading}
                     professionals={professionals}
-                    isLocked={props.isForDisable}
+                    isLocked={props.isDisabled}
                     subtitle="Adicione o profissional"
                     onShowMessage={props.onShowMessage}
                     buttonTitle="Adicionar profissional"
@@ -398,17 +401,17 @@ export default function ServiceDataForm(props: ServiceDataFormProps) {
                     title="Imóveis alvo"
                     formClassName="p-1 m-2"
                     isLoading={props.isLoading}
-                    isLocked={props.isForDisable}
+                    isLocked={props.isDisabled}
                     buttonTitle="Adicionar imóveis"
                     subtitle="Selecione os imovéis"
                     onValidate={handleValidadeTarget}
                     onShowMessage={props.onShowMessage}
                     onSetImmobiles={handleSetServiceImmobilesTarget}
-                    immobiles={props.services[index].immobilesTarget}
+                    immobiles={props.service.immobilesTarget}
                     validationMessageButton="Não é possivel adicionar"
                     validationButton={handleValidadeTargetForAddButton()}
                     validationMessage="Este imóvel alvo já está selecionado"
-                    isMultipleSelect={props.services[index].immobilesOrigin?.length < 2}
+                    isMultipleSelect={props.service.immobilesOrigin?.length < 2}
                     onFinishAdd={() => {
                         {/*
                         if (props.onFinishAdd) {
@@ -418,22 +421,22 @@ export default function ServiceDataForm(props: ServiceDataFormProps) {
                     }}
                 />
 
-                {props.services[index].immobilesTarget?.length > 0 && (
+                {props.service.immobilesTarget?.length > 0 && (
                     <SelectImmobileForm
                         formClassName="p-1 m-2"
                         title="Imóveis de origem"
                         isLoading={props.isLoading}
-                        isLocked={props.isForDisable}
+                        isLocked={props.isDisabled}
                         buttonTitle="Adicionar imóveis"
                         subtitle="Selecione os imovéis"
                         onValidate={handleValidadeOrigin}
                         onShowMessage={props.onShowMessage}
                         onSetImmobiles={handleSetServiceImmobilesOrigin}
-                        immobiles={props.services[index].immobilesOrigin}
+                        immobiles={props.service.immobilesOrigin}
                         validationMessageButton="Não é possivel adicionar"
                         validationButton={handleValidadeOriginForAddButton()}
                         validationMessage="Este imóvel de origem já está selecionado"
-                        isMultipleSelect={props.services[index].immobilesTarget?.length < 2}
+                        isMultipleSelect={props.service.immobilesTarget?.length < 2}
                         onFinishAdd={() => {
                             {/*
                             if (props.onFinishAdd) {
@@ -450,11 +453,11 @@ export default function ServiceDataForm(props: ServiceDataFormProps) {
                     formClassName="p-1 m-2"
                     isLoading={props.isLoading}
                     subtitle="Adicione as etapas"
-                    isForDisable={props.isForDisable}
+                    isDisabled={props.isDisabled}
                     onShowMessage={props.onShowMessage}
                     onSetServiceStages={handleSetServiceStages}
-                    id={"service-stages-" + props.services[index].id}
-                    serviceStages={props.services[index].serviceStages}
+                    id={"service-stages-" + props.service.id}
+                    serviceStages={props.service.serviceStages}
                 />
 
                 <ServicePaymentForm
@@ -462,13 +465,13 @@ export default function ServiceDataForm(props: ServiceDataFormProps) {
                     status={props.status}
                     formClassName="p-1 m-2"
                     isLoading={props.isLoading}
-                    isForDisable={props.isForDisable}
+                    isDisabled={props.isDisabled}
                     subtitle="Adicione os pagamentos"
                     onShowMessage={props.onShowMessage}
                     onSetServicePayments={handleSetServicePayments}
                     onUpdateServiceValue={handleUpdateValueByPayments}
-                    id={"service-payments-" + props.services[index].id}
-                    servicePayments={props.services[index].servicePayments}
+                    id={"service-payments-" + props.service.id}
+                    servicePayments={props.service.servicePayments}
                 />
             </ScrollDownTransition>
             {/*
@@ -479,7 +482,7 @@ export default function ServiceDataForm(props: ServiceDataFormProps) {
                             color="red"
                             className="mr-2 group"
                             isLoading={props.isLoading}
-                            isDisabled={props.isForDisable}
+                            isDisabled={props.isDisabled}
                             onClick={() => {
                                 setIsOpen(true)
                             }}
@@ -497,7 +500,7 @@ export default function ServiceDataForm(props: ServiceDataFormProps) {
             <WindowModal
                 isOpen={isOpen}
                 setIsOpen={setIsOpen}>
-                <p className="text-center">Deseja realmente deletar {props.services[index].title}?</p>
+                <p className="text-center">Deseja realmente deletar {props.service.title}?</p>
                 <div className="flex mt-10 justify-between content-between">
                     <Button
                         onClick={(event) => {
@@ -513,7 +516,7 @@ export default function ServiceDataForm(props: ServiceDataFormProps) {
                         onClick={(event) => {
                             event.preventDefault()
                             if (props.onDelete) {
-                                props.onDelete(index)
+                                props.onDelete(props.index)
                             }
                             setIsOpen(false)
                         }}

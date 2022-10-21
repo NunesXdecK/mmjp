@@ -23,7 +23,7 @@ interface PersonFormProps {
     isBack?: boolean,
     canAutoSave?: boolean,
     canMultiple?: boolean,
-    isForDisable?: boolean,
+    isDisabled?: boolean,
     isForOldRegister?: boolean,
     person?: Person,
     onBack?: (object?) => void,
@@ -278,7 +278,7 @@ export default function PersonForm(props: PersonFormProps) {
                                     isLoading={isLoading}
                                     onSetText={setIsMultiple}
                                     title="Cadastro multiplo?"
-                                    isDisabled={props.isForDisable}
+                                    isDisabled={props.isDisabled}
                                 />
                             </FormRowColumn>
                         </FormRow>
@@ -294,7 +294,7 @@ export default function PersonForm(props: PersonFormProps) {
                                 onBlur={handleAutoSave}
                                 validation={TEXT_NOT_NULL_MARK}
                                 onSetText={handleSetPersonName}
-                                isDisabled={props.isForDisable}
+                                isDisabled={props.isDisabled}
                                 onValidate={handleChangeFormValidation}
                                 validationMessage="O nome não pode ficar em branco."
                             />
@@ -307,7 +307,7 @@ export default function PersonForm(props: PersonFormProps) {
                                 title="Codigo de cliente"
                                 value={person.clientCode}
                                 isInvalid={isClientCodeInvalid}
-                                isDisabled={props.isForDisable}
+                                isDisabled={props.isDisabled}
                                 message="Verificando o codigo..."
                                 onSetText={handleSetPersonClientCode}
                                 isForShowMessage={isCheckingClientCode}
@@ -332,7 +332,7 @@ export default function PersonForm(props: PersonFormProps) {
                                 validation={CPF_MARK}
                                 onBlur={handleAutoSave}
                                 onSetText={handleSetPersonCPF}
-                                isDisabled={props.isForDisable}
+                                isDisabled={props.isDisabled}
                                 validationMessage="O CPF está invalido"
                                 onValidate={handleChangeFormValidation}
                             />
@@ -349,7 +349,7 @@ export default function PersonForm(props: PersonFormProps) {
                                 isLoading={isLoading}
                                 onBlur={handleAutoSave}
                                 onSetText={handleSetPersonRG}
-                                isDisabled={props.isForDisable}
+                                isDisabled={props.isDisabled}
                             />
                         </FormRowColumn>
 
@@ -360,7 +360,7 @@ export default function PersonForm(props: PersonFormProps) {
                                 isLoading={isLoading}
                                 value={person.rgIssuer}
                                 onBlur={handleAutoSave}
-                                isDisabled={props.isForDisable}
+                                isDisabled={props.isDisabled}
                                 onSetText={handleSetPersonRgIssuer}
                             />
                         </FormRowColumn>
@@ -374,7 +374,7 @@ export default function PersonForm(props: PersonFormProps) {
                                 isLoading={isLoading}
                                 onBlur={handleAutoSave}
                                 value={person.naturalness}
-                                isDisabled={props.isForDisable}
+                                isDisabled={props.isDisabled}
                                 onSetText={handleSetPersonNaturalness}
                             />
                         </FormRowColumn>
@@ -386,7 +386,7 @@ export default function PersonForm(props: PersonFormProps) {
                                 isLoading={isLoading}
                                 onBlur={handleAutoSave}
                                 value={person.nationality}
-                                isDisabled={props.isForDisable}
+                                isDisabled={props.isDisabled}
                                 onSetText={handleSetPersonNationality}
                             />
                         </FormRowColumn>
@@ -400,7 +400,7 @@ export default function PersonForm(props: PersonFormProps) {
                                 isLoading={isLoading}
                                 onBlur={handleAutoSave}
                                 value={person.maritalStatus}
-                                isDisabled={props.isForDisable}
+                                isDisabled={props.isDisabled}
                                 onSetText={handleSetPersonMaritalStatus}
                                 options={["casado", "divorciado", "separado", "solteiro", "viuvo"]}
                             />
@@ -413,7 +413,7 @@ export default function PersonForm(props: PersonFormProps) {
                                 isLoading={isLoading}
                                 onBlur={handleAutoSave}
                                 value={person.profession}
-                                isDisabled={props.isForDisable}
+                                isDisabled={props.isDisabled}
                                 onSetText={handleSetPersonProfession}
                             />
                         </FormRowColumn>

@@ -16,7 +16,7 @@ interface ServiceStageFormProps {
     isBack?: boolean,
     isSingle?: boolean,
     isLoading?: boolean,
-    isForDisable?: boolean,
+    isDisabled?: boolean,
     serviceStages?: ServiceStage[],
     onBlur?: (any) => void,
     onFinishAdd?: (any?) => void,
@@ -72,7 +72,7 @@ export default function ServiceStageForm(props: ServiceStageFormProps) {
             subtitle={props.subtitle}
             className={props.formClassName}
         >
-            {(!props.isForDisable && !props.isSingle) && (
+            {(!props.isDisabled && !props.isSingle) && (
                 <FormRow>
                     <FormRowColumn unit="6" className="flex justify-end">
                         <Button
@@ -97,16 +97,16 @@ export default function ServiceStageForm(props: ServiceStageFormProps) {
 
             {props?.serviceStages?.map((element, index) => (
                 <ServiceStageDataForm
-                    key={index}
                     index={index}
                     onBlur={props.onBlur}
+                    onSet={handleSetText}
+                    serviceStage={element}
                     onDelete={handeOnDelete}
                     isSingle={props.isSingle}
-                    onSetText={handleSetText}
                     isLoading={props.isLoading}
+                    isDisabled={props.isDisabled}
                     onFinishAdd={props.onFinishAdd}
-                    isForDisable={props.isForDisable}
-                    serviceStages={props.serviceStages}
+                    key={"services-stages-" + index + props.id}
                 />
             ))}
 

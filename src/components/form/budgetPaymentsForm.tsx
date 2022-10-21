@@ -1,13 +1,13 @@
-import Form from "../form/form";
-import FormRow from "../form/formRow";
+import Form from "./form";
+import FormRow from "./formRow";
 import Button from "../button/button";
-import FormRowColumn from "../form/formRowColumn";
-import ServicePaymentDataForm from "./servicePaymentDataForm";
+import FormRowColumn from "./formRowColumn";
+import BudgetPaymentForm from "./budgetPaymentForm";
 import { FeedbackMessage } from "../modal/feedbackMessageModal";
 import { handleNewDateToUTC, handleUTCToDateShow } from "../../util/dateUtils";
-import { defaultServicePayment, ServicePayment } from "../../interfaces/objectInterfaces";
+import { BudgetPayment, defaultBudgetPayment } from "../../interfaces/objectInterfaces";
 
-interface ServicePaymentFormProps {
+interface BudgetPaymentsFormProps {
     id?: string,
     title?: string,
     subtitle?: string,
@@ -17,48 +17,35 @@ interface ServicePaymentFormProps {
     isSingle?: boolean,
     isLoading?: boolean,
     isDisabled?: boolean,
-    servicePayments?: ServicePayment[],
+    budgetPayments?: BudgetPayment[],
+    onSet?: (any) => void,
     onBlur?: (any) => void,
     onFinishAdd?: (any?) => void,
-    onSetServicePayments?: (any) => void,
     onShowMessage?: (FeedbackMessage) => void,
-    onUpdateServiceValue?: (any, number) => void,
+    onUpdateBudgetValue?: (any, number) => void,
 }
 
-export default function ServicePaymentForm(props: ServicePaymentFormProps) {
+export default function BudgetPaymentsForm(props: BudgetPaymentsFormProps) {
     const handleSetText = (object, index) => {
-        if (props.onSetServicePayments) {
-            props.onSetServicePayments([
-                ...props.servicePayments.slice(0, index),
+        if (props.onSet) {
+            props.onSet([
+                ...props.budgetPayments.slice(0, index),
                 object,
-                ...props.servicePayments.slice(index + 1, props.servicePayments.length),
+                ...props.budgetPayments.slice(index + 1, props.budgetPayments.length),
             ])
         }
     }
 
     const handeOnDelete = async (index: number) => {
         let feedbackMessage: FeedbackMessage = { messages: ["Algo deu errado"], messageType: "ERROR" }
-        let localServicePayments = [...props.servicePayments]
-        let localServicePayment = localServicePayments[index]
+        let localPayments = [...props.budgetPayments]
         let canDelete = true
-
-        if (localServicePayment && "id" in localServicePayment && localServicePayment.id?.length) {
-            const res = await fetch("api/servicePayment", {
-                method: "DELETE",
-                body: JSON.stringify({ token: "tokenbemseguro", id: localServicePayment.id }),
-            }).then((res) => res.json())
-
-            if (res.status !== "SUCCESS") {
-                canDelete = false
-                feedbackMessage = { messages: ["Algo deu errado"], messageType: "ERROR" }
-            }
-        }
 
         if (canDelete) {
             feedbackMessage = { messages: ["Removido com sucesso!"], messageType: "SUCCESS" }
-            localServicePayments.splice(index, 1)
-            if (props.onSetServicePayments) {
-                props.onSetServicePayments(localServicePayments)
+            localPayments.splice(index, 1)
+            if (props.onSet) {
+                props.onSet(localPayments)
             }
         }
 
@@ -81,12 +68,12 @@ export default function ServicePaymentForm(props: ServicePaymentFormProps) {
                             isLoading={props.isLoading}
                             isDisabled={props.isLoading}
                             onClick={() => {
-                                if (props.onSetServicePayments) {
-                                    props.onSetServicePayments([...props.servicePayments,
+                                if (props.onSet) {
+                                    props.onSet([...props.budgetPayments,
                                     {
-                                        ...defaultServicePayment,
+                                        ...defaultBudgetPayment,
                                         status: props.status ?? "ORÇAMENTO",
-                                        index: props.servicePayments?.length,
+                                        index: props.budgetPayments?.length,
                                         dateString: handleUTCToDateShow((handleNewDateToUTC() + 2592000000) + ""),
                                     }])
                                 }
@@ -97,19 +84,18 @@ export default function ServicePaymentForm(props: ServicePaymentFormProps) {
                 </FormRow>
             )}
 
-            {props?.servicePayments?.map((element, index) => (
-                <ServicePaymentDataForm
+            {props?.budgetPayments?.map((element, index) => (
+                <BudgetPaymentForm
                     index={index}
                     onBlur={props.onBlur}
                     onSet={handleSetText}
+                    budgetPayment={element}
                     onDelete={handeOnDelete}
-                    servicePayment={element}
-                    isSingle={props.isSingle}
                     isLoading={props.isLoading}
                     isDisabled={props.isDisabled}
                     onFinishAdd={props.onFinishAdd}
                     key={"payments-" + index + props.id}
-                    onUpdateServiceValue={props.onUpdateServiceValue}
+                    onUpdateServiceValue={props.onUpdateBudgetValue}
                 />
             ))}
 

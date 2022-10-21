@@ -23,36 +23,35 @@ interface ServiceStageDataFormProps {
     isLoading?: boolean,
     isForSelect?: boolean,
     isForShowAll?: boolean,
-    isForDisable?: boolean,
-    serviceStages?: ServiceStage[],
+    isDisabled?: boolean,
+    serviceStage?: ServiceStage,
     onBlur?: (any) => void,
     onDelete?: (number) => void,
     onFinishAdd?: (any?) => void,
-    onSetText?: (any, number) => void,
+    onSet?: (any, number) => void,
     onShowMessage?: (FeedbackMessage) => void,
 }
 
 export default function ServiceStageDataForm(props: ServiceStageDataFormProps) {
     const [isOpen, setIsOpen] = useState(false)
     const [isFormOpen, setIsFormOpen] = useState(props?.isSingle ? true : false)
-    const [index, setIndex] = useState(props.index ?? 0)
 
-    const [isFormValid, setIsFormValid] = useState(handleServiceStageValidationForDB(props.serviceStages[index]).validation)
+    const [isFormValid, setIsFormValid] = useState(handleServiceStageValidationForDB(props.serviceStage).validation)
 
-    const [users, setUsers] = useState(props.serviceStages[index].responsible?.id ? [props.serviceStages[index].responsible] : [])
+    const [users, setUsers] = useState(props.serviceStage.responsible?.id ? [props.serviceStage.responsible] : [])
 
     const handleSetServiceStageUser = (value) => {
         setUsers(value)
-        handleSetText({ ...props.serviceStages[index], responsible: value[0] })
+        handleSetText({ ...props.serviceStage, responsible: value[0] })
     }
-    const handleSetServiceStageTitle = (value) => { handleSetText({ ...props.serviceStages[index], title: value }) }
-    const handleSetServiceStageDate = (value) => { handleSetText({ ...props.serviceStages[index], dateString: value }) }
-    const handleSetServiceStageFinished = (value) => { handleSetText({ ...props.serviceStages[index], finished: value }) }
-    const handleSetServiceStageDescription = (value) => { handleSetText({ ...props.serviceStages[index], description: value }) }
+    const handleSetServiceStageTitle = (value) => { handleSetText({ ...props.serviceStage, title: value }) }
+    const handleSetServiceStageDate = (value) => { handleSetText({ ...props.serviceStage, dateString: value }) }
+    const handleSetServiceStageFinished = (value) => { handleSetText({ ...props.serviceStage, finished: value }) }
+    const handleSetServiceStageDescription = (value) => { handleSetText({ ...props.serviceStage, description: value }) }
 
     const handleSetText = (element) => {
-        if (props.onSetText) {
-            props.onSetText(element, index)
+        if (props.onSet) {
+            props.onSet(element, props.index)
         }
     }
 
@@ -106,12 +105,12 @@ export default function ServiceStageDataForm(props: ServiceStageDataFormProps) {
                         holderClassName="w-full"
                         validation={NOT_NULL_MARK}
                         isLoading={props.isLoading}
-                        isDisabled={props.isForDisable}
+                        isDisabled={props.isDisabled}
                         sugestions={["Planta", "Memorial"]}
-                        id={"title-" + index + "-" + props.id}
+                        id={"title-" + props.index + "-" + props.id}
                         onSetText={handleSetServiceStageTitle}
                         onValidate={handleChangeFormValidation}
-                        value={props.serviceStages[index].title}
+                        value={props.serviceStage.title}
                         validationMessage="O titulo não pode ficar em branco."
                     />
                 </FormRowColumn>
@@ -122,19 +121,19 @@ export default function ServiceStageDataForm(props: ServiceStageDataFormProps) {
                         title="Prazo"
                         onBlur={props.onBlur}
                         isLoading={props.isLoading}
-                        isDisabled={props.isForDisable}
+                        isDisabled={props.isDisabled}
                         onSetText={handleSetServiceStageDate}
                         onValidate={handleChangeFormValidation}
-                        id={"date-due-stages-" + index + "-" + props.id}
-                        value={props.serviceStages[index].dateString}
+                        id={"date-due-stages-" + props.index + "-" + props.id}
+                        value={props.serviceStage.dateString}
                     />
 
-                    {!props.isSingle && props.onDelete && !props.isForDisable && (
+                    {!props.isSingle && props.onDelete && !props.isDisabled && (
                         <Button
                             color="red"
                             isLoading={props.isLoading}
                             className="ml-2 mt-2 sm:mt-0 h-fit self-end"
-                            isDisabled={props.isForDisable}
+                            isDisabled={props.isDisabled}
                             onClick={() => {
                                 setIsOpen(true)
                             }}
@@ -152,7 +151,7 @@ export default function ServiceStageDataForm(props: ServiceStageDataFormProps) {
                             <InputText
                                 id="status-stages"
                                 isDisabled={true}
-                                value={props.serviceStages[index].status}
+                                value={props.serviceStage.status}
                                 title="Status"
                             />
                         </FormRowColumn>
@@ -164,10 +163,10 @@ export default function ServiceStageDataForm(props: ServiceStageDataFormProps) {
                                 title="Descrição"
                                 onBlur={props.onBlur}
                                 isLoading={props.isLoading}
-                                isDisabled={props.isForDisable}
+                                isDisabled={props.isDisabled}
                                 onSetText={handleSetServiceStageDescription}
-                                id={"description-stages-" + index + "-" + props.id}
-                                value={props.serviceStages[index].description}
+                                id={"description-stages-" + props.index + "-" + props.id}
+                                value={props.serviceStage.description}
                             />
                         </FormRowColumn>
                     </FormRow>
@@ -182,7 +181,7 @@ export default function ServiceStageDataForm(props: ServiceStageDataFormProps) {
                     isMultipleSelect={false}
                     isLoading={props.isLoading}
                     users={users}
-                    isLocked={props.isForDisable}
+                    isLocked={props.isDisabled}
                     buttonTitle="Adicionar responsável"
                     onShowMessage={props.onShowMessage}
                     validationButton={users.length === 1}
@@ -202,7 +201,7 @@ export default function ServiceStageDataForm(props: ServiceStageDataFormProps) {
             <WindowModal
                 isOpen={isOpen}
                 setIsOpen={setIsOpen}>
-                <p className="text-center">Deseja realmente deletar {props.serviceStages[index].description}?</p>
+                <p className="text-center">Deseja realmente deletar {props.serviceStage.description}?</p>
                 <div className="flex mt-10 justify-between content-between">
                     <Button
                         onClick={(event) => {
@@ -218,7 +217,7 @@ export default function ServiceStageDataForm(props: ServiceStageDataFormProps) {
                         onClick={(event) => {
                             event.preventDefault()
                             if (props.onDelete) {
-                                props.onDelete(index)
+                                props.onDelete(props.index)
                             }
                             setIsOpen(false)
                         }}

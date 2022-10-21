@@ -22,7 +22,7 @@ interface UserFormProps {
     canAutoSave?: boolean,
     canMultiple?: boolean,
     isForSelect?: boolean,
-    isForDisable?: boolean,
+    isDisabled?: boolean,
     isForOldRegister?: boolean,
     user?: User,
     onBack?: (object?) => void,
@@ -318,7 +318,7 @@ export default function UserForm(props: UserFormProps) {
                                     isLoading={isLoading}
                                     onSetText={setIsMultiple}
                                     title="Cadastro multiplo?"
-                                    isDisabled={props.isForDisable}
+                                    isDisabled={props.isDisabled}
                                 />
                             </FormRowColumn>
                         </FormRow>
@@ -331,7 +331,7 @@ export default function UserForm(props: UserFormProps) {
                                 id="user-is-blocked"
                                 isLoading={isLoading}
                                 value={user.isBlocked}
-                                isDisabled={props.isForDisable}
+                                isDisabled={props.isDisabled}
                                 onSetText={handleSetUserIsBlocked}
                             />
                         </FormRowColumn>
@@ -350,7 +350,7 @@ export default function UserForm(props: UserFormProps) {
                                 }}
                                 validation={NOT_NULL_MARK}
                                 isInvalid={isUserNameInvalid}
-                                isDisabled={props.isForDisable}
+                                isDisabled={props.isDisabled}
                                 onSetText={handleSetUserUsername}
                                 message="Verificando o username..."
                                 isForShowMessage={isCheckingUserName}
@@ -370,7 +370,7 @@ export default function UserForm(props: UserFormProps) {
                                 validation={EMAIL_MARK}
                                 isInvalid={isEmailInvalid}
                                 onSetText={handleSetUserEmail}
-                                isDisabled={props.isForDisable}
+                                isDisabled={props.isDisabled}
                                 message="Verificando o e-mail..."
                                 isForShowMessage={isCheckingEmail}
                                 onValidate={handleChangeFormValidation}
@@ -390,7 +390,7 @@ export default function UserForm(props: UserFormProps) {
                                 value={user.office}
                                 isLoading={isLoading}
                                 onBlur={handleAutoSave}
-                                isDisabled={props.isForDisable}
+                                isDisabled={props.isDisabled}
                                 onSetText={handleSetUserOffice}
                                 options={["visitante", "secretaria", "projetista", "gerente", "administrador"]}
                             />
@@ -405,7 +405,7 @@ export default function UserForm(props: UserFormProps) {
                                 isLoading={isLoading}
                                 value={user.password}
                                 onBlur={handleAutoSave}
-                                isDisabled={props.isForDisable}
+                                isDisabled={props.isDisabled}
                                 onSetText={handleSetUserPassword}
                                 onValidate={handleChangeFormValidation}
                                 validationMessage="A senha não pode ficar em branco."
@@ -421,7 +421,7 @@ export default function UserForm(props: UserFormProps) {
                                 title="Confirme a senha"
                                 id="user-password-confirm"
                                 value={user.passwordConfirm}
-                                isDisabled={props.isForDisable}
+                                isDisabled={props.isDisabled}
                                 onValidate={handleChangeFormValidation}
                                 onSetText={handleSetUserPasswordConfirm}
                                 validationMessage="A senha não pode ficar em branco."

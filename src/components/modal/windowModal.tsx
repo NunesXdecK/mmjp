@@ -24,7 +24,7 @@ export default function WindowModal(props: WindowModalProps) {
             p-4
         `
     if (props.max) {
-        panelClass = panelClass + `w-full`
+        panelClass = panelClass + ` min-w-[98%] min-h-[90%]`
     }
     return (
         <Transition.Root show={props.isOpen} as={Fragment}>
@@ -50,6 +50,8 @@ export default function WindowModal(props: WindowModalProps) {
                 </Transition.Child>
                 <div className="fixed z-10 inset-0 overflow-hidden">
                     <div className="flex h-screen items-center justify-center text-center p-6 sm:block print:justify-start print:items-start print:h-max">
+                        <HeaderModal
+                            onClose={() => props.setIsOpen(false)} />
                         <span className="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">
                             &#8203;
                         </span>
@@ -63,8 +65,6 @@ export default function WindowModal(props: WindowModalProps) {
                             leaveTo="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95">
 
                             <Dialog.Panel className={panelClass}>
-                                <HeaderModal
-                                    onClose={() => props.setIsOpen(false)} />
                                 <div ref={cancelButtonRef}>
                                     {props.children}
                                 </div>

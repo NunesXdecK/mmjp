@@ -4,7 +4,7 @@ import Layout from "../../components/layout/layout"
 import { handlePrepareServiceForShow } from "../../util/converterUtil"
 import { handleNewDateToUTC, handleUTCToDateShow } from "../../util/dateUtils"
 import FeedbackMessageModal, { defaultFeedbackMessage, FeedbackMessage } from "../../components/modal/feedbackMessageModal"
-import { Company, defaultProfessional, defaultProject, defaultService, Person, Professional, Project, Service } from "../../interfaces/objectInterfaces"
+import { Budget, Company, defaultBudget, defaultProfessional, defaultProject, defaultService, Person, Professional, Project, Service } from "../../interfaces/objectInterfaces"
 import FeedbackPendency from "../../components/modal/feedbackPendencyModal"
 import ListTable from "../../components/list/listTable"
 import FormRow from "../../components/form/formRow"
@@ -13,10 +13,12 @@ import Button from "../../components/button/button"
 import WindowModal from "../../components/modal/windowModal"
 import ProjectForm from "../../components/form/projectForm"
 import ProjectView from "../../components/view/projectView"
+import BudgetDataForm from "../../components/form/budgetDataForm"
 
-export default function Budget() {
+export default function Index() {
     const [title, setTitle] = useState("Lista de orçamentos")
     const [professional, setProfessional] = useState<Professional>(defaultProfessional)
+    const [budget, setBudget] = useState<Budget>(defaultBudget)
     const [project, setProject] = useState<Project>(defaultProject)
     const [projects, setProjects] = useState<Project[]>([])
     const [messages, setMessages] = useState<string[]>([])
@@ -252,6 +254,22 @@ export default function Budget() {
                 <meta name="description" content={title} />
                 <link rel="icon" href="/favicon.ico" />
             </Head>
+
+            <div className="p-4 pb-0">
+                <BudgetDataForm
+                    budget={budget}
+                    onSet={setBudget}
+                    isLoading={isLoading}
+                />
+
+
+                <Button
+                    onClick={() => {
+                        console.log(budget)
+                    }}>
+                    Imprimir
+                </Button>
+            </div>
 
             <div className="p-4 pb-0">
                 <div className="rounded border shadow p-4 flex gap-2">

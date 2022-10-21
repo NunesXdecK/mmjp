@@ -84,6 +84,7 @@ export default function ServiceForm(props: ServiceFormProps) {
                                     if (props.professional) {
                                         professional = props.professional
                                     }
+                                    console.log(props.services)
                                     props.onSetServices([
                                         ...props.services,
                                         {
@@ -103,19 +104,19 @@ export default function ServiceForm(props: ServiceFormProps) {
 
             {props?.services?.map((element, index) => (
                 <ServiceDataForm
-                    key={index}
                     index={index}
+                    service={element}
                     status={props.status}
                     onBlur={props.onBlur}
+                    onSet={handleSetText}
                     onDelete={handeOnDelete}
                     isSingle={props.isSingle}
-                    onSetText={handleSetText}
-                    services={props.services}
                     isLoading={props.isLoading}
-                    isForDisable={props.isLocked}
+                    isDisabled={props.isLocked}
                     onFinishAdd={props.onFinishAdd}
                     isForShowAll={props.isForShowAll}
                     onShowMessage={props.onShowMessage}
+                    key={"services-" + index + props.id}
                 />
             ))}
         </Form>

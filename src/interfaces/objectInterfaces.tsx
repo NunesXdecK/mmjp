@@ -104,6 +104,35 @@ export interface Immobile {
     points?: any[],
 }
 
+export interface Budget {
+    id?: string,
+    title?: string,
+    dateString?: string,
+    status?: "ORÇAMENTO" | "ARQUIVADO" | "FINALIZADO",
+    date?: number,
+    dateInsertUTC?: number,
+    dateLastUpdateUTC?: number,
+    clients?: (Person | Company)[],
+    services?: BudgetService[],
+    payments?: BudgetPayment[],
+}
+
+export interface BudgetService {
+    title?: string,
+    value?: string,
+    total?: string,
+    quantity?: string,
+    index?: number,
+}
+
+export interface BudgetPayment {
+    value?: string,
+    dateString?: string,
+    description?: string,
+    index?: number,
+    dateDue?: number,
+}
+
 export interface Project {
     id?: string,
     title?: string,
@@ -286,6 +315,35 @@ export const defaultImmobilePoint: ImmobilePoint = {
     description: "",
     dateInsertUTC: 0,
     dateLastUpdateUTC: 0,
+}
+
+export const defaultBudget: Budget = {
+    id: "",
+    title: "",
+    dateString: "",
+    status: "ORÇAMENTO",
+    date: 0,
+    dateInsertUTC: 0,
+    dateLastUpdateUTC: 0,
+    clients: [],
+    services: [],
+    payments: [],
+}
+
+export const defaultBudgetService: BudgetService = {
+    title: "",
+    value: "0",
+    total: "0",
+    quantity: "1",
+    index: -1,
+}
+
+export const defaultBudgetPayment: BudgetPayment = {
+    value: "",
+    dateString: "",
+    description: "",
+    index: -1,
+    dateDue: 0,
 }
 
 export const defaultProject: Project = {

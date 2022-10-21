@@ -14,7 +14,7 @@ interface ServicePaymentSingleFormProps {
     subtitle?: string,
     isBack?: boolean,
     canAutoSave?: boolean,
-    isForDisable?: boolean,
+    isDisabled?: boolean,
     isForOldRegister?: boolean,
     servicePayment?: ServicePayment,
     professional?: Professional,
@@ -314,7 +314,7 @@ export default function ServicePaymentSingleForm(props: ServicePaymentSingleForm
                 onShowMessage={props.onShowMessage}
                 onSetServicePayments={setServicePayments}
                 subtitle="Dados básicos dos serviços"
-                isForDisable={props.isForDisable ||
+                isDisabled={props.isDisabled ||
                     (servicePayments[0].status === "PENDENTE" ||
                         servicePayments[0].status === "FINALIZADO" ||
                         servicePayments[0].status === "ARQUIVADO")}
