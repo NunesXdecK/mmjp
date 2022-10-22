@@ -339,7 +339,7 @@ export const defaultBudgetService: BudgetService = {
 }
 
 export const defaultBudgetPayment: BudgetPayment = {
-    value: "",
+    value: "0",
     dateString: "",
     description: "",
     index: -1,
@@ -401,7 +401,7 @@ export const defaultServiceStage: ServiceStage = {
 
 export const defaultServicePayment: ServicePayment = {
     id: "",
-    value: "",
+    value: "0",
     dateString: "",
     description: "",
     status: "ORÇAMENTO",

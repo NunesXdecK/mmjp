@@ -1,4 +1,4 @@
-import { Company, Person, Professional, Project, ServicePayment, ServiceStage, Immobile, Service, User, SubjectMessage } from "../interfaces/objectInterfaces"
+import { Company, Person, Professional, Project, ServicePayment, ServiceStage, Immobile, Service, User, SubjectMessage, Budget } from "../interfaces/objectInterfaces"
 import { handleRemoveCNPJMask } from "./maskUtil"
 import { CNPJ_PATTERN, CPF_PATTERN, ONLY_CHARACTERS_PATTERN, ONLY_CHARACTERS_PATTERN_TWO, ONLY_SPECIAL_FOR_NUMBER_PATTERN } from "./patternValidationUtil"
 
@@ -212,6 +212,67 @@ export const handleImmobileValidationForDB = (immobile: Immobile) => {
         }
     })
     validation = { ...validation, validation: nameCheck && ownersCheck && ownersOnBaseCheck }
+    return validation
+}
+
+export const handleBudgetValidationForDB = (budget: Budget) => {
+    let validation: ValidationReturn = { validation: false, messages: [] }
+    let nameCheck = handleValidationNotNull(budget.title)
+    let clientsCheck = budget?.clients?.length > 0 ?? false
+    let servicesCheck = budget?.services?.length > 0 ?? false
+    let paymentsCheck = budget?.payments?.length > 0 ?? false
+    let clientsOnBaseCheck = true
+    let serviceOnBaseCheck = true
+    let paymentOnBaseCheck = true
+
+    if (!nameCheck) {
+        validation = { ...validation, messages: [...validation.messages, "O campo titulo está em branco."] }
+    }
+
+    if (!clientsCheck) {
+        validation = { ...validation, messages: [...validation.messages, "O serviço precisa de um cliente."] }
+    }
+
+    if (!servicesCheck) {
+        validation = { ...validation, messages: [...validation.messages, "O serviço precisa de ao menos um serviço."] }
+    }
+
+    if (!paymentsCheck) {
+        validation = { ...validation, messages: [...validation.messages, "O serviço precisa de ao menos um pagamento."] }
+    }
+
+    budget.clients.map((element, index) => {
+        if (!handleValidationNotNull(element.id)) {
+            clientsOnBaseCheck = false
+            validation = { ...validation, messages: [...validation.messages, "O serviço precisa de um cliente."] }
+        }
+    })
+
+    budget.services.map((element, index) => {
+        if (!handleValidationNotNull(element.title)) {
+            serviceOnBaseCheck = false
+            validation = { ...validation, messages: [...validation.messages, "O serviço " + (index + 1) + " está sem titulo."] }
+        }
+    })
+
+    budget.payments.map((element, index) => {
+        if (!handleValidationNotNull(element.description)) {
+            paymentOnBaseCheck = false
+            validation = { ...validation, messages: [...validation.messages, "O pagamento " + (index + 1) + " está sem descrição."] }
+        }
+    })
+
+    validation = {
+        ...validation,
+        validation:
+            nameCheck &&
+            clientsCheck &&
+            servicesCheck &&
+            paymentsCheck &&
+            clientsOnBaseCheck &&
+            serviceOnBaseCheck &&
+            paymentOnBaseCheck
+    }
     return validation
 }
 

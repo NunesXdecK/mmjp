@@ -27,6 +27,7 @@ export { db }
 
 export const USER_COLLECTION_NAME = "user"
 export const PERSON_COLLECTION_NAME = "person"
+export const BUDGET_COLLECTION_NAME = "budget"
 export const COMPANY_COLLECTION_NAME = "company"
 export const PROJECT_COLLECTION_NAME = "project"
 export const SERVICE_COLLECTION_NAME = "service"

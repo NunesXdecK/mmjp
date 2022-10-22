@@ -192,6 +192,36 @@ export const ImmobileConversor = {
     }
 }
 
+export const BudgetConversor = {
+    toFirestore(data) {
+        return {
+            id: data.id,
+            title: data.title,
+            status: data.status,
+            date: data.date,
+            dateInsertUTC: data.dateInsertUTC,
+            dateLastUpdateUTC: data.dateLastUpdateUTC,
+            clients: data.clients,
+            services: data.services,
+            payments: data.payments,
+        }
+    },
+    fromFirestore(snapshot, options) {
+        const data = snapshot?.data(options)
+        return {
+            id: snapshot?.id ?? "",
+            title: data.title ?? "",
+            status: data.status ?? "ORÇAMENTO",
+            date: data.date ?? 0,
+            dateInsertUTC: data.dateInsertUTC ?? 0,
+            dateLastUpdateUTC: data.dateLastUpdateUTC ?? 0,
+            clients: data.clients ?? [],
+            services: data.services ?? [],
+            payments: data.payments ?? [],
+        }
+    }
+}
+
 export const ProjectConversor = {
     toFirestore(data) {
         return {

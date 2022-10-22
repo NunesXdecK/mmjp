@@ -1,13 +1,13 @@
 import Button from "../button/button";
-import IOSModal from "../modal/iosModal";
 import PersonForm from "../form/personForm";
 import { useEffect, useState } from "react";
 import CompanyForm from "../form/companyForm";
+import WindowModal from "../modal/windowModal";
+import { XCircleIcon } from "@heroicons/react/outline";
 import { PlusCircleIcon } from "@heroicons/react/solid";
 import InputTextAutoComplete from "./inputTextAutocomplete";
 import { FeedbackMessage } from "../modal/feedbackMessageModal";
 import { Company, defaultCompany, defaultPerson, Person } from "../../interfaces/objectInterfaces";
-import WindowModal from "../modal/windowModal";
 
 interface InputSelectPersonCompanyProps {
     id?: string,
@@ -26,17 +26,18 @@ interface InputSelectPersonCompanyProps {
     validationButton?: boolean,
     isMultipleSelect?: boolean,
     personsAndCompanies?: Person[],
+    onSet?: (any) => void,
     onBlur?: (any?) => void,
     onFinishAdd?: (any?) => void,
     onSetLoading?: (any) => void,
     onShowMessage?: (FeedbackMessage) => void,
-    onSetPersonsAndCompanies?: (array) => void,
     onValidate?: (any) => boolean,
 }
 
 export default function InputSelectPersonCompany(props: InputSelectPersonCompanyProps) {
     const [isOpen, setIsOpen] = useState(false)
     const [isFirst, setIsFirst] = useState(true)
+    const [isSelected, setIsSelected] = useState(props.value?.length > 0)
     const [isRegisterPerson, setIsRegisterPerson] = useState(false)
     const [isRegisterCompany, setIsRegisterCompany] = useState(false)
 
@@ -89,8 +90,9 @@ export default function InputSelectPersonCompany(props: InputSelectPersonCompany
 
         if (canAdd) {
             setText(personOrCompany.name)
-            if (props.onSetPersonsAndCompanies) {
-                props.onSetPersonsAndCompanies(personOrCompany)
+            setIsSelected(true)
+            if (props.onSet) {
+                props.onSet(personOrCompany)
                 setIsOpen(false)
             }
             if (props.onFinishAdd) {
@@ -111,13 +113,14 @@ export default function InputSelectPersonCompany(props: InputSelectPersonCompany
                     isLight
                     isLoading={props.isLoading}
                     isDisabled={props.isLoading}
+                    id={props.id + "-auto-complete-option-new-person"}
+                    className="py-4 rounded-none text-left shadow-none w-full text-gray-700 "
                     onClick={() => {
                         handleNewClickPerson()
                         if (cleanFunction) {
                             cleanFunction("")
                         }
                     }}
-                    className="py-4 rounded-none text-left shadow-none w-full text-gray-700 "
                 >
                     <div className="w-full text-left flex flex-row gap-1">
                         <PlusCircleIcon className="text-indigo-600 block h-5 w-5" aria-hidden="true" />
@@ -128,13 +131,14 @@ export default function InputSelectPersonCompany(props: InputSelectPersonCompany
                     isLight
                     isLoading={props.isLoading}
                     isDisabled={props.isLoading}
+                    id={props.id + "-auto-complete-option-new-company"}
+                    className="py-4 rounded-none text-left shadow-none w-full text-gray-700 "
                     onClick={() => {
                         handleNewClickCompany()
                         if (cleanFunction) {
                             cleanFunction("")
                         }
                     }}
-                    className="py-4 rounded-none text-left shadow-none w-full text-gray-700 "
                 >
                     <div className="w-full text-left flex flex-row gap-1">
                         <PlusCircleIcon className="text-indigo-600 block h-5 w-5" aria-hidden="true" />
@@ -161,20 +165,36 @@ export default function InputSelectPersonCompany(props: InputSelectPersonCompany
 
     return (
         <>
-            <InputTextAutoComplete
-                value={text}
-                id={props.id}
-                title={props.title}
-                onSetText={setText}
-                onBlur={props.onBlur}
-                onClickItem={handleAdd}
-                isLoading={props.isLoading}
-                isDisabled={props.isDisabled}
-                onListOptions={handlePutActions}
-                sugestions={personsAndCompanies}
-            />
+            <div className="relative">
+                <InputTextAutoComplete
+                    value={text}
+                    id={props.id}
+                    title={props.title}
+                    onSetText={setText}
+                    onBlur={props.onBlur}
+                    onClickItem={handleAdd}
+                    isLoading={props.isLoading}
+                    sugestions={personsAndCompanies}
+                    onListOptions={handlePutActions}
+                    isDisabled={isSelected || props.isDisabled}
+                />
+                {isSelected && (
+                    <Button
+                        isLight
+                        className="p-0 top-8 right-2 absolute"
+                        onClick={() => {
+                            setText("")
+                            handleAdd(defaultPerson)
+                            setIsSelected(false)
+                        }}
+                    >
+                        <XCircleIcon className="hover:text-gray-100 text-gray-400 h-6 w-6" aria-hidden="true" />
+                    </Button>
+                )}
+            </div>
 
             <WindowModal
+                max
                 isOpen={isOpen}
                 setIsOpen={setIsOpen}
                 onClose={() => {

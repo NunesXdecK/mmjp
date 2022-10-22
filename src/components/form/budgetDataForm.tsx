@@ -93,10 +93,10 @@ export default function BudgetDataForm(props: BudgetDataFormProps) {
                         title="Cliente"
                         id="budget-client"
                         onBlur={props.onBlur}
+                        onSet={handleSetClient}
                         isLoading={props.isLoading}
                         isDisabled={props.isDisabled}
                         value={props.budget.clients[0]?.name}
-                        onSetPersonsAndCompanies={handleSetClient}
                     />
                 </FormRowColumn>
             </FormRow>

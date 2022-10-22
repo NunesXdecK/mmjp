@@ -84,7 +84,6 @@ export default function ServiceForm(props: ServiceFormProps) {
                                     if (props.professional) {
                                         professional = props.professional
                                     }
-                                    console.log(props.services)
                                     props.onSetServices([
                                         ...props.services,
                                         {

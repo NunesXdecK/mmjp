@@ -19,7 +19,7 @@ interface FeedbackMessageModalProps {
 
 export default function FeedbackMessageModal(props: FeedbackMessageModalProps) {
     let className = `
-                        z-20 
+                        z-50 
                         fixed 
                         py-2 px-5 
                         text-white

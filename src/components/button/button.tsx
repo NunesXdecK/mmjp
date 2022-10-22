@@ -1,6 +1,7 @@
 import { STYLE_FOR_INPUT_LOADING_TRANSPARENT } from "../../util/patternValidationUtil"
 
 interface ButtonProps {
+    id?: string,
     href?: string,
     className?: string,
     color?: "red",
@@ -12,6 +13,7 @@ interface ButtonProps {
     isHidden?: boolean,
     isLoading?: boolean,
     isDisabled?: boolean,
+    ignoreClass?: boolean,
     type?: "button" | "submit" | "reset",
     onClick?: (any) => void,
 }
@@ -80,6 +82,10 @@ export default function Button(props: ButtonProps) {
 
     className = colorClassName + " " + className
 
+    if (props.ignoreClass) {
+        className = props.className
+    }
+
     return (
         <>
             {props.isLink ? (
@@ -92,6 +98,7 @@ export default function Button(props: ButtonProps) {
                 </a>
             ) : (
                 <button
+                    id={props.id}
                     type={props.type}
                     className={className}
                     onClick={props.onClick}

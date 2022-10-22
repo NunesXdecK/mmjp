@@ -5,9 +5,10 @@ import FormRowColumn from "./formRowColumn";
 import InputText from "../inputText/inputText";
 import WindowModal from "../modal/windowModal";
 import { TrashIcon } from "@heroicons/react/outline";
+import InputTextCurrency from "../inputText/inputTextCurrency";
+import { NOT_NULL_MARK } from "../../util/patternValidationUtil";
 import { BudgetPayment } from "../../interfaces/objectInterfaces";
 import InputTextAutoComplete from "../inputText/inputTextAutocomplete";
-import { NOT_NULL_MARK, NUMBER_MARK } from "../../util/patternValidationUtil";
 
 interface BudgetPaymentFormProps {
     id?: string,
@@ -74,17 +75,15 @@ export default function BudgetPaymentForm(props: BudgetPaymentFormProps) {
                 </FormRowColumn>
 
                 <FormRowColumn unit="2">
-                    <InputText
+                    <InputTextCurrency
                         title="Valor"
-                        mask="currency"
                         onBlur={props.onBlur}
-                        validation={NUMBER_MARK}
                         isLoading={props.isLoading}
                         isDisabled={props.isDisabled}
-                        id={"value-payment-" + props.index + "-" + props.id}
-                        onValidate={handleChangeFormValidation}
-                        onSetText={handleSetServicePaymentValue}
                         value={props.budgetPayment.value}
+                        onSet={handleSetServicePaymentValue}
+                        onValidate={handleChangeFormValidation}
+                        id={"value-payment-" + props.index + "-" + props.id}
                         validationMessage="O titulo da etapa não pode ficar em branco."
                     />
                 </FormRowColumn>

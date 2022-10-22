@@ -100,7 +100,6 @@ export default function InputTextAutoComplete(props: InputTextAutoCompleteProps)
     return (
         <div className={classNameHolder}>
             <div>
-
                 <label
                     htmlFor={props.id}
                     className={classNameLabel}>

@@ -5,6 +5,7 @@ import FormRowColumn from "./formRowColumn";
 import InputText from "../inputText/inputText";
 import WindowModal from "../modal/windowModal";
 import { TrashIcon } from "@heroicons/react/outline";
+import InputTextCurrency from "../inputText/inputTextCurrency";
 import { BudgetService } from "../../interfaces/objectInterfaces";
 import InputTextAutoComplete from "../inputText/inputTextAutocomplete";
 import { NOT_NULL_MARK, NUMBER_MARK } from "../../util/patternValidationUtil";
@@ -93,17 +94,15 @@ export default function BudgetServiceForm(props: BudgetServiceFormProps) {
                     />
                 </FormRowColumn>
                 <FormRowColumn unit="1">
-                    <InputText
+                    <InputTextCurrency
                         title="Valor"
-                        mask="currency"
                         onBlur={props.onBlur}
-                        validation={NUMBER_MARK}
                         isLoading={props.isLoading}
                         isDisabled={props.isDisabled}
-                        onSetText={handleSetServiceValue}
+                        onSet={handleSetServiceValue}
                         value={props.budgetService.value}
-                        id={"value-service-" + props.index + "-" + props.id}
                         onValidate={handleChangeFormValidation}
+                        id={"value-service-" + props.index + "-" + props.id}
                     />
                 </FormRowColumn>
                 <FormRowColumn unit="1">
@@ -120,11 +119,9 @@ export default function BudgetServiceForm(props: BudgetServiceFormProps) {
                     />
                 </FormRowColumn>
                 <FormRowColumn unit="2" className="flex flex-col sm:flex-row">
-                    <InputText
+                    <InputTextCurrency
                         isDisabled
                         title="Total"
-                        mask="currency"
-                        validation={NUMBER_MARK}
                         isLoading={props.isLoading}
                         value={props.budgetService.total}
                         id={"total-service-" + props.index + "-" + props.id}

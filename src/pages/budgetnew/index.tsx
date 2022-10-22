@@ -1,7 +1,6 @@
 import Head from "next/head"
 import { useEffect, useState } from "react"
 import Layout from "../../components/layout/layout"
-import { handlePrepareServiceForShow } from "../../util/converterUtil"
 import { handleNewDateToUTC, handleUTCToDateShow } from "../../util/dateUtils"
 import FeedbackMessageModal, { defaultFeedbackMessage, FeedbackMessage } from "../../components/modal/feedbackMessageModal"
 import { Budget, Company, defaultBudget, defaultProfessional, defaultProject, defaultService, Person, Professional, Project, Service } from "../../interfaces/objectInterfaces"
@@ -11,9 +10,8 @@ import FormRow from "../../components/form/formRow"
 import FormRowColumn from "../../components/form/formRowColumn"
 import Button from "../../components/button/button"
 import WindowModal from "../../components/modal/windowModal"
-import ProjectForm from "../../components/form/projectForm"
 import ProjectView from "../../components/view/projectView"
-import BudgetDataForm from "../../components/form/budgetDataForm"
+import BudgetForm from "../../components/form/budgetForm"
 
 export default function Index() {
     const [title, setTitle] = useState("Lista de orçamentos")
@@ -46,7 +44,7 @@ export default function Index() {
     const handleDeleteClick = async (project, index) => {
         setIsLoading(true)
         let feedbackMessage: FeedbackMessage = { messages: ["Algo deu errado"], messageType: "ERROR" }
-        const res = await fetch("api/project", {
+        const res = await fetch("api/budget", {
             method: "DELETE",
             body: JSON.stringify({ token: "tokenbemseguro", id: project.id }),
         }).then((res) => res.json())
@@ -65,6 +63,7 @@ export default function Index() {
     }
 
     const handleNewClick = async () => {
+        /*
         setIsLoading(true)
         let localProfessional: Professional = defaultProfessional
         try {
@@ -78,9 +77,11 @@ export default function Index() {
         }
         setProject(newProject)
         setProfessional(localProfessional)
-        setIsRegister(true)
         setIsLoading(false)
         setTitle("Novo orçamento")
+        */
+        setBudget(defaultBudget)
+        setIsRegister(true)
     }
 
     const handleFilterList = (string) => {
@@ -112,42 +113,13 @@ export default function Index() {
         setIsForShow(true)
         setIsLoading(false)
     }
-    const handleEditClick = async (project, index?) => {
+    const handleEditClick = async (budget, index?) => {
         setIsLoading(true)
-        let localProject: Project = await fetch("api/projectview/" + project.id).then((res) => res.json()).then((res) => res.data)
-        let localProfessional: Professional = defaultProfessional
-        try {
-            localProfessional = await fetch("api/lastProfessional").then((res) => res.json()).then((res) => res.professional)
-        } catch (err) {
-            console.error(err)
-        }
-        let localServices: Service[] = []
-        try {
-            let localServicesByProject = await fetch("api/services/" + localProject.id).then((res) => res.json()).then((res) => res.list)
-            if (localServicesByProject && localServicesByProject?.length > 0) {
-                await Promise.all(
-                    localServicesByProject.map(async (element, index) => {
-                        if (element && "id" in element && element?.id?.length) {
-                            let service: Service = await fetch("api/service/" + element.id).then((res) => res.json()).then((res) => res.data)
-                            if (service && "id" in service && service?.id?.length) {
-                                localServices = [...localServices, { ...defaultService, ...handlePrepareServiceForShow(service) }]
-                            }
-                        }
-                    })
-                )
-            }
-            localServices = localServices.sort((elementOne: Service, elementTwo: Service) => {
-                let indexOne = elementOne.index
-                let indexTwo = elementTwo.index
-                return indexTwo - indexOne
-            })
-        } catch (err) {
-            console.error(err)
-        }
+        let localBudget: Budget = await fetch("api/budget/" + budget.id).then((res) => res.json()).then((res) => res.data)
         let localClients = []
-        if (localProject.clients && localProject.clients?.length > 0) {
+        if (localBudget.clients && localBudget.clients?.length > 0) {
             await Promise.all(
-                localProject.clients.map(async (element, index) => {
+                localBudget.clients.map(async (element, index) => {
                     if (element && element?.id?.length) {
                         let localClient: (Person | Company) = {}
                         if ("cpf" in element) {
@@ -162,17 +134,14 @@ export default function Index() {
                 })
             )
         }
-        localProject = {
-            ...localProject,
+        localBudget = {
+            ...localBudget,
             clients: localClients,
-            services: localServices,
-            dateString: handleUTCToDateShow(localProject.date.toString()),
+            dateString: handleUTCToDateShow(localBudget.date.toString()),
         }
         setIsLoading(false)
         setIsRegister(true)
-        setProject({ ...defaultProject, ...localProject })
-        setProfessional(localProfessional)
-        setTitle("Editar orçamento")
+        setBudget(localBudget)
     }
 
     const handleAfterSave = (feedbackMessage: FeedbackMessage, budget: Project) => {
@@ -256,19 +225,7 @@ export default function Index() {
             </Head>
 
             <div className="p-4 pb-0">
-                <BudgetDataForm
-                    budget={budget}
-                    onSet={setBudget}
-                    isLoading={isLoading}
-                />
 
-
-                <Button
-                    onClick={() => {
-                        console.log(budget)
-                    }}>
-                    Imprimir
-                </Button>
             </div>
 
             <div className="p-4 pb-0">
@@ -314,10 +271,9 @@ export default function Index() {
                 setIsOpen={setIsRegister}>
                 {isRegister && (
                     <>
-                        <ProjectForm
-                            isBack={false}
-                            project={project}
-                            professional={professional}
+                        <BudgetForm
+                            budget={budget}
+                            onSet={setBudget}
                             onAfterSave={handleAfterSave}
                             title="Informações do orçamento"
                             onShowMessage={handleShowMessage}

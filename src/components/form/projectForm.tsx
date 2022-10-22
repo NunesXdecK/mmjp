@@ -16,11 +16,11 @@ import ScrollDownTransition from "../animation/scrollDownTransition";
 import InputTextAutoComplete from "../inputText/inputTextAutocomplete";
 import SelectPersonCompanyForm from "../select/selectPersonCompanyForm";
 import FeedbackMessageSaveText from "../modal/feedbackMessageSavingText";
+import InputSelectPersonCompany from "../inputText/inputSelectPersonCompany";
 import { handleNewDateToUTC, handleUTCToDateShow } from "../../util/dateUtils";
 import { handleIsEqual, handleProjectValidationForDB, handleServicesValidationForDB } from "../../util/validationUtil";
 import { defaultProject, Immobile, Professional, Project, Service, ServicePayment, ServiceStage } from "../../interfaces/objectInterfaces";
 import { defaultElementFromBase, ElementFromBase, handlePrepareImmobileForDB, handlePrepareProjectForDB, handlePrepareServiceForDB } from "../../util/converterUtil";
-import InputSelectPersonCompany from "../inputText/inputSelectPersonCompany";
 
 interface ProjectFormProps {
     title?: string,
@@ -729,7 +729,7 @@ export default function ProjectForm(props: ProjectFormProps) {
                                         id="input-select"
                                         isLoading={isLoading}
                                         value={project.clients[0]?.name}
-                                        onSetPersonsAndCompanies={handleSetProjectClients}
+                                        onSet={handleSetProjectClients}
                                     />
                                 </FormRowColumn>
                             </FormRow>
