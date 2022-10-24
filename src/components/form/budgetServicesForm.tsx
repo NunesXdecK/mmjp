@@ -7,7 +7,7 @@ import CurrencyTextView from "../text/currencyTextView";
 import { FeedbackMessage } from "../modal/feedbackMessageModal";
 import { handleNewDateToUTC, handleUTCToDateShow } from "../../util/dateUtils";
 import { BudgetService, defaultBudgetService } from "../../interfaces/objectInterfaces";
-import { handleValueStringToFloat } from "../../util/maskUtil";
+import { handleValueStringToInt } from "../../util/maskUtil";
 
 interface BudgetServicesFormProps {
     id?: string,
@@ -27,10 +27,9 @@ export default function BudgetServicesForm(props: BudgetServicesFormProps) {
     const handleGetTotal = () => {
         let total = 0
         props.budgetServices?.map((element, index) => {
-            total = total + handleValueStringToFloat(element.total)
-
+            total = total + handleValueStringToInt(element.total)
         })
-        return total.toFixed(2)
+        return total.toString()
     }
 
     const handleSetText = (object, index) => {

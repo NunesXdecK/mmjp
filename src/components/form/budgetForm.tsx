@@ -110,6 +110,7 @@ export default function BudgetForm(props: BudgetForm) {
     return (
         <>
             {handleActionBar()}
+            {/*
             <ActionBar>
                 <InputCheckbox
                     id="budget-multiple"
@@ -120,6 +121,7 @@ export default function BudgetForm(props: BudgetForm) {
                     isDisabled={props.isDisabled}
                 />
             </ActionBar>
+            */}
             <BudgetDataForm
                 onSet={props.onSet}
                 budget={props.budget}

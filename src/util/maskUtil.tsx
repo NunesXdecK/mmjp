@@ -258,6 +258,14 @@ export const handleMountCPFCurrency = (text, dig1, dig2) => {
     return maskedText
 }
 
+export const handleValueStringToInt = (text: string) => {
+    let returnInt = 0
+    if (text) {
+        returnInt = parseFloat(text.replaceAll(".", "").replaceAll(",", ""))
+    }
+    return returnInt
+}
+
 export const handleValueStringToFloat = (text: string) => {
     let returnFloat = 0.0
     if (text) {

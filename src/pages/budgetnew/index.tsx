@@ -1,10 +1,9 @@
 import Head from "next/head"
 import { useEffect, useState } from "react"
 import Layout from "../../components/layout/layout"
-import { handleNewDateToUTC, handleUTCToDateShow } from "../../util/dateUtils"
+import { handleUTCToDateShow, handleNewDateToUTC } from "../../util/dateUtils"
 import FeedbackMessageModal, { defaultFeedbackMessage, FeedbackMessage } from "../../components/modal/feedbackMessageModal"
-import { Budget, Company, defaultBudget, defaultProfessional, defaultProject, defaultService, Person, Professional, Project, Service } from "../../interfaces/objectInterfaces"
-import FeedbackPendency from "../../components/modal/feedbackPendencyModal"
+import { Budget, Company, defaultBudget, Person, Project } from "../../interfaces/objectInterfaces"
 import ListTable from "../../components/list/listTable"
 import FormRow from "../../components/form/formRow"
 import FormRowColumn from "../../components/form/formRowColumn"
@@ -12,13 +11,13 @@ import Button from "../../components/button/button"
 import WindowModal from "../../components/modal/windowModal"
 import ProjectView from "../../components/view/projectView"
 import BudgetForm from "../../components/form/budgetForm"
+import ActionBar from "../../components/bar/actionBar"
+import BudgetView from "../../components/view/budgetView"
 
 export default function Index() {
-    const [title, setTitle] = useState("Lista de orçamentos")
-    const [professional, setProfessional] = useState<Professional>(defaultProfessional)
+    const [title, setTitle] = useState("Orçamentos")
     const [budget, setBudget] = useState<Budget>(defaultBudget)
-    const [project, setProject] = useState<Project>(defaultProject)
-    const [projects, setProjects] = useState<Project[]>([])
+    const [budgets, setBudgets] = useState<Budget[]>([])
     const [messages, setMessages] = useState<string[]>([])
 
     const [index, setIndex] = useState(-1)
@@ -34,19 +33,17 @@ export default function Index() {
         if (event) {
             event.preventDefault()
         }
-        setProjects([])
-        setProject(defaultProject)
-        setProfessional(defaultProfessional)
+        setBudget(defaultBudget)
         setIsRegister(false)
-        setTitle("Lista de orçamentos")
+        setTitle("Orçamentos")
     }
 
-    const handleDeleteClick = async (project, index) => {
+    const handleDeleteClick = async (budget, index) => {
         setIsLoading(true)
         let feedbackMessage: FeedbackMessage = { messages: ["Algo deu errado"], messageType: "ERROR" }
         const res = await fetch("api/budget", {
             method: "DELETE",
-            body: JSON.stringify({ token: "tokenbemseguro", id: project.id }),
+            body: JSON.stringify({ token: "tokenbemseguro", id: budget.id }),
         }).then((res) => res.json())
         if (res.status === "SUCCESS") {
             feedbackMessage = { messages: ["Removido com sucesso!"], messageType: "SUCCESS" }
@@ -54,65 +51,35 @@ export default function Index() {
             feedbackMessage = { messages: ["Algo deu errado"], messageType: "ERROR" }
         }
         const list = [
-            ...projects.slice(0, index),
-            ...projects.slice(index + 1, projects.length),
+            ...budgets.slice(0, index),
+            ...budgets.slice(index + 1, budgets.length),
         ]
-        setProjects(list)
+        setBudgets(list)
         setIsLoading(false)
         handleShowMessage(feedbackMessage)
     }
 
     const handleNewClick = async () => {
-        /*
-        setIsLoading(true)
-        let localProfessional: Professional = defaultProfessional
-        try {
-            localProfessional = await fetch("api/lastProfessional").then((res) => res.json()).then((res) => res.professional)
-        } catch (err) {
-            console.error(err)
-        }
-        let newProject = {
-            ...defaultProject,
-            dateString: handleUTCToDateShow(handleNewDateToUTC().toString()),
-        }
-        setProject(newProject)
-        setProfessional(localProfessional)
-        setIsLoading(false)
-        setTitle("Novo orçamento")
-        */
-        setBudget(defaultBudget)
+        setBudget({ ...defaultBudget, dateString: handleUTCToDateShow(handleNewDateToUTC().toString()) })
         setIsRegister(true)
     }
 
     const handleFilterList = (string) => {
-        let listItems = [...projects]
-        let listItemsFiltered: Project[] = []
-        listItemsFiltered = listItems.filter((element: Project, index) => {
+        let listItems = [...budgets]
+        let listItemsFiltered: Budget[] = []
+        listItemsFiltered = listItems.filter((element: Budget, index) => {
             return element.title.toLowerCase().includes(string.toLowerCase())
         })
         return listItemsFiltered
     }
 
-    const handleEditClickOld = async (project) => {
-        setIsLoading(true)
-        let localProject: Project = await fetch("api/project/" + project.id).then((res) => res.json()).then((res) => res.data)
-
-        localProject = {
-            ...localProject,
-            dateString: handleUTCToDateShow(localProject.date.toString()),
-        }
-        setIsLoading(false)
-        setIsRegister(true)
-        setProject({ ...defaultProject, ...localProject })
-        setTitle("Editar orçamento")
-    }
-
     const handleShowClick = async (project) => {
         setIsLoading(true)
-        setProject({ ...defaultProject, ...project })
+        setBudget({ ...defaultBudget, ...project })
         setIsForShow(true)
         setIsLoading(false)
     }
+
     const handleEditClick = async (budget, index?) => {
         setIsLoading(true)
         let localBudget: Budget = await fetch("api/budget/" + budget.id).then((res) => res.json()).then((res) => res.data)
@@ -144,21 +111,21 @@ export default function Index() {
         setBudget(localBudget)
     }
 
-    const handleAfterSave = (feedbackMessage: FeedbackMessage, budget: Project) => {
+    const handleAfterSave = (feedbackMessage: FeedbackMessage, budget: Budget) => {
         handleBackClick()
-        let list = [
+        let list: Budget[] = [
             budget,
-            ...projects,
+            ...budgets,
         ]
         if (index > -1) {
             list = [
-                ...projects.slice(0, index),
+                ...budgets.slice(0, index),
                 budget,
-                ...projects.slice(index + 1, projects.length),
+                ...budgets.slice(index + 1, budgets.length),
             ]
             setIndex(-1)
         }
-        setProjects(list)
+        setBudgets(list)
         handleShowMessage(feedbackMessage)
     }
 
@@ -199,7 +166,7 @@ export default function Index() {
             fetch("api/budgets").then((res) => res.json()).then((res) => {
                 setIsFirst(old => false)
                 if (res.list.length) {
-                    setProjects(res.list)
+                    setBudgets(res.list)
                 }
                 setIsLoading(false)
             })
@@ -224,33 +191,27 @@ export default function Index() {
                 <link rel="icon" href="/favicon.ico" />
             </Head>
 
-            <div className="p-4 pb-0">
-
-            </div>
-
-            <div className="p-4 pb-0">
-                <div className="rounded border shadow p-4 flex gap-2">
-                    <Button
-                        isLoading={isLoading}
-                        onClick={handleNewClick}
-                    >
-                        Novo
-                    </Button>
-                    <Button
-                        isLoading={isLoading}
-                        onClick={() => {
-                            setIsFirst(true)
-                            setIsLoading(true)
-                            handleBackClick()
-                        }}
-                    >
-                        Atualizar
-                    </Button>
-                </div>
-            </div>
+            <ActionBar>
+                <Button
+                    isLoading={isLoading}
+                    onClick={handleNewClick}
+                >
+                    Novo
+                </Button>
+                <Button
+                    isLoading={isLoading}
+                    onClick={() => {
+                        setIsFirst(true)
+                        setIsLoading(true)
+                        handleBackClick()
+                    }}
+                >
+                    Atualizar
+                </Button>
+            </ActionBar>
 
             <ListTable
-                list={projects}
+                list={budgets}
                 title="Orçamento"
                 isLoading={isLoading}
                 onSetIndex={setIndex}
@@ -270,16 +231,14 @@ export default function Index() {
                 isOpen={isRegister}
                 setIsOpen={setIsRegister}>
                 {isRegister && (
-                    <>
-                        <BudgetForm
-                            budget={budget}
-                            onSet={setBudget}
-                            onAfterSave={handleAfterSave}
-                            title="Informações do orçamento"
-                            onShowMessage={handleShowMessage}
-                            subtitle="Dados importantes sobre o orçamento"
-                        />
-                    </>
+                    <BudgetForm
+                        budget={budget}
+                        onSet={setBudget}
+                        onAfterSave={handleAfterSave}
+                        title="Informações do orçamento"
+                        onShowMessage={handleShowMessage}
+                        subtitle="Dados importantes sobre o orçamento"
+                    />
                 )}
             </WindowModal>
 
@@ -288,9 +247,7 @@ export default function Index() {
                 isOpen={isForShow}
                 setIsOpen={setIsForShow}>
                 {isForShow && (
-                    <>
-                        <ProjectView elementId={project.id} />
-                    </>
+                    <BudgetView elementId={budget.id} />
                 )}
             </WindowModal>
 
