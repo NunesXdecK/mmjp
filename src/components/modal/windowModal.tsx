@@ -1,5 +1,4 @@
-import { Transition } from "@headlessui/react"
-import { Fragment, useEffect } from "react"
+import { useEffect } from "react"
 import HeaderModal from "./headerModal"
 
 interface WindowModalProps {
