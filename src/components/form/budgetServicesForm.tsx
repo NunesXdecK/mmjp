@@ -65,27 +65,31 @@ export default function BudgetServicesForm(props: BudgetServicesFormProps) {
             title={props.title}
             subtitle={props.subtitle}
             className={props.formClassName}
+            titleRight={
+                <>
+                    <FormRow className="mb-2">
+                        <FormRowColumn unit="6" className="flex justify-end">
+                            <Button
+                                isLoading={props.isLoading}
+                                isDisabled={props.isDisabled || props.isLoading}
+                                onClick={async () => {
+                                    if (props.onSet) {
+                                        props.onSet([
+                                            ...props.budgetServices,
+                                            {
+                                                ...defaultBudgetService,
+                                                index: props.budgetServices.length,
+                                                dateString: handleUTCToDateShow((handleNewDateToUTC() + 2592000000) + ""),
+                                            }])
+                                    }
+                                }}>
+                                Adicionar serviço
+                            </Button>
+                        </FormRowColumn>
+                    </FormRow>
+                </>
+            }
         >
-            <FormRow className="mb-2">
-                <FormRowColumn unit="6" className="flex justify-end">
-                    <Button
-                        isLoading={props.isLoading}
-                        isDisabled={props.isDisabled || props.isLoading}
-                        onClick={async () => {
-                            if (props.onSet) {
-                                props.onSet([
-                                    ...props.budgetServices,
-                                    {
-                                        ...defaultBudgetService,
-                                        index: props.budgetServices.length,
-                                        dateString: handleUTCToDateShow((handleNewDateToUTC() + 2592000000) + ""),
-                                    }])
-                            }
-                        }}>
-                        Adicionar serviço
-                    </Button>
-                </FormRowColumn>
-            </FormRow>
 
             {props?.budgetServices?.map((element, index) => (
                 <BudgetServiceDataForm

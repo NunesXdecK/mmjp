@@ -14,12 +14,12 @@ interface DropDownButtonProps {
 
 export default function DropDownButton(props: DropDownButtonProps) {
     const [isOpen, setIsOpen] = useState(false)
-    let optionsHolderClassName = "absolute shadow-m mt-2 z-20 bg-slate-50 rounded"
+    let optionsHolderClassName = "absolute min-w-max shadow-m mt-2 z-20 bg-slate-50 rounded"
     if (props.isLeft) {
         optionsHolderClassName = optionsHolderClassName + " right-0"
     }
     return (
-        <div>
+        <div className="relative">
             <div>
                 <Button
                     isLoading={props.isLoading}

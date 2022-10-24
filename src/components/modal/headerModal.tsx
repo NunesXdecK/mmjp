@@ -1,8 +1,15 @@
 import { XIcon } from "@heroicons/react/outline";
+interface HeaderModalProps {
+    title?: string,
+    onClose?: (boolean) => void,
+}
 
-export default function HeaderModal(props) {
+export default function HeaderModal(props: HeaderModalProps) {
     return (
-        <div className="left-6 sm:left-8 sm:top-8 top-4 fixed print:hidden">
+        <div className="p-4 flex flex-row items-center justify-between print:hidden">
+            <div className="text-xl pl-4">
+                {props.title}
+            </div>
             <button
                 className="p-2 rounded-full bg-slate-50"
                 type="button"

@@ -9,10 +9,11 @@ import FormRow from "../../components/form/formRow"
 import FormRowColumn from "../../components/form/formRowColumn"
 import Button from "../../components/button/button"
 import WindowModal from "../../components/modal/windowModal"
-import ProjectView from "../../components/view/projectView"
 import BudgetForm from "../../components/form/budgetForm"
 import ActionBar from "../../components/bar/actionBar"
 import BudgetView from "../../components/view/budgetView"
+import BudgetActionBarForm from "../../components/bar/budgetActionBar"
+import BudgetDataForm from "../../components/form/budgetDataForm"
 
 export default function Index() {
     const [title, setTitle] = useState("Orçamentos")
@@ -191,24 +192,26 @@ export default function Index() {
                 <link rel="icon" href="/favicon.ico" />
             </Head>
 
-            <ActionBar>
-                <Button
-                    isLoading={isLoading}
-                    onClick={handleNewClick}
-                >
-                    Novo
-                </Button>
-                <Button
-                    isLoading={isLoading}
-                    onClick={() => {
-                        setIsFirst(true)
-                        setIsLoading(true)
-                        handleBackClick()
-                    }}
-                >
-                    Atualizar
-                </Button>
-            </ActionBar>
+            <div className="p-4 pb-0">
+                <ActionBar>
+                    <Button
+                        isLoading={isLoading}
+                        onClick={handleNewClick}
+                    >
+                        Novo
+                    </Button>
+                    <Button
+                        isLoading={isLoading}
+                        onClick={() => {
+                            setIsFirst(true)
+                            setIsLoading(true)
+                            handleBackClick()
+                        }}
+                    >
+                        Atualizar
+                    </Button>
+                </ActionBar>
+            </div>
 
             <ListTable
                 list={budgets}
@@ -228,16 +231,28 @@ export default function Index() {
 
             <WindowModal
                 max
+                title={title}
                 isOpen={isRegister}
+                id="budget-register-modal"
+                headerBottom={(
+                    <div className="p-4 pb-0">
+                        <BudgetActionBarForm
+                            budget={budget}
+                            onSet={setBudget}
+                            isLoading={isLoading}
+                            onSetIsLoading={setIsLoading}
+                            onAfterSave={handleAfterSave}
+                            onShowMessage={handleShowMessage}
+                        />
+                    </div>
+                )}
                 setIsOpen={setIsRegister}>
                 {isRegister && (
-                    <BudgetForm
+                    <BudgetDataForm
                         budget={budget}
                         onSet={setBudget}
-                        onAfterSave={handleAfterSave}
-                        title="Informações do orçamento"
+                        isLoading={isLoading}
                         onShowMessage={handleShowMessage}
-                        subtitle="Dados importantes sobre o orçamento"
                     />
                 )}
             </WindowModal>
@@ -245,6 +260,8 @@ export default function Index() {
             <WindowModal
                 max
                 isOpen={isForShow}
+                title="Ver orçamento"
+                id="budget-show-modal"
                 setIsOpen={setIsForShow}>
                 {isForShow && (
                     <BudgetView elementId={budget.id} />

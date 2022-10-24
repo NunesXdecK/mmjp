@@ -39,7 +39,7 @@ export default function InfoHolderView(props: InfoHolderViewProps) {
 
     return (
         <div className={classNameHolder}>
-            <div className="bg-gray-200 px-4 py-5 sm:px-6">
+            <div className="rounded-t bg-gray-200 px-4 py-5 sm:px-6">
                 {props.title && (<p className={classNameTitle}>{props.title}</p>)}
                 {props.subtitle && (<p className={classNameSubtitle}>{props.subtitle}</p>)}
             </div>

@@ -1,4 +1,5 @@
 import { Transition } from "@headlessui/react"
+import { Fragment } from "react"
 
 export interface FeedbackMessage {
     messages?: string[],
@@ -19,7 +20,7 @@ interface FeedbackMessageModalProps {
 
 export default function FeedbackMessageModal(props: FeedbackMessageModalProps) {
     let className = `
-                        z-50 
+                        z-30
                         fixed 
                         py-2 px-5 
                         text-white
@@ -41,6 +42,7 @@ export default function FeedbackMessageModal(props: FeedbackMessageModalProps) {
     return (
         <>
             <Transition
+                as={Fragment}
                 show={props.isOpen}
                 enter="transition-opacity duration-[500ms]"
                 enterFrom="opacity-0"

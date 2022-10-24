@@ -2,6 +2,7 @@ interface FormProps {
     title?: string,
     subtitle?: string,
     className?: string,
+    titleRight?: any,
     children?: any,
 }
 
@@ -24,10 +25,13 @@ export default function Form(props: FormProps) {
         <div className={className}>
             <div className={classNameHolder}>
                 {props.title && (
-                    <div className="md:cols-span-1">
-                        <div className="pb-4">
+                    <div className="flex flex-row justify-between md:cols-span-1 pb-4">
+                        <div className="">
                             <h3 className="text-lg font-medium leading-6 text-gray-900">{props.title}</h3>
                             <p className="mt-1 text-sm text-gray-600">{props.subtitle}</p>
+                        </div>
+                        <div className="">
+                            {props.titleRight}
                         </div>
                     </div>
                 )}

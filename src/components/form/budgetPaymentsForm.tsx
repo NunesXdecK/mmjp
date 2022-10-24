@@ -59,30 +59,33 @@ export default function BudgetPaymentsForm(props: BudgetPaymentsFormProps) {
             title={props.title}
             subtitle={props.subtitle}
             className={props.formClassName}
+            titleRight={
+                <>
+                    {(!props.isDisabled && !props.isSingle) && (
+                        <FormRow>
+                            <FormRowColumn unit="6" className="flex justify-end">
+                                <Button
+                                    isLoading={props.isLoading}
+                                    isDisabled={props.isLoading}
+                                    onClick={() => {
+                                        if (props.onSet) {
+                                            props.onSet([...props.budgetPayments,
+                                            {
+                                                ...defaultBudgetPayment,
+                                                status: props.status ?? "ORÇAMENTO",
+                                                index: props.budgetPayments?.length,
+                                                dateString: handleUTCToDateShow((handleNewDateToUTC() + 2592000000) + ""),
+                                            }])
+                                        }
+                                    }}>
+                                    Adicionar pagamento
+                                </Button>
+                            </FormRowColumn>
+                        </FormRow>
+                    )}
+                </>
+            }
         >
-
-            {(!props.isDisabled && !props.isSingle) && (
-                <FormRow>
-                    <FormRowColumn unit="6" className="flex justify-end">
-                        <Button
-                            isLoading={props.isLoading}
-                            isDisabled={props.isLoading}
-                            onClick={() => {
-                                if (props.onSet) {
-                                    props.onSet([...props.budgetPayments,
-                                    {
-                                        ...defaultBudgetPayment,
-                                        status: props.status ?? "ORÇAMENTO",
-                                        index: props.budgetPayments?.length,
-                                        dateString: handleUTCToDateShow((handleNewDateToUTC() + 2592000000) + ""),
-                                    }])
-                                }
-                            }}>
-                            Adicionar pagamento
-                        </Button>
-                    </FormRowColumn>
-                </FormRow>
-            )}
 
             {props?.budgetPayments?.map((element, index) => (
                 <BudgetPaymentForm

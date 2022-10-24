@@ -77,31 +77,34 @@ export default function BudgetForm(props: BudgetForm) {
     const handleActionBar = () => {
         return (
             <ActionBar>
-                <Button
-                    onClick={handleSave}
-                >
-                    Salvar
-                </Button>
-                <DropDownButton
-                    title="...">
-                    <div className="w-full flex flex-col">
-                        <MenuButton>
-                            Arquivar
-                        </MenuButton>
-                        <MenuButton>
-                            Imprimir orçamento
-                        </MenuButton>
-                        <MenuButton>
-                            Imprimir contrato
-                        </MenuButton>
-                        <MenuButton>
-                            Iniciar projeto
-                        </MenuButton>
-                        <MenuButton>
-                            Reativar orçamento
-                        </MenuButton>
-                    </div>
-                </DropDownButton>
+                <div className="w-full flex flex-row justify-between">
+                    <Button
+                        onClick={handleSave}
+                    >
+                        Salvar
+                    </Button>
+                    <DropDownButton
+                        isLeft
+                        title="...">
+                        <div className="w-full flex flex-col">
+                            <MenuButton>
+                                Arquivar
+                            </MenuButton>
+                            <MenuButton>
+                                Imprimir orçamento
+                            </MenuButton>
+                            <MenuButton>
+                                Imprimir contrato
+                            </MenuButton>
+                            <MenuButton>
+                                Iniciar projeto
+                            </MenuButton>
+                            <MenuButton>
+                                Reativar orçamento
+                            </MenuButton>
+                        </div>
+                    </DropDownButton>
+                </div>
             </ActionBar>
 
         )
