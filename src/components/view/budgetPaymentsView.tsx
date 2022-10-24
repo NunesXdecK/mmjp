@@ -29,7 +29,7 @@ export default function BudgetPaymentsView(props: BudgetPaymentsViewProps) {
                     hidePaddingMargin={props.hidePaddingMargin}
                     classNameContentHolder={props.classNameContentHolder}
                 >
-                    <FormRow className="-m-2 mb-2 p-2  flex-row bg-gray-200 hidden sm:flex">
+                    <FormRow className="-m-2 mb-2 p-2 bg-gray-200 hidden sm:grid">
                         <FormRowColumn unit="3">Nome</FormRowColumn>
                         <FormRowColumn unit="1" className="text-center">Vencimento</FormRowColumn>
                         <FormRowColumn unit="2" className="text-center">Valor</FormRowColumn>
