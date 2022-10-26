@@ -37,6 +37,7 @@ export default function BudgetServicesView(props: BudgetServiceViewProps) {
                     </FormRow>
                     {props.budgetServices.map((element, index) => (
                         <BudgetServiceView
+                            index={index + 1}
                             budgetService={element}
                             key={"budget-services-" + props.id + "-" + index}
                         />

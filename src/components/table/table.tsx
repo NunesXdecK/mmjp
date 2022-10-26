@@ -12,7 +12,7 @@ let lineTest = { codigo: "1PCN", codiNome: "Fazenda Arraial", cliente: "Conde Do
 
 const headerClassName = "px-4 py-5 text-md leading-6 font-medium text-gray-900"
 const rowClassName = "mt-1 text-sm text-gray-900 px-4 py-5"
-const pagesLineClassName = "z-10 bg-indigo-50 bg-slate-50 border-gray-300 text-gray-500 hover:bg-gray-50relative inline-flex items-center px-4 py-2 border text-sm font-medium"
+const pagesLineClassName = "z-10 bg-indigo-50 bg-slate-50 border-gray-300 text-gray-500 hover:bg-gray-50 relative inline-flex items-center px-4 py-2 border text-sm font-medium"
 const pagesLineCurrentClassName = "z-10 bg-indigo-50 border-indigo-500 text-indigo-600 relative inline-flex items-center px-4 py-2 border text-sm font-medium"
 
 

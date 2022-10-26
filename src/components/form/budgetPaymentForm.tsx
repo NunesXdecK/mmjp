@@ -67,7 +67,7 @@ export default function BudgetPaymentForm(props: BudgetPaymentFormProps) {
                         isDisabled={props.isDisabled}
                         sugestions={["Entrada", "Parcela"]}
                         onValidate={handleChangeFormValidation}
-                        id={"description-payment" + props.index + "-" + props.id}
+                        id={"description-payment-" + (props.index ?? 0) + "-" + props.id}
                         onSetText={handleSetServicePaymentDescription}
                         value={props.budgetPayment.description}
                         validationMessage="A descrição não pode ficar em branco."
@@ -83,7 +83,7 @@ export default function BudgetPaymentForm(props: BudgetPaymentFormProps) {
                         value={props.budgetPayment.value}
                         onSet={handleSetServicePaymentValue}
                         onValidate={handleChangeFormValidation}
-                        id={"value-payment-" + props.index + "-" + props.id}
+                        id={"value-payment-" + (props.index ?? 0) + "-" + props.id}
                         validationMessage="O titulo da etapa não pode ficar em branco."
                     />
                 </FormRowColumn>
@@ -98,7 +98,7 @@ export default function BudgetPaymentForm(props: BudgetPaymentFormProps) {
                         isDisabled={props.isDisabled}
                         onSetText={handleSetServicePaymentDate}
                         onValidate={handleChangeFormValidation}
-                        id={"date-due-payment-" + props.index + "-" + props.id}
+                        id={"date-due-payment-" + (props.index ?? 0) + "-" + props.id}
                         value={props.budgetPayment.dateString}
                     />
 

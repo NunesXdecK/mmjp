@@ -46,11 +46,7 @@ export default function IOSModal(props: IOSModalProps) {
                         leaveFrom="translate-y-0"
                         leaveTo="translate-y-full"
                     >
-                        <Dialog.Panel className={`
-                                overflow-auto
-                                z-0 flex flex-col h-full
-                                bg-slate-50 rounded-t-lg shadow-xl
-                                `}>
+                        <Dialog.Panel className={"overflow-auto z-0 flex flex-col h-full bg-slate-50 rounded-t-lg shadow-xl"}>
                             <Transition.Child
                                 enter="ease-out duration-300"
                                 enterFrom="opacity-0"

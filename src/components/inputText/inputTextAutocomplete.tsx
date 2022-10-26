@@ -30,16 +30,9 @@ export default function InputTextAutoComplete(props: InputTextAutoCompleteProps)
     const inputRef = useRef(props.ref ?? null);
     const divRef = useRef(null);
 
-    let classNameInput = `
-                            peer
-                            p-2 mt-1 
-                            block w-full 
-                            shadow-sm sm:text-sm 
-                            border-gray-300 rounded-md
-                            focus:ring-indigo-500 focus:border-indigo-500 
-                        `
+    let classNameInput = "peer p-2 mt-1 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500 "
     let classNameLabel = "block text-sm font-medium text-gray-700"
-    let classNameHolder = "w-full"
+    let classNameHolder = "w-full relative "
 
     if (props.holderClassName) {
         classNameHolder = classNameHolder + " " + props.holderClassName
@@ -145,10 +138,9 @@ export default function InputTextAutoComplete(props: InputTextAutoCompleteProps)
                     <span className="text-sm whitespace-nowrap text-red-600">{props.validationMessage}</span>
                 )}
             </div>
-
             <div
                 id={props.id + "-suggestions-holder"}
-                className="absolute shadow-m mt-2 z-20 bg-slate-50 rounded"
+                className="absolute shadow-m mt-2 z-40 bg-slate-50 rounded"
             >
                 {sugestions.length > 0 && (
                     <div
@@ -177,7 +169,6 @@ export default function InputTextAutoComplete(props: InputTextAutoCompleteProps)
                     </div>
                 )}
             </div>
-
         </div>
     )
 }

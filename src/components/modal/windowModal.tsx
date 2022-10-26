@@ -1,4 +1,4 @@
-import { useEffect } from "react"
+import { useEffect, useRef } from "react"
 import HeaderModal from "./headerModal"
 
 interface WindowModalProps {
@@ -15,18 +15,24 @@ interface WindowModalProps {
 export default function WindowModal(props: WindowModalProps) {
     let holderClass = "justify-center items-center flex overflow-x-hidden overflow-y-hidden fixed inset-0 z-20 outline-none focus:outline-none"
     let panelClass = "bg-slate-50 rounded"
-    if (props.max) {
-        panelClass = panelClass + " max-w-[90%] max-h-[90%] min-w-[90%] min-h-[90%]"
+
+    const handleWindowResize = () => {
+        let painel: HTMLInputElement = document.querySelector("#" + "modal-painel-" + props.id)
+        let header: HTMLInputElement = document.querySelector("#" + "modal-header-" + props.id)
+        let content: HTMLInputElement = document.querySelector("#" + "modal-content-" + props.id)
+        if (painel && header && content) {
+            painel.style.width = (window.innerWidth * 0.9) + "px"
+            painel.style.height = (window.innerHeight * 0.9) + "px"
+            content.style.height = (painel.offsetHeight - header.offsetHeight - 10) + "px"
+        }
     }
 
     useEffect(() => {
-        if (props.max) {
+        if (props.isOpen && props.max) {
+            document.body.style.overflowY = "hidden"
             let painel: HTMLInputElement = document.querySelector("#" + "modal-painel-" + props.id)
-            let header: HTMLInputElement = document.querySelector("#" + "modal-header-" + props.id)
-            let content: HTMLInputElement = document.querySelector("#" + "modal-content-" + props.id)
-            if (painel && header && content) {
-                content.style.height = (painel.offsetHeight - header.offsetHeight - 10) + "px"
-            }
+            handleWindowResize()
+            window.addEventListener("resize", handleWindowResize)
         }
     })
 
@@ -34,14 +40,17 @@ export default function WindowModal(props: WindowModalProps) {
         <>
             {props.isOpen && (
                 <>
-                    <div className="opacity-25 fixed inset-0 z-10 bg-black"></div>
+                    <div className="opacity-25 fixed inset-0 z-10 bg-gray-900"></div>
                     <div className={holderClass}>
                         <div id={"modal-painel-" + props.id} className={panelClass}>
                             {/*header*/}
-                            <div id={"modal-header-" + props.id} className="rounded-t border-b border-gray-200">
+                            <div id={"modal-header-" + props.id} className="bg-gray-200 rounded-t border-b border-gray-200">
                                 <HeaderModal
                                     title={props.title}
-                                    onClose={() => props.setIsOpen(false)} />
+                                    onClose={() => {
+                                        props.setIsOpen(false)
+                                        document.body.style.overflowY = "scroll"
+                                    }} />
                                 <div>
                                     {props.headerBottom}
                                 </div>

@@ -10,11 +10,7 @@ interface FeedbackMessageSaveTextProps {
 }
 
 export default function FeedbackMessageSaveText(props: FeedbackMessageSaveTextProps) {
-    let className = `
-                        z-20 
-                        mt-2
-                    `
-
+    let className = "z-20 mt-2"
     if (props.className) {
         className = className + " " + props.className
     }

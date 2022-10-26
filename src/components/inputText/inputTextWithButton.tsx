@@ -19,18 +19,8 @@ interface InputTextWithButtonProps {
 export default function InputTextWithButton(props: InputTextWithButtonProps) {
     const [text, setText] = useState(props.value ?? "")
 
-    let classNameInput = `
-                            z-0
-                            flex-1 block w-full 
-                            focus:ring-indigo-500 focus:border-indigo-500 
-                            rounded-none rounded-l-md sm:text-sm border-gray-300
-                        `
-    let classNameButton = `
-                            px-4
-                            rounded-r-md 
-                            inline-flex items-center 
-                            border border-l-0 border-gray-300
-                        `
+    let classNameInput = "z-0 flex-1 block w-full focus:ring-indigo-500 focus:border-indigo-500 rounded-none rounded-l-md sm:text-sm border-gray-300 "
+    let classNameButton = "px-4 rounded-r-md inline-flex items-center border border-l-0 border-gray-300 "
     let classNameHolder = "w-full"
 
     if (props.holderClassName) {

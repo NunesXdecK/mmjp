@@ -55,7 +55,7 @@ export default function ListTable(props: ListTableProps) {
         <>
             <div className={classNameHolder}>
                 <div className="rounded mt-4 ">
-                    <div className="bg-gray-200">
+                    <div className="bg-gray-200 rounded-t">
                         <div className="p-4 sm:flex sm:flex-row items-center justify-between ">
                             <span className="text-2xl">{props.title}</span>
                             <div className="mt-10 sm:mt-0">
@@ -97,6 +97,8 @@ export default function ListTable(props: ListTableProps) {
                                 }}
                             />
                         ))}
+                    </div>
+                    <div className="rounded-b">
                     </div>
                 </div>
             </div>

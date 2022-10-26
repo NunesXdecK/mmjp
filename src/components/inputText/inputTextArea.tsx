@@ -28,14 +28,7 @@ interface InputTextAreaProps {
 export default function InputTextArea(props: InputTextAreaProps) {
     const [isValid, setIsValid] = useState(true)
 
-    let classNameInput = `
-                            peer
-                            p-2 mt-1 
-                            block w-full 
-                            shadow-sm sm:text-sm 
-                            border-gray-300 rounded-md
-                            focus:ring-indigo-500 focus:border-indigo-500 
-                        `
+    let classNameInput = "peer p-2 mt-1 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500 "
     let classNameLabel = "block text-sm font-medium text-gray-700"
     let classNameHolder = "w-full"
 

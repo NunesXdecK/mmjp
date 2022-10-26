@@ -19,7 +19,6 @@ interface BudgetActionBarFormProps {
 }
 
 export default function BudgetActionBarForm(props: BudgetActionBarFormProps) {
-
     const handleSetIsLoading = (value: boolean) => {
         if (props.onSetIsLoading) {
             props.onSetIsLoading(value)
@@ -73,11 +72,10 @@ export default function BudgetActionBarForm(props: BudgetActionBarFormProps) {
     }
 
     return (
-        <ActionBar className={props.className}>
+        <ActionBar className={props.className + " bg-slate-50"}>
             <div className="w-full flex flex-row justify-between">
                 <Button
                     isLoading={props.isLoading}
-                    isDisabled={props.isLoading}
                     onClick={handleSave}
                 >
                     Salvar

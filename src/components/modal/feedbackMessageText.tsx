@@ -10,10 +10,7 @@ interface FeedbackMessageTextProps {
 }
 
 export default function FeedbackMessageText(props: FeedbackMessageTextProps) {
-    let className = `
-                        z-20 
-                        mt-2
-                    `
+    let className = "z-20 mt-2"
     switch (props.feedbackMessage?.messageType) {
         case "SUCCESS":
             className = className + " text-green-600"

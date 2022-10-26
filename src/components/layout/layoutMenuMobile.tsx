@@ -33,12 +33,7 @@ export default function LayoutMenuMobile(props: LayoutMenuMobileProps) {
                                         leaveFrom="transform scale-100 opacity-100"
                                         leaveTo="transform scale-95 opacity-0">
                                         <Disclosure.Panel
-                                            className={`
-                                                mt-2
-                                                w-full 
-                                                origin-top-left
-                                                bg-gray-800 rounded-md 
-                                                focus:outline-none`}>
+                                            className={"mt-2 w-full origin-top-left bg-gray-800 rounded-md focus:outline-none"}>
                                             {element.subMenus.map((elementItem, index) => (
                                                 <a
                                                     key={index + elementItem.name}

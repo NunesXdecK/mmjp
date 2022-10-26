@@ -38,13 +38,7 @@ export default function LayoutMenu(props: LayoutMenuProps) {
                             leaveFrom="transform scale-100 opacity-100"
                             leaveTo="transform scale-95 opacity-0">
                             <Menu.Items
-                                className={`
-                                    p-2
-                                    w-max
-                                    left-0 
-                                    absolute
-                                    bg-gray-800 rounded-md 
-                                    focus:outline-none`}>
+                                className={"p-2 w-max left-0 absolute bg-gray-800 rounded-md focus:outline-none"}>
                                 {element.subMenus.map((elementItem, index) => (
                                     <Menu.Item
                                         disabled={elementItem.disabled}

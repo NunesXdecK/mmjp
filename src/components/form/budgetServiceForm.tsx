@@ -89,7 +89,7 @@ export default function BudgetServiceForm(props: BudgetServiceFormProps) {
                         value={props.budgetService.title}
                         validationMessage="Titulo em branco."
                         onValidate={handleChangeFormValidation}
-                        id={"title-service-" + props.index + "-" + props.id}
+                        id={"title-service-" + (props.index ?? 0) + "-" + props.id}
                         sugestions={["Ambiental", "Desmembramento", "Georeferenciamento", "União", "Licenciamento"]}
                     />
                 </FormRowColumn>
@@ -102,7 +102,7 @@ export default function BudgetServiceForm(props: BudgetServiceFormProps) {
                         onSet={handleSetServiceValue}
                         value={props.budgetService.value}
                         onValidate={handleChangeFormValidation}
-                        id={"value-service-" + props.index + "-" + props.id}
+                        id={"value-service-" + (props.index ?? 0) + "-" + props.id}
                     />
                 </FormRowColumn>
                 <FormRowColumn unit="1">
@@ -115,7 +115,7 @@ export default function BudgetServiceForm(props: BudgetServiceFormProps) {
                         onSetText={handleSetServiceQuantity}
                         value={props.budgetService.quantity}
                         onValidate={handleChangeFormValidation}
-                        id={"quantity-service-" + props.index + "-" + props.id}
+                        id={"quantity-service-" + (props.index ?? 0) + "-" + props.id}
                     />
                 </FormRowColumn>
                 <FormRowColumn unit="2" className="flex flex-col sm:flex-row">
@@ -124,7 +124,7 @@ export default function BudgetServiceForm(props: BudgetServiceFormProps) {
                         title="Total"
                         isLoading={props.isLoading}
                         value={props.budgetService.total}
-                        id={"total-service-" + props.index + "-" + props.id}
+                        id={"total-service-" + (props.index ?? 0) + "-" + props.id}
                     />
                     {!props.isDisabled && props.onDelete && (
                         <Button

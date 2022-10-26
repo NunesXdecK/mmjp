@@ -19,14 +19,7 @@ interface FeedbackMessageModalProps {
 }
 
 export default function FeedbackMessageModal(props: FeedbackMessageModalProps) {
-    let className = `
-                        z-30
-                        fixed 
-                        py-2 px-5 
-                        text-white
-                        rounded-md 
-                        right-10 bottom-10
-                    `
+    let className = "z-30 fixed py-2 px-5 text-white rounded-md right-10 bottom-10"
     switch (props.feedbackMessage?.messageType) {
         case "SUCCESS":
             className = className + " bg-green-600"
