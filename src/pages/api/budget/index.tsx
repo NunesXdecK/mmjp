@@ -19,7 +19,6 @@ export default async function handler(req, res) {
                     let budget: Budget = data
                     let nowID = data?.id ?? ""
                     const isSave = nowID === ""
-
                     if (budget.dateString.length > 0) {
                         budget = { ...budget, date: handleGetDateFormatedToUTC(budget.dateString) }
                     }

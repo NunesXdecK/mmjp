@@ -3,7 +3,7 @@ import { useEffect, useState } from "react"
 import Layout from "../../components/layout/layout"
 import { handleUTCToDateShow, handleNewDateToUTC } from "../../util/dateUtils"
 import FeedbackMessageModal, { defaultFeedbackMessage, FeedbackMessage } from "../../components/modal/feedbackMessageModal"
-import { Budget, Company, defaultBudget, Person, Project } from "../../interfaces/objectInterfaces"
+import { Budget, Company, defaultBudget, Person } from "../../interfaces/objectInterfaces"
 import ListTable from "../../components/list/listTable"
 import FormRow from "../../components/form/formRow"
 import FormRowColumn from "../../components/form/formRowColumn"
@@ -119,6 +119,7 @@ export default function Index() {
             ...budgets,
         ]
         if (index > -1) {
+            console.log(budget)
             list = [
                 ...budgets.slice(0, index),
                 budget,
@@ -126,6 +127,17 @@ export default function Index() {
             ]
             setIndex(-1)
         }
+        list = list.sort((elementOne: Budget, elementTwo: Budget) => {
+            let dateOne = elementOne.dateInsertUTC
+            let dateTwo = elementTwo.dateInsertUTC
+            if (elementOne.dateLastUpdateUTC > 0 && elementOne.dateLastUpdateUTC > dateOne) {
+                dateOne = elementOne.dateLastUpdateUTC
+            }
+            if (elementTwo.dateLastUpdateUTC > 0 && elementTwo.dateLastUpdateUTC > dateTwo) {
+                dateTwo = elementTwo.dateLastUpdateUTC
+            }
+            return dateTwo - dateOne
+        })
         setBudgets(list)
         handleShowMessage(feedbackMessage)
     }
@@ -148,7 +160,7 @@ export default function Index() {
         )
     }
 
-    const handlePutRows = (element: Project) => {
+    const handlePutRows = (element: Budget) => {
         return (
             <>
                 <FormRowColumn unit="4">{element.title}</FormRowColumn>

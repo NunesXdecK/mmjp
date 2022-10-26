@@ -5,6 +5,7 @@ import DropDownButton from "../button/dropDownButton";
 import { FeedbackMessage } from "../modal/feedbackMessageModal";
 import { handleBudgetValidationForDB } from "../../util/validationUtil";
 import { Budget, defaultBudget } from "../../interfaces/objectInterfaces";
+import { handleGetDateFormatedToUTC } from "../../util/dateUtils";
 
 interface BudgetActionBarFormProps {
     className?: string,
@@ -67,7 +68,11 @@ export default function BudgetActionBarForm(props: BudgetActionBarFormProps) {
             props.onSet(defaultBudget)
         }
         if (props.onAfterSave) {
-            props.onAfterSave(feedbackMessage, props.budget)
+            let budget = props.budget
+            if (budget.dateString.length > 0) {
+                budget = { ...props.budget, date: handleGetDateFormatedToUTC(budget.dateString) }
+            }
+            props.onAfterSave(feedbackMessage, budget)
         }
     }
 
