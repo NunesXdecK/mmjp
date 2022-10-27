@@ -3,9 +3,9 @@ import Button from "../button/button";
 import MenuButton from "../button/menuButton";
 import DropDownButton from "../button/dropDownButton";
 import { FeedbackMessage } from "../modal/feedbackMessageModal";
+import { handleGetDateFormatedToUTC } from "../../util/dateUtils";
 import { handleBudgetValidationForDB } from "../../util/validationUtil";
 import { Budget, defaultBudget } from "../../interfaces/objectInterfaces";
-import { handleGetDateFormatedToUTC } from "../../util/dateUtils";
 
 interface BudgetActionBarFormProps {
     className?: string,
@@ -54,7 +54,11 @@ export default function BudgetActionBarForm(props: BudgetActionBarFormProps) {
             return
         }
         handleSetIsLoading(true)
-        let resProject = await handleSaveBudgetInner(props.budget, true)
+        let budget = props.budget
+        if (status?.length > 0) {
+            budget = { ...budget, status: status }
+        }
+        let resProject = await handleSaveBudgetInner(budget, true)
         if (resProject.status === "ERROR") {
             const feedbackMessage: FeedbackMessage = { messages: ["Algo deu errado!"], messageType: "ERROR" }
             handleShowMessage(feedbackMessage)
@@ -68,9 +72,8 @@ export default function BudgetActionBarForm(props: BudgetActionBarFormProps) {
             props.onSet(defaultBudget)
         }
         if (props.onAfterSave) {
-            let budget = props.budget
             if (budget.dateString.length > 0) {
-                budget = { ...props.budget, date: handleGetDateFormatedToUTC(budget.dateString) }
+                budget = { ...budget, date: handleGetDateFormatedToUTC(budget.dateString) }
             }
             props.onAfterSave(feedbackMessage, budget)
         }
@@ -89,25 +92,49 @@ export default function BudgetActionBarForm(props: BudgetActionBarFormProps) {
                     isLeft
                     title="...">
                     <div className="w-full flex flex-col">
-                        <MenuButton>
-                            Arquivar
-                        </MenuButton>
-                        <MenuButton>
-                            Imprimir orçamento
-                        </MenuButton>
-                        <MenuButton>
-                            Imprimir contrato
-                        </MenuButton>
-                        <MenuButton>
+                        <MenuButton
+                            isLoading={props.isLoading}
+                            isHidden={props.budget.status !== "ORÇAMENTO"}
+                            isDisabled={props.budget.status !== "ORÇAMENTO"}
+                            onClick={() => {
+                                handleSave("FINALIZADO")
+                            }}
+                        >
                             Iniciar projeto
                         </MenuButton>
-                        <MenuButton>
+                        <MenuButton
+                            isLoading={props.isLoading}
+                            isHidden={props.budget.status === "ORÇAMENTO"}
+                            isDisabled={props.budget.status === "ORÇAMENTO"}
+                            onClick={() => {
+                                handleSave("ORÇAMENTO")
+                            }}
+                        >
                             Reativar orçamento
+                        </MenuButton>
+                        <MenuButton
+                            isLoading={props.isLoading}
+                        >
+                            Imprimir orçamento
+                        </MenuButton>
+                        <MenuButton
+                            isLoading={props.isLoading}
+                        >
+                            Imprimir contrato
+                        </MenuButton>
+                        <MenuButton
+                            isLoading={props.isLoading}
+                            isHidden={props.budget.status !== "ORÇAMENTO"}
+                            isDisabled={props.budget.status !== "ORÇAMENTO"}
+                            onClick={() => {
+                                handleSave("ARQUIVADO")
+                            }}
+                        >
+                            Arquivar orçamento
                         </MenuButton>
                     </div>
                 </DropDownButton>
             </div>
         </ActionBar>
-
     )
 }

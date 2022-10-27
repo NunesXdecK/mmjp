@@ -79,7 +79,8 @@ export default function BudgetServicesForm(props: BudgetServicesFormProps) {
                                 }])
                         }
                     }}>
-                    Adicionar serviço
+                    <span className="block sm:hidden">+</span>
+                    <span className="sm:block hidden">Adicionar serviço</span>
                 </Button>
             )}>
 

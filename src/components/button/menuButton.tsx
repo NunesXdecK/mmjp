@@ -21,6 +21,7 @@ export default function MenuButton(props: MenuButtonProps) {
             href={props.href}
             isLink={props.isLink}
             onClick={props.onClick}
+            isHidden={props.isHidden}
             isLoading={props.isLoading}
             isDisabled={props.isDisabled}
             id={props.id + "-menu-button"}

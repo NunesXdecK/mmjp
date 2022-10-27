@@ -61,7 +61,7 @@ export default function BudgetPaymentsForm(props: BudgetPaymentsFormProps) {
             titleRight={(
                 <Button
                     isLoading={props.isLoading}
-                    isDisabled={props.isLoading}
+                    isDisabled={props.isDisabled || props.isLoading}
                     onClick={() => {
                         if (props.onSet) {
                             props.onSet([...props.budgetPayments,
@@ -73,7 +73,8 @@ export default function BudgetPaymentsForm(props: BudgetPaymentsFormProps) {
                             }])
                         }
                     }}>
-                    Adicionar pagamento
+                    <span className="block sm:hidden">+</span>
+                    <span className="sm:block hidden">Adicionar pagamento</span>
                 </Button>
             )}>
 

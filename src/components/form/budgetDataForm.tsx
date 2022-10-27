@@ -122,6 +122,9 @@ export default function BudgetDataForm(props: BudgetDataFormProps) {
                 subtitle="Adicione os pagamentos"
                 onShowMessage={props.onShowMessage}
                 budgetPayments={props.budget.payments}
+                isDisabled={props.isDisabled ||
+                    (props.budget.status === "FINALIZADO" ||
+                        props.budget.status === "ARQUIVADO")}
             />
         </div>
     )

@@ -9,7 +9,6 @@ import FormRow from "../../components/form/formRow"
 import FormRowColumn from "../../components/form/formRowColumn"
 import Button from "../../components/button/button"
 import WindowModal from "../../components/modal/windowModal"
-import BudgetForm from "../../components/form/budgetForm"
 import ActionBar from "../../components/bar/actionBar"
 import BudgetView from "../../components/view/budgetView"
 import BudgetActionBarForm from "../../components/bar/budgetActionBar"
@@ -119,13 +118,11 @@ export default function Index() {
             ...budgets,
         ]
         if (index > -1) {
-            console.log(budget)
             list = [
-                ...budgets.slice(0, index),
                 budget,
+                ...budgets.slice(0, index),
                 ...budgets.slice(index + 1, budgets.length),
             ]
-            setIndex(-1)
         }
         list = list.sort((elementOne: Budget, elementTwo: Budget) => {
             let dateOne = elementOne.dateInsertUTC
@@ -138,7 +135,8 @@ export default function Index() {
             }
             return dateTwo - dateOne
         })
-        setBudgets(list)
+        setIndex((old) => -1)
+        setBudgets((old) => list)
         handleShowMessage(feedbackMessage)
     }
 
@@ -165,9 +163,21 @@ export default function Index() {
             <>
                 <FormRowColumn unit="4">{element.title}</FormRowColumn>
                 <FormRowColumn unit="1">
-                    <span className="rounded text-slate-600 bg-slate-300 py-1 px-2 text-xs font-bold">
-                        {element.status}
-                    </span>
+                    {element.status === "ORÇAMENTO" && (
+                        <span className="rounded text-slate-600 bg-slate-300 py-1 px-2 text-xs font-bold">
+                            {element.status}
+                        </span>
+                    )}
+                    {element.status === "ARQUIVADO" && (
+                        <span className="rounded text-red-600 bg-red-300 py-1 px-2 text-xs font-bold">
+                            {element.status}
+                        </span>
+                    )}
+                    {element.status === "FINALIZADO" && (
+                        <span className="rounded text-green-600 bg-green-300 py-1 px-2 text-xs font-bold">
+                            {element.status}
+                        </span>
+                    )}
                 </FormRowColumn>
                 <FormRowColumn className="hidden sm:block" unit="1">{handleUTCToDateShow(element.date.toString())}</FormRowColumn>
             </>
@@ -215,6 +225,7 @@ export default function Index() {
                     <Button
                         isLoading={isLoading}
                         onClick={() => {
+                            setIndex(-1)
                             setIsFirst(true)
                             setIsLoading(true)
                             handleBackClick()
@@ -227,9 +238,10 @@ export default function Index() {
 
             <ListTable
                 list={budgets}
+                isActive={index}
                 title="Orçamento"
                 isLoading={isLoading}
-                onSetIndex={setIndex}
+                onSetIsActive={setIndex}
                 onTableRow={handlePutRows}
                 onShowClick={handleShowClick}
                 onEditClick={handleEditClick}

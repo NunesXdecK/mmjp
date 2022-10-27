@@ -1,34 +1,35 @@
-import Button from "../button/button";
-import FormRow from "../form/formRow";
 import { useState } from "react";
-import InputText from "../inputText/inputText";
-import FormRowColumn from "../form/formRowColumn";
-import { handleMaskCPF } from "../../util/maskUtil";
-import { Person } from "../../interfaces/objectInterfaces";
-import { PencilIcon, TrashIcon } from "@heroicons/react/solid";
+import Button from "../button/button";
 import ListTableItem from "./listTableItem";
-import { STYLE_FOR_INPUT_LOADING_TRANSPARENT } from "../../util/patternValidationUtil";
+import InputText from "../inputText/inputText";
 import WindowModal from "../modal/windowModal";
-import PlaceholderItemList from "./placeholderItemList";
+import { STYLE_FOR_INPUT_LOADING_TRANSPARENT } from "../../util/patternValidationUtil";
 
 interface ListTableProps {
     list?: any[],
     title?: string,
     deleteWindowTitle?: string,
+    isActive?: number,
     isLoading?: boolean,
-    onDeleteClick?: (any, number) => void,
+    onSetIsActive?: (any) => void,
     onShowClick?: (any, number?) => void,
     onEditClick?: (any, number?) => void,
+    onDeleteClick?: (any, number) => void,
     onTableHeader?: () => any,
     onTableRow?: (any) => any,
-    onSetIndex?: (any) => void,
 }
 
 export default function ListTable(props: ListTableProps) {
+    const [page, setPage] = useState(0)
     const [element, setElement] = useState({})
-    const [isActive, setIsActive] = useState(-1)
     const [inputSearch, setInputSearch] = useState("")
     const [isOpenDelete, setIsOpenDelete] = useState(false)
+
+    const handleSetIsActive = (index) => {
+        if (props.onSetIsActive) {
+            props.onSetIsActive(index)
+        }
+    }
 
     const filteredList = props.list.filter((element, index) => {
         let name = ""
@@ -46,6 +47,34 @@ export default function ListTable(props: ListTableProps) {
         }
         return name.toLowerCase().includes(inputSearch.toLowerCase())
     })
+
+    let pagesArray = []
+    if (filteredList.length > 5) {
+        let lastPOS = 0
+        const listLenght = filteredList.length
+        const pages = Math.ceil(listLenght / 10)
+
+        for (let i = 0; i < listLenght; i++) {
+            const lastIndex = lastPOS + 10
+            if (lastPOS < (listLenght)) {
+                if (lastIndex < (listLenght)) {
+                    pagesArray = [...pagesArray, filteredList.slice(lastPOS, lastIndex)]
+                } else {
+                    let lastPage = filteredList.slice(lastPOS, (listLenght))
+                    {/*
+                    let diference = perPage - lastPage.length
+                    for (let ii = 0; ii < diference; ii++) {
+                        lastPage = [...lastPage, defaultPerson]
+                    }
+                */}
+                    pagesArray = [...pagesArray, lastPage]
+                }
+                lastPOS = lastIndex
+            }
+        }
+    } else {
+        pagesArray = [...pagesArray, filteredList]
+    }
 
     let classNameHolder = "rounded p-4 pt-0"
     if (props.isLoading) {
@@ -75,18 +104,15 @@ export default function ListTable(props: ListTableProps) {
                         <div className="border-black my-1" />
                     </div>
                     <div className="">
-                        {filteredList.map((element, index) => (
+                        {pagesArray[page]?.map((element, index) => (
                             <ListTableItem
                                 index={index}
                                 element={element}
                                 onRowClick={() => {
-                                    setIsActive(index)
-                                    if (props.onSetIndex) {
-                                        props.onSetIndex(index)
-                                    }
+                                    handleSetIsActive(index)
                                 }}
                                 isDisabled={props.isLoading}
-                                isActive={isActive === index}
+                                isActive={props.isActive === index}
                                 onTableRow={props.onTableRow}
                                 onShowClick={props.onShowClick}
                                 onEditClick={props.onEditClick}
@@ -99,6 +125,31 @@ export default function ListTable(props: ListTableProps) {
                         ))}
                     </div>
                     <div className="rounded-b">
+                        {(Math.ceil(filteredList.length / 10)) > 1 && (
+                            <div className="p-2 flex-1 flex justify-between">
+                                <Button
+                                    isDisabled={page < 1}
+                                    onClick={() => {
+                                        handleSetIsActive(-1)
+                                        setPage((old) => page - 1)
+                                    }}
+                                >
+                                    Anterior
+                                </Button>
+
+                                <span className="mt-1 max-w-2xl text-sm text-gray-500">{(page + 1) + " de " + (Math.ceil(filteredList.length / 10))}</span>
+
+                                <Button
+                                    onClick={() => {
+                                        handleSetIsActive(-1)
+                                        setPage((old) => page + 1)
+                                    }}
+                                    isDisabled={page === (Math.ceil(filteredList.length / 10) - 1)}
+                                >
+                                    Próxima
+                                </Button>
+                            </div>
+                        )}
                     </div>
                 </div>
             </div>
@@ -109,10 +160,10 @@ export default function ListTable(props: ListTableProps) {
                     onSubmit={(event) => {
                         event.preventDefault()
                         if (props.onDeleteClick) {
-                            props.onDeleteClick(element, isActive)
+                            props.onDeleteClick(element, props.isActive)
                         }
+                        handleSetIsActive(-1)
                         setIsOpenDelete(false)
-                        setIsActive(-1)
                     }}
                 >
                     <p className="text-center">
