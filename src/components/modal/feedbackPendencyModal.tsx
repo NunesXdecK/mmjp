@@ -3,7 +3,8 @@ import { Transition } from "@headlessui/react"
 import { ExclamationCircleIcon } from "@heroicons/react/solid"
 
 interface FeedbackPendencyProps {
-    isFirst: boolean,
+    isFirst?: boolean,
+    messages?: string[],
 }
 
 export default function FeedbackPendency(props: FeedbackPendencyProps) {
