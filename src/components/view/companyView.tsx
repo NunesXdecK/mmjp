@@ -104,20 +104,20 @@ export default function CompanyView(props: CompanyViewProps) {
                                         )}
                                     </Button>
                                 )}
-                                <InfoView title="Codigo de cliente" info={company.clientCode} />
-                                <InfoView title="Nome da empresa" info={company.name} />
-                                <InfoView title="CNPJ" info={handleMaskCNPJ(company.cnpj)} />
+                                <InfoView title="Codigo de cliente">{company.clientCode}</InfoView>
+                                <InfoView title="Nome da empresa">{company.name}</InfoView>
+                                <InfoView title="CNPJ">{handleMaskCNPJ(company.cnpj)}</InfoView>
                                 <ScrollDownTransition isOpen={isShowInfo}>
                                     {company.telephones?.length > 0 && (
                                         <>
-                                            <InfoView title="Telefones" info=" " />
+                                            <InfoView title="Telefones"></InfoView>
                                             {company.telephones?.map((element, index) => (
-                                                <InfoView key={index + element} title="" info={handleMaskTelephone(element)} />
+                                                <InfoView key={index + element} title="">{handleMaskTelephone(element)}</InfoView>
                                             ))}
                                         </>
                                     )}
-                                    <InfoView title="Data criação" info={handleUTCToDateShow(company.dateInsertUTC.toString())} />
-                                    {company.dateLastUpdateUTC > 0 && <InfoView title="Data atualização" info={handleUTCToDateShow(company.dateLastUpdateUTC.toString())} />}
+                                    <InfoView title="Data criação">{handleUTCToDateShow(company.dateInsertUTC.toString())}</InfoView>
+                                    {company.dateLastUpdateUTC > 0 && <InfoView title="Data atualização">{handleUTCToDateShow(company.dateLastUpdateUTC.toString())}</InfoView>}
                                     {props.dataInside && handlePutData()}
                                 </ScrollDownTransition>
                             </InfoHolderView>

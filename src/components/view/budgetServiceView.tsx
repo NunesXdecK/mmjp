@@ -36,9 +36,9 @@ export default function BudgetServiceView(props: BudgetServiceViewProps) {
                         classNameHolder="block sm:hidden"
                     >
                         <div className="flex flex-row  flex-wrap">
-                            <InfoView title="Valor" info={handleMountNumberCurrency(props.budgetService.value.toString(), ".", ",", 3, 2)} />
-                            <InfoView title="Quantidade" info={props.budgetService.quantity} />
-                            <InfoView title="Total" info={handleMountNumberCurrency(props.budgetService.total.toString(), ".", ",", 3, 2)} />
+                            <InfoView title="Valor">{handleMountNumberCurrency(props.budgetService.value.toString(), ".", ",", 3, 2)}</InfoView>
+                            <InfoView title="Quantidade">{props.budgetService.quantity}</InfoView>
+                            <InfoView title="Total">{handleMountNumberCurrency(props.budgetService.total.toString(), ".", ",", 3, 2)}</InfoView>
                         </div>
                     </InfoHolderView>
                 </>

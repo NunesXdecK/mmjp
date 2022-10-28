@@ -1,10 +1,10 @@
 interface InfoViewProps {
     id?: string,
-    info?: string,
     title?: string,
     classNameInfo?: string,
     classNameTitle?: string,
     classNameHolder?: string,
+    children?: any,
 }
 
 export default function InfoView(props: InfoViewProps) {
@@ -24,13 +24,9 @@ export default function InfoView(props: InfoViewProps) {
         classNameInfo = classNameInfo + " " + props.classNameInfo
     }
     return (
-        <>
-            {props.info?.length > 0 && (
-                <div className={classNameHolder}>
-                    <dt className={classNameTitle}>{props.title}</dt>
-                    <dd className={classNameInfo}>{props.info}</dd>
-                </div>
-            )}
-        </>
+        <div className={classNameHolder}>
+            <dt className={classNameTitle}>{props.title}</dt>
+            <dd className={classNameInfo}>{props.children}</dd>
+        </div>
     )
 }

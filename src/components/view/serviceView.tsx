@@ -195,28 +195,28 @@ export default function ServiceView(props: ServiceViewProps) {
                                 classNameContentHolder={props.classNameContentHolder}
                             >
                                 {service.priorityView > 0 && (
-                                    <InfoView classNameHolder="w-full" title="Lista de espera" info={service.priorityView + ""} />
+                                    <InfoView classNameHolder="w-full" title="Lista de espera">{service.priorityView + ""}</InfoView>
                                 )}
-                                <InfoView title="Serviço" info={service.title} />
-                                <InfoView title="Valor" info={handleMountNumberCurrency(service.value.toString(), ".", ",", 3, 2)} />
-                                <InfoView title="Quantidade" info={service.quantity} />
-                                <InfoView title="Total" info={handleMountNumberCurrency(service.total.toString(), ".", ",", 3, 2)} />
-                                <InfoView title="Data" info={handleUTCToDateShow(service.date.toString())} />
+                                <InfoView title="Serviço">{service.title}</InfoView>
+                                <InfoView title="Valor">{handleMountNumberCurrency(service.value.toString(), ".", ",", 3, 2)}</InfoView>
+                                <InfoView title="Quantidade">{service.quantity}</InfoView>
+                                <InfoView title="Total">{handleMountNumberCurrency(service.total.toString(), ".", ",", 3, 2)}</InfoView>
+                                <InfoView title="Data">{handleUTCToDateShow(service.date.toString())}</InfoView>
                                 {service.status === "FINALIZADO" && (
-                                    <InfoView classNameHolder="w-full" classNameInfo="rounded-sm px-2 py-1 text-green-100 bg-green-600 text-[0.8rem] font-bold" title="" info={service.status} />
+                                    <InfoView classNameHolder="w-full" classNameInfo="rounded-sm px-2 py-1 text-green-100 bg-green-600 text-[0.8rem] font-bold" title="">{service.status}</InfoView>
                                 )}
                                 {service.status === "ARQUIVADO" && (
-                                    <InfoView classNameHolder="w-full" classNameInfo="rounded-sm px-2 py-1 text-orange-100 bg-orange-600 text-[0.8rem] font-bold" title="" info={service.status} />
+                                    <InfoView classNameHolder="w-full" classNameInfo="rounded-sm px-2 py-1 text-orange-100 bg-orange-600 text-[0.8rem] font-bold" title="">{service.status}</InfoView>
                                 )}
                                 {service.status === "PENDENTE" && (
-                                    <InfoView classNameHolder="w-full" classNameInfo="rounded-sm px-2 py-1 text-red-100 bg-red-600 text-[0.8rem] font-bold" title="" info={service.status} />
+                                    <InfoView classNameHolder="w-full" classNameInfo="rounded-sm px-2 py-1 text-red-100 bg-red-600 text-[0.8rem] font-bold" title="">{service.status}</InfoView>
                                 )}
                                 {props.showMoreInfo && (
                                     handlePutProject()
                                 )}
                                 <ScrollDownTransition isOpen={isShowInfo}>
-                                    <InfoView title="Data criação" info={handleUTCToDateShow(service.dateInsertUTC.toString())} />
-                                    {service.dateLastUpdateUTC > 0 && <InfoView title="Data atualização" info={handleUTCToDateShow(service.dateLastUpdateUTC.toString())} />}
+                                    <InfoView title="Data criação">{handleUTCToDateShow(service.dateInsertUTC.toString())}</InfoView>
+                                    {service.dateLastUpdateUTC > 0 && <InfoView title="Data atualização">{handleUTCToDateShow(service.dateLastUpdateUTC.toString())}</InfoView>}
                                     {props.dataInside && handlePutData()}
                                 </ScrollDownTransition>
                                 {props.canShowHideData && props.hideData && hasHideData && (

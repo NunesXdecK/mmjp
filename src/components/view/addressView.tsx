@@ -26,12 +26,12 @@ export default function AddressView(props: AddressViewProps) {
                     classNameHolder={props.classNameHolder}
                     classNameContentHolder={props.classNameContentHolder}
                 >
-                    <InfoView title="CEP" info={handleMaskCEP(address.cep)} />
-                    <InfoView title="Logradouro" info={address.publicPlace} />
-                    <InfoView title="Número" info={address.number} />
-                    <InfoView title="Bairro" info={address.district} />
-                    <InfoView title="Cidade" info={address.county} />
-                    <InfoView title="Complemento" info={address.complement} />
+                    <InfoView title="CEP">{handleMaskCEP(address.cep)}</InfoView>
+                    <InfoView title="Logradouro">{address.publicPlace} </InfoView>
+                    <InfoView title="Número">{address.number}</InfoView>
+                    <InfoView title="Bairro">{address.district}</InfoView>
+                    <InfoView title="Cidade">{address.county}</InfoView>
+                    <InfoView title="Complemento">{address.complement}</InfoView>
                 </InfoHolderView>
             )}
         </>

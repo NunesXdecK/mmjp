@@ -127,22 +127,22 @@ export default function ImmobileView(props: ImmobileViewProps) {
                                         )}
                                     </Button>
                                 )}
-                                <InfoView title="Nome do imóvel" info={immobile.name} />
+                                <InfoView title="Nome do imóvel">{immobile.name}</InfoView>
                                 {(immobile.status === "DESMEMBRADO" || immobile.status === "UNIFICADO") && (
-                                    <InfoView classNameHolder="w-full" classNameInfo="rounded-sm px-2 py-1 text-green-100 bg-green-600 text-[0.8rem] font-bold" title="" info={immobile.status} />
+                                    <InfoView classNameHolder="w-full" classNameInfo="rounded-sm px-2 py-1 text-green-100 bg-green-600 text-[0.8rem] font-bold" title="">{immobile.status}</InfoView>
                                 )}
                                 <ScrollDownTransition isOpen={isShowInfo}>
-                                    <InfoView title="Gleba" info={immobile.land} />
-                                    <InfoView title="Município/UF" info={immobile.county} />
-                                    <InfoView title="Área" info={handleMountNumberCurrency(immobile.area, ".", ",", 3, 2)} />
-                                    <InfoView title="Perimetro" info={handleMountNumberCurrency(immobile.perimeter, ".", ",", 3, 4)} />
-                                    <InfoView title="CCIR" info={immobile.ccirNumber} />
-                                    <InfoView title="Processo" info={immobile.process} />
-                                    <InfoView title="Comarca" info={immobile.comarca} />
-                                    <InfoView title="Codigo da comarca" info={immobile.comarcaCode} />
-                                    <InfoView title="Matricula" info={immobile.registration} />
-                                    <InfoView title="Data criação" info={handleUTCToDateShow(immobile.dateInsertUTC.toString())} />
-                                    {immobile.dateLastUpdateUTC > 0 && <InfoView title="Data atualização" info={handleUTCToDateShow(immobile.dateLastUpdateUTC.toString())} />}
+                                    <InfoView title="Gleba">{immobile.land}</InfoView>
+                                    <InfoView title="Município/UF">{immobile.county}</InfoView>
+                                    <InfoView title="Área">{handleMountNumberCurrency(immobile.area, ".", ",", 3, 2)}</InfoView>
+                                    <InfoView title="Perimetro">{handleMountNumberCurrency(immobile.perimeter, ".", ",", 3, 4)}</InfoView>
+                                    <InfoView title="CCIR">{immobile.ccirNumber}</InfoView>
+                                    <InfoView title="Processo">{immobile.process}</InfoView>
+                                    <InfoView title="Comarca">{immobile.comarca}</InfoView>
+                                    <InfoView title="Codigo da comarca">{immobile.comarcaCode}</InfoView>
+                                    <InfoView title="Matricula">{immobile.registration}</InfoView>
+                                    <InfoView title="Data criação">{handleUTCToDateShow(immobile.dateInsertUTC.toString())}</InfoView>
+                                    {immobile.dateLastUpdateUTC > 0 && <InfoView title="Data atualização">{handleUTCToDateShow(immobile.dateLastUpdateUTC.toString())}</InfoView>}
                                     {props.dataInside && handlePutData()}
                                 </ScrollDownTransition>
                             </InfoHolderView>

@@ -114,17 +114,17 @@ export default function ServicePaymentView(props: ServicePaymentViewProps) {
                                         )}
                                     </Button>
                                 )}
-                                <InfoView title="Pagamento" info={servicePayment.description} />
-                                <InfoView title="Valor" info={handleMountNumberCurrency(servicePayment.value.toString(), ".", ",", 3, 2)} />
-                                <InfoView title="Data" info={handleUTCToDateShow(servicePayment.dateDue.toString())} />
+                                <InfoView title="Pagamento">{servicePayment.description}</InfoView>
+                                <InfoView title="Valor">{handleMountNumberCurrency(servicePayment.value.toString(), ".", ",", 3, 2)}</InfoView>
+                                <InfoView title="Data">{handleUTCToDateShow(servicePayment.dateDue.toString())}</InfoView>
                                 {servicePayment.status === "FINALIZADO" && (
-                                    <InfoView classNameHolder="w-full" classNameInfo="rounded-sm px-2 py-1 text-green-100 bg-green-600 text-[0.8rem] font-bold" title="" info={servicePayment.status} />
+                                    <InfoView classNameHolder="w-full" classNameInfo="rounded-sm px-2 py-1 text-green-100 bg-green-600 text-[0.8rem] font-bold" title="">{servicePayment.status}</InfoView>
                                 )}
                                 {servicePayment.status === "ARQUIVADO" && (
-                                    <InfoView classNameHolder="w-full" classNameInfo="rounded-sm px-2 py-1 text-orange-100 bg-orange-600 text-[0.8rem] font-bold" title="" info={servicePayment.status} />
+                                    <InfoView classNameHolder="w-full" classNameInfo="rounded-sm px-2 py-1 text-orange-100 bg-orange-600 text-[0.8rem] font-bold" title="">{servicePayment.status}</InfoView>
                                 )}
                                 {servicePayment.status === "PENDENTE" && (
-                                    <InfoView classNameHolder="w-full" classNameInfo="rounded-sm px-2 py-1 text-red-100 bg-red-600 text-[0.8rem] font-bold" title="" info={servicePayment.status} />
+                                    <InfoView classNameHolder="w-full" classNameInfo="rounded-sm px-2 py-1 text-red-100 bg-red-600 text-[0.8rem] font-bold" title="">{servicePayment.status}</InfoView>
                                 )}
                                 {props.showMoreInfo && (
                                     <>
@@ -132,8 +132,8 @@ export default function ServicePaymentView(props: ServicePaymentViewProps) {
                                     </>
                                 )}
                                 <ScrollDownTransition isOpen={isShowInfo}>
-                                    <InfoView title="Data criação" info={handleUTCToDateShow(servicePayment.dateInsertUTC.toString())} />
-                                    {servicePayment.dateLastUpdateUTC > 0 && <InfoView title="Data atualização" info={handleUTCToDateShow(servicePayment.dateLastUpdateUTC.toString())} />}
+                                    <InfoView title="Data criação">{handleUTCToDateShow(servicePayment.dateInsertUTC.toString())}</InfoView>
+                                    {servicePayment.dateLastUpdateUTC > 0 && <InfoView title="Data atualização">{handleUTCToDateShow(servicePayment.dateLastUpdateUTC.toString())}</InfoView>}
                                     {props.dataInside && handlePutData()}
                                 </ScrollDownTransition>
                             </InfoHolderView>

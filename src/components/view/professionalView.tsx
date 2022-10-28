@@ -91,12 +91,12 @@ export default function ProfessionalView(props: ProfessionalViewProps) {
                                         )}
                                     </Button>
                                 )}
-                                <InfoView title="Titulo do profissional" info={professional.title} />
+                                <InfoView title="Titulo do profissional">{professional.title}</InfoView>
                                 <ScrollDownTransition isOpen={isShowInfo}>
-                                    <InfoView title="CREA" info={professional.creaNumber} />
-                                    <InfoView title="Código credencial" info={professional.credentialCode} />
-                                    <InfoView title="Data criação" info={handleUTCToDateShow(professional.dateInsertUTC.toString())} />
-                                    {professional.dateLastUpdateUTC > 0 && <InfoView title="Data atualização" info={handleUTCToDateShow(professional.dateLastUpdateUTC.toString())} />}
+                                    <InfoView title="CREA">{professional.creaNumber}</InfoView>
+                                    <InfoView title="Código credencial">{professional.credentialCode}</InfoView>
+                                    <InfoView title="Data criação">{handleUTCToDateShow(professional.dateInsertUTC.toString())}</InfoView>
+                                    {professional.dateLastUpdateUTC > 0 && <InfoView title="Data atualização">{handleUTCToDateShow(professional.dateLastUpdateUTC.toString())}</InfoView>}
                                     {props.dataInside && handlePutData()}
                                 </ScrollDownTransition>
                             </InfoHolderView>

@@ -189,23 +189,23 @@ export default function ProjectView(props: ProjectViewProps) {
                                     </Button>
                                 )}
                                 {project.priorityView > 0 && (
-                                    <InfoView classNameHolder="w-full" title="Lista de espera" info={project.priorityView + ""} />
+                                    <InfoView classNameHolder="w-full" title="Lista de espera">{project.priorityView + ""}</InfoView>
                                 )}
-                                <InfoView title="Projeto" info={project.title} />
-                                <InfoView title="Número" info={project.number} />
-                                <InfoView title="Data" info={handleUTCToDateShow(project.date.toString())} />
+                                <InfoView title="Projeto">{project.title}</InfoView>
+                                <InfoView title="Número">{project.number}</InfoView>
+                                <InfoView title="Data">{handleUTCToDateShow(project.date.toString())}</InfoView>
                                 {project.status === "FINALIZADO" && (
-                                    <InfoView classNameHolder="w-full" classNameInfo="rounded-sm px-2 py-1 text-green-100 bg-green-600 text-[0.8rem] font-bold" title="" info={project.status} />
+                                    <InfoView classNameHolder="w-full" classNameInfo="rounded-sm px-2 py-1 text-green-100 bg-green-600 text-[0.8rem] font-bold" title="">{project.status}</InfoView>
                                 )}
                                 {project.status === "ARQUIVADO" && (
-                                    <InfoView classNameHolder="w-full" classNameInfo="rounded-sm px-2 py-1 text-orange-100 bg-orange-600 text-[0.8rem] font-bold" title="" info={project.status} />
+                                    <InfoView classNameHolder="w-full" classNameInfo="rounded-sm px-2 py-1 text-orange-100 bg-orange-600 text-[0.8rem] font-bold" title="">{project.status}</InfoView>
                                 )}
                                 {props.showMoreInfo && (
                                     handlePutOwner(project.clients[0])
                                 )}
                                 <ScrollDownTransition isOpen={isShowInfo}>
-                                    <InfoView title="Data criação" info={handleUTCToDateShow(project.dateInsertUTC.toString())} />
-                                    {project.dateLastUpdateUTC > 0 && <InfoView title="Data atualização" info={handleUTCToDateShow(project.dateLastUpdateUTC.toString())} />}
+                                    <InfoView title="Data criação">{handleUTCToDateShow(project.dateInsertUTC.toString())}</InfoView>
+                                    {project.dateLastUpdateUTC > 0 && <InfoView title="Data atualização">{handleUTCToDateShow(project.dateLastUpdateUTC.toString())}</InfoView>}
                                     {props.dataInside && handlePutData()}
                                 </ScrollDownTransition>
                             </InfoHolderView>

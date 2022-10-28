@@ -98,27 +98,27 @@ export default function PersonView(props: PersonViewProps) {
                                         )}
                                     </Button>
                                 )}
-                                <InfoView title="Codigo de cliente" info={person.clientCode} />
-                                <InfoView title="Nome da pessoa" info={person.name} />
-                                <InfoView title="CPF" info={handleMaskCPF(person.cpf)} />
+                                <InfoView title="Codigo de cliente">{person.clientCode}</InfoView>
+                                <InfoView title="Nome da pessoa">{person.name}</InfoView>
+                                <InfoView title="CPF">{handleMaskCPF(person.cpf)}</InfoView>
                                 <ScrollDownTransition isOpen={isShowInfo}>
                                     {person.rg?.length > 0 && (
-                                        <InfoView title="RG" info={person.rg + " " + (person.rgIssuer && " " + person.rgIssuer)} />
+                                        <InfoView title="RG">{person.rg + " " + (person.rgIssuer && " " + person.rgIssuer)}</InfoView>
                                     )}
-                                    <InfoView title="Naturalidade" info={person.naturalness} />
-                                    <InfoView title="Nacionalidade" info={person.nationality} />
-                                    <InfoView title="Estado civil" info={person.maritalStatus} />
-                                    <InfoView title="Profissão" info={person.profession} />
+                                    <InfoView title="Naturalidade">{person.naturalness}</InfoView>
+                                    <InfoView title="Nacionalidade">{person.nationality}</InfoView>
+                                    <InfoView title="Estado civil">{person.maritalStatus}</InfoView>
+                                    <InfoView title="Profissão">{person.profession}</InfoView>
                                     {person.telephones?.length > 0 && (
                                         <>
-                                            <InfoView title="Telefones" info=" " />
+                                            <InfoView title="Telefones"></InfoView>
                                             {person.telephones?.map((element, index) => (
-                                                <InfoView key={index + element} title="" info={handleMaskTelephone(element)} />
+                                                <InfoView key={index + element} title="">{handleMaskTelephone(element)}</InfoView>
                                             ))}
                                         </>
                                     )}
-                                    <InfoView title="Data criação" info={handleUTCToDateShow(person.dateInsertUTC.toString())} />
-                                    {person.dateLastUpdateUTC > 0 && <InfoView title="Data atualização" info={handleUTCToDateShow(person.dateLastUpdateUTC.toString())} />}
+                                    <InfoView title="Data criação">{handleUTCToDateShow(person.dateInsertUTC.toString())}</InfoView>
+                                    {person.dateLastUpdateUTC > 0 && <InfoView title="Data atualização">{handleUTCToDateShow(person.dateLastUpdateUTC.toString())}</InfoView>}
                                     {props.dataInside && handlePutData()}
                                 </ScrollDownTransition>
                             </InfoHolderView>

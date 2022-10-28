@@ -14,6 +14,7 @@ import FeedbackPendency from "../../components/modal/feedbackPendencyModal"
 import { handleUTCToDateShow, handleNewDateToUTC } from "../../util/dateUtils"
 import { Budget, Company, defaultBudget, Person } from "../../interfaces/objectInterfaces"
 import FeedbackMessageModal, { defaultFeedbackMessage, FeedbackMessage } from "../../components/modal/feedbackMessageModal"
+import ContractPrintView from "../../components/view/contractPrintView"
 
 export default function Index() {
     const [title, setTitle] = useState("Orçamentos")
@@ -25,6 +26,8 @@ export default function Index() {
     const [isLoading, setIsLoading] = useState(true)
     const [isForShow, setIsForShow] = useState(false)
     const [isRegister, setIsRegister] = useState(false)
+    const [isPrintBudget, setIsPrintBudget] = useState(false)
+    const [isPrintContract, setIsPrintContract] = useState(false)
     const [isFeedbackOpen, setIsFeedbackOpen] = useState(false)
 
     const [feedbackMessage, setFeedbackMessage] = useState<FeedbackMessage>(defaultFeedbackMessage)
@@ -34,7 +37,11 @@ export default function Index() {
             event.preventDefault()
         }
         setBudget(defaultBudget)
+        setIndex(-1)
+        setIsForShow(false)
         setIsRegister(false)
+        setIsPrintBudget(false)
+        setIsPrintContract(false)
         document.body.style.overflowY = "scroll"
     }
 
@@ -51,8 +58,8 @@ export default function Index() {
             feedbackMessage = { messages: ["Algo deu errado"], messageType: "ERROR" }
         }
         const list = [
-            ...budgets.slice(0, index),
-            ...budgets.slice(index + 1, budgets.length),
+            ...budgets.slice(0, (index - 1)),
+            ...budgets.slice(index, budgets.length),
         ]
         setBudgets(list)
         setIsLoading(false)
@@ -65,12 +72,28 @@ export default function Index() {
         setIndex(-1)
     }
 
-    const handleCloseModal = async (value) => {
+    const handlePrintBudget = () => {
+        setIsForShow(false)
+        setIsRegister(false)
+        setIsPrintBudget(true)
+        setIsPrintContract(false)
+        document.body.style.overflowY = "scroll"
+    }
+
+    const handlePrintContract = () => {
+        setIsForShow(false)
+        setIsRegister(false)
+        setIsPrintBudget(false)
+        setIsPrintContract(true)
+        document.body.style.overflowY = "scroll"
+    }
+
+    const handleCloseModal = (value) => {
         setIsRegister(value)
         setIsForShow(value)
     }
 
-    const handleShowClick = async (project) => {
+    const handleShowClick = (project) => {
         setIsLoading(true)
         setBudget({ ...defaultBudget, ...project })
         setIsForShow(true)
@@ -191,40 +214,68 @@ export default function Index() {
                 <meta name="description" content={title} />
                 <link rel="icon" href="/favicon.ico" />
             </Head>
-            <div className="p-4 pb-0">
-                <ActionBar>
-                    <Button
-                        isLoading={isLoading}
-                        onClick={handleNewClick}
-                    >
-                        Novo
-                    </Button>
-                    <Button
-                        isLoading={isLoading}
-                        onClick={() => {
-                            setIndex(-1)
-                            setIsFirst(true)
-                            setIsLoading(true)
-                            handleBackClick()
-                        }}
-                    >
-                        Atualizar
-                    </Button>
-                </ActionBar>
-            </div>
 
-            <ListTable
-                list={budgets}
-                isActive={index}
-                title="Orçamento"
-                isLoading={isLoading}
-                onSetIsActive={setIndex}
-                onTableRow={handlePutRows}
-                onShowClick={handleShowClick}
-                onEditClick={handleEditClick}
-                onTableHeader={handlePutHeaders}
-                onDeleteClick={handleDeleteClick}
-            />
+            {!isPrintBudget && !isPrintContract && (
+                <>
+                    <div className="p-4 pb-0">
+                        <ActionBar>
+                            <Button
+                                isLoading={isLoading}
+                                onClick={handleNewClick}
+                            >
+                                Novo
+                            </Button>
+                            <Button
+                                isLoading={isLoading}
+                                onClick={() => {
+                                    setIndex(-1)
+                                    setIsFirst(true)
+                                    setIsLoading(true)
+                                    handleBackClick()
+                                }}
+                            >
+                                Atualizar
+                            </Button>
+                        </ActionBar>
+                    </div>
+
+                    <ListTable
+                        list={budgets}
+                        isActive={index}
+                        title="Orçamento"
+                        isLoading={isLoading}
+                        onSetIsActive={setIndex}
+                        onTableRow={handlePutRows}
+                        onShowClick={handleShowClick}
+                        onEditClick={handleEditClick}
+                        onTableHeader={handlePutHeaders}
+                        onDeleteClick={handleDeleteClick}
+                    />
+                </>
+            )}
+
+            {(isPrintBudget || isPrintContract) && (
+                <div className="p-4 pb-0">
+                    <ActionBar>
+                        <Button
+                            isLoading={isLoading}
+                            onClick={() => {
+                                setIsRegister(true)
+                                setIsPrintBudget(false)
+                                setIsPrintContract(false)
+                            }}
+                        >
+                            Voltar
+                        </Button>
+                    </ActionBar>
+                    {isPrintBudget && (
+                        <BudgetView elementId={budget.id} />
+                    )}
+                    {isPrintContract && (
+                        <ContractPrintView />
+                    )}
+                </div>
+            )}
 
             <FeedbackPendency isFirst={isFirst} />
 
@@ -244,6 +295,8 @@ export default function Index() {
                                 onSetIsLoading={setIsLoading}
                                 onAfterSave={handleAfterSave}
                                 onShowMessage={handleShowMessage}
+                                onPrintBudget={handlePrintBudget}
+                                onPrintContract={handlePrintContract}
                             />
                         )}
                         {isForShow && (

@@ -1,10 +1,10 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Button from "../button/button";
 import ListTableItem from "./listTableItem";
 import InputText from "../inputText/inputText";
 import WindowModal from "../modal/windowModal";
-import { STYLE_FOR_INPUT_LOADING_TRANSPARENT } from "../../util/patternValidationUtil";
 import { handleUTCToDateShow } from "../../util/dateUtils";
+import { STYLE_FOR_INPUT_LOADING_TRANSPARENT } from "../../util/patternValidationUtil";
 
 interface ListTableProps {
     list?: any[],
@@ -22,10 +22,11 @@ interface ListTableProps {
 
 export default function ListTable(props: ListTableProps) {
     const [page, setPage] = useState(0)
-    const [isActive, setIsActive] = useState(-1)
     const [element, setElement] = useState({})
     const [inputSearch, setInputSearch] = useState("")
     const [isOpenDelete, setIsOpenDelete] = useState(false)
+
+    let perPage = 10
 
     const handleSetIsActive = (index) => {
         if (props.onSetIsActive) {
@@ -63,24 +64,17 @@ export default function ListTable(props: ListTableProps) {
     })
 
     let pagesArray = []
-    if (filteredList.length > 5) {
+    const listLenght = filteredList.length
+    const pages = Math.ceil(listLenght / perPage)
+    if (listLenght > perPage) {
         let lastPOS = 0
-        const listLenght = filteredList.length
-        const pages = Math.ceil(listLenght / 10)
-
         for (let i = 0; i < listLenght; i++) {
-            const lastIndex = lastPOS + 10
+            const lastIndex = lastPOS + perPage
             if (lastPOS < (listLenght)) {
                 if (lastIndex < (listLenght)) {
                     pagesArray = [...pagesArray, filteredList.slice(lastPOS, lastIndex)]
                 } else {
                     let lastPage = filteredList.slice(lastPOS, (listLenght))
-                    {/*
-                    let diference = perPage - lastPage.length
-                    for (let ii = 0; ii < diference; ii++) {
-                        lastPage = [...lastPage, defaultPerson]
-                    }
-                */}
                     pagesArray = [...pagesArray, lastPage]
                 }
                 lastPOS = lastIndex
@@ -94,6 +88,14 @@ export default function ListTable(props: ListTableProps) {
     if (props.isLoading) {
         classNameHolder = classNameHolder + " " + STYLE_FOR_INPUT_LOADING_TRANSPARENT
     }
+    /*
+    useEffect(() => {
+        if (listLenght > 0 && (!pagesArray[page] || pagesArray[page].length === 0)) {
+            setPage((old) => old - 1)
+        }
+    }, [listLenght, page, pagesArray])
+    */
+
     return (
         <>
             <div className={classNameHolder}>
@@ -118,19 +120,18 @@ export default function ListTable(props: ListTableProps) {
                         <div className="border-black my-1" />
                     </div>
                     <div className="">
-                        {pagesArray[page]?.map((element, index) => (
+                        {pagesArray[(page === pages ? page - 1 : page)]?.map((element, index) => (
                             <ListTableItem
-                                index={(page * 10) + (index + 1)}
+                                index={(page * perPage) + (index + 1)}
                                 element={element}
                                 isDisabled={props.isLoading}
-                                isActive={isActive === index}
+                                isActive={props.isActive - 1 === (page * perPage) + index}
                                 onTableRow={props.onTableRow}
                                 onShowClick={props.onShowClick}
                                 onEditClick={props.onEditClick}
                                 key={index + "-" + (element && "id" in element ? element.id : element)}
                                 onRowClick={() => {
-                                    setIsActive(index)
-                                    handleSetIsActive((page * 10) + (index + 1))
+                                    handleSetIsActive((old) => (page * perPage) + (index + 1))
                                 }}
                                 onDeleteClick={() => {
                                     setElement(element)
@@ -140,12 +141,11 @@ export default function ListTable(props: ListTableProps) {
                         ))}
                     </div>
                     <div className="rounded-b">
-                        {(Math.ceil(filteredList.length / 10)) > 1 && (
+                        {pages > 1 && (
                             <div className="p-2 flex-1 flex justify-between">
                                 <Button
-                                    isDisabled={page < 1}
+                                    isDisabled={(page === pages ? page - 1 : page) < 1}
                                     onClick={() => {
-                                        setIsActive(-1)
                                         handleSetIsActive(-1)
                                         setPage((old) => page - 1)
                                     }}
@@ -153,15 +153,14 @@ export default function ListTable(props: ListTableProps) {
                                     Anterior
                                 </Button>
 
-                                <span className="mt-1 max-w-2xl text-sm text-gray-500">{(page + 1) + " de " + (Math.ceil(filteredList.length / 10))}</span>
+                                <span className="mt-1 max-w-2xl text-sm text-gray-500">{((page === pages ? page - 1 : page) + 1) + " de " + (pages)}</span>
 
                                 <Button
                                     onClick={() => {
-                                        setIsActive(-1)
                                         handleSetIsActive(-1)
                                         setPage((old) => page + 1)
                                     }}
-                                    isDisabled={page === (Math.ceil(filteredList.length / 10) - 1)}
+                                    isDisabled={page === pages || page === pages - 1}
                                 >
                                     Próxima
                                 </Button>

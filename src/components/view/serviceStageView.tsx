@@ -125,26 +125,26 @@ export default function ServiceStageView(props: ServiceStageViewProps) {
                                     </Button>
                                 )}
                                 {serviceStage.priorityView > 0 && (
-                                    <InfoView classNameHolder="w-full" title="Lista de espera" info={serviceStage.priorityView + ""} />
+                                    <InfoView classNameHolder="w-full" title="Lista de espera">{serviceStage.priorityView + ""}</InfoView>
                                 )}
-                                <InfoView title="Etapa" info={serviceStage.title} />
-                                <InfoView title="Data" info={handleUTCToDateShow(serviceStage.dateDue.toString())} />
+                                <InfoView title="Etapa">{serviceStage.title}</InfoView>
+                                <InfoView title="Data">{handleUTCToDateShow(serviceStage.dateDue.toString())}</InfoView>
                                 {serviceStage.status === "FINALIZADO" && (
-                                    <InfoView classNameHolder="w-full" classNameInfo="rounded-sm px-2 py-1 text-green-100 bg-green-600 text-[0.8rem] font-bold" title="" info={serviceStage.status} />
+                                    <InfoView classNameHolder="w-full" classNameInfo="rounded-sm px-2 py-1 text-green-100 bg-green-600 text-[0.8rem] font-bold" title="">{serviceStage.status}</InfoView>
                                 )}
                                 {serviceStage.status === "ARQUIVADO" && (
-                                    <InfoView classNameHolder="w-full" classNameInfo="rounded-sm px-2 py-1 text-orange-100 bg-orange-600 text-[0.8rem] font-bold" title="" info={serviceStage.status} />
+                                    <InfoView classNameHolder="w-full" classNameInfo="rounded-sm px-2 py-1 text-orange-100 bg-orange-600 text-[0.8rem] font-bold" title="">{serviceStage.status}</InfoView>
                                 )}
                                 {serviceStage.status === "PENDENTE" && (
-                                    <InfoView classNameHolder="w-full" classNameInfo="rounded-sm px-2 py-1 text-red-100 bg-red-600 text-[0.8rem] font-bold" title="" info={serviceStage.status} />
+                                    <InfoView classNameHolder="w-full" classNameInfo="rounded-sm px-2 py-1 text-red-100 bg-red-600 text-[0.8rem] font-bold" title="">{serviceStage.status}</InfoView>
                                 )}
                                 {props.showMoreInfo && (
                                     handlePutService()
                                 )}
                                 <ScrollDownTransition isOpen={isShowInfo}>
-                                    <InfoView title="Descrição" info={serviceStage.description} />
-                                    <InfoView title="Data criação" info={handleUTCToDateShow(serviceStage.dateInsertUTC.toString())} />
-                                    {serviceStage.dateLastUpdateUTC > 0 && <InfoView title="Data atualização" info={handleUTCToDateShow(serviceStage.dateLastUpdateUTC.toString())} />}
+                                    <InfoView title="Descrição">{serviceStage.description}</InfoView>
+                                    <InfoView title="Data criação">{handleUTCToDateShow(serviceStage.dateInsertUTC.toString())}</InfoView>
+                                    {serviceStage.dateLastUpdateUTC > 0 && <InfoView title="Data atualização">{handleUTCToDateShow(serviceStage.dateLastUpdateUTC.toString())}</InfoView>}
                                     {props.dataInside && handlePutData()}
                                 </ScrollDownTransition>
                             </InfoHolderView>

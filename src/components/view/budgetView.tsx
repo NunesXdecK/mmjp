@@ -156,17 +156,17 @@ export default function BudgetView(props: BudgetViewProps) {
                                 title={props.title ?? "Dados básicos"}
                                 classNameContentHolder={props.classNameContentHolder}
                             >
-                                <InfoView title="Projeto" info={budget.title} />
-                                <InfoView title="Data" info={handleUTCToDateShow(budget.date.toString())} />
+                                <InfoView title="Projeto">{budget.title}</InfoView>
+                                <InfoView title="Data">{handleUTCToDateShow(budget.date.toString())}</InfoView>
                                 {budget.status === "FINALIZADO" && (
-                                    <InfoView classNameHolder="w-full" classNameInfo="rounded-sm px-2 py-1 text-green-100 bg-green-600 text-[0.8rem] font-bold" title="" info={budget.status} />
+                                    <InfoView title="Status"><span className="rounded-sm px-2 py-1 text-green-100 bg-green-600 text-[0.8rem] font-bold">{budget.status}</span></InfoView>
                                 )}
                                 {budget.status === "ARQUIVADO" && (
-                                    <InfoView classNameHolder="w-full" classNameInfo="rounded-sm px-2 py-1 text-orange-100 bg-orange-600 text-[0.8rem] font-bold" title="" info={budget.status} />
+                                    <InfoView title="Status"><span className="rounded-sm px-2 py-1 text-orange-100 bg-orange-600 text-[0.8rem] font-bold">{budget.status}</span></InfoView>
                                 )}
-                                <ScrollDownTransition isOpen={isShowInfo}>
-                                    <InfoView title="Data criação" info={handleUTCToDateShow(budget.dateInsertUTC.toString())} />
-                                    {budget.dateLastUpdateUTC > 0 && <InfoView title="Data atualização" info={handleUTCToDateShow(budget.dateLastUpdateUTC.toString())} />}
+                                <ScrollDownTransition isOpen={false}>
+                                    <InfoView title="Data criação">{handleUTCToDateShow(budget.dateInsertUTC.toString())}</InfoView>
+                                    {budget.dateLastUpdateUTC > 0 && <InfoView title="Data atualização">{handleUTCToDateShow(budget.dateLastUpdateUTC.toString())}</InfoView>}
                                     {props.dataInside && handlePutData()}
                                 </ScrollDownTransition>
                                 {props.canShowHideData && props.hideData && hasHideData && (

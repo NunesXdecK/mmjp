@@ -14,6 +14,8 @@ interface BudgetActionBarFormProps {
     isMultiple?: boolean,
     isDisabled?: boolean,
     budget?: Budget,
+    onPrintBudget?: () => void,
+    onPrintContract?: () => void,
     onSet?: (any) => void,
     onSetIsLoading?: (boolean) => void,
     onAfterSave?: (object, any?) => void,
@@ -59,8 +61,9 @@ export default function BudgetActionBarForm(props: BudgetActionBarFormProps) {
         if (status?.length > 0) {
             budget = { ...budget, status: status }
         }
-        let resProject = await handleSaveBudgetInner(budget, true)
-        if (resProject.status === "ERROR") {
+        let res = await handleSaveBudgetInner(budget, true)
+        budget = { ...budget, id: res.id }
+        if (res.status === "ERROR") {
             const feedbackMessage: FeedbackMessage = { messages: ["Algo deu errado!"], messageType: "ERROR" }
             handleShowMessage(feedbackMessage)
             handleSetIsLoading(false)
@@ -116,12 +119,15 @@ export default function BudgetActionBarForm(props: BudgetActionBarFormProps) {
                             </MenuButton>
                             <MenuButton
                                 isLoading={props.isLoading}
-                                onClick={() => window.print()}
+                                onClick={props.onPrintBudget}
+                                isHidden={!props.onPrintBudget}
                             >
                                 Imprimir orçamento
                             </MenuButton>
                             <MenuButton
                                 isLoading={props.isLoading}
+                                onClick={props.onPrintContract}
+                                isHidden={!props.onPrintContract}
                             >
                                 Imprimir contrato
                             </MenuButton>

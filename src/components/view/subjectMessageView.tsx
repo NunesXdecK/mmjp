@@ -92,17 +92,14 @@ export default function SubjectMessageView(props: SubjectMessageViewProps) {
                         <div className="w-full flex flex-row justify-between">
                             <div>
                                 {subjectMessage.user?.username?.length && (
-                                    <InfoView classNameHolder="w-full text-xl"
-                                        info={subjectMessage.user?.username} />
+                                    <InfoView classNameHolder="w-full text-xl">{subjectMessage.user?.username}</InfoView>
                                 )}
                                 {subjectMessage.dateLastUpdateUTC === 0 &&
                                     <InfoView
-                                        classNameHolder="w-full ml-1 text-gray-500 text-xs italic"
-                                        info={"Ás " + handleUTCToDateFullShow(subjectMessage.dateInsertUTC.toString())} />}
+                                        classNameHolder="w-full ml-1 text-gray-500 text-xs italic">{"Ás " + handleUTCToDateFullShow(subjectMessage.dateInsertUTC.toString())}</InfoView>}
                                 {subjectMessage.dateLastUpdateUTC > 0 &&
                                     <InfoView
-                                        classNameHolder="w-full text-xs italic"
-                                        info={"Ás " + handleUTCToDateFullShow(subjectMessage.dateLastUpdateUTC.toString())} />}
+                                        classNameHolder="w-full text-xs italic">{"Ás " + handleUTCToDateFullShow(subjectMessage.dateLastUpdateUTC.toString())}</InfoView>}
                             </div>
                             {props.canDelete && (
                                 <Button
@@ -118,8 +115,7 @@ export default function SubjectMessageView(props: SubjectMessageViewProps) {
                                 </Button>
                             )}
                         </div>
-                        <InfoView classNameHolder="w-full p-2"
-                            info={subjectMessage.text} />
+                        <InfoView classNameHolder="w-full p-2">{subjectMessage.text}</InfoView>
                     </InfoHolderView>
                 </>
             )}

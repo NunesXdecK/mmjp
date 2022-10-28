@@ -92,14 +92,14 @@ export default function UserView(props: UserViewProps) {
                                     </Button>
                                 )}
                                 {user.isBlocked && (
-                                    <InfoView classNameHolder="w-full" classNameInfo="rounded-md px-3 py-1 bg-red-600 text-white" info="BLOQUEADO" />
+                                    <InfoView classNameHolder="w-full" classNameInfo="rounded-md px-3 py-1 bg-red-600 text-white">BLOQUEADO</InfoView>
                                 )}
-                                <InfoView title="Username" info={user.username} />
-                                <InfoView title="E-mail" info={user.email} />
+                                <InfoView title="Username">{user.username}</InfoView>
+                                <InfoView title="E-mail">{user.email}</InfoView>
                                 <ScrollDownTransition isOpen={isShowInfo}>
-                                    <InfoView title="Cargo" info={user.office} />
-                                    {user.dateInsertUTC > 0 && <InfoView title="Data inserção" info={handleUTCToDateShow(user.dateInsertUTC.toString())} />}
-                                    {user.dateLastUpdateUTC > 0 && <InfoView title="Data atualização" info={handleUTCToDateShow(user.dateLastUpdateUTC.toString())} />}
+                                    <InfoView title="Cargo">{user.office}</InfoView>
+                                    {user.dateInsertUTC > 0 && <InfoView title="Data inserção">{handleUTCToDateShow(user.dateInsertUTC.toString())}</InfoView>}
+                                    {user.dateLastUpdateUTC > 0 && <InfoView title="Data atualização">{handleUTCToDateShow(user.dateLastUpdateUTC.toString())}</InfoView>}
                                     {props.dataInside && handlePutData()}
                                 </ScrollDownTransition>
                             </InfoHolderView>

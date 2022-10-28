@@ -34,8 +34,8 @@ export default function BudgetPaymentView(props: BudgetPaymentViewProps) {
                         classNameHolder="block sm:hidden"
                     >
                         <div className="flex flex-row flex-wrap">
-                            <InfoView title="Vencimento" info={handleUTCToDateShow(props.budgetPayment.dateDue.toString())} />
-                            <InfoView title="Valor" info={handleMountNumberCurrency(props.budgetPayment.value.toString(), ".", ",", 3, 2)} />
+                            <InfoView title="Vencimento">{handleUTCToDateShow(props.budgetPayment.dateDue.toString())}</InfoView>
+                            <InfoView title="Valor">{handleMountNumberCurrency(props.budgetPayment.value.toString(), ".", ",", 3, 2)}</InfoView>
                         </div>
                     </InfoHolderView>
                 </>
