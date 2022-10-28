@@ -8,6 +8,7 @@ import { BellIcon, MenuIcon, XIcon } from "@heroicons/react/outline"
 import { UserCircleIcon } from "@heroicons/react/solid";
 import { AuthContext } from "../../contexts/authContext";
 import { defaultUser } from "../../interfaces/objectInterfaces";
+import FeedbackPendency from "../modal/feedbackPendencyModal";
 
 export interface LayoutMenuItem {
     name?: string,
@@ -335,9 +336,9 @@ export default function Layout(props) {
                 </header>
 
                 <main>
-                    <div className="max-w-7xl -mt-36 mx-auto py-6 px-6 lg:px-8">
+                    <div className="max-w-7xl -mt-36 mx-auto py-6 px-6 lg:px-8 print:px-0 print:py-0">
                         {/* Replace with your content */}
-                        <div className="bg-slate-50 shadow-md rounded-lg sm:px-0 z-50 print:shadow-none">
+                        <div className="bg-slate-50 shadow-md rounded-lg sm:px-0 z-50 print:shadow-none print:px-0 print:py-0">
                             {props.children}
                             {/*
                             <div className="border-4 border-dashed border-gray-200 rounded-lg h-96">
@@ -355,6 +356,7 @@ export default function Layout(props) {
                     </div>
                 </footer>
                     */}
+
             </div>
         </>
     )

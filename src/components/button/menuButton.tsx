@@ -6,6 +6,7 @@ interface MenuButtonProps {
     href?: string,
     title?: string,
     children?: any,
+    newTab?: boolean,
     isLink?: boolean,
     isHidden?: boolean,
     isLoading?: boolean,
@@ -19,6 +20,7 @@ export default function MenuButton(props: MenuButtonProps) {
             isLight
             ignoreClass
             href={props.href}
+            newTab={props.newTab}
             isLink={props.isLink}
             onClick={props.onClick}
             isHidden={props.isHidden}

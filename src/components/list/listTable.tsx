@@ -4,6 +4,7 @@ import ListTableItem from "./listTableItem";
 import InputText from "../inputText/inputText";
 import WindowModal from "../modal/windowModal";
 import { STYLE_FOR_INPUT_LOADING_TRANSPARENT } from "../../util/patternValidationUtil";
+import { handleUTCToDateShow } from "../../util/dateUtils";
 
 interface ListTableProps {
     list?: any[],
@@ -21,6 +22,7 @@ interface ListTableProps {
 
 export default function ListTable(props: ListTableProps) {
     const [page, setPage] = useState(0)
+    const [isActive, setIsActive] = useState(-1)
     const [element, setElement] = useState({})
     const [inputSearch, setInputSearch] = useState("")
     const [isOpenDelete, setIsOpenDelete] = useState(false)
@@ -33,19 +35,31 @@ export default function ListTable(props: ListTableProps) {
 
     const filteredList = props.list.filter((element, index) => {
         let name = ""
+        let title = ""
+        let date = ""
+        let status = ""
         if (element) {
             if (typeof element === "string") {
                 name = element
             } else if (typeof element === "object") {
                 if ("name" in element) {
-                    name = element.name
+                    name = element.name.toString()
                 }
                 if ("title" in element) {
-                    name = element.title
+                    title = element.title.toString()
+                }
+                if ("status" in element) {
+                    status = element.status.toString()
+                }
+                if ("date" in element) {
+                    date = handleUTCToDateShow(element.date)
                 }
             }
         }
         return name.toLowerCase().includes(inputSearch.toLowerCase())
+            || date.toLowerCase().includes(inputSearch.toLowerCase())
+            || title.toLowerCase().includes(inputSearch.toLowerCase())
+            || status.toLowerCase().includes(inputSearch.toLowerCase())
     })
 
     let pagesArray = []
@@ -106,17 +120,18 @@ export default function ListTable(props: ListTableProps) {
                     <div className="">
                         {pagesArray[page]?.map((element, index) => (
                             <ListTableItem
-                                index={index}
+                                index={(page * 10) + (index + 1)}
                                 element={element}
-                                onRowClick={() => {
-                                    handleSetIsActive(index)
-                                }}
                                 isDisabled={props.isLoading}
-                                isActive={props.isActive === index}
+                                isActive={isActive === index}
                                 onTableRow={props.onTableRow}
                                 onShowClick={props.onShowClick}
                                 onEditClick={props.onEditClick}
                                 key={index + "-" + (element && "id" in element ? element.id : element)}
+                                onRowClick={() => {
+                                    setIsActive(index)
+                                    handleSetIsActive((page * 10) + (index + 1))
+                                }}
                                 onDeleteClick={() => {
                                     setElement(element)
                                     setIsOpenDelete(true)
@@ -130,6 +145,7 @@ export default function ListTable(props: ListTableProps) {
                                 <Button
                                     isDisabled={page < 1}
                                     onClick={() => {
+                                        setIsActive(-1)
                                         handleSetIsActive(-1)
                                         setPage((old) => page - 1)
                                     }}
@@ -141,6 +157,7 @@ export default function ListTable(props: ListTableProps) {
 
                                 <Button
                                     onClick={() => {
+                                        setIsActive(-1)
                                         handleSetIsActive(-1)
                                         setPage((old) => page + 1)
                                     }}

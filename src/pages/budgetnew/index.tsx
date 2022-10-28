@@ -1,24 +1,24 @@
 import Head from "next/head"
 import { useEffect, useState } from "react"
 import Layout from "../../components/layout/layout"
-import { handleUTCToDateShow, handleNewDateToUTC } from "../../util/dateUtils"
-import FeedbackMessageModal, { defaultFeedbackMessage, FeedbackMessage } from "../../components/modal/feedbackMessageModal"
-import { Budget, Company, defaultBudget, Person } from "../../interfaces/objectInterfaces"
-import ListTable from "../../components/list/listTable"
 import FormRow from "../../components/form/formRow"
-import FormRowColumn from "../../components/form/formRowColumn"
 import Button from "../../components/button/button"
-import WindowModal from "../../components/modal/windowModal"
 import ActionBar from "../../components/bar/actionBar"
+import ListTable from "../../components/list/listTable"
 import BudgetView from "../../components/view/budgetView"
-import BudgetActionBarForm from "../../components/bar/budgetActionBar"
+import WindowModal from "../../components/modal/windowModal"
+import FormRowColumn from "../../components/form/formRowColumn"
 import BudgetDataForm from "../../components/form/budgetDataForm"
+import BudgetActionBarForm from "../../components/bar/budgetActionBar"
+import FeedbackPendency from "../../components/modal/feedbackPendencyModal"
+import { handleUTCToDateShow, handleNewDateToUTC } from "../../util/dateUtils"
+import { Budget, Company, defaultBudget, Person } from "../../interfaces/objectInterfaces"
+import FeedbackMessageModal, { defaultFeedbackMessage, FeedbackMessage } from "../../components/modal/feedbackMessageModal"
 
 export default function Index() {
     const [title, setTitle] = useState("Orçamentos")
     const [budget, setBudget] = useState<Budget>(defaultBudget)
     const [budgets, setBudgets] = useState<Budget[]>([])
-    const [messages, setMessages] = useState<string[]>([])
 
     const [index, setIndex] = useState(-1)
     const [isFirst, setIsFirst] = useState(true)
@@ -35,7 +35,7 @@ export default function Index() {
         }
         setBudget(defaultBudget)
         setIsRegister(false)
-        setTitle("Orçamentos")
+        document.body.style.overflowY = "scroll"
     }
 
     const handleDeleteClick = async (budget, index) => {
@@ -62,15 +62,12 @@ export default function Index() {
     const handleNewClick = async () => {
         setBudget({ ...defaultBudget, dateString: handleUTCToDateShow(handleNewDateToUTC().toString()) })
         setIsRegister(true)
+        setIndex(-1)
     }
 
-    const handleFilterList = (string) => {
-        let listItems = [...budgets]
-        let listItemsFiltered: Budget[] = []
-        listItemsFiltered = listItems.filter((element: Budget, index) => {
-            return element.title.toLowerCase().includes(string.toLowerCase())
-        })
-        return listItemsFiltered
+    const handleCloseModal = async (value) => {
+        setIsRegister(value)
+        setIsForShow(value)
     }
 
     const handleShowClick = async (project) => {
@@ -82,6 +79,7 @@ export default function Index() {
 
     const handleEditClick = async (budget, index?) => {
         setIsLoading(true)
+        setIsForShow(false)
         let localBudget: Budget = await fetch("api/budget/" + budget.id).then((res) => res.json()).then((res) => res.data)
         let localClients = []
         if (localBudget.clients && localBudget.clients?.length > 0) {
@@ -120,21 +118,10 @@ export default function Index() {
         if (index > -1) {
             list = [
                 budget,
-                ...budgets.slice(0, index),
-                ...budgets.slice(index + 1, budgets.length),
+                ...budgets.slice(0, (index - 1)),
+                ...budgets.slice(index, budgets.length),
             ]
         }
-        list = list.sort((elementOne: Budget, elementTwo: Budget) => {
-            let dateOne = elementOne.dateInsertUTC
-            let dateTwo = elementTwo.dateInsertUTC
-            if (elementOne.dateLastUpdateUTC > 0 && elementOne.dateLastUpdateUTC > dateOne) {
-                dateOne = elementOne.dateLastUpdateUTC
-            }
-            if (elementTwo.dateLastUpdateUTC > 0 && elementTwo.dateLastUpdateUTC > dateTwo) {
-                dateTwo = elementTwo.dateLastUpdateUTC
-            }
-            return dateTwo - dateOne
-        })
         setIndex((old) => -1)
         setBudgets((old) => list)
         handleShowMessage(feedbackMessage)
@@ -193,27 +180,17 @@ export default function Index() {
                 }
                 setIsLoading(false)
             })
-            /*
-            fetch("api/checkPendencies").then((res) => res.json()).then((res) => {
-                setIsFirst(old => false)
-                if (res.messages.length) {
-                    setMessages(res.messages)
-                }
-            })
-            */
         }
     })
 
     return (
         <Layout
             title={title}>
-
             <Head>
                 <title>{title}</title>
                 <meta name="description" content={title} />
                 <link rel="icon" href="/favicon.ico" />
             </Head>
-
             <div className="p-4 pb-0">
                 <ActionBar>
                     <Button
@@ -249,28 +226,43 @@ export default function Index() {
                 onDeleteClick={handleDeleteClick}
             />
 
-            {/*
-            <FeedbackPendency messages={messages} />
-*/}
+            <FeedbackPendency isFirst={isFirst} />
 
             <WindowModal
                 max
-                title={title}
-                isOpen={isRegister}
+                title="Orçamento"
                 id="budget-register-modal"
+                setIsOpen={handleCloseModal}
+                isOpen={isRegister || isForShow}
                 headerBottom={(
                     <div className="p-4 pb-0">
-                        <BudgetActionBarForm
-                            budget={budget}
-                            onSet={setBudget}
-                            isLoading={isLoading}
-                            onSetIsLoading={setIsLoading}
-                            onAfterSave={handleAfterSave}
-                            onShowMessage={handleShowMessage}
-                        />
+                        {isRegister && (
+                            <BudgetActionBarForm
+                                budget={budget}
+                                onSet={setBudget}
+                                isLoading={isLoading}
+                                onSetIsLoading={setIsLoading}
+                                onAfterSave={handleAfterSave}
+                                onShowMessage={handleShowMessage}
+                            />
+                        )}
+                        {isForShow && (
+                            <ActionBar
+                                className="bg-slate-50"
+                            >
+                                <Button
+                                    isLoading={isLoading}
+                                    onClick={() => {
+                                        handleEditClick(budget)
+                                    }}
+                                >
+                                    Editar
+                                </Button>
+                            </ActionBar>
+                        )}
                     </div>
                 )}
-                setIsOpen={setIsRegister}>
+            >
                 {isRegister && (
                     <BudgetDataForm
                         budget={budget}
@@ -279,14 +271,6 @@ export default function Index() {
                         onShowMessage={handleShowMessage}
                     />
                 )}
-            </WindowModal>
-
-            <WindowModal
-                max
-                isOpen={isForShow}
-                title="Ver orçamento"
-                id="budget-show-modal"
-                setIsOpen={setIsForShow}>
                 {isForShow && (
                     <BudgetView elementId={budget.id} />
                 )}

@@ -13,8 +13,8 @@ interface WindowModalProps {
 }
 
 export default function WindowModal(props: WindowModalProps) {
-    let holderClass = "justify-center items-center flex overflow-x-hidden overflow-y-hidden fixed inset-0 z-20 outline-none focus:outline-none"
-    let panelClass = "bg-slate-50 rounded"
+    let holderClass = "print:min-h-full justify-center items-center flex overflow-x-hidden overflow-y-hidden fixed inset-0 z-20 outline-none focus:outline-none"
+    let panelClass = "bg-slate-50 rounded print:min-h-full"
 
     const handleWindowResize = () => {
         let painel: HTMLInputElement = document.querySelector("#" + "modal-painel-" + props.id)
@@ -40,7 +40,7 @@ export default function WindowModal(props: WindowModalProps) {
         <>
             {props.isOpen && (
                 <>
-                    <div className="opacity-25 fixed inset-0 z-10 bg-gray-900"></div>
+                    <div className="opacity-25 fixed inset-0 z-10 bg-gray-900 print:hidden"></div>
                     <div className={holderClass}>
                         <div id={"modal-painel-" + props.id} className={panelClass}>
                             {/*header*/}
@@ -56,7 +56,7 @@ export default function WindowModal(props: WindowModalProps) {
                                 </div>
                             </div>
                             {/*body*/}
-                            <div id={"modal-content-" + props.id} className="rounded-b p-4 overflow-x-hidden overflow-y-auto">
+                            <div id={"modal-content-" + props.id} className="rounded-b p-4 overflow-x-hidden overflow-y-auto break-after-all print:p-0 print:min-h-full print:overflow-y-hidden">
                                 {props.children}
                             </div>
                             {/*footer

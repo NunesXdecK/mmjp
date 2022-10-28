@@ -9,7 +9,7 @@ interface FormProps {
 export default function Form(props: FormProps) {
 
     let className = "p-4"
-    let classNameHolder = "px-2 py-4 sm:p-4 rounded-lg shadow print:shadow-none"
+    let classNameHolder = "px-2 py-4 sm:p-4 rounded-lg shadow print:shadow-none print:px-0 print:py-0"
     let classNameContent = ""
 
     if (props.className) {

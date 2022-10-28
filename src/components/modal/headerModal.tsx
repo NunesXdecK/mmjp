@@ -6,12 +6,12 @@ interface HeaderModalProps {
 
 export default function HeaderModal(props: HeaderModalProps) {
     return (
-        <div className="p-4 flex flex-row items-center justify-between print:hidden">
+        <div className="p-4 flex flex-row items-center justify-between print:p-0 print:hidden">
             <div className="text-xl pl-4">
                 {props.title}
             </div>
             <button
-                className="p-2 rounded-full bg-slate-50"
+                className="p-1 rounded-full hover:bg-gray-300"
                 type="button"
                 onClick={() => props.onClose(false)}>
                 <XIcon className="block h-6 w-6" aria-hidden="true" />
