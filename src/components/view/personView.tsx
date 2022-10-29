@@ -9,6 +9,7 @@ import { handleMaskCPF, handleMaskTelephone } from "../../util/maskUtil"
 import { defaultPerson, Person } from "../../interfaces/objectInterfaces"
 import { ChevronDownIcon, ChevronRightIcon } from "@heroicons/react/outline"
 import { handleUTCToDateShow } from "../../util/dateUtils"
+import SwitchTextButton from "../button/switchTextButton"
 
 interface PersonViewProps {
     id?: string,
@@ -83,21 +84,6 @@ export default function PersonView(props: PersonViewProps) {
                                 hidePaddingMargin={props.hidePaddingMargin}
                                 classNameContentHolder={props.classNameContentHolder}
                             >
-                                {props.canShowHideData && props.hideData && hasHideData && (
-                                    <Button
-                                        isLight
-                                        className="bg-transparent mr-2 sm:mt-auto"
-                                        onClick={() => {
-                                            setIsShowInfo(!isShowInfo)
-                                        }}
-                                    >
-                                        {isShowInfo ? (
-                                            <ChevronDownIcon className="text-gray-600 block h-5 w-5" aria-hidden="true" />
-                                        ) : (
-                                            <ChevronRightIcon className="text-gray-600 block h-5 w-5" aria-hidden="true" />
-                                        )}
-                                    </Button>
-                                )}
                                 <InfoView title="Codigo de cliente">{person.clientCode}</InfoView>
                                 <InfoView title="Nome da pessoa">{person.name}</InfoView>
                                 <InfoView title="CPF">{handleMaskCPF(person.cpf)}</InfoView>
@@ -121,6 +107,15 @@ export default function PersonView(props: PersonViewProps) {
                                     {person.dateLastUpdateUTC > 0 && <InfoView title="Data atualização">{handleUTCToDateShow(person.dateLastUpdateUTC.toString())}</InfoView>}
                                     {props.dataInside && handlePutData()}
                                 </ScrollDownTransition>
+                                {props.canShowHideData && props.hideData && hasHideData && (
+                                    <SwitchTextButton
+                                        isSwitched={isShowInfo}
+                                        onClick={() => {
+                                            setIsShowInfo(!isShowInfo)
+                                        }}
+                                    >
+                                    </SwitchTextButton>
+                                )}
                             </InfoHolderView>
                             <ScrollDownTransition isOpen={isShowInfo}>
                                 {!props.dataInside && handlePutData()}

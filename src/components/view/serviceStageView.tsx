@@ -9,6 +9,7 @@ import PlaceholderItemList from "../list/placeholderItemList"
 import ScrollDownTransition from "../animation/scrollDownTransition"
 import { ChevronDownIcon, ChevronRightIcon } from "@heroicons/react/outline"
 import { defaultServiceStage, ServiceStage } from "../../interfaces/objectInterfaces"
+import SwitchTextButton from "../button/switchTextButton"
 
 interface ServiceStageViewProps {
     id?: string,
@@ -109,21 +110,6 @@ export default function ServiceStageView(props: ServiceStageViewProps) {
                                 title={props.title ?? "Dados básicos"}
                                 classNameContentHolder={props.classNameContentHolder}
                             >
-                                {props.canShowHideData && props.hideData && hasHideData && (
-                                    <Button
-                                        isLight
-                                        className="bg-transparent mr-2 sm:mt-auto"
-                                        onClick={() => {
-                                            setIsShowInfo(!isShowInfo)
-                                        }}
-                                    >
-                                        {isShowInfo ? (
-                                            <ChevronDownIcon className="text-gray-600 block h-5 w-5" aria-hidden="true" />
-                                        ) : (
-                                            <ChevronRightIcon className="text-gray-600 block h-5 w-5" aria-hidden="true" />
-                                        )}
-                                    </Button>
-                                )}
                                 {serviceStage.priorityView > 0 && (
                                     <InfoView classNameHolder="w-full" title="Lista de espera">{serviceStage.priorityView + ""}</InfoView>
                                 )}
@@ -147,6 +133,15 @@ export default function ServiceStageView(props: ServiceStageViewProps) {
                                     {serviceStage.dateLastUpdateUTC > 0 && <InfoView title="Data atualização">{handleUTCToDateShow(serviceStage.dateLastUpdateUTC.toString())}</InfoView>}
                                     {props.dataInside && handlePutData()}
                                 </ScrollDownTransition>
+                                {props.canShowHideData && props.hideData && hasHideData && (
+                                    <SwitchTextButton
+                                        isSwitched={isShowInfo}
+                                        onClick={() => {
+                                            setIsShowInfo(!isShowInfo)
+                                        }}
+                                    >
+                                    </SwitchTextButton>
+                                )}
                             </InfoHolderView>
                             <ScrollDownTransition isOpen={isShowInfo}>
                                 {!props.dataInside && handlePutData()}

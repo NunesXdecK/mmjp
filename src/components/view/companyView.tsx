@@ -10,6 +10,7 @@ import { handleMaskCNPJ, handleMaskTelephone } from "../../util/maskUtil"
 import { defaultCompany, Company } from "../../interfaces/objectInterfaces"
 import { ChevronDownIcon, ChevronRightIcon } from "@heroicons/react/outline"
 import { handleUTCToDateShow } from "../../util/dateUtils"
+import SwitchTextButton from "../button/switchTextButton"
 
 interface CompanyViewProps {
     id?: string,
@@ -89,21 +90,6 @@ export default function CompanyView(props: CompanyViewProps) {
                                 hidePaddingMargin={props.hidePaddingMargin}
                                 classNameContentHolder={props.classNameContentHolder}
                             >
-                                {props.canShowHideData && props.hideData && hasHideData && (
-                                    <Button
-                                        isLight
-                                        className="bg-transparent mr-2 sm:mt-auto"
-                                        onClick={() => {
-                                            setIsShowInfo(!isShowInfo)
-                                        }}
-                                    >
-                                        {isShowInfo ? (
-                                            <ChevronDownIcon className="text-gray-600 block h-5 w-5" aria-hidden="true" />
-                                        ) : (
-                                            <ChevronRightIcon className="text-gray-600 block h-5 w-5" aria-hidden="true" />
-                                        )}
-                                    </Button>
-                                )}
                                 <InfoView title="Codigo de cliente">{company.clientCode}</InfoView>
                                 <InfoView title="Nome da empresa">{company.name}</InfoView>
                                 <InfoView title="CNPJ">{handleMaskCNPJ(company.cnpj)}</InfoView>
@@ -120,6 +106,15 @@ export default function CompanyView(props: CompanyViewProps) {
                                     {company.dateLastUpdateUTC > 0 && <InfoView title="Data atualização">{handleUTCToDateShow(company.dateLastUpdateUTC.toString())}</InfoView>}
                                     {props.dataInside && handlePutData()}
                                 </ScrollDownTransition>
+                                {props.canShowHideData && props.hideData && hasHideData && (
+                                    <SwitchTextButton
+                                        isSwitched={isShowInfo}
+                                        onClick={() => {
+                                            setIsShowInfo(!isShowInfo)
+                                        }}
+                                    >
+                                    </SwitchTextButton>
+                                )}
                             </InfoHolderView>
                             <ScrollDownTransition isOpen={isShowInfo}>
                                 {!props.dataInside && handlePutData()}

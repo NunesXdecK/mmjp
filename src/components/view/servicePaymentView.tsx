@@ -9,6 +9,7 @@ import { handleMountNumberCurrency } from "../../util/maskUtil"
 import ScrollDownTransition from "../animation/scrollDownTransition"
 import { ChevronDownIcon, ChevronRightIcon } from "@heroicons/react/outline"
 import { defaultServicePayment, ServicePayment } from "../../interfaces/objectInterfaces"
+import SwitchTextButton from "../button/switchTextButton"
 
 interface ServicePaymentViewProps {
     id?: string,
@@ -99,21 +100,6 @@ export default function ServicePaymentView(props: ServicePaymentViewProps) {
                                 title={props.title ?? "Dados básicos"}
                                 classNameContentHolder={props.classNameContentHolder}
                             >
-                                {props.canShowHideData && props.hideData && hasHideData && (
-                                    <Button
-                                        isLight
-                                        className="bg-transparent mr-2 sm:mt-auto"
-                                        onClick={() => {
-                                            setIsShowInfo(!isShowInfo)
-                                        }}
-                                    >
-                                        {isShowInfo ? (
-                                            <ChevronDownIcon className="text-gray-600 block h-5 w-5" aria-hidden="true" />
-                                        ) : (
-                                            <ChevronRightIcon className="text-gray-600 block h-5 w-5" aria-hidden="true" />
-                                        )}
-                                    </Button>
-                                )}
                                 <InfoView title="Pagamento">{servicePayment.description}</InfoView>
                                 <InfoView title="Valor">{handleMountNumberCurrency(servicePayment.value.toString(), ".", ",", 3, 2)}</InfoView>
                                 <InfoView title="Data">{handleUTCToDateShow(servicePayment.dateDue.toString())}</InfoView>
@@ -136,6 +122,15 @@ export default function ServicePaymentView(props: ServicePaymentViewProps) {
                                     {servicePayment.dateLastUpdateUTC > 0 && <InfoView title="Data atualização">{handleUTCToDateShow(servicePayment.dateLastUpdateUTC.toString())}</InfoView>}
                                     {props.dataInside && handlePutData()}
                                 </ScrollDownTransition>
+                                {props.canShowHideData && props.hideData && hasHideData && (
+                                    <SwitchTextButton
+                                        isSwitched={isShowInfo}
+                                        onClick={() => {
+                                            setIsShowInfo(!isShowInfo)
+                                        }}
+                                    >
+                                    </SwitchTextButton>
+                                )}
                             </InfoHolderView>
                             <ScrollDownTransition isOpen={isShowInfo}>
                                 {!props.dataInside && handlePutData()}

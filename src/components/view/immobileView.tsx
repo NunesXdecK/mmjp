@@ -11,6 +11,7 @@ import ScrollDownTransition from "../animation/scrollDownTransition"
 import { ChevronDownIcon, ChevronRightIcon } from "@heroicons/react/outline"
 import { defaultImmobile, Immobile } from "../../interfaces/objectInterfaces"
 import { handleUTCToDateShow } from "../../util/dateUtils"
+import SwitchTextButton from "../button/switchTextButton"
 
 interface ImmobileViewProps {
     id?: string,
@@ -112,7 +113,7 @@ export default function ImmobileView(props: ImmobileViewProps) {
                                 title={props.title ?? "Dados básicos"}
                                 classNameContentHolder={props.classNameContentHolder}
                             >
-                                {props.canShowHideData && props.hideData && hasHideData && (
+                                {/*props.canShowHideData && props.hideData && hasHideData && (
                                     <Button
                                         isLight
                                         className="bg-transparent mr-2 sm:mt-auto"
@@ -126,7 +127,7 @@ export default function ImmobileView(props: ImmobileViewProps) {
                                             <ChevronRightIcon className="text-gray-600 block h-5 w-5" aria-hidden="true" />
                                         )}
                                     </Button>
-                                )}
+                                        )*/}
                                 <InfoView title="Nome do imóvel">{immobile.name}</InfoView>
                                 {(immobile.status === "DESMEMBRADO" || immobile.status === "UNIFICADO") && (
                                     <InfoView classNameHolder="w-full" classNameInfo="rounded-sm px-2 py-1 text-green-100 bg-green-600 text-[0.8rem] font-bold" title="">{immobile.status}</InfoView>
@@ -145,6 +146,15 @@ export default function ImmobileView(props: ImmobileViewProps) {
                                     {immobile.dateLastUpdateUTC > 0 && <InfoView title="Data atualização">{handleUTCToDateShow(immobile.dateLastUpdateUTC.toString())}</InfoView>}
                                     {props.dataInside && handlePutData()}
                                 </ScrollDownTransition>
+                                {props.canShowHideData && props.hideData && hasHideData && (
+                                    <SwitchTextButton
+                                        isSwitched={isShowInfo}
+                                        onClick={() => {
+                                            setIsShowInfo(!isShowInfo)
+                                        }}
+                                    >
+                                    </SwitchTextButton>
+                                )}
                             </InfoHolderView>
                             <ScrollDownTransition isOpen={isShowInfo}>
                                 {!props.dataInside && handlePutData()}

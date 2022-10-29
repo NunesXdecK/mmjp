@@ -8,6 +8,7 @@ import PlaceholderItemList from "../list/placeholderItemList"
 import ScrollDownTransition from "../animation/scrollDownTransition"
 import { defaultUser, User } from "../../interfaces/objectInterfaces"
 import { ChevronDownIcon, ChevronRightIcon } from "@heroicons/react/outline"
+import SwitchTextButton from "../button/switchTextButton"
 
 interface UserViewProps {
     id?: string,
@@ -76,21 +77,6 @@ export default function UserView(props: UserViewProps) {
                                 title={props.title ?? "Dados do usuário"}
                                 classNameContentHolder={props.classNameContentHolder}
                             >
-                                {props.canShowHideData && props.hideData && hasHideData && (
-                                    <Button
-                                        isLight
-                                        className="bg-transparent mr-2 sm:mt-auto"
-                                        onClick={() => {
-                                            setIsShowInfo(!isShowInfo)
-                                        }}
-                                    >
-                                        {isShowInfo ? (
-                                            <ChevronDownIcon className="text-gray-600 block h-5 w-5" aria-hidden="true" />
-                                        ) : (
-                                            <ChevronRightIcon className="text-gray-600 block h-5 w-5" aria-hidden="true" />
-                                        )}
-                                    </Button>
-                                )}
                                 {user.isBlocked && (
                                     <InfoView classNameHolder="w-full" classNameInfo="rounded-md px-3 py-1 bg-red-600 text-white">BLOQUEADO</InfoView>
                                 )}
@@ -102,6 +88,15 @@ export default function UserView(props: UserViewProps) {
                                     {user.dateLastUpdateUTC > 0 && <InfoView title="Data atualização">{handleUTCToDateShow(user.dateLastUpdateUTC.toString())}</InfoView>}
                                     {props.dataInside && handlePutData()}
                                 </ScrollDownTransition>
+                                {props.canShowHideData && props.hideData && hasHideData && (
+                                    <SwitchTextButton
+                                        isSwitched={isShowInfo}
+                                        onClick={() => {
+                                            setIsShowInfo(!isShowInfo)
+                                        }}
+                                    >
+                                    </SwitchTextButton>
+                                )}
                             </InfoHolderView>
                             <ScrollDownTransition isOpen={isShowInfo}>
                                 {!props.dataInside && handlePutData()}

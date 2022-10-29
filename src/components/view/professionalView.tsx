@@ -8,6 +8,7 @@ import ScrollDownTransition from "../animation/scrollDownTransition"
 import { ChevronDownIcon, ChevronRightIcon } from "@heroicons/react/outline"
 import { defaultProfessional, Professional } from "../../interfaces/objectInterfaces"
 import { handleUTCToDateShow } from "../../util/dateUtils"
+import SwitchTextButton from "../button/switchTextButton"
 
 interface ProfessionalViewProps {
     id?: string,
@@ -76,21 +77,6 @@ export default function ProfessionalView(props: ProfessionalViewProps) {
                                 title={props.title ?? "Dados profissionais"}
                                 classNameContentHolder={props.classNameContentHolder}
                             >
-                                {props.canShowHideData && props.hideData && hasHideData && (
-                                    <Button
-                                        isLight
-                                        className="bg-transparent mr-2 sm:mt-auto"
-                                        onClick={() => {
-                                            setIsShowInfo(!isShowInfo)
-                                        }}
-                                    >
-                                        {isShowInfo ? (
-                                            <ChevronDownIcon className="text-gray-600 block h-5 w-5" aria-hidden="true" />
-                                        ) : (
-                                            <ChevronRightIcon className="text-gray-600 block h-5 w-5" aria-hidden="true" />
-                                        )}
-                                    </Button>
-                                )}
                                 <InfoView title="Titulo do profissional">{professional.title}</InfoView>
                                 <ScrollDownTransition isOpen={isShowInfo}>
                                     <InfoView title="CREA">{professional.creaNumber}</InfoView>
@@ -99,6 +85,15 @@ export default function ProfessionalView(props: ProfessionalViewProps) {
                                     {professional.dateLastUpdateUTC > 0 && <InfoView title="Data atualização">{handleUTCToDateShow(professional.dateLastUpdateUTC.toString())}</InfoView>}
                                     {props.dataInside && handlePutData()}
                                 </ScrollDownTransition>
+                                {props.canShowHideData && props.hideData && hasHideData && (
+                                    <SwitchTextButton
+                                        isSwitched={isShowInfo}
+                                        onClick={() => {
+                                            setIsShowInfo(!isShowInfo)
+                                        }}
+                                    >
+                                    </SwitchTextButton>
+                                )}
                             </InfoHolderView>
                             <ScrollDownTransition isOpen={isShowInfo}>
                                 {!props.dataInside && handlePutData()}

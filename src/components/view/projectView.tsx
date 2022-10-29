@@ -10,6 +10,7 @@ import { ChevronDownIcon, ChevronRightIcon } from "@heroicons/react/outline"
 import { defaultProject, Project, Service } from "../../interfaces/objectInterfaces"
 import { handleUTCToDateShow } from "../../util/dateUtils"
 import ServiceView from "./serviceView"
+import SwitchTextButton from "../button/switchTextButton"
 
 interface ProjectViewProps {
     id?: string,
@@ -173,21 +174,7 @@ export default function ProjectView(props: ProjectViewProps) {
                                 title={props.title ?? "Dados básicos"}
                                 classNameContentHolder={props.classNameContentHolder}
                             >
-                                {props.canShowHideData && props.hideData && hasHideData && (
-                                    <Button
-                                        isLight
-                                        className="bg-transparent mr-2 sm:mt-auto"
-                                        onClick={() => {
-                                            setIsShowInfo(!isShowInfo)
-                                        }}
-                                    >
-                                        {isShowInfo ? (
-                                            <ChevronDownIcon className="text-gray-600 block h-5 w-5" aria-hidden="true" />
-                                        ) : (
-                                            <ChevronRightIcon className="text-gray-600 block h-5 w-5" aria-hidden="true" />
-                                        )}
-                                    </Button>
-                                )}
+                                
                                 {project.priorityView > 0 && (
                                     <InfoView classNameHolder="w-full" title="Lista de espera">{project.priorityView + ""}</InfoView>
                                 )}
@@ -208,6 +195,15 @@ export default function ProjectView(props: ProjectViewProps) {
                                     {project.dateLastUpdateUTC > 0 && <InfoView title="Data atualização">{handleUTCToDateShow(project.dateLastUpdateUTC.toString())}</InfoView>}
                                     {props.dataInside && handlePutData()}
                                 </ScrollDownTransition>
+                                {props.canShowHideData && props.hideData && hasHideData && (
+                                    <SwitchTextButton
+                                        isSwitched={isShowInfo}
+                                        onClick={() => {
+                                            setIsShowInfo(!isShowInfo)
+                                        }}
+                                    >
+                                    </SwitchTextButton>
+                                )}
                             </InfoHolderView>
                             <ScrollDownTransition isOpen={isShowInfo}>
                                 {!props.dataInside && handlePutData()}
