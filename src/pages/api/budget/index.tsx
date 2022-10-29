@@ -1,5 +1,5 @@
 import { BudgetConversor } from "../../../db/converters"
-import { Budget } from "../../../interfaces/objectInterfaces"
+import { Budget, BudgetPayment } from "../../../interfaces/objectInterfaces"
 import { addDoc, collection, deleteDoc, doc, updateDoc } from "firebase/firestore"
 import { handleGetDateFormatedToUTC, handleNewDateToUTC } from "../../../util/dateUtils"
 import { db, HISTORY_COLLECTION_NAME, BUDGET_COLLECTION_NAME } from "../../../db/firebaseDB"
@@ -40,6 +40,18 @@ export default async function handler(req, res) {
                         })
                     }
 
+                    let payments = []
+                    if (budget.payments && budget.payments?.length) {
+                        budget.payments?.map((element: BudgetPayment, index) => {
+                            let payment = { ...element }
+                            payment = { ...payment, dateDue: handleGetDateFormatedToUTC(payment.dateString) }
+                            if (payment.dateString) {
+                                delete payment.dateString
+                            }
+                            payments = [...payments, payment]
+                        })
+                    }
+
                     if (budget.dateString) {
                         delete budget.dateString
                     }
@@ -47,6 +59,7 @@ export default async function handler(req, res) {
                     budget = {
                         ...budget,
                         clients: clients,
+                        payments: payments,
                         title: budget.title.trim(),
                     }
 

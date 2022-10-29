@@ -28,6 +28,14 @@ export default function ListTable(props: ListTableProps) {
 
     let perPage = 10
 
+    const handleGetPage = (list) => {
+        if (page > 0 && page === pages && (!list[page] || list[page].length > 0)) {
+            setPage(page - 1)
+            return page - 1
+        }
+        return page
+    }
+
     const handleSetIsActive = (index) => {
         if (props.onSetIsActive) {
             props.onSetIsActive(index)
@@ -120,7 +128,7 @@ export default function ListTable(props: ListTableProps) {
                         <div className="border-black my-1" />
                     </div>
                     <div className="">
-                        {pagesArray[(page === pages ? page - 1 : page)]?.map((element, index) => (
+                        {pagesArray[handleGetPage(pagesArray)]?.map((element, index) => (
                             <ListTableItem
                                 index={(page * perPage) + (index + 1)}
                                 element={element}
