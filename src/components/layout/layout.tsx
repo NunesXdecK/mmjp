@@ -10,7 +10,6 @@ import { MenuIcon, MoonIcon, SunIcon, UserCircleIcon, XIcon } from "@heroicons/r
 
 interface LayoutMenuProps {
     title?: string,
-    children?: string,
 }
 
 export interface LayoutMenuItem {
@@ -51,7 +50,7 @@ const menus: LayoutMenuItem[] = [
     },
 ]
 
-export default function Layout(props: LayoutMenuProps) {
+export default function Layout(props) {
 
     const [isOpen, setIsOpen] = useState(false)
     const { user } = useContext(AuthContext)
