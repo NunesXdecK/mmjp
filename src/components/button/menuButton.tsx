@@ -5,6 +5,7 @@ interface MenuButtonProps {
     id?: string,
     href?: string,
     title?: string,
+    className?: string,
     children?: any,
     newTab?: boolean,
     isLink?: boolean,
@@ -15,6 +16,10 @@ interface MenuButtonProps {
 }
 
 export default function MenuButton(props: MenuButtonProps) {
+    let className = "py-2 px-4 text-left text-gray-800 bg-slate-50 hover:bg-slate-300 active:bg-slate-400 focus:outline-none"
+    if (props.className) {
+        className = props.className
+    }
     return (
         <Button
             isLight
@@ -22,12 +27,12 @@ export default function MenuButton(props: MenuButtonProps) {
             href={props.href}
             newTab={props.newTab}
             isLink={props.isLink}
+            className={className}
             onClick={props.onClick}
             isHidden={props.isHidden}
             isLoading={props.isLoading}
             isDisabled={props.isDisabled}
             id={props.id + "-menu-button"}
-            className="py-2 px-4 text-left text-gray-800 bg-slate-50 hover:bg-slate-300 active:bg-slate-400 focus:outline-none"
         >
             {props.children}
         </Button >

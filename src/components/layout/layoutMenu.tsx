@@ -1,5 +1,8 @@
 import { LayoutMenuItem } from "./layout"
 import { Menu, Transition } from "@headlessui/react"
+import Button from "../button/button"
+import MenuButton from "../button/menuButton"
+import DropDownButton from "../button/dropDownButton"
 
 
 interface LayoutMenuProps {
@@ -11,52 +14,40 @@ export default function LayoutMenu(props: LayoutMenuProps) {
     return (
         <>
             {props.menus.map((element, index) => (
-                <Menu as="div" className="relative" key={index + element.name}>
+                <div key={index + element.name}>
                     {element.subMenus ?
                         (<>
-                            <Menu.Button
-                            >
-                                <a
-                                    className={aClassName}>
-                                    {element.name}
-                                </a>
-                            </Menu.Button>
-                        </>) : (<>
-                            <a
+                            <DropDownButton
+                                title={element.name}
                                 className={aClassName}
-                                href={element.href}>
+                            >
+                                <div
+                                    className={"p-2 w-max left-0 absolute bg-gray-800 rounded-md focus:outline-none"}>
+                                    {element.subMenus.map((elementItem, index) => (
+                                        <Button
+                                            isLink
+                                            ignoreClass
+                                            className={aClassName}
+                                            href={elementItem.href}
+                                            isDisabled={elementItem.disabled}
+                                            key={index + elementItem.name}
+                                        >
+                                            {elementItem.name}
+                                        </Button>
+                                    ))}
+                                </div>
+                            </DropDownButton>
+                        </>) : (<>
+                            <Button
+                                isLink
+                                ignoreClass
+                                href={element.href}
+                                className={aClassName}
+                            >
                                 {element.name}
-                            </a>
+                            </Button>
                         </>)}
-
-                    {element.subMenus && (
-                        <Transition
-                            enter="transition duration-100 ease-out"
-                            enterFrom="transform scale-95 opacity-0"
-                            enterTo="transform scale-100 opacity-100"
-                            leave="transition duration-75 ease-out"
-                            leaveFrom="transform scale-100 opacity-100"
-                            leaveTo="transform scale-95 opacity-0">
-                            <Menu.Items
-                                className={"p-2 w-max left-0 absolute bg-gray-800 rounded-md focus:outline-none"}>
-                                {element.subMenus.map((elementItem, index) => (
-                                    <Menu.Item
-                                        disabled={elementItem.disabled}
-                                        key={index + elementItem.name}>
-                                        {({ active }) => (
-                                            <a
-                                                className={aClassName}
-                                                href={elementItem.href}
-                                            >
-                                                {elementItem.name}
-                                            </a>
-                                        )}
-                                    </Menu.Item>
-                                ))}
-                            </Menu.Items>
-                        </Transition>
-                    )}
-                </Menu>
+                </div>
             ))}
         </>
     )

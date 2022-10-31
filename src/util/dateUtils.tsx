@@ -23,7 +23,7 @@ export const handleRemoveDateMask = (text: string) => {
 export const handleGetDateFormatedToUTC = (date: string) => {
     let dateUTC = 0
     const dateText = handleRemoveDateMask(date)
-    if (dateText.length === 8) {
+    if (dateText?.length === 8) {
         const day = dateText.substring(0, 2)
         const month = dateText.substring(2, 4)
         const year = dateText.substring(4, dateText.length)

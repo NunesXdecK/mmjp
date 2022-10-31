@@ -13,56 +13,50 @@ export default async function handler(req, res) {
     switch (method) {
         case "POST":
             let resPOST = { status: "ERROR", error: {}, id: "", message: "" }
-            try {
-                let { token, data, history } = JSON.parse(body)
-                if (token === "tokenbemseguro") {
-                    let budget: Budget = data
-                    let nowID = data?.id ?? ""
-                    const isSave = nowID === ""
-                    if (budget.dateString.length > 0) {
-                        budget = { ...budget, date: handleGetDateFormatedToUTC(budget.dateString) }
-                    }
-
-                    if (budget.date === 0) {
-                        budget = { ...budget, date: handleNewDateToUTC() }
-                    }
-
-                    let clients = []
-                    if (budget.clients && budget.clients.length) {
-                        budget.clients?.map((element, index) => {
-                            if (element && "id" in element && element.id.length) {
-                                if ("cpf" in element) {
-                                    clients = [...clients, { id: element.id, cpf: "" }]
-                                } else if ("cnpj" in element) {
-                                    clients = [...clients, { id: element.id, cnpj: "" }]
-                                }
+            let { token, data, history } = JSON.parse(body)
+            if (token === "tokenbemseguro") {
+                let budget: Budget = data
+                let nowID = data?.id ?? ""
+                const isSave = nowID === ""
+                if (budget?.dateString?.length > 0) {
+                    budget = { ...budget, date: handleGetDateFormatedToUTC(budget.dateString) }
+                }
+                if (budget.date === 0) {
+                    budget = { ...budget, date: handleNewDateToUTC() }
+                }
+                let clients = []
+                if (budget.clients && budget.clients.length) {
+                    budget.clients?.map((element, index) => {
+                        if (element && "id" in element && element.id.length) {
+                            if ("cpf" in element) {
+                                clients = [...clients, { id: element.id, cpf: "" }]
+                            } else if ("cnpj" in element) {
+                                clients = [...clients, { id: element.id, cnpj: "" }]
                             }
-                        })
-                    }
-
-                    let payments = []
-                    if (budget.payments && budget.payments?.length) {
-                        budget.payments?.map((element: BudgetPayment, index) => {
-                            let payment = { ...element }
-                            payment = { ...payment, dateDue: handleGetDateFormatedToUTC(payment.dateString) }
-                            if (payment.dateString) {
-                                delete payment.dateString
-                            }
-                            payments = [...payments, payment]
-                        })
-                    }
-
-                    if (budget.dateString) {
-                        delete budget.dateString
-                    }
-
-                    budget = {
-                        ...budget,
-                        clients: clients,
-                        payments: payments,
-                        title: budget.title.trim(),
-                    }
-
+                        }
+                    })
+                }
+                let payments = []
+                if (budget.payments && budget.payments?.length) {
+                    budget.payments?.map((element: BudgetPayment, index) => {
+                        let payment = { ...element }
+                        payment = { ...payment, dateDue: handleGetDateFormatedToUTC(payment.dateString) }
+                        if (payment.dateString) {
+                            delete payment.dateString
+                        }
+                        payments = [...payments, payment]
+                    })
+                }
+                if (budget.dateString) {
+                    delete budget.dateString
+                }
+                budget = {
+                    ...budget,
+                    clients: clients,
+                    payments: payments,
+                    title: budget.title.trim(),
+                }
+                try {
                     if (isSave) {
                         budget = { ...budget, dateInsertUTC: handleNewDateToUTC() }
                         const docRef = await addDoc(budgetCollection, BudgetConversor.toFirestore(budget))
@@ -79,12 +73,12 @@ export default async function handler(req, res) {
                     resPOST = { ...resPOST, status: "SUCCESS", id: nowID }
                     {/*
                 */}
-                } else {
-                    resPOST = { ...resPOST, status: "ERROR", message: "Token invalido!" }
+                } catch (err) {
+                    console.error(err)
+                    resPOST = { ...resPOST, status: "ERROR", error: err }
                 }
-            } catch (err) {
-                console.error(err)
-                resPOST = { ...resPOST, status: "ERROR", error: err }
+            } else {
+                resPOST = { ...resPOST, status: "ERROR", message: "Token invalido!" }
             }
             res.status(200).json(resPOST)
             break
