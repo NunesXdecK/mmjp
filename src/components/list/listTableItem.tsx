@@ -18,7 +18,7 @@ interface ListTableItemProps {
 export default function ListTableItem(props: ListTableItemProps) {
     let className = "dark:text-slate-200 dark:border-slate-600 border-b items-center mb-2 px-4 py-2"
     if (props.isActive) {
-        className = className + " bg-indigo-100"
+        className = className + " bg-indigo-100 dark:bg-gray-700"
     }
     return (
         <div
