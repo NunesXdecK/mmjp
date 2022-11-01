@@ -61,7 +61,7 @@ export default function WindowModal(props: WindowModalProps) {
                                 </div>
                             </div>
                             {/*body*/}
-                            <div id={"modal-content-" + props.id} className="rounded-b p-4 overflow-x-hidden overflow-y-auto break-after-all print:p-0 print:min-h-full print:overflow-y-hidden">
+                            <div id={"modal-content-" + props.id} className="rounded-b p-4 overflow-x-hidden overflow-y-auto break-after-all dark:text-gray-200 print:p-0 print:min-h-full print:overflow-y-hidden">
                                 {props.children}
                             </div>
                             {/*footer

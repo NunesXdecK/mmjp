@@ -58,7 +58,7 @@ export default function Users() {
                 </div>
 
                 <div className="rounded p-4">
-                    <div className="rounded border shadow p-4 flex gap-2">
+                    <div className="rounded border shadow dark:shadow-none p-4 flex gap-2">
                         <Button onClick={() => setIsOpenIOS(true)}>modal TC</Button>
                         <Button onClick={() => setIsOpenWindow(true)}>modal JN</Button>
                     </div>
@@ -88,12 +88,12 @@ export default function Users() {
                                     <FormRowColumn className="hidden sm:block" unit="2">{handleMaskCPF(element.cpf)}</FormRowColumn>
                                     <FormRowColumn className="flex gap-1 place-content-center" unit="1/1">
                                         <Button
-                                            className="shadow-md"
+                                            className="shadow-md dark:shadow-none"
                                             isLight>
                                             <PencilIcon className="text-indigo-600 block h-6 w-6" aria-hidden="true" />
                                         </Button>
                                         <Button
-                                            className="shadow-md"
+                                            className="shadow-md dark:shadow-none"
                                             isLight>
                                             <TrashIcon className="text-red-600 block h-6 w-6" aria-hidden="true" />
                                         </Button>

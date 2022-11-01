@@ -23,7 +23,7 @@ export default function BudgetServiceView(props: BudgetServiceViewProps) {
         <>
             {hasData && (
                 <>
-                    <FormRow className="-m-2 mb-2 p-2 hidden sm:grid">
+                    <FormRow className="-m-2 mb-2 p-2 hidden sm:grid text-gray-900 dark:text-gray-200 ">
                         <FormRowColumn unit="2">{props.budgetService.title}</FormRowColumn>
                         <FormRowColumn unit="1" className="text-center">{handleMountNumberCurrency(props.budgetService.value.toString(), ".", ",", 3, 2)}</FormRowColumn>
                         <FormRowColumn unit="1" className="text-center">{props.budgetService.quantity}</FormRowColumn>

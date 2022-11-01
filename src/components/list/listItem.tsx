@@ -31,7 +31,7 @@ export default function ItemList(props: ItemListProps) {
     let className = "border border-gray-50 bg-slate-50 p-4 sm:p-8 items-center text-left transition duration-200 hover:bg-indigo-50 active:bg-indigo-50 focus:bg-indigo-50 active:outline-none focus:outline-none"
 
     if (props.isActive) {
-        className = className + " shadow-md bg-indigo-50 shadow-indigo-500"
+        className = className + " shadow-md bg-indigo-50 shadow-indigo-500 dark:shadow-none"
     }
 
     const handleLoading = () => {

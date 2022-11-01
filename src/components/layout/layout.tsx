@@ -80,7 +80,7 @@ export default function Layout(props) {
 
     return (
         <div className={holderClassName}>
-            <div className="bg-gray-800 shadow pb-32">
+            <div className="bg-gray-800 shadow pb-32 dark:shadow-none">
                 <div className="hidden sm:block">
                     <div className="flex flex-row items-center justify-between px-2 py-4">
                         <div className="flex flex-row gap-2">
@@ -162,7 +162,7 @@ export default function Layout(props) {
                 </div>
             </div>
             <div className="-mt-32 p-6 z-10">
-                <div className="rounded shadow bg-slate-50 dark:bg-slate-800 z-10">
+                <div className="rounded shadow dark:shadow-none bg-slate-50 dark:bg-slate-800 z-10">
                     {props.children}
                 </div>
             </div>

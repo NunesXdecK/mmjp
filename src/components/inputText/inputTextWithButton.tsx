@@ -46,7 +46,7 @@ export default function InputTextWithButton(props: InputTextWithButtonProps) {
                         </label>
                     )}
 
-                    <div className="mt-1 flex rounded-md shadow-sm">
+                    <div className="mt-1 flex rounded-md shadow-sm dark:shadow-none">
                         <input
                             type="text"
                             value={text}

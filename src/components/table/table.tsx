@@ -57,7 +57,7 @@ export default function Table() {
     ))
 
     return (
-        <div className="bg-slate-50 shadow overflow-hidden">
+        <div className="bg-slate-50 shadow dark:shadow-none overflow-hidden">
 
             <div className="bg-gray-100 border-t border-gray-200">
                 <div className="px-4 py-5 sm:px-6">
@@ -100,7 +100,7 @@ export default function Table() {
                         {pagesFromTo}
                     </div>
                     <div>
-                        <nav className="relative z-0 inline-flex rounded-md shadow-sm -space-x-px" aria-label="Pagination">
+                        <nav className="relative z-0 inline-flex rounded-md shadow-sm dark:shadow-none -space-x-px" aria-label="Pagination">
                             <a
                                 href="#"
                                 className="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-slate-50 text-sm font-medium text-gray-500 hover:bg-gray-50"

@@ -298,7 +298,7 @@ export default function Index() {
                         )}
                         {isForShow && (
                             <ActionBar
-                                className="bg-slate-50"
+                                className="bg-slate-50 dark:bg-slate-800"
                             >
                                 <Button
                                     isLoading={isLoading}

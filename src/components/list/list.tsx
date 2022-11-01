@@ -114,7 +114,7 @@ export default function List(props: ListProps) {
     })
 
     return (
-        <div className="bg-slate-50 shadow overflow-hidden rounded-lg">
+        <div className="bg-slate-50 shadow dark:shadow-none overflow-hidden rounded-lg">
             <div className="bg-gray-100 border-gray-200 px-4 py-5 sm:px-6">
                 <div className="flex w-full">
                     <div className="w-full">

@@ -58,7 +58,7 @@ export default function SubjectMessageLayoutModal(props: SubjectMessageLayoutMod
                                             </button>
                                         </div>
                                     </Transition.Child>
-                                    <div className="flex h-full flex-col overflow-y-scroll bg-slate-50 py-6 shadow-xl">
+                                    <div className="flex h-full flex-col overflow-y-scroll bg-slate-50 py-6 shadow-xl dark:shadow-none">
                                         <div className="px-4 sm:px-6">
                                             <Dialog.Title className="text-lg font-medium text-gray-900">{props.title}</Dialog.Title>
                                         </div>

@@ -90,7 +90,7 @@ export default function InputImmobilePoints(props: InputImmobilePointsProps) {
             )}
 
             {props.points && props.points?.map((element: ImmobilePoint, index) => (
-                <div className="mb-2 shadow-md py-2" key={index + element.id + element.description}>
+                <div className="mb-2 shadow-md dark:shadow-none py-2" key={index + element.id + element.description}>
                     <FormRow>
                         <FormRowColumn unit="4">
                             <InputText

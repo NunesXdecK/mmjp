@@ -79,7 +79,7 @@ export default function LoginForm(props: ImmobileFormProps) {
                             }}
                             className="mt-8 space-y-6">
                             <input type="hidden" name="remember" defaultValue="true" />
-                            <div className="-space-y-px rounded-md shadow-sm">
+                            <div className="-space-y-px rounded-md shadow-sm dark:shadow-none">
                                 <InputText
                                     id="username"
                                     value={username}
