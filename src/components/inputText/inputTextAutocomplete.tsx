@@ -25,14 +25,15 @@ interface InputTextAutoCompleteProps {
 }
 
 export default function InputTextAutoComplete(props: InputTextAutoCompleteProps) {
+    const divRef = useRef(null)
+    const inputRef = useRef(props.ref ?? null)
     const [isValid, setIsValid] = useState(true)
     const [sugestions, setSugestions] = useState([])
-    const inputRef = useRef(props.ref ?? null);
-    const divRef = useRef(null);
 
-    let classNameInput = "peer p-2 mt-1 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500 "
-    let classNameLabel = "block text-sm font-medium text-gray-700"
     let classNameHolder = "w-full relative "
+    let classNameLabel = "block text-sm font-medium text-gray-700 dark:text-gray-200"
+    let classNameInput = "peer p-2 mt-1 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500 "
+    classNameInput = classNameInput + " dark:border-gray-700 dark:text-gray-200 dark:bg-slate-800 "
 
     if (props.holderClassName) {
         classNameHolder = classNameHolder + " " + props.holderClassName
@@ -140,7 +141,7 @@ export default function InputTextAutoComplete(props: InputTextAutoCompleteProps)
             </div>
             <div
                 id={props.id + "-suggestions-holder"}
-                className="absolute shadow-m mt-2 z-40 bg-slate-50 rounded"
+                className="absolute shadow-m mt-2 z-40 bg-slate-50 dark:bg-gray-800 dark:text-slate-200 rounded"
             >
                 {sugestions.length > 0 && (
                     <div
@@ -162,7 +163,7 @@ export default function InputTextAutoComplete(props: InputTextAutoCompleteProps)
                                     handleCheckSugestion("")
                                 }}
                                 type="button"
-                                className="text-left text-gray-600 w-full px-2 py-4 hover:bg-gray-300">
+                                className="text-left text-gray-600 dark:text-gray-300 w-full px-2 py-4 hover:bg-gray-300 dark:hover:bg-gray-700">
                                 {element && typeof element === "string" ? element : "name" in element && element.name}
                             </button>
                         ))}

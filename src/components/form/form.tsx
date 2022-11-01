@@ -25,8 +25,8 @@ export default function Form(props: FormProps) {
         <div className="rounded shadow p-4 mt-4">
             <div className="flex flex-row justify-between items-center p-2">
                 <div>
-                    <h3 className="text-lg font-medium leading-6 text-gray-900">{props.title}</h3>
-                    <p className="mt-1 text-sm text-gray-600">{props.subtitle}</p>
+                    <h3 className="text-lg font-medium leading-6 text-gray-900 dark:text-gray-200">{props.title}</h3>
+                    <p className="mt-1 text-sm text-gray-600 dark:text-gray-300">{props.subtitle}</p>
                 </div>
                 {props.titleRight}
             </div>

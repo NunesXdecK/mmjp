@@ -82,9 +82,10 @@ const handleMaskCurrency = (text) => {
 export default function InputText(props: InputTextProps) {
     const [isValid, setIsValid] = useState(true)
 
-    let classNameInputLocal = "peer p-2 mt-1 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500 "
-    let classNameLabelLocal = "block text-sm font-medium text-gray-700"
-    let classNameHolder = "w-full"
+    let classNameHolder = "w-full dark:text-slate-50"
+    let classNameLabelLocal = "block text-sm font-medium text-gray-700 dark:text-gray-200"
+    let classNameInputLocal = "peer p-2 mt-1 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500 dark:text-gray-200 dark:bg-slate-800 "
+    classNameInputLocal = classNameInputLocal + " dark:border-gray-700 dark:text-gray-200 dark:bg-slate-800 "
 
     if (props.isDisabled) {
         classNameInputLocal = classNameInputLocal + " opacity-60"

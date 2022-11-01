@@ -85,7 +85,7 @@ export default function BudgetActionBarForm(props: BudgetActionBarFormProps) {
 
     return (
         <>
-            <ActionBar className={props.className + " bg-slate-50"}>
+            <ActionBar className={props.className + " bg-slate-50 dark:bg-slate-800"}>
                 <div className="w-full flex flex-row justify-between">
                     <Button
                         isLoading={props.isLoading}

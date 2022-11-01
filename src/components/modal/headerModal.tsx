@@ -11,7 +11,7 @@ export default function HeaderModal(props: HeaderModalProps) {
                 {props.title}
             </div>
             <button
-                className="p-1 rounded-full hover:bg-gray-300"
+                className="p-1 rounded-full hover:bg-gray-300 dark:hover:bg-gray-600"
                 type="button"
                 onClick={() => props.onClose(false)}>
                 <XIcon className="block h-6 w-6" aria-hidden="true" />

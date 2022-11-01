@@ -14,7 +14,7 @@ interface WindowModalProps {
 
 export default function WindowModal(props: WindowModalProps) {
     let holderClass = "print:min-h-full justify-center items-center flex overflow-x-hidden overflow-y-hidden fixed inset-0 z-20 outline-none focus:outline-none"
-    let panelClass = "bg-slate-50 rounded print:min-h-full"
+    let panelClass = "bg-slate-50 dark:bg-slate-800 rounded print:min-h-full"
 
     const handleWindowResize = () => {
         let painel: HTMLInputElement = document.querySelector("#" + "modal-painel-" + props.id)
@@ -27,9 +27,15 @@ export default function WindowModal(props: WindowModalProps) {
         }
     }
 
+    let painel: HTMLInputElement = document.querySelector("#" + "modal-painel-" + props.id)
+    if (props.isOpen) {
+        document.body.style.overflowY = "hidden"
+    } else if (painel !== null) {
+        document.body.style.overflowY = "scroll"
+    }
+
     useEffect(() => {
         if (props.isOpen && props.max) {
-            document.body.style.overflowY = "hidden"
             let painel: HTMLInputElement = document.querySelector("#" + "modal-painel-" + props.id)
             handleWindowResize()
             window.addEventListener("resize", handleWindowResize)
@@ -41,15 +47,14 @@ export default function WindowModal(props: WindowModalProps) {
             {props.isOpen && (
                 <>
                     <div className="opacity-25 fixed inset-0 z-10 bg-gray-900 print:hidden"></div>
-                    <div className={holderClass}>
+                    <div className={holderClass} >
                         <div id={"modal-painel-" + props.id} className={panelClass}>
                             {/*header*/}
-                            <div id={"modal-header-" + props.id} className="bg-gray-200 rounded-t border-b border-gray-200">
+                            <div id={"modal-header-" + props.id} className="bg-gray-200 rounded-t border-b border-gray-200 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-200">
                                 <HeaderModal
                                     title={props.title}
                                     onClose={() => {
                                         props.setIsOpen(false)
-                                        document.body.style.overflowY = "scroll"
                                     }} />
                                 <div>
                                     {props.headerBottom}

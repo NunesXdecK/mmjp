@@ -17,6 +17,7 @@ interface MenuButtonProps {
 
 export default function MenuButton(props: MenuButtonProps) {
     let className = "py-2 px-4 text-left text-gray-800 bg-slate-50 hover:bg-slate-300 active:bg-slate-400 focus:outline-none"
+    className = className + " dark:text-gray-200 dark:bg-slate-800 dark:hover:bg-slate-700 dark:active:bg-slate-700"
     if (props.className) {
         className = props.className
     }

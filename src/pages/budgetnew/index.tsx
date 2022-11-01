@@ -42,7 +42,6 @@ export default function Index() {
         setIsRegister(false)
         setIsPrintBudget(false)
         setIsPrintContract(false)
-        document.body.style.overflowY = "scroll"
     }
 
     const handleDeleteClick = async (budget, index) => {
@@ -77,7 +76,6 @@ export default function Index() {
         setIsRegister(false)
         setIsPrintBudget(true)
         setIsPrintContract(false)
-        document.body.style.overflowY = "scroll"
     }
 
     const handlePrintContract = () => {
@@ -85,7 +83,6 @@ export default function Index() {
         setIsRegister(false)
         setIsPrintBudget(false)
         setIsPrintContract(true)
-        document.body.style.overflowY = "scroll"
     }
 
     const handleCloseModal = (value) => {

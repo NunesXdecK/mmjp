@@ -99,8 +99,8 @@ export default function BudgetServicesForm(props: BudgetServicesFormProps) {
                 />
             ))}
 
-            <div className="p-2">
-                <span className="text-gray-800 text-lg font-bold">VALOR TOTAL: </span>
+            <div className="p-2 text-gray-800 dark:text-gray-200">
+                <span className="text-lg font-bold">VALOR TOTAL: </span>
                 <CurrencyTextView className="text-lg">{handleGetTotal()}</CurrencyTextView>
             </div>
         </Form>

@@ -7,6 +7,7 @@ import BudgetView from "../../components/view/budgetView";
 import DropDownButton from "../../components/button/dropDownButton";
 import LayoutMenuMobile from "../../components/layout/layoutMenuMobile";
 import { MenuIcon, MoonIcon, SunIcon, UserCircleIcon, XIcon } from "@heroicons/react/solid";
+import SwitchTextButton from "../button/switchTextButton";
 
 interface LayoutMenuProps {
     title?: string,
@@ -51,7 +52,8 @@ const menus: LayoutMenuItem[] = [
 ]
 
 export default function Layout(props) {
-
+    const { "mmjp.darktheme": token } = parseCookies()
+    const [isDark, setIsDark] = useState(token && token === "true" ? true : false)
     const [isOpen, setIsOpen] = useState(false)
     const { user } = useContext(AuthContext)
 
@@ -69,8 +71,15 @@ export default function Layout(props) {
         }
     }
 
+    let holderClassName = "min-h-screen"
+    if (!isDark) {
+        holderClassName = holderClassName + " bg-gray-800 dark"
+    } else {
+        holderClassName = holderClassName + " bg-transparent"
+    }
+
     return (
-        <div className="">
+        <div className={holderClassName}>
             <div className="bg-gray-800 shadow pb-32">
                 <div className="hidden sm:block">
                     <div className="flex flex-row items-center justify-between px-2 py-4">
@@ -78,8 +87,21 @@ export default function Layout(props) {
                             <LayoutMenu menus={menus} />
                         </div>
                         <div className="flex flex-row gap-2 items-center">
-                            <SunIcon className="text-gray-200 block h-5 w-5" aria-hidden="true" />
-                            <MoonIcon className="text-gray-200 block h-5 w-5" aria-hidden="true" />
+                            <SwitchTextButton
+                                className=""
+                                isSwitched={isDark}
+                                buttonClassName="p-2 hover:bg-gray-600 rounded-full"
+                                onChildren={(
+                                    <SunIcon className="text-gray-200 block h-5 w-5" aria-hidden="true" />
+                                )}
+                                offChildren={(
+                                    <MoonIcon className="text-gray-200 block h-5 w-5" aria-hidden="true" />
+                                )}
+                                onClick={() => {
+                                    setCookie(undefined, "mmjp.darktheme", !isDark + "", {})
+                                    setIsDark(!isDark)
+                                }}
+                            />
                             <DropDownButton
                                 isLeft
                                 className="p-2 bg-transparent hover:bg-gray-600 rounded-full"
@@ -139,8 +161,8 @@ export default function Layout(props) {
                     )}
                 </div>
             </div>
-            <div className="bg-transparent -mt-32 p-6 z-10">
-                <div className="rounded shadow bg-slate-50 z-10">
+            <div className="-mt-32 p-6 z-10">
+                <div className="rounded shadow bg-slate-50 dark:bg-slate-800 z-10">
                     {props.children}
                 </div>
             </div>

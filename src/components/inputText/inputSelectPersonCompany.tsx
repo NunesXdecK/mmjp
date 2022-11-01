@@ -114,7 +114,7 @@ export default function InputSelectPersonCompany(props: InputSelectPersonCompany
                     isLoading={props.isLoading}
                     isDisabled={props.isLoading}
                     id={props.id + "-auto-complete-option-new-person"}
-                    className="py-4 rounded-none text-left shadow-none w-full text-gray-700 "
+                    className="py-4 rounded-none text-left shadow-none w-full text-gray-700 dark:bg-gray-800 dark:text-gray-200 dark:hover:bg-gray-700 "
                     onClick={() => {
                         handleNewClickPerson()
                         if (cleanFunction) {
@@ -123,7 +123,7 @@ export default function InputSelectPersonCompany(props: InputSelectPersonCompany
                     }}
                 >
                     <div className="w-full text-left flex flex-row gap-1">
-                        <PlusCircleIcon className="text-indigo-600 block h-5 w-5" aria-hidden="true" />
+                        <PlusCircleIcon className="text-indigo-600 dark:text-gray-200 block h-5 w-5" aria-hidden="true" />
                         Nova pessoa
                     </div>
                 </Button>
@@ -132,7 +132,7 @@ export default function InputSelectPersonCompany(props: InputSelectPersonCompany
                     isLoading={props.isLoading}
                     isDisabled={props.isLoading}
                     id={props.id + "-auto-complete-option-new-company"}
-                    className="py-4 rounded-none text-left shadow-none w-full text-gray-700 "
+                    className="py-4 rounded-none text-left shadow-none w-full text-gray-700 dark:bg-gray-800 dark:text-gray-200 dark:hover:bg-gray-700"
                     onClick={() => {
                         handleNewClickCompany()
                         if (cleanFunction) {
@@ -141,7 +141,7 @@ export default function InputSelectPersonCompany(props: InputSelectPersonCompany
                     }}
                 >
                     <div className="w-full text-left flex flex-row gap-1">
-                        <PlusCircleIcon className="text-indigo-600 block h-5 w-5" aria-hidden="true" />
+                        <PlusCircleIcon className="text-indigo-600 dark:text-gray-200 block h-5 w-5" aria-hidden="true" />
                         Nova empresa
                     </div>
                 </Button>

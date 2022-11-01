@@ -35,6 +35,12 @@ export default function DropDownButton(props: DropDownButtonProps) {
                     onClick={(event) => {
                         setIsOpen(!isOpen)
                     }}
+                    onBlur={(event) => {
+                        if (!event?.relatedTarget?.id ||
+                            event?.relatedTarget?.id.indexOf(props.id) < 0) {
+                            setIsOpen(false)
+                        }
+                    }}
                 >
                     {props.title}
                 </Button>
