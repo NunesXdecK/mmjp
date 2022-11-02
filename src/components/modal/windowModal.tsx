@@ -50,7 +50,7 @@ export default function WindowModal(props: WindowModalProps) {
                     <div className={holderClass} >
                         <div id={"modal-painel-" + props.id} className={panelClass}>
                             {/*header*/}
-                            <div id={"modal-header-" + props.id} className="bg-gray-200 rounded-t border-b border-gray-200 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-200">
+                            <div id={"modal-header-" + props.id} className="bg-gray-200 rounded-t border-b border-gray-200 dark:bg-gray-700 dark:border-gray-700 dark:text-gray-200">
                                 <HeaderModal
                                     title={props.title}
                                     onClose={() => {

@@ -18,6 +18,7 @@ export default function LayoutMenu(props: LayoutMenuProps) {
                     {element.subMenus ?
                         (<>
                             <DropDownButton
+                                id={element.name}
                                 title={element.name}
                                 className={aClassName}
                             >
@@ -29,8 +30,9 @@ export default function LayoutMenu(props: LayoutMenuProps) {
                                             ignoreClass
                                             className={aClassName}
                                             href={elementItem.href}
-                                            isDisabled={elementItem.disabled}
                                             key={index + elementItem.name}
+                                            isDisabled={elementItem.disabled}
+                                            id={element.name + "-" + elementItem.name + "-" + index}
                                         >
                                             {elementItem.name}
                                         </Button>
@@ -41,6 +43,7 @@ export default function LayoutMenu(props: LayoutMenuProps) {
                             <Button
                                 isLink
                                 ignoreClass
+                                id={element.name}
                                 href={element.href}
                                 className={aClassName}
                             >

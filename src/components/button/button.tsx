@@ -31,6 +31,7 @@ export default function Button(props: ButtonProps) {
         className = "p-2 h-min text-center shadow-sm dark:shadow-none justify-center rounded-full text-sm font-medium text-gray-500 disabled:opacity-40 focus:outline-none"
     } else {
         colorClassName = "bg-indigo-600 hover:bg-indigo-700 focus:border-indigo-500 focus:ring-indigo-500"
+        colorClassName = colorClassName + " dark:bg-purple-600 dark:hover:bg-purple-700 dark:focus:border-purple-500 dark:focus:ring-purple-500"
         className = "text-center h-min py-2 px-4 shadow-sm dark:shadow-none  justify-center disabled:opacity-40 border border-transparent text-sm font-medium rounded-md text-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-slate-50 dark:focus:ring-offset-slate-800"
     }
 
@@ -39,7 +40,7 @@ export default function Button(props: ButtonProps) {
             colorClassName = "bg-red-600 hover:bg-red-700 focus:border-red-500 focus:ring-red-500"
             break
     }
-    
+
     if (props.className) {
         className = className + " " + props.className
     }
@@ -62,6 +63,7 @@ export default function Button(props: ButtonProps) {
         <>
             {props.isLink ? (
                 <a
+                    id={props.id}
                     href={props.href}
                     className={className}
                     target={props.newTab && "_blank"}

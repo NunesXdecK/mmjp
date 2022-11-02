@@ -104,6 +104,7 @@ export default function Layout(props) {
                             />
                             <DropDownButton
                                 isLeft
+                                id="user-drop-down-icon"
                                 className="p-2 bg-transparent hover:bg-gray-600 rounded-full"
                                 title={(
                                     <UserCircleIcon className="text-gray-200 block h-8 w-8" aria-hidden="true" />
@@ -111,6 +112,7 @@ export default function Layout(props) {
                             >
                                 <Button
                                     ignoreClass
+                                    id="user-drop-down-logoff"
                                     onClick={handleDeleteClick}
                                     className="px-4 py-2 text-sm text-left rounded bg-transparent hover:bg-gray-400 hover:opacity-70"
                                 >
@@ -125,7 +127,22 @@ export default function Layout(props) {
                     <div className="flex flex-row items-center justify-between px-2 py-4">
                         <p className="pl-4 text-xl font-bold text-white">{props.title}</p>
 
-                        <div>
+                        <div className="flex flex-row gap-2 items-center">
+                            <SwitchTextButton
+                                className=""
+                                isSwitched={isDark}
+                                buttonClassName="p-2 hover:bg-gray-600 rounded-full"
+                                onChildren={(
+                                    <SunIcon className="text-gray-200 block h-5 w-5" aria-hidden="true" />
+                                )}
+                                offChildren={(
+                                    <MoonIcon className="text-gray-200 block h-5 w-5" aria-hidden="true" />
+                                )}
+                                onClick={() => {
+                                    setCookie(undefined, "mmjp.darktheme", !isDark + "", {})
+                                    setIsDark(!isDark)
+                                }}
+                            />
                             <Button
                                 ignoreClass
                                 onClick={() => setIsOpen(!isOpen)}
@@ -143,7 +160,6 @@ export default function Layout(props) {
                     {isOpen && (
                         <div className="px-2">
                             <LayoutMenuMobile menus={menus} />
-
                             <div className="pt-4 pb-3 border-t border-gray-700">
                                 <div className="flex items-center px-5">
                                     <UserCircleIcon className="block text-gray-300 h-10 w-10" aria-hidden="true" />
@@ -162,7 +178,7 @@ export default function Layout(props) {
                 </div>
             </div>
             <div className="-mt-32 p-6 z-10">
-                <div className="rounded shadow dark:shadow-none bg-slate-50 dark:bg-slate-800 z-10">
+                <div className="rounded shadow dark:border dark:border-gray-700 dark:shadow-none bg-slate-50 dark:bg-slate-800 z-10">
                     {props.children}
                 </div>
             </div>

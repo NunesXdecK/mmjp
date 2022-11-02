@@ -19,6 +19,7 @@ export default function LayoutMenuMobile(props: LayoutMenuMobileProps) {
                             <>
                                 <DropDownButton
                                     isNotFloat
+                                    id={element.name}
                                     title={element.name}
                                     className={aClassName}
                                     key={index + element.name}
@@ -32,6 +33,7 @@ export default function LayoutMenuMobile(props: LayoutMenuMobileProps) {
                                                 className={aClassName}
                                                 href={elementItem.href}
                                                 key={index + elementItem.name}
+                                                id={element.name + "-" + elementItem.name + "-" + index}
                                             >
                                                 {elementItem.name}
                                             </Button>
@@ -44,6 +46,7 @@ export default function LayoutMenuMobile(props: LayoutMenuMobileProps) {
                                 <Button
                                     isLink
                                     ignoreClass
+                                    id={element.name}
                                     href={element.href}
                                     className={aClassName}
                                     key={index + element.name}

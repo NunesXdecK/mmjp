@@ -107,8 +107,8 @@ export default function ListTable(props: ListTableProps) {
     return (
         <>
             <div className={classNameHolder}>
-                <div className="rounded mt-4 ">
-                    <div className="bg-gray-200 dark:bg-gray-800 rounded-t">
+                <div className="rounded mt-4 dark:border dark:border-gray-700">
+                    <div className="bg-gray-200 dark:bg-gray-700 rounded-t">
                         <div className="p-4 sm:flex sm:flex-row items-center justify-between ">
                             <span className="text-2xl">{props.title}</span>
                             <div className="mt-10 sm:mt-0">

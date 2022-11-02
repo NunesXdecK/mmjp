@@ -114,13 +114,11 @@ export default function BudgetView(props: BudgetViewProps) {
                     </div>
                 ))}
                 <BudgetServicesView
-                    hideBorder
                     title="Serviços"
                     budgetServices={listServices}
                     id={"budget-services-" + props.budget?.id}
                 />
                 <BudgetPaymentsView
-                    hideBorder
                     title="Pagamentos"
                     budgetPayments={listPayments}
                     id={"budget-payments-" + props.budget?.id}
