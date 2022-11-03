@@ -14,8 +14,12 @@ export const handleNewDateToUTC = () => {
 
 export const handleRemoveDateMask = (text: string) => {
     if (text) {
-        text = text?.replaceAll("/", "")
-        text = text?.replace(new RegExp(ONLY_NUMBERS_PATTERN_TWO), "")
+        try {
+            text = text?.replaceAll("/", "")
+            text = text?.replace(new RegExp(ONLY_NUMBERS_PATTERN_TWO), "")
+        } catch (err) {
+            console.error(err)
+        }
     }
     return text
 }
