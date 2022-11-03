@@ -12,7 +12,7 @@ import BudgetDataForm from "../../components/form/budgetDataForm"
 import BudgetActionBarForm from "../../components/bar/budgetActionBar"
 import FeedbackPendency from "../../components/modal/feedbackPendencyModal"
 import { handleUTCToDateShow, handleNewDateToUTC } from "../../util/dateUtils"
-import { Budget, Company, defaultBudget, Person } from "../../interfaces/objectInterfaces"
+import { Budget, BudgetPayment, Company, defaultBudget, Person } from "../../interfaces/objectInterfaces"
 import FeedbackMessageModal, { defaultFeedbackMessage, FeedbackMessage } from "../../components/modal/feedbackMessageModal"
 import ContractPrintView from "../../components/view/contractPrintView"
 
@@ -119,9 +119,16 @@ export default function Index() {
                 })
             )
         }
+        let localPayments = []
+        if (localBudget.payments && localBudget.payments?.length > 0) {
+            localBudget.payments.map((element: BudgetPayment, index) => {
+                localPayments = [...localPayments, { ...element, dateString: handleUTCToDateShow(element.dateDue.toString()) }]
+            })
+        }
         localBudget = {
             ...localBudget,
             clients: localClients,
+            payments: localPayments,
             dateString: handleUTCToDateShow(localBudget.date.toString()),
         }
         setIsLoading(false)

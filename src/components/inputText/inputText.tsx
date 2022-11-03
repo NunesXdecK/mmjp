@@ -25,6 +25,7 @@ interface InputTextProps {
     children?: any,
     mask?: "cpf" | "rg" | "cnpj" | "currency" | "telephone" | "cep" | "perimeter" | "area" | "date" | "ccir",
     onBlur?: (any?) => void,
+    onFocus?: (any?) => void,
     onChange?: (any) => void,
     onSetText?: (string) => void,
     onValidate?: (boolean?) => void,
@@ -229,6 +230,7 @@ export default function InputText(props: InputTextProps) {
                 id={props.id}
                 name={props.title}
                 value={props.value}
+                onFocus={props.onFocus}
                 type={props.type ?? "text"}
                 maxLength={props.maxLength}
                 required={props.isRequired}

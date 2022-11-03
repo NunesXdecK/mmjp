@@ -31,7 +31,7 @@ export default function WindowModal(props: WindowModalProps) {
     if (props.isOpen) {
         document.body.style.overflowY = "hidden"
     } else if (painel !== null) {
-        document.body.style.overflowY = "scroll"
+        document.body.style.overflowY = "auto"
     }
 
     useEffect(() => {

@@ -67,6 +67,7 @@ export default function Button(props: ButtonProps) {
                     href={props.href}
                     className={className}
                     target={props.newTab && "_blank"}
+                    hidden={props.isDisabled || props.isLoading}
                 >
                     {props.children}
                 </a>

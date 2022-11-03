@@ -90,8 +90,8 @@ export default function BudgetDataForm(props: BudgetDataFormProps) {
                                     maxLength={10}
                                     id="budget-date"
                                     onBlur={props.onBlur}
-                                    isLoading={props.isLoading}
                                     onSetText={handleSetDate}
+                                    isLoading={props.isLoading}
                                     value={props.budget.dateString}
                                     onValidate={handleChangeFormValidation}
                                     isDisabled={
@@ -109,8 +109,11 @@ export default function BudgetDataForm(props: BudgetDataFormProps) {
                                     onBlur={props.onBlur}
                                     onSet={handleSetClient}
                                     isLoading={props.isLoading}
-                                    isDisabled={props.isDisabled}
                                     value={props.budget.clients[0]?.name}
+                                    isDisabled={
+                                        props.isDisabled ||
+                                        (props.budget.status === "FINALIZADO" || props.budget.status === "ARQUIVADO")
+                                    }
                                 />
                             </FormRowColumn>
                         </FormRow>

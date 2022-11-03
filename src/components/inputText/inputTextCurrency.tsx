@@ -9,6 +9,7 @@ interface InputTextCurrencyProps {
     isLoading?: boolean,
     isDisabled?: boolean,
     onBlur?: (any?) => void,
+    onFocus?: (any?) => void,
     onSet?: (string) => void,
     onValidate?: (boolean?) => void,
 }
@@ -21,6 +22,16 @@ export default function InputTextCurrency(props: InputTextCurrencyProps) {
             title={props.title}
             value={props.value}
             onBlur={props.onBlur}
+            onFocus={(event) => {
+                if (event.target.value === "0") {
+                    if (props.onSet) {
+                        props.onSet("")
+                    }
+                }
+                if (props.onFocus) {
+                    props.onFocus(event)
+                }
+            }}
             onSetText={props.onSet}
             validation={NUMBER_MARK}
             isLoading={props.isLoading}

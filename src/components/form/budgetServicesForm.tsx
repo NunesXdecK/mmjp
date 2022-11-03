@@ -75,7 +75,6 @@ export default function BudgetServicesForm(props: BudgetServicesFormProps) {
                                 {
                                     ...defaultBudgetService,
                                     index: props.budgetServices.length,
-                                    dateString: handleUTCToDateShow((handleNewDateToUTC() + 2592000000) + ""),
                                 }])
                         }
                     }}>

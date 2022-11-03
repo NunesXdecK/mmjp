@@ -181,6 +181,8 @@ export default function InputSelectPersonCompany(props: InputSelectPersonCompany
                 {isSelected && (
                     <Button
                         isLight
+                        isLoading={props.isLoading}
+                        isDisabled={props.isDisabled}
                         className="p-0 top-8 right-2 absolute"
                         onClick={() => {
                             setText("")
@@ -188,7 +190,7 @@ export default function InputSelectPersonCompany(props: InputSelectPersonCompany
                             setIsSelected(false)
                         }}
                     >
-                        <XCircleIcon className="hover:text-gray-100 text-gray-400 h-6 w-6" aria-hidden="true" />
+                        <XCircleIcon className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 h-6 w-6" aria-hidden="true" />
                     </Button>
                 )}
             </div>
@@ -197,6 +199,7 @@ export default function InputSelectPersonCompany(props: InputSelectPersonCompany
                 max
                 isOpen={isOpen}
                 setIsOpen={setIsOpen}
+                id={props.id + "-window-modal-register-person-company"}
                 onClose={() => {
                     setIsRegisterPerson(false)
                     setIsRegisterCompany(false)
