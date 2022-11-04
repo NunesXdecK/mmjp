@@ -3,55 +3,57 @@ import { useContext, useState } from "react";
 import { parseCookies, setCookie } from "nookies";
 import Button from "../../components/button/button";
 import { AuthContext } from "../../contexts/authContext";
-import BudgetView from "../../components/view/budgetView";
+import SwitchTextButton from "../button/switchTextButton";
 import DropDownButton from "../../components/button/dropDownButton";
 import LayoutMenuMobile from "../../components/layout/layoutMenuMobile";
 import { MenuIcon, MoonIcon, SunIcon, UserCircleIcon, XIcon } from "@heroicons/react/solid";
-import SwitchTextButton from "../button/switchTextButton";
 
 interface LayoutMenuProps {
     title?: string,
+    children?: any[],
+    onSetPage?: (any) => void,
 }
 
 export interface LayoutMenuItem {
     name?: string,
     href?: string,
+    value?: string,
     current?: boolean,
     disabled?: boolean,
     subMenus?: LayoutMenuItem[],
 }
 
 const menus: LayoutMenuItem[] = [
-    { name: "Testes", href: "/", current: false, disabled: false },
+    { name: "Dashboard", href: "/", value: "DASHBOARD", current: false, disabled: false },
     {
         name: "Cadastros", current: false, disabled: false,
         subMenus:
             [
-                { name: "Pessoas", href: "/person", current: false, disabled: false },
-                { name: "Empresas", href: "/company", current: false, disabled: false },
-                { name: "Profissionais", href: "/professional", current: false, disabled: false },
-                { name: "Imóveis", href: "/immobile", current: false, disabled: false },
-                { name: "Usuários", href: "/user", current: false, disabled: false },
+                { name: "Pessoas", href: "/person", value: "PERSON", current: false, disabled: false },
+                { name: "Empresas", href: "/company", value: "COMPANY", current: false, disabled: false },
+                { name: "Profissionais", href: "/professional", value: "PROFESSIONAL", current: false, disabled: false },
+                { name: "Imóveis", href: "/immobile", value: "IMMOBILE", current: false, disabled: false },
+                { name: "Usuários", href: "/user", value: "USER", current: false, disabled: false },
 
             ]
     },
     {
-        name: "Orçamentos", href: "/budget", current: false, disabled: false,
+        name: "Orçamentos", href: "/budget", value: "BUDGET", current: false, disabled: false,
     },
     {
         name: "Projetos", current: false, disabled: false,
         subMenus:
             [
-                { name: "Projetos", href: "/project", current: false, disabled: false },
-                { name: "Serviços", href: "/service", current: false, disabled: false },
-                { name: "Etapas", href: "/serviceStage", current: false, disabled: false },
-                { name: "Pagamentos", href: "/servicePayment", current: false, disabled: false },
+                { name: "Projetos", href: "/project", value: "PROJECT", current: false, disabled: false },
+                { name: "Serviços", href: "/service", value: "SERVICE", current: false, disabled: false },
+                { name: "Etapas", href: "/serviceStage", value: "SERVICE_STAGE", current: false, disabled: false },
+                { name: "Pagamentos", href: "/servicePayment", value: "PAYMENT", current: false, disabled: false },
 
             ]
     },
 ]
 
-export default function Layout(props) {
+export default function Layout(props: LayoutMenuProps) {
     const { "mmjp.darktheme": token } = parseCookies()
     const [isDark, setIsDark] = useState(token && token === "true" ? true : false)
     const [isOpen, setIsOpen] = useState(false)
@@ -70,6 +72,11 @@ export default function Layout(props) {
             location.reload()
         }
     }
+    const handleSetPage = (value) => {
+        if (props.onSetPage) {
+            props.onSetPage(value)
+        }
+    }
 
     let holderClassName = "min-h-screen"
     if (!isDark) {
@@ -84,7 +91,7 @@ export default function Layout(props) {
                 <div className="hidden sm:block">
                     <div className="flex flex-row items-center justify-between px-2 py-4">
                         <div className="flex flex-row gap-2">
-                            <LayoutMenu menus={menus} />
+                            <LayoutMenu menus={menus} onSetPage={handleSetPage} />
                         </div>
                         <div className="flex flex-row gap-2 items-center">
                             <SwitchTextButton
@@ -104,7 +111,7 @@ export default function Layout(props) {
                             />
                             <DropDownButton
                                 isLeft
-                                id="user-drop-down-icon"
+                                id="user-drop-down"
                                 className="p-2 bg-transparent hover:bg-gray-600 rounded-full"
                                 title={(
                                     <UserCircleIcon className="text-gray-200 block h-8 w-8" aria-hidden="true" />
@@ -159,7 +166,7 @@ export default function Layout(props) {
                     </div>
                     {isOpen && (
                         <div className="px-2">
-                            <LayoutMenuMobile menus={menus} />
+                            <LayoutMenuMobile menus={menus} onSetPage={handleSetPage} />
                             <div className="pt-4 pb-3 border-t border-gray-700">
                                 <div className="flex items-center px-5">
                                     <UserCircleIcon className="block text-gray-300 h-10 w-10" aria-hidden="true" />

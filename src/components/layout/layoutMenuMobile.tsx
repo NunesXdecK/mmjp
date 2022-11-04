@@ -2,14 +2,18 @@ import Button from "../button/button"
 import { LayoutMenuItem } from "./layout"
 import DropDownButton from "../button/dropDownButton"
 
-
 interface LayoutMenuMobileProps {
     menus?: LayoutMenuItem[],
+    onSetPage?: (any) => void,
 }
 
 export default function LayoutMenuMobile(props: LayoutMenuMobileProps) {
-
-    const aClassName = "text-left w-full block px-2 py-6 text-gray-300 hover:bg-gray-700 hover:text-white disabled:opacity-75"
+    const aClassName = "text-left w-full rounded block px-2 py-6 text-gray-300 hover:bg-gray-700 hover:text-white disabled:opacity-75"
+    const handleSetPage = (value) => {
+        if (props.onSetPage) {
+            props.onSetPage(value)
+        }
+    }
     return (
         <>
             {props.menus.map((element, index) => (
@@ -28,12 +32,11 @@ export default function LayoutMenuMobile(props: LayoutMenuMobileProps) {
                                         className={"mt-2 w-full origin-top-left bg-gray-800 focus:outline-none"}>
                                         {element.subMenus.map((elementItem, index) => (
                                             <Button
-                                                isLink
                                                 ignoreClass
                                                 className={aClassName}
-                                                href={elementItem.href}
                                                 key={index + elementItem.name}
                                                 id={element.name + "-" + elementItem.name + "-" + index}
+                                                onClick={() => handleSetPage(element.value)}
                                             >
                                                 {elementItem.name}
                                             </Button>
@@ -44,12 +47,11 @@ export default function LayoutMenuMobile(props: LayoutMenuMobileProps) {
                         ) : (
                             <>
                                 <Button
-                                    isLink
                                     ignoreClass
                                     id={element.name}
-                                    href={element.href}
                                     className={aClassName}
                                     key={index + element.name}
+                                    onClick={() => handleSetPage(element.value)}
                                 >
                                     {element.name}
                                 </Button>
@@ -58,6 +60,12 @@ export default function LayoutMenuMobile(props: LayoutMenuMobileProps) {
                     }
                 </div>
             ))}
+            {/*
+            isLink
+            href={element.href}
+        isLink
+        href={elementItem.href}
+    */}
         </>
     )
 }

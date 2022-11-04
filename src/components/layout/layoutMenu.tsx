@@ -1,16 +1,19 @@
-import { LayoutMenuItem } from "./layout"
-import { Menu, Transition } from "@headlessui/react"
 import Button from "../button/button"
-import MenuButton from "../button/menuButton"
+import { LayoutMenuItem } from "./layout"
 import DropDownButton from "../button/dropDownButton"
-
 
 interface LayoutMenuProps {
     menus?: LayoutMenuItem[],
+    onSetPage?: (any) => void,
 }
 
 export default function LayoutMenu(props: LayoutMenuProps) {
-    const aClassName = "block px-3 py-2 text-gray-300 hover:bg-gray-700 hover:text-white disabled:opacity-75"
+    const aClassName = "block w-full text-left rounded px-3 py-2 text-gray-300 hover:bg-gray-700 hover:text-white disabled:opacity-75"
+    const handleSetPage = (value) => {
+        if (props.onSetPage) {
+            props.onSetPage(value)
+        }
+    }
     return (
         <>
             {props.menus.map((element, index) => (
@@ -26,13 +29,12 @@ export default function LayoutMenu(props: LayoutMenuProps) {
                                     className={"p-2 w-max left-0 absolute bg-gray-800 rounded-md focus:outline-none"}>
                                     {element.subMenus.map((elementItem, index) => (
                                         <Button
-                                            isLink
                                             ignoreClass
                                             className={aClassName}
-                                            href={elementItem.href}
                                             key={index + elementItem.name}
                                             isDisabled={elementItem.disabled}
                                             id={element.name + "-" + elementItem.name + "-" + index}
+                                            onClick={() => handleSetPage(elementItem.value)}
                                         >
                                             {elementItem.name}
                                         </Button>
@@ -41,17 +43,22 @@ export default function LayoutMenu(props: LayoutMenuProps) {
                             </DropDownButton>
                         </>) : (<>
                             <Button
-                                isLink
                                 ignoreClass
                                 id={element.name}
-                                href={element.href}
                                 className={aClassName}
+                                onClick={() => handleSetPage(element.value)}
                             >
                                 {element.name}
                             </Button>
                         </>)}
                 </div>
             ))}
+            {/*
+            isLink
+            href={element.href}
+        isLink
+        href={elementItem.href}
+    */}
         </>
     )
 }

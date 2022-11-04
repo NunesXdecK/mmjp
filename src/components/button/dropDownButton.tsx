@@ -23,6 +23,13 @@ export default function DropDownButton(props: DropDownButtonProps) {
     if (props.isLeft) {
         optionsHolderClassName = optionsHolderClassName + " right-0"
     }
+    const handleFocusBlur = (event) => {
+        if (!event?.relatedTarget?.id?.includes(props.id)) {
+            setIsOpen(false)
+        }
+        /*
+        */
+    }
     return (
         <div className="relative">
             <div>
@@ -35,17 +42,14 @@ export default function DropDownButton(props: DropDownButtonProps) {
                     onClick={(event) => {
                         setIsOpen(!isOpen)
                     }}
-                    onBlur={(event) => {
-                        if (!event?.relatedTarget?.id ||
-                            event?.relatedTarget?.id.indexOf(props.id) < 0) {
-                            setIsOpen(false)
-                        }
-                    }}
+                    onBlur={(event) => handleFocusBlur(event)}
                 >
                     {props.title}
                 </Button>
             </div>
             <div
+                onBlur={(event) => handleFocusBlur(event)}
+                onFocus={(event) => handleFocusBlur(event)}
                 id={props.id + "-drop-down-info"}
                 className={optionsHolderClassName}
             >

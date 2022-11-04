@@ -1,28 +1,23 @@
 import Head from "next/head"
-import { useEffect, useState } from "react"
-import Form from "../components/form/form"
-import Button from "../components/button/button"
+import { useState } from "react"
 import Layout from "../components/layout/layout"
-import { ChatAltIcon } from "@heroicons/react/solid"
-import { PERSON_COLLECTION_NAME } from "../db/firebaseDB"
+import BudgetPage from "../components/pages/BudgetPage"
 import FeedbackPendency from "../components/modal/feedbackPendencyModal"
-import SubjectMessageFormModal from "../components/modal/subjectMessageFormModal"
-import { defaultSubjectMessage, SubjectMessage } from "../interfaces/objectInterfaces"
 import FeedbackMessageModal, { defaultFeedbackMessage, FeedbackMessage } from "../components/modal/feedbackMessageModal"
-import InputTextAutoComplete from "../components/inputText/inputTextAutocomplete"
 
-export default function Index() {
-    const [isFirst, setIsFirst] = useState(true)
-    const [isLoading, setIsLoading] = useState(false)
+export type PageOps =
+    "DASHBOARD"
+    | "PERSON" | "COMPANY" | "PROFESSIONAL" | "IMMOBILE" | "USER"
+    | "BUDGET"
+    | "PROJECT" | "SERVICE" | "SERVICESTAGE" | "PAYMENT"
+
+interface IndexProps {
+    page?: any | PageOps
+}
+
+export default function Index(props: IndexProps) {
+    const [page, setPage] = useState<PageOps>(props.page ?? "BUDGET")
     const [isFeedbackOpen, setIsFeedbackOpen] = useState(false)
-    const [messages, setMessages] = useState<string[]>([])
-
-    const [subjectMessage, setSubjectMessage] = useState<SubjectMessage>({
-        ...defaultSubjectMessage,
-        referenceId: "M8Kvcag59gggzvesKOV2",
-        referenceBase: PERSON_COLLECTION_NAME,
-    })
-
     const [feedbackMessage, setFeedbackMessage] = useState<FeedbackMessage>(defaultFeedbackMessage)
 
     const handleShowMessage = (feedbackMessage: FeedbackMessage) => {
@@ -33,6 +28,68 @@ export default function Index() {
         }
     }
 
+    let title = ""
+    switch (page) {
+        default:
+            title = "Orçamentos"
+            window.history.pushState({}, "", "/budget");
+            break
+        case "DASHBOARD":
+            title = "Dashboard"
+            window.history.pushState({}, "", "/dashboard");
+            break
+        case "PERSON":
+            title = "Pessoas"
+            window.history.pushState({}, "", "/person");
+            break
+        case "COMPANY":
+            title = "Empresas"
+            window.history.pushState({}, "", "/company");
+            break
+        case "PROFESSIONAL":
+            title = "Profissionais"
+            window.history.pushState({}, "", "/professional");
+            break
+        case "IMMOBILE":
+            title = "Imovéis"
+            window.history.pushState({}, "", "/immobile");
+            break
+        case "USER":
+            title = "Usuários"
+            window.history.pushState({}, "", "/user");
+            break
+        case "BUDGET":
+            title = "Orçamentos"
+            window.history.pushState({}, "", "/budget");
+            break
+        case "PROJECT":
+            title = "Projetos"
+            window.history.pushState({}, "", "/project");
+            break
+        case "SERVICE":
+            title = "Serviços"
+            window.history.pushState({}, "", "/service");
+            break
+        case "SERVICESTAGE":
+            title = "Etapas"
+            window.history.pushState({}, "", "/servicestage");
+            break
+        case "PAYMENT":
+            title = "Pagamentos"
+            window.history.pushState({}, "", "/payment");
+            break
+    }
+
+    {/*
+    const [isFirst, setIsFirst] = useState(true)
+    const [isLoading, setIsLoading] = useState(false)
+
+const [subjectMessage, setSubjectMessage] = useState<SubjectMessage>({
+    ...defaultSubjectMessage,
+        referenceId: "M8Kvcag59gggzvesKOV2",
+        referenceBase: PERSON_COLLECTION_NAME,
+    })
+    
     useEffect(() => {
         if (isFirst) {
             fetch("api/checkPendencies").then((res) => res.json()).then((res) => {
@@ -43,16 +100,28 @@ export default function Index() {
             })
         }
     })
+*/}
 
     return (
         <Layout
-            title="Testes">
+            title={title}
+            onSetPage={setPage}>
             <Head>
-                <title>Testes</title>
-                <meta name="description" content="Testes" />
+                <title>{title}</title>
                 <link rel="icon" href="/favicon.ico" />
+                <meta name="description" content={title} />
             </Head>
 
+            {page === "DASHBOARD" && (
+                <></>
+            )}
+            {page === "BUDGET" && (
+                <BudgetPage
+                    onSetPage={setPage}
+                    onShowMessage={handleShowMessage}
+                />
+            )}
+            {/*
             <Form>
                 <Button
                     isLight
@@ -72,14 +141,14 @@ export default function Index() {
                 setIsOpen={setIsLoading}
                 subjectMessage={subjectMessage}
             />
-
-            <FeedbackPendency messages={messages} />
-
+        */}
             <FeedbackMessageModal
                 isOpen={isFeedbackOpen}
                 feedbackMessage={feedbackMessage}
                 setIsOpen={setIsFeedbackOpen}
             />
+
+            <FeedbackPendency />
         </Layout >
     )
 }

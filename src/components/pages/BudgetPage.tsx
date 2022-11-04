@@ -1,26 +1,27 @@
-import Head from "next/head"
+import FormRow from "../form/formRow"
+import Button from "../button/button"
+import ActionBar from "../bar/actionBar"
+import ListTable from "../list/listTable"
 import { useEffect, useState } from "react"
-import Layout from "../../components/layout/layout"
-import FormRow from "../../components/form/formRow"
-import Button from "../../components/button/button"
-import ActionBar from "../../components/bar/actionBar"
-import ListTable from "../../components/list/listTable"
-import BudgetView from "../../components/view/budgetView"
-import WindowModal from "../../components/modal/windowModal"
-import FormRowColumn from "../../components/form/formRowColumn"
-import BudgetDataForm from "../../components/form/budgetDataForm"
-import BudgetActionBarForm from "../../components/bar/budgetActionBar"
-import FeedbackPendency from "../../components/modal/feedbackPendencyModal"
+import BudgetView from "../view/budgetView"
+import WindowModal from "../modal/windowModal"
+import FormRowColumn from "../form/formRowColumn"
+import BudgetDataForm from "../form/budgetDataForm"
+import BudgetActionBarForm from "../bar/budgetActionBar"
+import ContractPrintView from "../view/contractPrintView"
 import { handleUTCToDateShow, handleNewDateToUTC } from "../../util/dateUtils"
 import { Budget, BudgetPayment, Company, defaultBudget, Person } from "../../interfaces/objectInterfaces"
-import FeedbackMessageModal, { defaultFeedbackMessage, FeedbackMessage } from "../../components/modal/feedbackMessageModal"
-import ContractPrintView from "../../components/view/contractPrintView"
+import FeedbackMessageModal, { defaultFeedbackMessage, FeedbackMessage } from "../modal/feedbackMessageModal"
 
-export default function Index() {
-    const [title, setTitle] = useState("Orçamentos")
+interface BudgetPageProps {
+    id?: string,
+    onSetPage?: (any) => void,
+    onShowMessage?: (FeedbackMessage) => void,
+}
+
+export default function BudgetPage(props: BudgetPageProps) {
     const [budget, setBudget] = useState<Budget>(defaultBudget)
     const [budgets, setBudgets] = useState<Budget[]>([])
-
     const [index, setIndex] = useState(-1)
     const [isFirst, setIsFirst] = useState(true)
     const [isLoading, setIsLoading] = useState(true)
@@ -155,10 +156,8 @@ export default function Index() {
     }
 
     const handleShowMessage = (feedbackMessage: FeedbackMessage) => {
-        if (isFeedbackOpen === false) {
-            setFeedbackMessage(feedbackMessage)
-            setIsFeedbackOpen((isFeedbackOpen) => true)
-            setTimeout(() => setIsFeedbackOpen((isFeedbackOpen) => false), 2000)
+        if (props.onShowMessage) {
+            props.onShowMessage(feedbackMessage)
         }
     }
 
@@ -211,14 +210,7 @@ export default function Index() {
     })
 
     return (
-        <Layout
-            title={title}>
-            <Head>
-                <title>{title}</title>
-                <meta name="description" content={title} />
-                <link rel="icon" href="/favicon.ico" />
-            </Head>
-
+        <>
             {!isPrintBudget && !isPrintContract && (
                 <>
                     <div className="p-4 pb-0">
@@ -281,8 +273,6 @@ export default function Index() {
                 </div>
             )}
 
-            <FeedbackPendency isFirst={isFirst} />
-
             <WindowModal
                 max
                 title="Orçamento"
@@ -338,6 +328,6 @@ export default function Index() {
                 feedbackMessage={feedbackMessage}
                 setIsOpen={setIsFeedbackOpen}
             />
-        </Layout>
+        </>
     )
 }

@@ -8,15 +8,17 @@ interface FeedbackPendencyProps {
 }
 
 export default function FeedbackPendency(props: FeedbackPendencyProps) {
+    const [isFirst, setIsFirst] = useState(true)
     const [messages, setMessages] = useState<string[]>([])
     let className = "z-20 fixed py-2 px-5 bg-red-600 text-white rounded-md right-16 lg:right-60 top-16 animate-bounce print:hidden"
 
     useEffect(() => {
-        if (props.isFirst && messages.length === 0) {
+        if (isFirst && messages.length === 0) {
             fetch("api/checkPendencies").then((res) => res.json()).then((res) => {
                 if (res.messages.length) {
                     setMessages(res.messages)
                 }
+                setIsFirst(false)
             })
         }
     })
