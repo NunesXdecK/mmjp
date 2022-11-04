@@ -12,9 +12,10 @@ interface InputCheckboxProps {
 }
 export default function InputCheckbox(props: InputCheckboxProps) {
 
+    let classNameHolder = "w-full dark:text-slate-50"
+    let classNameLabel = "font-medium text-gray-700 dark:text-gray-200"
     let classNameInput = "h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded "
-    let classNameLabel = "font-medium text-gray-700"
-    let classNameHolder = "w-full"
+    classNameInput = classNameInput + " dark:text-gray-200 dark:bg-slate-800 dark:shadow-none dark:border-gray-700 dark:text-gray-200 dark:bg-slate-800 "
 
     if (props.holderClassName) {
         classNameHolder = classNameHolder + " " + props.holderClassName

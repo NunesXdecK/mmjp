@@ -19,9 +19,11 @@ interface InputTextWithButtonProps {
 export default function InputTextWithButton(props: InputTextWithButtonProps) {
     const [text, setText] = useState(props.value ?? "")
 
+    let classNameHolder = "w-full dark:text-slate-50"
+    let classNameButton = "px-4 rounded-r-md inline-flex items-center border border-l-0 border-gray-300 hover:bg-gray-200"
     let classNameInput = "z-0 flex-1 block w-full focus:ring-indigo-500 focus:border-indigo-500 rounded-none rounded-l-md sm:text-sm border-gray-300 "
-    let classNameButton = "px-4 rounded-r-md inline-flex items-center border border-l-0 border-gray-300 "
-    let classNameHolder = "w-full"
+    classNameInput = classNameInput + " dark:border-gray-700 dark:text-gray-200 dark:bg-slate-800 "
+    classNameButton = classNameButton + " dark:hover:bg-gray-700 dark:border-gray-700 dark:text-gray-200 dark:bg-slate-800 "
 
     if (props.holderClassName) {
         classNameHolder = classNameHolder + " " + props.holderClassName
@@ -41,7 +43,7 @@ export default function InputTextWithButton(props: InputTextWithButtonProps) {
                     {props.title && (
                         <label
                             htmlFor={props.id}
-                            className="block text-sm font-medium text-gray-700">
+                            className="block text-sm font-medium text-gray-700 dark:text-gray-200">
                             {props.title}
                         </label>
                     )}
@@ -65,9 +67,10 @@ export default function InputTextWithButton(props: InputTextWithButtonProps) {
                         />
 
                         <button
-                            disabled={props.isDisabled && props.isLoading}
                             type="submit"
-                            className={classNameButton}>
+                            className={classNameButton}
+                            disabled={props.isDisabled && props.isLoading}
+                        >
                             {props.children}
                         </button>
                     </div>

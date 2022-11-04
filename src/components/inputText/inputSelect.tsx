@@ -17,9 +17,10 @@ interface InputSelectProps {
 }
 export default function InputSelect(props: InputSelectProps) {
 
+    let classNameHolder = "w-full dark:text-slate-50"
+    let classNameLabel = "block text-sm font-medium text-gray-700 dark:text-gray-200"
     let classNameInput = "block w-full mt-1 py-2 px-3 sm:text-sm focus:outline-none border-gray-300 bg-slate-50 rounded-md shadow-sm dark:shadow-none border focus:ring-indigo-500 focus:border-indigo-500 "
-    let classNameLabel = "block text-sm font-medium text-gray-700"
-    let classNameHolder = "w-full"
+    classNameInput = classNameInput + " dark:border-gray-700 dark:text-gray-200 dark:bg-slate-800 "
 
     if (props.holderClassName) {
         classNameHolder = classNameHolder + " " + props.holderClassName

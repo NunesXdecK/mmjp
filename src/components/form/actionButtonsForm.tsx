@@ -30,7 +30,7 @@ interface ActionButtonsFormProps {
 
 export default function ActionButtonsForm(props: ActionButtonsFormProps) {
     const navigationBarClassName = "bg-slate-50"
-    let buttonHolderClassName = "flex "
+    let buttonHolderClassName = "flex dark:bg-slate-800"
 
     if (props.isLeftOn && props.onLeftClick) {
         buttonHolderClassName = buttonHolderClassName + " justify-between sm:items-end"
