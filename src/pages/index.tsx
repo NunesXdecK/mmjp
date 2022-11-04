@@ -113,7 +113,7 @@ const [subjectMessage, setSubjectMessage] = useState<SubjectMessage>({
             </Head>
 
             {page !== "BUDGET" && (
-                <div className="dark:text-gray-200 p-48 flex flex-row items-center justify-center">
+                <div className="dark:text-gray-200 py-48 flex flex-row items-center justify-center">
                     {title}
                 </div>
             )}
