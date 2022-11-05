@@ -39,7 +39,7 @@ export default function ProjectView(props: ProjectViewProps) {
         project.clients?.length > 0
     const hasData =
         hasHideData ||
-        project?.date > 0 ||
+        project?.dateDue > 0 ||
         project?.number?.length ||
         project?.title?.length
 
@@ -180,7 +180,7 @@ export default function ProjectView(props: ProjectViewProps) {
                                 )}
                                 <InfoView title="Projeto">{project.title}</InfoView>
                                 <InfoView title="Número">{project.number}</InfoView>
-                                <InfoView title="Data">{handleUTCToDateShow(project.date.toString())}</InfoView>
+                                <InfoView title="Data">{handleUTCToDateShow(project.dateDue.toString())}</InfoView>
                                 {project.status === "FINALIZADO" && (
                                     <InfoView classNameHolder="w-full" classNameInfo="rounded-sm px-2 py-1 text-green-100 bg-green-600 text-[0.8rem] font-bold" title="">{project.status}</InfoView>
                                 )}

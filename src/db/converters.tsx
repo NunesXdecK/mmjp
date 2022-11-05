@@ -198,7 +198,7 @@ export const BudgetConversor = {
             id: data.id,
             title: data.title,
             status: data.status,
-            date: data.date,
+            dateDue: data.dateDue,
             dateInsertUTC: data.dateInsertUTC,
             dateLastUpdateUTC: data.dateLastUpdateUTC,
             clients: data.clients,
@@ -212,7 +212,7 @@ export const BudgetConversor = {
             id: snapshot?.id ?? "",
             title: data.title ?? "",
             status: data.status ?? "ORÇAMENTO",
-            date: data.date ?? 0,
+            dateDue: data.dateDue ?? 0,
             dateInsertUTC: data.dateInsertUTC ?? 0,
             dateLastUpdateUTC: data.dateLastUpdateUTC ?? 0,
             clients: data.clients ?? [],
@@ -225,10 +225,11 @@ export const BudgetConversor = {
 export const ProjectConversor = {
     toFirestore(data) {
         return {
-            date: data.date,
+            dateDue: data.dateDue,
             title: data.title,
             number: data.number,
             status: data.status,
+            budget: data.budget,
             clients: data.clients,
             priority: data.priority,
             dateInsertUTC: data.dateInsertUTC,
@@ -242,10 +243,11 @@ export const ProjectConversor = {
             title: data.title ?? "",
             number: data.number ?? "",
             status: data.status ?? "ORÇAMENTO",
-            date: data.date ?? 0,
+            dateDue: data.dateDue ?? 0,
             priority: data.priority ?? 0,
             dateInsertUTC: data.dateInsertUTC ?? 0,
             dateLastUpdateUTC: data.dateLastUpdateUTC ?? 0,
+            budget: data.budget ?? { id: "" },
             clients: data.clients ?? [],
         }
     }
@@ -254,7 +256,7 @@ export const ProjectConversor = {
 export const ServiceConversor = {
     toFirestore(data) {
         return {
-            date: data.date,
+            dateDue: data.dateDue,
             title: data.title,
             value: data.value,
             total: data.total,
@@ -281,7 +283,7 @@ export const ServiceConversor = {
             quantity: data.quantity ?? "1",
             status: data.status ?? "ORÇAMENTO",
             description: data.description ?? "",
-            date: data.date ?? 0,
+            dateDue: data.dateDue ?? 0,
             index: data.index ?? 0,
             priority: data.priority ?? 0,
             dateInsertUTC: data.dateInsertUTC ?? 0,
@@ -323,6 +325,37 @@ export const ServiceStageConversor = {
             dateLastUpdateUTC: data.dateLastUpdateUTC ?? 0,
             service: data.service ?? defaultService,
             responsible: data.responsible ?? defaultProfessional,
+        }
+    }
+}
+
+export const PaymentConversor = {
+    toFirestore(data) {
+        return {
+            value: data.value,
+            index: data.index,
+            status: data.status,
+            project: data.project,
+            dateDue: data.dateDue,
+            priority: data.priority,
+            description: data.description,
+            dateInsertUTC: data.dateInsertUTC,
+            dateLastUpdateUTC: data.dateLastUpdateUTC,
+        }
+    },
+    fromFirestore(snapshot, options) {
+        const data = snapshot?.data(options)
+        return {
+            id: snapshot?.id ?? "",
+            value: data.value ?? "",
+            status: data.status ?? "ORÇAMENTO",
+            description: data.description ?? "",
+            index: data.index ?? 0,
+            dateDue: data.dateDue ?? 0,
+            priority: data.priority ?? 0,
+            dateInsertUTC: data.dateInsertUTC ?? 0,
+            dateLastUpdateUTC: data.dateLastUpdateUTC ?? 0,
+            project: data.project ?? defaultProject,
         }
     }
 }

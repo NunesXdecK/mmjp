@@ -65,7 +65,7 @@ export default function BudgetPaymentForm(props: BudgetPaymentFormProps) {
                         isLoading={props.isLoading}
                         validation={NOT_NULL_MARK}
                         isDisabled={props.isDisabled}
-                        sugestions={["Entrada", "Parcela"]}
+                        sugestions={["Entrada", "Parcela", "Saida"]}
                         onValidate={handleChangeFormValidation}
                         id={"description-payment-" + (props.index ?? 0) + "-" + props.id}
                         onSetText={handleSetServicePaymentDescription}

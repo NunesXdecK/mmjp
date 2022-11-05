@@ -1,8 +1,9 @@
 import ActionBar from "./actionBar";
 import Button from "../button/button";
-import BudgetView from "../view/budgetView";
+import { useEffect, useState } from "react";
 import MenuButton from "../button/menuButton";
 import DropDownButton from "../button/dropDownButton";
+import StartProjectButton from "../button/startProjectButton";
 import { FeedbackMessage } from "../modal/feedbackMessageModal";
 import { handleGetDateFormatedToUTC } from "../../util/dateUtils";
 import { handleBudgetValidationForDB } from "../../util/validationUtil";
@@ -23,6 +24,9 @@ interface BudgetActionBarFormProps {
 }
 
 export default function BudgetActionBarForm(props: BudgetActionBarFormProps) {
+    const [isFirst, setIsFirst] = useState(true)
+    const [hasProject, setHasProject] = useState(true)
+
     const handleSetIsLoading = (value: boolean) => {
         if (props.onSetIsLoading) {
             props.onSetIsLoading(value)
@@ -33,6 +37,22 @@ export default function BudgetActionBarForm(props: BudgetActionBarFormProps) {
         if (props.onShowMessage) {
             props.onShowMessage(feedbackMessage)
         }
+    }
+
+    const handleStartProjectButton = async (id) => {
+        let hasProject = false
+        if (id) {
+            try {
+                const saveRes = await fetch("api/hasProject", {
+                    method: "POST",
+                    body: JSON.stringify({ token: "tokenbemseguro", data: id }),
+                }).then((res) => res.json())
+                hasProject = saveRes.hasProject
+            } catch (e) {
+                console.error("Error adding document: ", e)
+            }
+        }
+        return hasProject
     }
 
     const handleSaveBudgetInner = async (budget, history) => {
@@ -77,11 +97,20 @@ export default function BudgetActionBarForm(props: BudgetActionBarFormProps) {
         }
         if (props.onAfterSave) {
             if (budget.dateString.length > 0) {
-                budget = { ...budget, date: handleGetDateFormatedToUTC(budget.dateString) }
+                budget = { ...budget, dateDue: handleGetDateFormatedToUTC(budget.dateString) }
             }
             props.onAfterSave(feedbackMessage, budget)
         }
     }
+
+    useEffect(() => {
+        if (isFirst && props?.budget?.id?.length > 0) {
+            handleStartProjectButton(props.budget.id).then((res) => {
+                setIsFirst(false)
+                setHasProject(res)
+            })
+        }
+    })
 
     return (
         <>
@@ -97,6 +126,20 @@ export default function BudgetActionBarForm(props: BudgetActionBarFormProps) {
                         isLeft
                         title="...">
                         <div className="w-full flex flex-col">
+                            <StartProjectButton
+                                budget={props.budget}
+                                isLoading={props.isLoading}
+                                canStartProject={hasProject}
+                                onAfterClick={() => handleSetIsLoading(true)}
+                                onBeforeClick={() => {
+                                    handleSetIsLoading(false)
+                                    const feedbackMessage: FeedbackMessage = { messages: ["Sucesso!"], messageType: "SUCCESS" }
+                                    handleShowMessage(feedbackMessage)
+                                    if (props.onAfterSave) {
+                                        props.onAfterSave(feedbackMessage, props.budget)
+                                    }
+                                }}
+                            />
                             <MenuButton
                                 isLoading={props.isLoading}
                                 isHidden={props.budget.status !== "ORÇAMENTO"}
@@ -105,7 +148,7 @@ export default function BudgetActionBarForm(props: BudgetActionBarFormProps) {
                                     handleSave("FINALIZADO")
                                 }}
                             >
-                                Iniciar projeto
+                                Finalizar orçamento
                             </MenuButton>
                             <MenuButton
                                 isLoading={props.isLoading}

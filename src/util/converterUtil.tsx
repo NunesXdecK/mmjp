@@ -324,11 +324,11 @@ export const handlePrepareProjectForDB = (project: Project) => {
             const month = dateText.substring(2, 4)
             const year = dateText.substring(4, dateText.length)
             const utcString = new Date(month + " " + day + " " + year).toUTCString()
-            project = { ...project, date: Date.parse(utcString) }
+            project = { ...project, dateDue: Date.parse(utcString) }
         }
     }
-    if (project.date === 0) {
-        project = { ...project, date: handleNewDateToUTC() }
+    if (project.dateDue === 0) {
+        project = { ...project, dateDue: handleNewDateToUTC() }
     }
     let clients = []
     if (project.clients && project.clients.length) {
@@ -378,7 +378,7 @@ export const handlePrepareServiceForDB = (service: Service) => {
             const month = dateText.substring(2, 4)
             const year = dateText.substring(4, dateText.length)
             const utcString = new Date(month + " " + day + " " + year).toUTCString()
-            service = { ...service, date: Date.parse(utcString) }
+            service = { ...service, dateDue: Date.parse(utcString) }
             delete service.dateString
         }
     }
@@ -561,7 +561,7 @@ export const handlePrepareServicePaymentStageForDB = (service: Service, list: (S
 export const handlePrepareServiceForShow = (service: Service) => {
     return {
         ...service,
-        dateString: handleUTCToDateShow(service.date.toString()),
+        dateString: handleUTCToDateShow(service.dateDue.toString()),
         total: handleMountNumberCurrency(service.total, ".", ",", 3, 2),
         value: handleMountNumberCurrency((service.value).toString(), ".", ",", 3, 2),
         serviceStages: handlePrepareServicePaymentStageForShow(service.serviceStages),

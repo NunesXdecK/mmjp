@@ -19,10 +19,10 @@ export default async function handler(req, res) {
                 let nowID = data?.id ?? ""
                 const isSave = nowID === ""
                 if (budget?.dateString?.length > 0) {
-                    budget = { ...budget, date: handleGetDateFormatedToUTC(budget.dateString) }
+                    budget = { ...budget, dateDue: handleGetDateFormatedToUTC(budget.dateString) }
                 }
-                if (budget.date === 0) {
-                    budget = { ...budget, date: handleNewDateToUTC() }
+                if (budget.dateDue === 0) {
+                    budget = { ...budget, dateDue: handleNewDateToUTC() }
                 }
                 let clients = []
                 if (budget.clients && budget.clients.length) {

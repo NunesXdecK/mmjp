@@ -86,7 +86,7 @@ export default function BudgetDataForm(props: BudgetDataFormProps) {
                             <FormRowColumn unit="2">
                                 <InputText
                                     mask="date"
-                                    title="Data"
+                                    title="Prazo"
                                     maxLength={10}
                                     id="budget-date"
                                     onBlur={props.onBlur}

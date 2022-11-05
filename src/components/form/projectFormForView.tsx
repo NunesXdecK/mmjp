@@ -46,7 +46,7 @@ export default function ProjectFormForView(props: ProjectFormForViewProps) {
                         title="Data"
                         maxLength={10}
                         id="project-date"
-                        value={handleUTCToDateShow(project.date.toString())}
+                        value={handleUTCToDateShow(project.dateDue.toString())}
                     />
                 </FormRowColumn>
             </FormRow>

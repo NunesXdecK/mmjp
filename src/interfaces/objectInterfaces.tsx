@@ -109,7 +109,7 @@ export interface Budget {
     title?: string,
     dateString?: string,
     status?: "ORÇAMENTO" | "ARQUIVADO" | "FINALIZADO",
-    date?: number,
+    dateDue?: number,
     dateInsertUTC?: number,
     dateLastUpdateUTC?: number,
     clients?: (Person | Company)[],
@@ -139,11 +139,12 @@ export interface Project {
     number?: string,
     dateString?: string,
     status?: "ORÇAMENTO" | "NORMAL" | "ARQUIVADO" | "FINALIZADO",
-    date?: number,
+    dateDue?: number,
     priority?: number,
     priorityView?: number,
     dateInsertUTC?: number,
     dateLastUpdateUTC?: number,
+    budget?: Budget,
     oldData?: any,
     clients?: any[],
     services?: Service[],
@@ -158,7 +159,7 @@ export interface Service {
     dateString?: string,
     description?: string,
     status?: "ORÇAMENTO" | "NORMAL" | "ARQUIVADO" | "FINALIZADO" | "PENDENTE",
-    date?: number,
+    dateDue?: number,
     index?: number,
     priority?: number,
     priorityView?: number,
@@ -186,6 +187,20 @@ export interface ServiceStage {
     dateLastUpdateUTC?: number,
     service?: any,
     responsible?: any,
+}
+
+export interface Payment {
+    id?: string,
+    value?: string,
+    dateString?: string,
+    description?: string,
+    status?: "NORMAL" | "ARQUIVADO" | "FINALIZADO" | "PENDENTE",
+    index?: number,
+    dateDue?: number,
+    priority?: number,
+    dateInsertUTC?: number,
+    dateLastUpdateUTC?: number,
+    project?: any,
 }
 
 export interface ServicePayment {
@@ -322,7 +337,7 @@ export const defaultBudget: Budget = {
     title: "",
     dateString: "",
     status: "ORÇAMENTO",
-    date: 0,
+    dateDue: 0,
     dateInsertUTC: 0,
     dateLastUpdateUTC: 0,
     clients: [],
@@ -352,7 +367,7 @@ export const defaultProject: Project = {
     number: "",
     dateString: "",
     status: "ORÇAMENTO",
-    date: 0,
+    dateDue: 0,
     priority: 0,
     priorityView: 0,
     dateInsertUTC: 0,
@@ -370,7 +385,7 @@ export const defaultService: Service = {
     dateString: "",
     description: "",
     status: "ORÇAMENTO",
-    date: 0,
+    dateDue: 0,
     index: -1,
     priority: 0,
     priorityView: 0,
@@ -397,6 +412,20 @@ export const defaultServiceStage: ServiceStage = {
     dateLastUpdateUTC: 0,
     service: defaultService,
     responsible: defaultProfessional,
+}
+
+export const defaultPayment: Payment = {
+    id: "",
+    value: "0",
+    dateString: "",
+    description: "",
+    status: "NORMAL",
+    index: -1,
+    dateDue: 0,
+    priority: 0,
+    dateInsertUTC: 0,
+    dateLastUpdateUTC: 0,
+    project: defaultProject,
 }
 
 export const defaultServicePayment: ServicePayment = {

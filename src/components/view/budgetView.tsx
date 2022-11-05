@@ -39,7 +39,7 @@ export default function BudgetView(props: BudgetViewProps) {
         budget.clients?.length > 0
     const hasData =
         hasHideData ||
-        budget?.date > 0 ||
+        budget?.dateDue > 0 ||
         budget?.title?.length
 
     const handlePutOwner = (owner) => {
@@ -157,7 +157,7 @@ export default function BudgetView(props: BudgetViewProps) {
                                 classNameContentHolder={props.classNameContentHolder}
                             >
                                 <InfoView title="Projeto">{budget.title}</InfoView>
-                                <InfoView title="Data">{handleUTCToDateShow(budget.date.toString())}</InfoView>
+                                <InfoView title="Data">{handleUTCToDateShow(budget.dateDue.toString())}</InfoView>
                                 {budget.status === "FINALIZADO" && (
                                     <InfoView title="Status"><span className="rounded-sm px-2 py-1 text-green-100 bg-green-600 text-[0.8rem] font-bold">{budget.status}</span></InfoView>
                                 )}

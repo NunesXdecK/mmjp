@@ -47,7 +47,7 @@ export default function ServiceView(props: ServiceViewProps) {
         service.immobilesOrigin?.length > 0
     const hasData =
         hasHideData ||
-        service?.date > 0 ||
+        service?.dateDue > 0 ||
         service?.value?.length ||
         service?.total?.length ||
         service?.title?.length ||
@@ -201,7 +201,7 @@ export default function ServiceView(props: ServiceViewProps) {
                                 <InfoView title="Valor">{handleMountNumberCurrency(service.value.toString(), ".", ",", 3, 2)}</InfoView>
                                 <InfoView title="Quantidade">{service.quantity}</InfoView>
                                 <InfoView title="Total">{handleMountNumberCurrency(service.total.toString(), ".", ",", 3, 2)}</InfoView>
-                                <InfoView title="Data">{handleUTCToDateShow(service.date.toString())}</InfoView>
+                                <InfoView title="Data">{handleUTCToDateShow(service.dateDue.toString())}</InfoView>
                                 {service.status === "FINALIZADO" && (
                                     <InfoView classNameHolder="w-full" classNameInfo="rounded-sm px-2 py-1 text-green-100 bg-green-600 text-[0.8rem] font-bold" title="">{service.status}</InfoView>
                                 )}

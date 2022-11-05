@@ -12,6 +12,7 @@ import ContractPrintView from "../view/contractPrintView"
 import { handleUTCToDateShow, handleNewDateToUTC } from "../../util/dateUtils"
 import { Budget, BudgetPayment, Company, defaultBudget, Person } from "../../interfaces/objectInterfaces"
 import FeedbackMessageModal, { defaultFeedbackMessage, FeedbackMessage } from "../modal/feedbackMessageModal"
+import { PlusIcon, RefreshIcon } from "@heroicons/react/solid"
 
 interface BudgetPageProps {
     id?: string,
@@ -130,7 +131,7 @@ export default function BudgetPage(props: BudgetPageProps) {
             ...localBudget,
             clients: localClients,
             payments: localPayments,
-            dateString: handleUTCToDateShow(localBudget.date.toString()),
+            dateString: handleUTCToDateShow(localBudget.dateDue.toString()),
         }
         setIsLoading(false)
         setIsRegister(true)
@@ -192,7 +193,7 @@ export default function BudgetPage(props: BudgetPageProps) {
                         </span>
                     )}
                 </FormRowColumn>
-                <FormRowColumn className="hidden sm:block" unit="1">{handleUTCToDateShow(element.date.toString())}</FormRowColumn>
+                <FormRowColumn className="hidden sm:block" unit="1">{handleUTCToDateShow(element.dateDue.toString())}</FormRowColumn>
             </>
         )
     }
@@ -214,13 +215,7 @@ export default function BudgetPage(props: BudgetPageProps) {
             {!isPrintBudget && !isPrintContract && (
                 <>
                     <div className="p-4 pb-0">
-                        <ActionBar>
-                            <Button
-                                isLoading={isLoading}
-                                onClick={handleNewClick}
-                            >
-                                Novo
-                            </Button>
+                        <ActionBar className="flex flex-row justify-end">
                             <Button
                                 isLoading={isLoading}
                                 onClick={() => {
@@ -230,7 +225,13 @@ export default function BudgetPage(props: BudgetPageProps) {
                                     handleBackClick()
                                 }}
                             >
-                                Atualizar
+                                <RefreshIcon className="block h-4 w-4" aria-hidden="true" />
+                            </Button>
+                            <Button
+                                isLoading={isLoading}
+                                onClick={handleNewClick}
+                            >
+                                <PlusIcon className="block h-4 w-4" aria-hidden="true" />
                             </Button>
                         </ActionBar>
                     </div>

@@ -46,7 +46,7 @@ export default function ServiceFormForView(props: ServiceFormForViewProps) {
                         title="Data"
                         maxLength={10}
                         id="service-date"
-                        value={handleUTCToDateShow(service.date.toString())}
+                        value={handleUTCToDateShow(service.dateDue.toString())}
                     />
                 </FormRowColumn>
             </FormRow>
