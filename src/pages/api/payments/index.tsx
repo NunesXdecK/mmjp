@@ -13,24 +13,25 @@ export default async function handler(req, res) {
             let resGET = { status: "ERROR", error: {}, message: "", list: [] }
             const paymentCollection = collection(db, PAYMENT_COLLECTION_NAME).withConverter(PaymentConversor)
             let list = []
+            let listFinal = []
             try {
                 const querySnapshot = await getDocs(paymentCollection)
                 querySnapshot.forEach((doc) => {
-                    let payment: Payment = { ...doc.data() }
-                    console.log(payment)
-                    payment = {
-                        ...payment,
-                        dateString: handleUTCToDateShow(payment.dateDue?.toString()),
-                        value: handleMountNumberCurrency(payment.value.toString(), ".", ",", 3, 2)
-                    }
-                    console.log(payment)
-                    list = [...list, payment]
+                    list = [...list, doc.data()]
                 })
             } catch (err) {
                 console.error(err)
                 resGET = { ...resGET, status: "ERROR", error: err }
             }
-            list = list.sort((elementOne: Payment, elementTwo: Payment) => {
+            console.log(list)
+            list.map((element: Payment, index) => {
+                listFinal = [...listFinal, {
+                    ...element,
+                    dateString: handleUTCToDateShow(element.dateDue?.toString()),
+                    value: handleMountNumberCurrency(element.value.toString(), ".", ",", 3, 2)
+                }]
+            })
+            listFinal = listFinal.sort((elementOne: Payment, elementTwo: Payment) => {
                 let dateOne = elementOne.dateInsertUTC
                 let dateTwo = elementTwo.dateInsertUTC
                 if (elementOne.dateLastUpdateUTC > 0 && elementOne.dateLastUpdateUTC > dateOne) {
@@ -41,7 +42,7 @@ export default async function handler(req, res) {
                 }
                 return dateTwo - dateOne
             })
-            resGET = { ...resGET, status: "SUCCESS", list: list }
+            resGET = { ...resGET, status: "SUCCESS", list: listFinal }
             res.status(200).json(resGET)
             break
         default:

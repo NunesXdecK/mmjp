@@ -17,22 +17,22 @@ export default async function handler(req, res) {
                 querySnapshot.forEach((doc) => {
                     list = [...list, doc.data()]
                 })
-                list = list.sort((elementOne: Budget, elementTwo: Budget) => {
-                    let dateOne = elementOne.dateInsertUTC
-                    let dateTwo = elementTwo.dateInsertUTC
-                    if (elementOne.dateLastUpdateUTC > 0 && elementOne.dateLastUpdateUTC > dateOne) {
-                        dateOne = elementOne.dateLastUpdateUTC
-                    }
-                    if (elementTwo.dateLastUpdateUTC > 0 && elementTwo.dateLastUpdateUTC > dateTwo) {
-                        dateTwo = elementTwo.dateLastUpdateUTC
-                    }
-                    return dateTwo - dateOne
-                })
-                resGET = { ...resGET, status: "SUCCESS", list: list }
             } catch (err) {
                 console.error(err)
                 resGET = { ...resGET, status: "ERROR", error: err }
             }
+            list = list.sort((elementOne: Budget, elementTwo: Budget) => {
+                let dateOne = elementOne.dateInsertUTC
+                let dateTwo = elementTwo.dateInsertUTC
+                if (elementOne.dateLastUpdateUTC > 0 && elementOne.dateLastUpdateUTC > dateOne) {
+                    dateOne = elementOne.dateLastUpdateUTC
+                }
+                if (elementTwo.dateLastUpdateUTC > 0 && elementTwo.dateLastUpdateUTC > dateTwo) {
+                    dateTwo = elementTwo.dateLastUpdateUTC
+                }
+                return dateTwo - dateOne
+            })
+            resGET = { ...resGET, status: "SUCCESS", list: list }
             res.status(200).json(resGET)
             break
         default:
