@@ -12,6 +12,7 @@ import { Payment, defaultPayment } from "../../interfaces/objectInterfaces"
 import { handleUTCToDateShow, handleNewDateToUTC } from "../../util/dateUtils"
 import PaymentActionBarForm from "../bar/paymentActionBar"
 import PaymentForm from "../form/paymentForm"
+import { handleMountNumberCurrency } from "../../util/maskUtil"
 
 interface PaymentPageProps {
     id?: string,
@@ -85,6 +86,11 @@ export default function PaymentPage(props: PaymentPageProps) {
         setIsLoading(true)
         setIsForShow(false)
         let localPayment: Payment = await fetch("api/payment/" + payment.id).then((res) => res.json()).then((res) => res.data)
+        localPayment = {
+            ...localPayment,
+            dateString: handleUTCToDateShow(localPayment.dateDue.toString()),
+            value: handleMountNumberCurrency(localPayment.value.toString(), ".", ",", 3, 2),
+        }
         setIsLoading(false)
         setIsRegister(true)
         setPayment(localPayment)
@@ -131,7 +137,7 @@ export default function PaymentPage(props: PaymentPageProps) {
             <FormRow>
                 <FormRowColumn unit="2"><ProjectNumberListItem id={element.project.id} /></FormRowColumn>
                 <FormRowColumn unit="1">{element.description}</FormRowColumn>
-                <FormRowColumn unit="1">{element.value}</FormRowColumn>
+                <FormRowColumn unit="1">{handleMountNumberCurrency(element.value.toString(), ".", ",", 3, 2)}</FormRowColumn>
                 <FormRowColumn unit="1">
                     {element.status === "NORMAL" && (
                         <span className="rounded text-slate-600 bg-slate-300 py-1 px-2 text-xs font-bold">
