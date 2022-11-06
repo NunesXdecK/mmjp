@@ -17,30 +17,31 @@ export default async function handler(req, res) {
                 const querySnapshot = await getDocs(paymentCollection)
                 querySnapshot.forEach((doc) => {
                     let payment: Payment = { ...doc.data() }
+                    console.log(payment)
                     payment = {
                         ...payment,
                         dateString: handleUTCToDateShow(payment.dateDue?.toString()),
                         value: handleMountNumberCurrency(payment.value.toString(), ".", ",", 3, 2)
                     }
+                    console.log(payment)
                     list = [...list, payment]
                 })
-                list = list.sort((elementOne: Payment, elementTwo: Payment) => {
-                    let dateOne = elementOne.dateInsertUTC
-                    let dateTwo = elementTwo.dateInsertUTC
-                    if (elementOne.dateLastUpdateUTC > 0 && elementOne.dateLastUpdateUTC > dateOne) {
-                        dateOne = elementOne.dateLastUpdateUTC
-                    }
-                    if (elementTwo.dateLastUpdateUTC > 0 && elementTwo.dateLastUpdateUTC > dateTwo) {
-                        dateTwo = elementTwo.dateLastUpdateUTC
-                    }
-                    return dateTwo - dateOne
-                })
-
-                resGET = { ...resGET, status: "SUCCESS", list: list }
             } catch (err) {
                 console.error(err)
                 resGET = { ...resGET, status: "ERROR", error: err }
             }
+            list = list.sort((elementOne: Payment, elementTwo: Payment) => {
+                let dateOne = elementOne.dateInsertUTC
+                let dateTwo = elementTwo.dateInsertUTC
+                if (elementOne.dateLastUpdateUTC > 0 && elementOne.dateLastUpdateUTC > dateOne) {
+                    dateOne = elementOne.dateLastUpdateUTC
+                }
+                if (elementTwo.dateLastUpdateUTC > 0 && elementTwo.dateLastUpdateUTC > dateTwo) {
+                    dateTwo = elementTwo.dateLastUpdateUTC
+                }
+                return dateTwo - dateOne
+            })
+            resGET = { ...resGET, status: "SUCCESS", list: list }
             res.status(200).json(resGET)
             break
         default:
