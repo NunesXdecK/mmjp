@@ -1,4 +1,4 @@
-import { Company, Person, Professional, Project, ServicePayment, ServiceStage, Immobile, Service, User, SubjectMessage, Budget } from "../interfaces/objectInterfaces"
+import { Company, Person, Professional, Project, ServicePayment, ServiceStage, Immobile, Service, User, SubjectMessage, Budget, Payment } from "../interfaces/objectInterfaces"
 import { handleRemoveCNPJMask } from "./maskUtil"
 import { CNPJ_PATTERN, CPF_PATTERN, ONLY_CHARACTERS_PATTERN, ONLY_CHARACTERS_PATTERN_TWO, ONLY_SPECIAL_FOR_NUMBER_PATTERN } from "./patternValidationUtil"
 
@@ -450,5 +450,27 @@ export const handleServicePaymentValidationForDB = (servicePayment: ServicePayme
         }
     }
     validation = { ...validation, validation: descriptionCheck && valueCheck && serviceCheck }
+    return validation
+}
+
+export const handlePaymentValidationForDB = (payment: Payment, isForValidService?) => {
+    let validation: ValidationReturn = { validation: false, messages: [] }
+    let valueCheck = handleValidationNotNull(payment.value)
+    let descriptionCheck = handleValidationNotNull(payment.description)
+    let projectCheck = true
+    if (!valueCheck) {
+        validation = { ...validation, messages: [...validation.messages, "O pagamento " + (payment.description) + " está com o valor em branco."] }
+    }
+    if (!descriptionCheck) {
+        validation
+            = { ...validation, messages: [...validation.messages, "O pagamento " + (payment.description) + " está com a descrição em branco."] }
+    }
+    if (isForValidService) {
+        projectCheck = payment?.project?.id?.length > 0 ?? false
+        if (!projectCheck) {
+            validation = { ...validation, messages: [...validation.messages, "O pagamento " + (payment.description) + " precisa de um serviço referente."] }
+        }
+    }
+    validation = { ...validation, validation: descriptionCheck && valueCheck && projectCheck }
     return validation
 }

@@ -9,13 +9,16 @@ import FormRowColumn from "../form/formRowColumn"
 import BudgetDataForm from "../form/budgetDataForm"
 import BudgetActionBarForm from "../bar/budgetActionBar"
 import ContractPrintView from "../view/contractPrintView"
+import { PlusIcon, RefreshIcon } from "@heroicons/react/solid"
+import { FeedbackMessage } from "../modal/feedbackMessageModal"
 import { handleUTCToDateShow, handleNewDateToUTC } from "../../util/dateUtils"
 import { Budget, BudgetPayment, Company, defaultBudget, Person } from "../../interfaces/objectInterfaces"
-import FeedbackMessageModal, { defaultFeedbackMessage, FeedbackMessage } from "../modal/feedbackMessageModal"
-import { PlusIcon, RefreshIcon } from "@heroicons/react/solid"
 
 interface BudgetPageProps {
     id?: string,
+    getInfo?: boolean,
+    canSave?: boolean,
+    canUpdate?: boolean,
     onSetPage?: (any) => void,
     onShowMessage?: (FeedbackMessage) => void,
 }
@@ -24,15 +27,12 @@ export default function BudgetPage(props: BudgetPageProps) {
     const [budget, setBudget] = useState<Budget>(defaultBudget)
     const [budgets, setBudgets] = useState<Budget[]>([])
     const [index, setIndex] = useState(-1)
-    const [isFirst, setIsFirst] = useState(true)
-    const [isLoading, setIsLoading] = useState(true)
+    const [isFirst, setIsFirst] = useState(props.getInfo)
+    const [isLoading, setIsLoading] = useState(props.getInfo)
     const [isForShow, setIsForShow] = useState(false)
     const [isRegister, setIsRegister] = useState(false)
     const [isPrintBudget, setIsPrintBudget] = useState(false)
     const [isPrintContract, setIsPrintContract] = useState(false)
-    const [isFeedbackOpen, setIsFeedbackOpen] = useState(false)
-
-    const [feedbackMessage, setFeedbackMessage] = useState<FeedbackMessage>(defaultFeedbackMessage)
 
     const handleBackClick = (event?) => {
         if (event) {
@@ -164,17 +164,17 @@ export default function BudgetPage(props: BudgetPageProps) {
 
     const handlePutHeaders = () => {
         return (
-            <FormRow className="flex flex-row">
+            <FormRow>
                 <FormRowColumn unit="4">Nome</FormRowColumn>
                 <FormRowColumn unit="1">Status</FormRowColumn>
-                <FormRowColumn className="hidden sm:block" unit="1">Data</FormRowColumn>
+                <FormRowColumn className="hidden sm:block" unit="1">Prazo</FormRowColumn>
             </FormRow>
         )
     }
 
     const handlePutRows = (element: Budget) => {
         return (
-            <>
+            <FormRow>
                 <FormRowColumn unit="4">{element.title}</FormRowColumn>
                 <FormRowColumn unit="1">
                     {element.status === "ORÇAMENTO" && (
@@ -194,7 +194,7 @@ export default function BudgetPage(props: BudgetPageProps) {
                     )}
                 </FormRowColumn>
                 <FormRowColumn className="hidden sm:block" unit="1">{handleUTCToDateShow(element.dateDue.toString())}</FormRowColumn>
-            </>
+            </FormRow>
         )
     }
 
@@ -218,6 +218,7 @@ export default function BudgetPage(props: BudgetPageProps) {
                         <ActionBar className="flex flex-row justify-end">
                             <Button
                                 isLoading={isLoading}
+                                isHidden={!props.canUpdate}
                                 onClick={() => {
                                     setIndex(-1)
                                     setIsFirst(true)
@@ -230,6 +231,7 @@ export default function BudgetPage(props: BudgetPageProps) {
                             <Button
                                 isLoading={isLoading}
                                 onClick={handleNewClick}
+                                isHidden={!props.canSave}
                             >
                                 <PlusIcon className="block h-4 w-4" aria-hidden="true" />
                             </Button>
@@ -323,12 +325,6 @@ export default function BudgetPage(props: BudgetPageProps) {
                     <BudgetView elementId={budget.id} />
                 )}
             </WindowModal>
-
-            <FeedbackMessageModal
-                isOpen={isFeedbackOpen}
-                feedbackMessage={feedbackMessage}
-                setIsOpen={setIsFeedbackOpen}
-            />
         </>
     )
 }

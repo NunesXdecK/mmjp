@@ -53,58 +53,66 @@ export default function StartProjectButton(props: StartProjectButtonProps) {
                 budget: { id: props.budget.id },
             }
             //save project
-            let saveRes = false
+            let projectSaveRes = { status: "", id: "" }
             try {
-                saveRes = await fetch("api/projectByBudget", {
+                projectSaveRes = await fetch("api/projectByBudget", {
                     method: "POST",
                     body: JSON.stringify({ token: "tokenbemseguro", data: project, history: history }),
-                }).then((res) => res.json()).then((res) => res.status === "SUCCESS")
-                console.log(saveRes)
+                }).then((res) => res.json())
             } catch (err) {
                 console.error(err)
             }
-            if (saveRes) {
+            if (projectSaveRes?.status === "SUCCESS" && projectSaveRes?.id?.length > 0) {
+                //get last professional
                 let professional: Professional = defaultProfessional
                 try {
                     professional = await fetch("api/lastProfessional").then((res) => res.json()).then((res) => res.professional)
                 } catch (err) {
                     console.error(err)
                 }
-                console.log(professional)
-                let services: Service[] = []
-                props?.budget?.services?.map((element, index) => {
-                    let service: BudgetService = element
-                    services = [...services,
-                    {
-                        ...defaultService,
-                        status: "NORMAL",
-                        title: service.title,
-                        value: service.value,
-                        total: service.total,
-                        index: service.index,
-                        quantity: service.quantity,
-                        dateDue: props.budget.dateDue,
-                        professional: { id: professional.id },
-                        project: { id: project.id },
-                    }
-                    ]
-                })
-                console.log(services)
-                let payments: Payment[] = []
-                props?.budget?.payments?.map((element, index) => {
-                    let payment: BudgetPayment = element
-                    payments = [...payments,
-                    {
-                        ...defaultPayment,
-                        status: "NORMAL",
-                        value: payment.value,
-                        index: payment.index,
-                        dateDue: payment.dateDue,
-                        description: payment.description,
-                    }
-                    ]
-                })
-                console.log(payments)
+                //save services
+                await Promise.all(
+                    props?.budget?.services?.map(async (element, index) => {
+                        let service: BudgetService = element
+                        let serviceNew =
+                        {
+                            ...defaultService,
+                            status: "NORMAL",
+                            title: service.title,
+                            value: service.value,
+                            total: service.total,
+                            index: service.index,
+                            quantity: service.quantity,
+                            project: { id: projectSaveRes?.id },
+                            dateDue: props.budget.dateDue,
+                            professional: { id: professional.id },
+                        }
+                        await fetch("api/serviceNew", {
+                            method: "POST",
+                            body: JSON.stringify({ token: "tokenbemseguro", data: serviceNew, history: history }),
+                        })
+                    })
+                )
+                //save payments
+                await Promise.all(
+                    props?.budget?.payments?.map(async (element, index) => {
+                        let payment: BudgetPayment = element
+                        let paymentNew =
+                        {
+                            ...defaultPayment,
+                            status: "NORMAL",
+                            value: payment.value,
+                            index: payment.index,
+                            dateDue: payment.dateDue,
+                            project: { id: projectSaveRes?.id },
+                            description: payment.description,
+                        }
+                        await fetch("api/payment", {
+                            method: "POST",
+                            body: JSON.stringify({ token: "tokenbemseguro", data: paymentNew, history: history }),
+                        })
+                    })
+                )
             }
         }
         if (props.onBeforeClick) {

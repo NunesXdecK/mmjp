@@ -14,7 +14,7 @@ export default async function handler(req, res) {
                 let projects = []
                 if (data) {
                     const queryProjects = query(projectCollection,
-                        where("budget.id", "==", data)
+                        where("budget", "==", { id: data })
                     )
                     const querySnapshot = await getDocs(queryProjects)
                     querySnapshot.forEach((doc) => {

@@ -130,13 +130,13 @@ export default function ListTable(props: ListTableProps) {
                     <div className="">
                         {pagesArray[handleGetPage(pagesArray)]?.map((element, index) => (
                             <ListTableItem
-                                index={(page * perPage) + (index + 1)}
                                 element={element}
                                 isDisabled={props.isLoading}
-                                isActive={props.isActive - 1 === (page * perPage) + index}
                                 onTableRow={props.onTableRow}
                                 onShowClick={props.onShowClick}
                                 onEditClick={props.onEditClick}
+                                index={(page * perPage) + (index + 1)}
+                                isActive={props.isActive - 1 === (page * perPage) + index}
                                 key={index + "-" + (element && "id" in element ? element.id : element)}
                                 onRowClick={() => {
                                     handleSetIsActive((old) => (page * perPage) + (index + 1))

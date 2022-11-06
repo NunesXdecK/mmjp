@@ -26,7 +26,7 @@ export default function FeedbackPendency(props: FeedbackPendencyProps) {
     return (
         <>
             <Transition
-                show={!props.isFirst}
+                show={!props.isFirst && messages?.length > 0}
                 enter="transition-opacity duration-[500ms]"
                 enterFrom="opacity-0"
                 enterTo="opacity-100"

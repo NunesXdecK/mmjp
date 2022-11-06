@@ -36,6 +36,12 @@ export default async function handler(req, res) {
                         project = { ...project, clients: clientsDocRefsForDB }
                     })
                 }
+                if (project.services) {
+                    delete project.services
+                }
+                if (project.priorityView) {
+                    delete project.priorityView
+                }
                 if (project.dateString) {
                     delete project.dateString
                 }
