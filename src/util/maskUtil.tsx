@@ -74,7 +74,7 @@ export const handleMountDateMask = (text) => {
         4, 6,
     ]
     if (text) {
-        const localText = text.replaceAll(".", "").replaceAll("/", "").replaceAll("-", "")
+        const localText = text?.replaceAll(".", "").replaceAll("/", "").replaceAll("-", "")
         const length = localText.length
         let lastPos = 0
         let posToSub = []
@@ -111,7 +111,7 @@ export const handleMountCNPJMask = (text) => {
         2, 6, 9, 12,
     ]
     if (text) {
-        const localText = text.replaceAll(".", "").replaceAll("/", "").replaceAll("-", "")
+        const localText = text?.replaceAll(".", "").replaceAll("/", "").replaceAll("-", "")
         const length = localText.length
         let lastPos = 0
         let posToSub = []
@@ -261,7 +261,7 @@ export const handleMountCPFCurrency = (text, dig1, dig2) => {
 export const handleValueStringToInt = (text: string) => {
     let returnInt = 0
     if (text) {
-        returnInt = parseFloat(text.replaceAll(".", "").replaceAll(",", ""))
+        returnInt = parseFloat(text?.replaceAll(".", "").replaceAll(",", ""))
     }
     return returnInt
 }
@@ -269,9 +269,9 @@ export const handleValueStringToInt = (text: string) => {
 export const handleValueStringToFloat = (text: string) => {
     let returnFloat = 0.0
     if (text) {
-        text = text.replaceAll(".", "")
+        text = text?.replaceAll(".", "")
         if (text.includes(",")) {
-            text = text.replaceAll(",", ".")
+            text = text?.replaceAll(",", ".")
         } else if (text.length > 2 && text.substring(text.length - 2, text.length) !== "00") {
             text = text.substring(0, text.length - 2) + "." + text.substring(text.length - 2, text.length)
         }
@@ -282,45 +282,45 @@ export const handleValueStringToFloat = (text: string) => {
 
 export const handleRemoveCPFMask = (text: string) => {
     if (text) {
-        text = text.replaceAll("-", "").replaceAll(".", "")
+        text = text?.replaceAll("-", "").replaceAll(".", "")
     }
     return text
 }
 
 export const handleRemoveCNPJMask = (text: string) => {
     if (text) {
-        text = text.replaceAll("/", "").replaceAll("-", "").replaceAll(".", "")
+        text = text?.replaceAll("/", "").replaceAll("-", "").replaceAll(".", "")
     }
     return text
 }
 
 export const handleRemoveDateMask = (text: string) => {
     if (text) {
-        text = text.replaceAll("/", "")
-        text = text.replace(new RegExp(ONLY_NUMBERS_PATTERN_TWO), "")
+        text = text?.replaceAll("/", "")
+        text = text?.replace(new RegExp(ONLY_NUMBERS_PATTERN_TWO), "")
     }
     return text
 }
 
 export const handleRemoveCEPMask = (text: string) => {
     if (text) {
-        text = text.replaceAll(" ", "").replaceAll("-", "").replaceAll(".", "")
-        text = text.replace(new RegExp(ONLY_NUMBERS_PATTERN_TWO), "")
+        text = text?.replaceAll(" ", "").replaceAll("-", "").replaceAll(".", "")
+        text = text?.replace(new RegExp(ONLY_NUMBERS_PATTERN_TWO), "")
     }
     return text
 }
 
 export const handleRemoveCurrencyMask = (text: string) => {
     if (text) {
-        text = text.replaceAll(".", "").replaceAll(",", "")
-        text = text.replace(new RegExp(ONLY_NUMBERS_PATTERN_TWO), "")
+        text = text?.replaceAll(".", "").replaceAll(",", "")
+        text = text?.replace(new RegExp(ONLY_NUMBERS_PATTERN_TWO), "")
     }
     return text
 }
 
 export const handleRemoveTelephoneMask = (text: string) => {
     if (text) {
-        text = text.replaceAll(" ", "").replaceAll("(", "").replaceAll(")", "").replaceAll("-", "")
+        text = text?.replaceAll(" ", "").replaceAll("(", "").replaceAll(")", "").replaceAll("-", "")
     }
     return text
 }
