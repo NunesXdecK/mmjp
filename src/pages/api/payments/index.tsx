@@ -2,8 +2,8 @@ import { collection, getDocs } from "firebase/firestore"
 import { PaymentConversor } from "../../../db/converters"
 import { handleUTCToDateShow } from "../../../util/dateUtils"
 import { Payment } from "../../../interfaces/objectInterfaces"
-import { db, PAYMENT_COLLECTION_NAME } from "../../../db/firebaseDB"
 import { handleMountNumberCurrency } from "../../../util/maskUtil"
+import { db, PAYMENT_COLLECTION_NAME } from "../../../db/firebaseDB"
 
 export default async function handler(req, res) {
     const { method } = req

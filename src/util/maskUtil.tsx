@@ -134,7 +134,7 @@ export const handleMountCNPJMask = (text) => {
 export const handleMountNumberCurrency = (text, digOne, digTwo, digOneStart, digTwoStart) => {
     let maskedText = ""
     if (text) {
-        const localText = text.replaceAll(digOne, "").replaceAll(digTwo, "")
+        const localText = text?.replaceAll(digOne, "").replaceAll(digTwo, "")
         const length = localText.length
         const lengthBetween = length - digTwoStart
         const digOneCount = Math.floor(lengthBetween / digOneStart)
