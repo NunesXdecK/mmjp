@@ -1,8 +1,7 @@
 import { PaymentConversor } from "../../../db/converters"
+import { handleNewDateToUTC } from "../../../util/dateUtils"
 import { Payment } from "../../../interfaces/objectInterfaces"
-import { handleRemoveCurrencyMask } from "../../../util/maskUtil"
 import { addDoc, collection, deleteDoc, doc, updateDoc } from "firebase/firestore"
-import { handleGetDateFormatedToUTC, handleNewDateToUTC } from "../../../util/dateUtils"
 import { db, HISTORY_COLLECTION_NAME, PAYMENT_COLLECTION_NAME } from "../../../db/firebaseDB"
 
 export default async function handler(req, res) {
@@ -18,19 +17,6 @@ export default async function handler(req, res) {
             let nowID = data?.id ?? ""
             let payment: Payment = data
             if (token === "tokenbemseguro") {
-                if (payment?.dateString?.length > 0) {
-                    payment = { ...payment, dateDue: handleGetDateFormatedToUTC(payment.dateString) }
-                }
-                if (payment.dateDue === 0) {
-                    payment = { ...payment, dateDue: handleNewDateToUTC() }
-                }
-                if (payment?.value?.length > 0) {
-                    payment = { ...payment, value: handleRemoveCurrencyMask(payment.value) }
-                }
-                payment = {
-                    ...payment,
-                    description: payment.description?.trim(),
-                }
                 try {
                     const isSave = nowID === ""
                     if (isSave) {

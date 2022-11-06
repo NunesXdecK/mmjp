@@ -5,9 +5,9 @@ import MenuButton from "../button/menuButton";
 import DropDownButton from "../button/dropDownButton";
 import StartProjectButton from "../button/startProjectButton";
 import { FeedbackMessage } from "../modal/feedbackMessageModal";
-import { handleGetDateFormatedToUTC } from "../../util/dateUtils";
+import { handleGetDateFormatedToUTC, handleNewDateToUTC } from "../../util/dateUtils";
 import { handleBudgetValidationForDB } from "../../util/validationUtil";
-import { Budget, defaultBudget } from "../../interfaces/objectInterfaces";
+import { Budget, BudgetPayment, defaultBudget } from "../../interfaces/objectInterfaces";
 
 interface BudgetActionBarFormProps {
     className?: string,
@@ -39,6 +39,48 @@ export default function BudgetActionBarForm(props: BudgetActionBarFormProps) {
         }
     }
 
+    const handleBudgetForDB = (budget: Budget) => {
+        if (budget?.dateString?.length > 0) {
+            budget = { ...budget, dateDue: handleGetDateFormatedToUTC(budget.dateString) }
+        }
+        if (budget.dateDue === 0) {
+            budget = { ...budget, dateDue: handleNewDateToUTC() }
+        }
+        let clients = []
+        if (budget.clients && budget.clients.length) {
+            budget.clients?.map((element, index) => {
+                if (element && "id" in element && element.id.length) {
+                    if ("cpf" in element) {
+                        clients = [...clients, { id: element.id, cpf: "" }]
+                    } else if ("cnpj" in element) {
+                        clients = [...clients, { id: element.id, cnpj: "" }]
+                    }
+                }
+            })
+        }
+        let payments = []
+        if (budget.payments && budget.payments?.length) {
+            budget.payments?.map((element: BudgetPayment, index) => {
+                let payment = { ...element }
+                payment = { ...payment, dateDue: handleGetDateFormatedToUTC(payment.dateString) }
+                if (payment.dateString) {
+                    delete payment.dateString
+                }
+                payments = [...payments, payment]
+            })
+        }
+        if (budget.dateString) {
+            delete budget.dateString
+        }
+        budget = {
+            ...budget,
+            clients: clients,
+            payments: payments,
+            title: budget.title.trim(),
+        }
+        return budget
+    }
+
     const handleStartProjectButton = async (id) => {
         let hasProject = false
         if (id) {
@@ -56,6 +98,7 @@ export default function BudgetActionBarForm(props: BudgetActionBarFormProps) {
     }
 
     const handleSaveBudgetInner = async (budget, history) => {
+        budget = handleBudgetForDB(budget)
         let res = { status: "ERROR", id: "", budget: budget }
         try {
             const saveRes = await fetch("api/budget", {

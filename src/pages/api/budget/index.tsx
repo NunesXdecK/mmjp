@@ -1,7 +1,7 @@
 import { BudgetConversor } from "../../../db/converters"
-import { Budget, BudgetPayment } from "../../../interfaces/objectInterfaces"
+import { handleNewDateToUTC } from "../../../util/dateUtils"
+import { Budget } from "../../../interfaces/objectInterfaces"
 import { addDoc, collection, deleteDoc, doc, updateDoc } from "firebase/firestore"
-import { handleGetDateFormatedToUTC, handleNewDateToUTC } from "../../../util/dateUtils"
 import { db, HISTORY_COLLECTION_NAME, BUDGET_COLLECTION_NAME } from "../../../db/firebaseDB"
 
 export default async function handler(req, res) {
@@ -18,44 +18,6 @@ export default async function handler(req, res) {
                 let budget: Budget = data
                 let nowID = data?.id ?? ""
                 const isSave = nowID === ""
-                if (budget?.dateString?.length > 0) {
-                    budget = { ...budget, dateDue: handleGetDateFormatedToUTC(budget.dateString) }
-                }
-                if (budget.dateDue === 0) {
-                    budget = { ...budget, dateDue: handleNewDateToUTC() }
-                }
-                let clients = []
-                if (budget.clients && budget.clients.length) {
-                    budget.clients?.map((element, index) => {
-                        if (element && "id" in element && element.id.length) {
-                            if ("cpf" in element) {
-                                clients = [...clients, { id: element.id, cpf: "" }]
-                            } else if ("cnpj" in element) {
-                                clients = [...clients, { id: element.id, cnpj: "" }]
-                            }
-                        }
-                    })
-                }
-                let payments = []
-                if (budget.payments && budget.payments?.length) {
-                    budget.payments?.map((element: BudgetPayment, index) => {
-                        let payment = { ...element }
-                        payment = { ...payment, dateDue: handleGetDateFormatedToUTC(payment.dateString) }
-                        if (payment.dateString) {
-                            delete payment.dateString
-                        }
-                        payments = [...payments, payment]
-                    })
-                }
-                if (budget.dateString) {
-                    delete budget.dateString
-                }
-                budget = {
-                    ...budget,
-                    clients: clients,
-                    payments: payments,
-                    title: budget.title.trim(),
-                }
                 try {
                     if (isSave) {
                         budget = { ...budget, dateInsertUTC: handleNewDateToUTC() }
@@ -71,8 +33,6 @@ export default async function handler(req, res) {
                         await addDoc(historyCollection, dataForHistory)
                     }
                     resPOST = { ...resPOST, status: "SUCCESS", id: nowID }
-                    {/*
-                */}
                 } catch (err) {
                     console.error(err)
                     resPOST = { ...resPOST, status: "ERROR", error: err }

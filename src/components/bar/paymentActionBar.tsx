@@ -1,11 +1,12 @@
 import ActionBar from "./actionBar";
 import Button from "../button/button";
 import { FeedbackMessage } from "../modal/feedbackMessageModal";
-import { handleGetDateFormatedToUTC } from "../../util/dateUtils";
+import { handleGetDateFormatedToUTC, handleNewDateToUTC } from "../../util/dateUtils";
 import { handlePaymentValidationForDB } from "../../util/validationUtil";
-import { Payment, defaultPayment } from "../../interfaces/objectInterfaces";
+import { Payment, defaultPayment, BudgetPayment } from "../../interfaces/objectInterfaces";
 import DropDownButton from "../button/dropDownButton";
 import MenuButton from "../button/menuButton";
+import { handleRemoveCurrencyMask } from "../../util/maskUtil";
 
 interface PaymentActionBarFormProps {
     className?: string,
@@ -32,7 +33,25 @@ export default function PaymentActionBarForm(props: PaymentActionBarFormProps) {
         }
     }
 
+    const handlePaymentForDB = (payment: BudgetPayment) => {
+        if (payment?.dateString?.length > 0) {
+            payment = { ...payment, dateDue: handleGetDateFormatedToUTC(payment.dateString) }
+        }
+        if (payment.dateDue === 0) {
+            payment = { ...payment, dateDue: handleNewDateToUTC() }
+        }
+        if (payment?.value?.length > 0) {
+            payment = { ...payment, value: handleRemoveCurrencyMask(payment.value) }
+        }
+        payment = {
+            ...payment,
+            description: payment.description?.trim(),
+        }
+        return payment
+    }
+
     const handleSavePaymentInner = async (payment, history) => {
+        payment = handlePaymentForDB(payment)
         let res = { status: "ERROR", id: "", payment: payment }
         try {
             const saveRes = await fetch("api/payment", {
