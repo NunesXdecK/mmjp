@@ -12,7 +12,6 @@ export default async function handler(req, res) {
             let resGET = { status: "ERROR", error: {}, message: "", list: [] }
             let list = []
             try {
-                //const queryBudgets = query(budgetCollection)
                 const querySnapshot = await getDocs(budgetCollection)
                 querySnapshot.forEach((doc) => {
                     list = [...list, doc.data()]

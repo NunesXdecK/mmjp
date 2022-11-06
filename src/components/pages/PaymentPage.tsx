@@ -92,7 +92,6 @@ export default function PaymentPage(props: PaymentPageProps) {
 
     const handleAfterSave = (feedbackMessage: FeedbackMessage, payment: Payment) => {
         handleBackClick()
-        console.log(payment)
         let list: Payment[] = [
             payment,
             ...payments,
@@ -126,7 +125,7 @@ export default function PaymentPage(props: PaymentPageProps) {
             </FormRow>
         )
     }
-    
+
     const handlePutRows = (element: Payment) => {
         return (
             <FormRow>
@@ -150,7 +149,7 @@ export default function PaymentPage(props: PaymentPageProps) {
                         </span>
                     )}
                 </FormRowColumn>
-                <FormRowColumn className="hidden sm:block" unit="1">{element.dateString}</FormRowColumn>
+                <FormRowColumn className="hidden sm:block" unit="1">{handleUTCToDateShow(element.dateDue.toString())}</FormRowColumn>
             </FormRow>
         )
     }
