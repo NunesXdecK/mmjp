@@ -8,17 +8,18 @@ interface FormRowColumnProps {
 }
 export default function FormRowColumn(props: FormRowColumnProps) {
     let colSpanClassName = ""
+    let colSpanClassNameMobile = ""
     if (props.unit) {
         colSpanClassName = "sm:col-span-" + props.unit + " print:col-span-" + props.unit
+        colSpanClassNameMobile = "col-span-" + props.unit
     } else {
         colSpanClassName = "sm:col-span-6 print:col-span-6"
+        colSpanClassNameMobile = "col-span-6"
     }
     if (props.unitM) {
-        colSpanClassName = colSpanClassName + " col-span-" + props.unitM
-    } else {
-        colSpanClassName = colSpanClassName + " col-span-6"
+        colSpanClassNameMobile = "col-span-" + props.unitM
     }
-    let className = "p-2 " + colSpanClassName
+    let className = "p-2 " + colSpanClassName + " " + colSpanClassNameMobile
     if (props.className) {
         className = className + " " + props.className
     }
