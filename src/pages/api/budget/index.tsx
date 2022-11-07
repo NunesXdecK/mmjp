@@ -15,9 +15,12 @@ export default async function handler(req, res) {
             let resPOST = { status: "ERROR", error: {}, id: "", message: "" }
             let { token, data, history } = JSON.parse(body)
             if (token === "tokenbemseguro") {
-                let budget: Budget = data
                 let nowID = data?.id ?? ""
                 const isSave = nowID === ""
+                let budget: Budget = data
+                if (budget.dateString) {
+                    delete budget.dateString
+                }
                 try {
                     if (isSave) {
                         budget = { ...budget, dateInsertUTC: handleNewDateToUTC() }

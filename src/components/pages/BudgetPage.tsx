@@ -102,9 +102,9 @@ export default function BudgetPage(props: BudgetPageProps) {
     const handleEditClick = async (budget, index?) => {
         setIsLoading(true)
         setIsForShow(false)
-        let localBudget: Budget = await fetch("api/budget/" + budget.id).then((res) => res.json()).then((res) => res.data)
+        let localBudget: Budget = await fetch("api/budget/" + budget?.id).then((res) => res.json()).then((res) => res.data)
         let localClients = []
-        if (localBudget.clients && localBudget.clients?.length > 0) {
+        if (localBudget?.clients?.length > 0) {
             await Promise.all(
                 localBudget.clients.map(async (element, index) => {
                     if (element && element?.id?.length) {
@@ -122,7 +122,7 @@ export default function BudgetPage(props: BudgetPageProps) {
             )
         }
         let localPayments = []
-        if (localBudget.payments && localBudget.payments?.length > 0) {
+        if (localBudget?.payments?.length > 0) {
             localBudget.payments.map((element: BudgetPayment, index) => {
                 localPayments = [...localPayments, { ...element, dateString: handleUTCToDateShow(element.dateDue.toString()) }]
             })
@@ -131,15 +131,14 @@ export default function BudgetPage(props: BudgetPageProps) {
             ...localBudget,
             clients: localClients,
             payments: localPayments,
-            dateString: handleUTCToDateShow(localBudget.dateDue.toString()),
+            dateString: handleUTCToDateShow(localBudget?.dateDue?.toString()),
         }
         setIsLoading(false)
         setIsRegister(true)
         setBudget(localBudget)
     }
 
-    const handleAfterSave = (feedbackMessage: FeedbackMessage, budget: Budget) => {
-        handleBackClick()
+    const handleAfterSave = (feedbackMessage: FeedbackMessage, budget: Budget, isForCloseModal) => {
         let list: Budget[] = [
             budget,
             ...budgets,
@@ -151,9 +150,12 @@ export default function BudgetPage(props: BudgetPageProps) {
                 ...budgets.slice(index, budgets.length),
             ]
         }
-        setIndex((old) => -1)
         setBudgets((old) => list)
         handleShowMessage(feedbackMessage)
+        if (!isForCloseModal) {
+            handleBackClick()
+            setIndex((old) => -1)
+        }
     }
 
     const handleShowMessage = (feedbackMessage: FeedbackMessage) => {

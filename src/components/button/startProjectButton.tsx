@@ -1,4 +1,5 @@
 import MenuButton from "./menuButton"
+import { handlePaymentForDB } from "../bar/paymentActionBar"
 import { Budget, BudgetPayment, BudgetService, defaultPayment, defaultProfessional, defaultProject, defaultService, Payment, Professional, Project, Service } from "../../interfaces/objectInterfaces"
 
 interface StartProjectButtonProps {
@@ -97,16 +98,17 @@ export default function StartProjectButton(props: StartProjectButtonProps) {
                 await Promise.all(
                     props?.budget?.payments?.map(async (element, index) => {
                         let payment: BudgetPayment = element
-                        let paymentNew =
+                        let paymentNew: Payment =
                         {
                             ...defaultPayment,
                             status: "NORMAL",
                             value: payment.value,
                             index: payment.index,
                             dateDue: payment.dateDue,
-                            project: { id: projectSaveRes?.id },
                             description: payment.description,
+                            project: { id: projectSaveRes?.id },
                         }
+                        paymentNew = handlePaymentForDB(paymentNew)
                         await fetch("api/payment", {
                             method: "POST",
                             body: JSON.stringify({ token: "tokenbemseguro", data: paymentNew, history: history }),

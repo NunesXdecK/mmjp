@@ -5,6 +5,7 @@ import BudgetPage from "../components/pages/BudgetPage"
 import FeedbackPendency from "../components/modal/feedbackPendencyModal"
 import FeedbackMessageModal, { defaultFeedbackMessage, FeedbackMessage } from "../components/modal/feedbackMessageModal"
 import PaymentPage from "../components/pages/PaymentPage"
+import ServiceStagePage from "../components/pages/ServiceStagePage"
 
 export type PageOps =
     "DASHBOARD"
@@ -115,6 +116,7 @@ const [subjectMessage, setSubjectMessage] = useState<SubjectMessage>({
 
             {page !== "BUDGET" &&
                 page !== "PAYMENT" &&
+                page !== "SERVICESTAGE" &&
                 (
                     <div className="dark:text-gray-200 py-48 flex flex-row items-center justify-center">
                         {title}
@@ -122,6 +124,15 @@ const [subjectMessage, setSubjectMessage] = useState<SubjectMessage>({
                 )}
             {page === "BUDGET" && (
                 <BudgetPage
+                    getInfo
+                    canSave
+                    canUpdate
+                    onSetPage={setPage}
+                    onShowMessage={handleShowMessage}
+                />
+            )}
+            {page === "SERVICESTAGE" && (
+                <ServiceStagePage
                     getInfo
                     canSave
                     canUpdate

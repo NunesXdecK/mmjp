@@ -1,43 +1,39 @@
 import ActionBar from "./actionBar";
 import Button from "../button/button";
-import { FeedbackMessage } from "../modal/feedbackMessageModal";
-import { handleGetDateFormatedToUTC, handleNewDateToUTC } from "../../util/dateUtils";
-import { handlePaymentValidationForDB } from "../../util/validationUtil";
-import { Payment, defaultPayment, BudgetPayment } from "../../interfaces/objectInterfaces";
-import DropDownButton from "../button/dropDownButton";
 import MenuButton from "../button/menuButton";
-import { handleRemoveCurrencyMask } from "../../util/maskUtil";
+import DropDownButton from "../button/dropDownButton";
+import { FeedbackMessage } from "../modal/feedbackMessageModal";
+import { handleServiceStageValidationForDB } from "../../util/validationUtil";
+import { handleGetDateFormatedToUTC, handleNewDateToUTC } from "../../util/dateUtils";
+import { ServiceStage, defaultServiceStage } from "../../interfaces/objectInterfaces";
 
-interface PaymentActionBarFormProps {
+interface ServiceStageActionBarFormProps {
     className?: string,
     isLoading?: boolean,
     isMultiple?: boolean,
     isDisabled?: boolean,
-    payment?: Payment,
+    serviceStage?: ServiceStage,
     onSet?: (any) => void,
     onSetIsLoading?: (boolean) => void,
     onAfterSave?: (object, any, boolean) => void,
     onShowMessage?: (FeedbackMessage) => void,
 }
 
-export const handlePaymentForDB = (payment: Payment) => {
-    if (payment?.dateString?.length > 0) {
-        payment = { ...payment, dateDue: handleGetDateFormatedToUTC(payment.dateString) }
+export const handleServiceStageForDB = (serviceStage: ServiceStage) => {
+    if (serviceStage?.dateString?.length > 0) {
+        serviceStage = { ...serviceStage, dateDue: handleGetDateFormatedToUTC(serviceStage.dateString) }
     }
-    if (payment.dateDue === 0) {
-        payment = { ...payment, dateDue: handleNewDateToUTC() }
+    if (serviceStage.dateDue === 0) {
+        serviceStage = { ...serviceStage, dateDue: handleNewDateToUTC() }
     }
-    if (payment?.value?.length > 0) {
-        payment = { ...payment, value: handleRemoveCurrencyMask(payment.value) }
+    serviceStage = {
+        ...serviceStage,
+        description: serviceStage.description?.trim(),
     }
-    payment = {
-        ...payment,
-        description: payment.description?.trim(),
-    }
-    return payment
+    return serviceStage
 }
 
-export default function PaymentActionBarForm(props: PaymentActionBarFormProps) {
+export default function ServiceStageActionBarForm(props: ServiceStageActionBarFormProps) {
     const handleSetIsLoading = (value: boolean) => {
         if (props.onSetIsLoading) {
             props.onSetIsLoading(value)
@@ -50,35 +46,35 @@ export default function PaymentActionBarForm(props: PaymentActionBarFormProps) {
         }
     }
 
-    const handleSavePaymentInner = async (payment, history) => {
-        let res = { status: "ERROR", id: "", payment: payment }
+    const handleSaveServiceStageInner = async (serviceStage, history) => {
+        let res = { status: "ERROR", id: "", serviceStage: serviceStage }
         try {
-            const saveRes = await fetch("api/payment", {
+            const saveRes = await fetch("api/serviceStage", {
                 method: "POST",
-                body: JSON.stringify({ token: "tokenbemseguro", data: payment, history: history }),
+                body: JSON.stringify({ token: "tokenbemseguro", data: serviceStage, history: history }),
             }).then((res) => res.json())
-            res = { ...res, status: "SUCCESS", id: saveRes.id, payment: { ...payment, id: saveRes.id } }
+            res = { ...res, status: "SUCCESS", id: saveRes.id, serviceStage: { ...serviceStage, id: saveRes.id } }
         } catch (e) {
             console.error("Error adding document: ", e)
         }
         return res
     }
 
-    const handleSave = async (status: "NORMAL" | "ARQUIVADO" | "FINALIZADO" | "PENDENTE", isForCloseModal) => {
-        const isPaymentValid = handlePaymentValidationForDB(props.payment)
-        if (!isPaymentValid.validation) {
-            const feedbackMessage: FeedbackMessage = { messages: [...isPaymentValid.messages], messageType: "ERROR" }
+    const handleSave = async (status: "ORÇAMENTO" | "NORMAL" | "ARQUIVADO" | "FINALIZADO" | "PENDENTE", isForCloseModal) => {
+        const isServiceStageValid = handleServiceStageValidationForDB(props.serviceStage)
+        if (!isServiceStageValid.validation) {
+            const feedbackMessage: FeedbackMessage = { messages: [...isServiceStageValid.messages], messageType: "ERROR" }
             handleShowMessage(feedbackMessage)
             return
         }
         handleSetIsLoading(true)
-        let payment: Payment = props.payment
+        let serviceStage: ServiceStage = props.serviceStage
         if (status?.length > 0) {
-            payment = { ...payment, status: status }
+            serviceStage = { ...serviceStage, status: status }
         }
-        payment = handlePaymentForDB(payment)
-        let res = await handleSavePaymentInner(payment, true)
-        payment = { ...payment, id: res.id }
+        serviceStage = handleServiceStageForDB(serviceStage)
+        let res = await handleSaveServiceStageInner(serviceStage, true)
+        serviceStage = { ...serviceStage, id: res.id }
         if (res.status === "ERROR") {
             const feedbackMessage: FeedbackMessage = { messages: ["Algo deu errado!"], messageType: "ERROR" }
             handleShowMessage(feedbackMessage)
@@ -89,15 +85,15 @@ export default function PaymentActionBarForm(props: PaymentActionBarFormProps) {
         const feedbackMessage: FeedbackMessage = { messages: ["Sucesso!"], messageType: "SUCCESS" }
         handleShowMessage(feedbackMessage)
         if (props.isMultiple && props.onSet) {
-            props.onSet(defaultPayment)
+            props.onSet(defaultServiceStage)
         } else if (isForCloseModal) {
-            props.onSet(payment)
+            props.onSet(serviceStage)
         }
         if (props.onAfterSave) {
-            if (payment.dateString?.length > 0) {
-                payment = { ...payment, dateDue: handleGetDateFormatedToUTC(payment.dateString) }
+            if (serviceStage.dateString?.length > 0) {
+                serviceStage = { ...serviceStage, dateDue: handleGetDateFormatedToUTC(serviceStage.dateString) }
             }
-            props.onAfterSave(feedbackMessage, payment, isForCloseModal)
+            props.onAfterSave(feedbackMessage, serviceStage, isForCloseModal)
         }
     }
 
@@ -105,7 +101,7 @@ export default function PaymentActionBarForm(props: PaymentActionBarFormProps) {
         <ActionBar className={props.className + " bg-slate-50 dark:bg-slate-800 dark:border dark:border-gray-700"}>
             <div className="w-full flex flex-row justify-between">
                 <Button
-                    onClick={() => handleSave(props.payment.status, false)}
+                    onClick={() => handleSave(props.serviceStage.status, false)}
                     isLoading={props.isLoading}
                 >
                     Salvar
@@ -116,8 +112,8 @@ export default function PaymentActionBarForm(props: PaymentActionBarFormProps) {
                     <div className="w-full flex flex-col">
                         <MenuButton
                             isLoading={props.isLoading}
-                            isHidden={props.payment.status !== "NORMAL"}
-                            isDisabled={props.payment.status !== "NORMAL"}
+                            isHidden={props.serviceStage.status !== "NORMAL"}
+                            isDisabled={props.serviceStage.status !== "NORMAL"}
                             onClick={() => {
                                 handleSave("FINALIZADO", true)
                             }}
@@ -126,8 +122,8 @@ export default function PaymentActionBarForm(props: PaymentActionBarFormProps) {
                         </MenuButton>
                         <MenuButton
                             isLoading={props.isLoading}
-                            isHidden={props.payment.status !== "NORMAL"}
-                            isDisabled={props.payment.status !== "NORMAL"}
+                            isHidden={props.serviceStage.status !== "NORMAL"}
+                            isDisabled={props.serviceStage.status !== "NORMAL"}
                             onClick={() => {
                                 handleSave("ARQUIVADO", true)
                             }}
@@ -136,8 +132,8 @@ export default function PaymentActionBarForm(props: PaymentActionBarFormProps) {
                         </MenuButton>
                         <MenuButton
                             isLoading={props.isLoading}
-                            isHidden={props.payment.status === "NORMAL"}
-                            isDisabled={props.payment.status === "NORMAL"}
+                            isHidden={props.serviceStage.status === "NORMAL"}
+                            isDisabled={props.serviceStage.status === "NORMAL"}
                             onClick={() => {
                                 handleSave("NORMAL", true)
                             }}

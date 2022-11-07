@@ -48,10 +48,11 @@ export default function DropDownButton(props: DropDownButtonProps) {
                 </Button>
             </div>
             <div
-                onBlur={(event) => handleFocusBlur(event)}
-                onFocus={(event) => handleFocusBlur(event)}
+                onClick={() => setIsOpen(false)}
                 id={props.id + "-drop-down-info"}
                 className={optionsHolderClassName}
+                onBlur={(event) => handleFocusBlur(event)}
+                onFocus={(event) => handleFocusBlur(event)}
             >
                 <ScrollDownTransition isOpen={isOpen}>
                     {props.children}

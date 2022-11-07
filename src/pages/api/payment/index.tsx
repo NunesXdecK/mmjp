@@ -16,6 +16,9 @@ export default async function handler(req, res) {
             let { token, data, history } = JSON.parse(body)
             let nowID = data?.id ?? ""
             let payment: Payment = data
+            if (payment.dateString) {
+                delete payment.dateString
+            }
             if (token === "tokenbemseguro") {
                 try {
                     const isSave = nowID === ""

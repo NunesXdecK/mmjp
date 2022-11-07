@@ -1,5 +1,7 @@
+import Form from "./form";
 import FormRow from "./formRow";
 import { useState } from "react";
+import BudgetView from "../view/budgetView";
 import FormRowColumn from "./formRowColumn";
 import InputText from "../inputText/inputText";
 import BudgetServicesForm from "./budgetServicesForm";
@@ -8,8 +10,6 @@ import { Budget } from "../../interfaces/objectInterfaces";
 import { NOT_NULL_MARK } from "../../util/patternValidationUtil";
 import InputTextAutoComplete from "../inputText/inputTextAutocomplete";
 import InputSelectPersonCompany from "../inputText/inputSelectPersonCompany";
-import Form from "./form";
-import BudgetView from "../view/budgetView";
 
 interface BudgetDataFormProps {
     title?: string,
@@ -27,11 +27,11 @@ interface BudgetDataFormProps {
 export default function BudgetDataForm(props: BudgetDataFormProps) {
     const [isFormValid, setIsFormValid] = useState(true)
 
-    const handleSetPayments = (value) => { handleSet({ ...props.budget, payments: value }) }
-    const handleSetServices = (value) => { handleSet({ ...props.budget, services: value }) }
     const handleSetTitle = (value) => { handleSet({ ...props.budget, title: value }) }
     const handleSetDate = (value) => { handleSet({ ...props.budget, dateString: value }) }
     const handleSetClient = (value) => { handleSet({ ...props.budget, clients: [value] }) }
+    const handleSetPayments = (value) => { handleSet({ ...props.budget, payments: value }) }
+    const handleSetServices = (value) => { handleSet({ ...props.budget, services: value }) }
 
     const handleSet = (value: Budget) => {
         if (props.onSet) {
@@ -61,7 +61,6 @@ export default function BudgetDataForm(props: BudgetDataFormProps) {
                         <FormRow>
                             <FormRowColumn unit="4">
                                 <InputTextAutoComplete
-                                    id="budget-title"
                                     onBlur={props.onBlur}
                                     value={props.budget.title}
                                     onSetText={handleSetTitle}
@@ -69,6 +68,7 @@ export default function BudgetDataForm(props: BudgetDataFormProps) {
                                     title="Titulo do orçamento"
                                     isLoading={props.isLoading}
                                     onValidate={handleChangeFormValidation}
+                                    id={"budget-title" + (props.index ? "-" + props.index : "")}
                                     validationMessage="O titulo do orçamento não pode ficar em branco."
                                     sugestions={[
                                         "Ambiental",
@@ -88,12 +88,12 @@ export default function BudgetDataForm(props: BudgetDataFormProps) {
                                     mask="date"
                                     title="Prazo"
                                     maxLength={10}
-                                    id="budget-date"
                                     onBlur={props.onBlur}
                                     onSetText={handleSetDate}
                                     isLoading={props.isLoading}
                                     value={props.budget.dateString}
                                     onValidate={handleChangeFormValidation}
+                                    id={"budget-date" + (props.index ? "-" + props.index : "")}
                                     isDisabled={
                                         props.isDisabled ||
                                         (props.budget.status === "FINALIZADO" || props.budget.status === "ARQUIVADO")
@@ -105,11 +105,11 @@ export default function BudgetDataForm(props: BudgetDataFormProps) {
                             <FormRowColumn unit="6">
                                 <InputSelectPersonCompany
                                     title="Cliente"
-                                    id="budget-client"
                                     onBlur={props.onBlur}
                                     onSet={handleSetClient}
                                     isLoading={props.isLoading}
                                     value={props.budget.clients[0]?.name}
+                                    id={"budget-client" + (props.index ? "-" + props.index : "")}
                                     isDisabled={
                                         props.isDisabled ||
                                         (props.budget.status === "FINALIZADO" || props.budget.status === "ARQUIVADO")
@@ -127,6 +127,7 @@ export default function BudgetDataForm(props: BudgetDataFormProps) {
                         subtitle="Adicione os serviços"
                         onShowMessage={props.onShowMessage}
                         budgetServices={props.budget.services}
+                        id={"budget-service-form" + (props.index ? "-" + props.index : "")}
                         isDisabled={props.isDisabled ||
                             (props.budget.status === "FINALIZADO" ||
                                 props.budget.status === "ARQUIVADO")}
@@ -139,6 +140,7 @@ export default function BudgetDataForm(props: BudgetDataFormProps) {
                         subtitle="Adicione os pagamentos"
                         onShowMessage={props.onShowMessage}
                         budgetPayments={props.budget.payments}
+                        id={"budget-payment-form" + (props.index ? "-" + props.index : "")}
                         isDisabled={props.isDisabled ||
                             (props.budget.status === "FINALIZADO" ||
                                 props.budget.status === "ARQUIVADO")}
