@@ -1,15 +1,13 @@
-import { Immobile, Service, ServicePayment, ServiceStage } from "../../../interfaces/objectInterfaces"
-import { ImmobileConversor, ServiceConversor, ServicePaymentConversor, ServiceStageConversor } from "../../../db/converters"
-import { addDoc, collection, deleteDoc, doc, getDoc, getDocs, query, updateDoc, where } from "firebase/firestore"
-import { db, HISTORY_COLLECTION_NAME, IMMOBILE_COLLECTION_NAME, SERVICE_COLLECTION_NAME, SERVICE_PAYMENT_COLLECTION_NAME, SERVICE_STAGE_COLLECTION_NAME } from "../../../db/firebaseDB"
+import { ServicePaymentConversor } from "../../../db/converters"
+import { addDoc, collection, deleteDoc, doc, updateDoc } from "firebase/firestore"
+import { db, HISTORY_COLLECTION_NAME, SERVICE_PAYMENT_COLLECTION_NAME } from "../../../db/firebaseDB"
+import { ServiceStage } from "../../../interfaces/objectInterfaces"
+import { handleNewDateToUTC } from "../../../util/dateUtils"
 
 export default async function handler(req, res) {
     const { method, body } = req
 
     const historyCollection = collection(db, HISTORY_COLLECTION_NAME)
-    const serviceCollection = collection(db, SERVICE_COLLECTION_NAME).withConverter(ServiceConversor)
-    const immobileCollection = collection(db, IMMOBILE_COLLECTION_NAME).withConverter(ImmobileConversor)
-    const serviceStageCollection = collection(db, SERVICE_STAGE_COLLECTION_NAME).withConverter(ServiceStageConversor)
     const servicePaymentCollection = collection(db, SERVICE_PAYMENT_COLLECTION_NAME).withConverter(ServicePaymentConversor)
 
     switch (method) {
@@ -20,94 +18,30 @@ export default async function handler(req, res) {
                 if (token === "tokenbemseguro") {
                     let nowID = data?.id ?? ""
                     const isSave = nowID === ""
-                    if (data.service && "id" in data.service && data.service.id?.length) {
-                        const serviceDocRef = doc(serviceCollection, data.service.id)
-                        if (serviceDocRef) {
-                            //data = { ...data, service: serviceDocRef }
-                            data = { ...data, service: { id: data.service.id } }
-                            if (isSave) {
-                                const docRef = await addDoc(servicePaymentCollection, ServicePaymentConversor.toFirestore(data))
-                                nowID = docRef.id
-                            } else {
-                                const docRef = doc(servicePaymentCollection, nowID)
-                                await updateDoc(docRef, ServicePaymentConversor.toFirestore(data))
-                            }
-                            if (history) {
-                                const dataForHistory = { ...ServicePaymentConversor.toFirestore(data), databaseid: nowID, databasename: SERVICE_PAYMENT_COLLECTION_NAME }
-                                await addDoc(historyCollection, dataForHistory)
-                            }
-
-                            if (changeProject && (data?.status === "NORMAL" || data?.status === "FINALIZADO")) {
-                                let docRef = await doc(serviceCollection, data?.service?.id)
-                                let service: Service = (await getDoc(docRef)).data()
-                                let saveStatus = service.status
-                                let isStatusDiferent = saveStatus !== data.status
-                                if (isStatusDiferent) {
-                                    let isFinish = true
-                                    const queryServiceStage = query(serviceStageCollection, where("service", "==", { id: data?.service?.id }))
-                                    const querySnapshotStage = await getDocs(queryServiceStage)
-                                    querySnapshotStage.forEach((doc) => {
-                                        let s: ServiceStage = doc.data()
-                                        if (s?.status !== "FINALIZADO") {
-                                            isFinish = false
-                                        }
-                                    })
-                                    const queryServicePayment = query(servicePaymentCollection, where("service", "==", { id: data?.service?.id }))
-                                    const querySnapshotPayment = await getDocs(queryServicePayment)
-                                    querySnapshotPayment.forEach((doc) => {
-                                        let s: ServicePayment = doc.data()
-                                        if (s?.status !== "FINALIZADO") {
-                                            isFinish = false
-                                        }
-                                    })
-                                    if (isFinish) {
-                                        service = { ...service, status: "FINALIZADO" }
-                                    } else {
-                                        service = { ...service, status: "NORMAL" }
-                                    }
-                                    if (saveStatus !== service.status) {
-                                        await updateDoc(docRef, ServiceConversor.toFirestore(service))
-                                        if (history) {
-                                            const dataForHistory = { ...ServiceConversor.toFirestore(service), databaseid: service.id, databasename: SERVICE_COLLECTION_NAME }
-                                            await addDoc(historyCollection, dataForHistory)
-                                        }
-                                        if (service?.immobilesOrigin?.length > 0) {
-                                            const isUnion = service.immobilesOrigin?.length > service.immobilesTarget?.length
-                                            const isDismemberment = service.immobilesOrigin?.length < service.immobilesTarget?.length
-                                            let immobilesFinal = []
-                                            service.immobilesOrigin?.map((immobile: Immobile, index) => {
-                                                let statusFinal = "NORMAL"
-                                                if (service.status === "FINALIZADO") {
-                                                    if (isUnion) {
-                                                        statusFinal = "UNIFICADO"
-                                                    }
-                                                    if (isDismemberment) {
-                                                        statusFinal = "DESMEMBRADO"
-                                                    }
-                                                }
-                                                immobilesFinal = [...immobilesFinal, {
-                                                    ...immobile,
-                                                    status: statusFinal
-                                                }]
-                                            })
-                                            await Promise.all(
-                                                immobilesFinal.map(async (element: Immobile, index) => {
-                                                    const docRef = doc(immobileCollection, element.id)
-                                                    const data = (await getDoc(docRef)).data()
-                                                    await updateDoc(docRef, { ...data, status: element.status })
-                                                    if (history) {
-                                                        const dataForHistory = { ...ImmobileConversor.toFirestore({ ...data, status: element.status }), databaseid: element.id, databasename: IMMOBILE_COLLECTION_NAME }
-                                                        await addDoc(historyCollection, dataForHistory)
-                                                    }
-                                                }))
-                                        }
-                                    }
-                                }
-                            }
-                            resPOST = { ...resPOST, status: "SUCCESS", id: nowID }
-                        } else {
-                            resPOST = { ...resPOST, status: "ERROR", message: "Projeto não vinculado!" }
+                    let serviceStage: ServiceStage = data
+                    if (serviceStage?.service?.id?.length > 0) {
+                        serviceStage = { ...serviceStage, service: { id: serviceStage.service.id } }
+                        if (serviceStage.dateString) {
+                            delete serviceStage.dateString
                         }
+                        if (serviceStage.priorityView) {
+                            delete serviceStage.priorityView
+                        }
+                        if (isSave) {
+                            serviceStage = { ...serviceStage, dateInsertUTC: handleNewDateToUTC() }
+                            const docRef = await addDoc(servicePaymentCollection, ServicePaymentConversor.toFirestore(serviceStage))
+                            nowID = docRef.id
+                        } else {
+                            serviceStage = { ...serviceStage, dateLastUpdateUTC: handleNewDateToUTC() }
+                            const docRef = doc(servicePaymentCollection, nowID)
+                            await updateDoc(docRef, ServicePaymentConversor.toFirestore(serviceStage))
+                        }
+                        if (history) {
+                            const dataForHistory = { ...ServicePaymentConversor.toFirestore(serviceStage), databaseid: nowID, databasename: SERVICE_PAYMENT_COLLECTION_NAME }
+                            await addDoc(historyCollection, dataForHistory)
+                        }
+
+                        resPOST = { ...resPOST, status: "SUCCESS", id: nowID }
                     } else {
                         resPOST = { ...resPOST, status: "ERROR", message: "Projeto não vinculado!" }
                     }

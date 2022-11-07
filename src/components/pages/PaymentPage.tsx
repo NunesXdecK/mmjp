@@ -88,6 +88,7 @@ export default function PaymentPage(props: PaymentPageProps) {
         let localPayment: Payment = await fetch("api/payment/" + payment?.id).then((res) => res.json()).then((res) => res.data)
         localPayment = {
             ...localPayment,
+            index: payments.length,
             dateString: handleUTCToDateShow(localPayment?.dateDue?.toString()),
             value: handleMountNumberCurrency(localPayment?.value?.toString(), ".", ",", 3, 2),
         }

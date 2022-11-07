@@ -29,6 +29,7 @@ export const handleServiceStageForDB = (serviceStage: ServiceStage) => {
     }
     serviceStage = {
         ...serviceStage,
+        title: serviceStage.title?.trim(),
         description: serviceStage.description?.trim(),
     }
     return serviceStage
