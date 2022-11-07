@@ -69,17 +69,17 @@ export default function InputSelectUser(props: InputSelectUserProps) {
         }
     }
 
-    const handleAdd = (personOrCompany) => {
+    const handleAdd = (user: User) => {
         let canAdd = true
         if (props.onValidate) {
-            canAdd = props.onValidate(personOrCompany)
+            canAdd = props.onValidate(user)
         }
 
         if (canAdd) {
-            setText(personOrCompany.name)
+            setText(user.username)
             setIsSelected(true)
             if (props.onSet) {
-                props.onSet(personOrCompany)
+                props.onSet(user)
                 setIsOpen(false)
             }
             if (props.onFinishAdd) {

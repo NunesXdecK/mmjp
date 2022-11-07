@@ -7,15 +7,15 @@ import WindowModal from "../modal/windowModal"
 import FormRowColumn from "../form/formRowColumn"
 import { PlusIcon, RefreshIcon } from "@heroicons/react/solid"
 import { FeedbackMessage } from "../modal/feedbackMessageModal"
-import ServiceNameListItem from "../list/projectNumberListItem"
 import { ServiceStage, defaultServiceStage } from "../../interfaces/objectInterfaces"
 import { handleUTCToDateShow, handleNewDateToUTC } from "../../util/dateUtils"
 import ServiceStageActionBarForm from "../bar/serviceStageActionBar"
 import ServiceStageDataForm from "../form/serviceStageDataForm"
+import ServiceNameListItem from "../list/serviceNameListItem"
 
 interface ServiceStagePageProps {
     id?: string,
-    projectId?: string,
+    serviceId?: string,
     canSave?: boolean,
     getInfo?: boolean,
     canUpdate?: boolean,
@@ -64,7 +64,11 @@ export default function ServiceStagePage(props: ServiceStagePageProps) {
     }
 
     const handleNewClick = async () => {
-        setServiceStage({ ...defaultServiceStage, dateString: handleUTCToDateShow(handleNewDateToUTC().toString()) })
+        setServiceStage({
+            ...defaultServiceStage,
+            status: "NORMAL",
+            dateString: handleUTCToDateShow(handleNewDateToUTC().toString()),
+        })
         setIsRegister(true)
         setIndex(-1)
     }
@@ -160,13 +164,23 @@ export default function ServiceStagePage(props: ServiceStagePageProps) {
 
     useEffect(() => {
         if (isFirst) {
-            fetch("api/serviceStages").then((res) => res.json()).then((res) => {
-                setIsFirst(old => false)
-                if (res.list.length) {
-                    setServiceStages(res.list)
-                }
-                setIsLoading(false)
-            })
+            if (props.serviceId?.length > 0) {
+                fetch("api/serviceStages/" + props.serviceId).then((res) => res.json()).then((res) => {
+                    setIsFirst(old => false)
+                    if (res.list.length) {
+                        setServiceStages(res.list)
+                    }
+                    setIsLoading(false)
+                })
+            } else {
+                fetch("api/serviceStages").then((res) => res.json()).then((res) => {
+                    setIsFirst(old => false)
+                    if (res.list.length) {
+                        setServiceStages(res.list)
+                    }
+                    setIsLoading(false)
+                })
+            }
         }
     })
 
@@ -220,9 +234,10 @@ export default function ServiceStagePage(props: ServiceStagePageProps) {
                         {isRegister && (
                             <div className="p-4 pb-0">
                                 <ServiceStageActionBarForm
-                                    serviceStage={serviceStage}
-                                    onSet={setServiceStage}
                                     isLoading={isLoading}
+                                    onSet={setServiceStage}
+                                    serviceId={props.serviceId}
+                                    serviceStage={serviceStage}
                                     onSetIsLoading={setIsLoading}
                                     onAfterSave={handleAfterSave}
                                     onShowMessage={handleShowMessage}
@@ -239,9 +254,9 @@ export default function ServiceStagePage(props: ServiceStagePageProps) {
                 <>
                     {isRegister && (
                         <ServiceStageDataForm
-                            serviceStage={serviceStage}
-                            onSet={setServiceStage}
                             isLoading={isLoading}
+                            onSet={setServiceStage}
+                            serviceStage={serviceStage}
                         />
                     )}
                     {isForShow && (

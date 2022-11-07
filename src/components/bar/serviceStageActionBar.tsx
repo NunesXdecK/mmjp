@@ -8,6 +8,7 @@ import { handleGetDateFormatedToUTC, handleNewDateToUTC } from "../../util/dateU
 import { ServiceStage, defaultServiceStage } from "../../interfaces/objectInterfaces";
 
 interface ServiceStageActionBarFormProps {
+    serviceId?: string,
     className?: string,
     isLoading?: boolean,
     isMultiple?: boolean,
@@ -73,6 +74,9 @@ export default function ServiceStageActionBarForm(props: ServiceStageActionBarFo
             serviceStage = { ...serviceStage, status: status }
         }
         serviceStage = handleServiceStageForDB(serviceStage)
+        if (props.serviceId?.length > 0) {
+            serviceStage = { ...serviceStage, service: { id: props.serviceId } }
+        }
         let res = await handleSaveServiceStageInner(serviceStage, true)
         serviceStage = { ...serviceStage, id: res.id }
         if (res.status === "ERROR") {

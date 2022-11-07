@@ -134,7 +134,6 @@ const [subjectMessage, setSubjectMessage] = useState<SubjectMessage>({
             {page === "SERVICESTAGE" && (
                 <ServiceStagePage
                     getInfo
-                    canSave
                     canUpdate
                     onSetPage={setPage}
                     onShowMessage={handleShowMessage}

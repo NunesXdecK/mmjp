@@ -1,11 +1,10 @@
 import { useEffect, useState } from "react"
-import FormRowColumn from "../form/formRowColumn"
 
-interface ProjectNumberListItemProps {
+interface SelectNumberListItemProps {
     id?: string,
 }
 
-export default function ProjectNumberListItem(props: ProjectNumberListItemProps) {
+export default function SelectNumberListItem(props: SelectNumberListItemProps) {
     const [projectNumber, setProjectNumber] = useState("")
     const [isFirst, setIsFirst] = useState(props?.id?.length > 0)
 

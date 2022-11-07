@@ -82,7 +82,7 @@ export default function InputSelectPersonCompany(props: InputSelectPersonCompany
         }
     }
 
-    const handleAdd = (personOrCompany) => {
+    const handleAdd = (personOrCompany: (Person | Company)) => {
         let canAdd = true
         if (props.onValidate) {
             canAdd = props.onValidate(personOrCompany)

@@ -1,45 +1,23 @@
-import { Professional, ServiceStage } from "../../../interfaces/objectInterfaces"
-import { collection, doc, getDoc, getDocs, query, where } from "firebase/firestore"
-import { ProfessionalConversor, ServiceConversor, ServiceStageConversor } from "../../../db/converters"
-import { db, PROFESSIONAL_COLLECTION_NAME, SERVICE_COLLECTION_NAME, SERVICE_STAGE_COLLECTION_NAME } from "../../../db/firebaseDB"
+import { ServiceStageConversor } from "../../../db/converters"
+import { ServiceStage } from "../../../interfaces/objectInterfaces"
+import { collection, getDocs, query, where } from "firebase/firestore"
+import { db, SERVICE_STAGE_COLLECTION_NAME } from "../../../db/firebaseDB"
 
 export default async function handler(req, res) {
     const { method } = req
-    const serviceCollection = collection(db, SERVICE_COLLECTION_NAME).withConverter(ServiceConversor)
-    const professionalCollection = collection(db, PROFESSIONAL_COLLECTION_NAME).withConverter(ProfessionalConversor)
     const serviceStageCollection = collection(db, SERVICE_STAGE_COLLECTION_NAME).withConverter(ServiceStageConversor)
 
     switch (method) {
         case 'GET':
             let resGET = { status: "ERROR", error: {}, message: "", list: [] }
             let list = []
-            let listLocal = []
             try {
                 const { id } = req.query
-                const serviceDocRef = doc(serviceCollection, id)
-                const queryServiceStage = query(serviceStageCollection, where("service", "==", serviceDocRef))
+                const queryServiceStage = query(serviceStageCollection, where("service", "==", { id: id }))
                 const querySnapshot = await getDocs(queryServiceStage)
                 querySnapshot.forEach((doc) => {
-                    listLocal = [...listLocal, doc.data()]
+                    list = [...list, doc.data()]
                 })
-
-                await Promise.all(
-                    listLocal.map(async (element: ServiceStage, index) => {
-                        if (element.responsible && "id" in element.responsible && element?.responsible?.id?.length) {
-                            const docRef = doc(professionalCollection, element.responsible.id)
-                            if (docRef) {
-                                const data: Professional = (await getDoc(docRef)).data()
-                                if (data) {
-                                    list = [...list, { ...element, responsible: data }]
-                                }
-                            }
-                        }
-                    })
-                )
-
-                if (list.length === 0) {
-                    list = [...listLocal]
-                }
 
                 list = list.sort((elementOne: ServiceStage, elementTwo: ServiceStage) => {
                     let indexOne = elementOne.index

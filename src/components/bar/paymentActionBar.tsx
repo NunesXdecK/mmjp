@@ -1,14 +1,15 @@
 import ActionBar from "./actionBar";
 import Button from "../button/button";
-import { FeedbackMessage } from "../modal/feedbackMessageModal";
-import { handleGetDateFormatedToUTC, handleNewDateToUTC } from "../../util/dateUtils";
-import { handlePaymentValidationForDB } from "../../util/validationUtil";
-import { Payment, defaultPayment, BudgetPayment } from "../../interfaces/objectInterfaces";
-import DropDownButton from "../button/dropDownButton";
 import MenuButton from "../button/menuButton";
+import DropDownButton from "../button/dropDownButton";
 import { handleRemoveCurrencyMask } from "../../util/maskUtil";
+import { FeedbackMessage } from "../modal/feedbackMessageModal";
+import { handlePaymentValidationForDB } from "../../util/validationUtil";
+import { Payment, defaultPayment } from "../../interfaces/objectInterfaces";
+import { handleGetDateFormatedToUTC, handleNewDateToUTC } from "../../util/dateUtils";
 
 interface PaymentActionBarFormProps {
+    projectId?: string,
     className?: string,
     isLoading?: boolean,
     isMultiple?: boolean,
@@ -77,6 +78,9 @@ export default function PaymentActionBarForm(props: PaymentActionBarFormProps) {
             payment = { ...payment, status: status }
         }
         payment = handlePaymentForDB(payment)
+        if (props.projectId?.length > 0) {
+            payment = { ...payment, project: { id: props.projectId } }
+        }
         let res = await handleSavePaymentInner(payment, true)
         payment = { ...payment, id: res.id }
         if (res.status === "ERROR") {

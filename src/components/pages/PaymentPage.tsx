@@ -164,13 +164,23 @@ export default function PaymentPage(props: PaymentPageProps) {
 
     useEffect(() => {
         if (isFirst) {
-            fetch("api/payments").then((res) => res.json()).then((res) => {
-                setIsFirst(old => false)
-                if (res.list.length) {
-                    setPayments(res.list)
-                }
-                setIsLoading(false)
-            })
+            if (props.projectId?.length > 0) {
+                fetch("api/payments/" + props.projectId).then((res) => res.json()).then((res) => {
+                    setIsFirst(old => false)
+                    if (res.list.length) {
+                        setPayments(res.list)
+                    }
+                    setIsLoading(false)
+                })
+            } else {
+                fetch("api/payments").then((res) => res.json()).then((res) => {
+                    setIsFirst(old => false)
+                    if (res.list.length) {
+                        setPayments(res.list)
+                    }
+                    setIsLoading(false)
+                })
+            }
         }
     })
 
@@ -227,6 +237,7 @@ export default function PaymentPage(props: PaymentPageProps) {
                                     payment={payment}
                                     onSet={setPayment}
                                     isLoading={isLoading}
+                                    projectId={props.projectId}
                                     onSetIsLoading={setIsLoading}
                                     onAfterSave={handleAfterSave}
                                     onShowMessage={handleShowMessage}

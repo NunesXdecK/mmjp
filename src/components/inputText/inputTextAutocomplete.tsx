@@ -58,6 +58,8 @@ export default function InputTextAutoComplete(props: InputTextAutoCompleteProps)
         if (text.length > 0) {
             finalSugestions = props?.sugestions?.filter((element, index) => {
                 let name = ""
+                let title = ""
+                let username = ""
                 if (element) {
                     if (typeof element === "string") {
                         name = element
@@ -66,11 +68,16 @@ export default function InputTextAutoComplete(props: InputTextAutoCompleteProps)
                             name = element.name
                         }
                         if ("title" in element) {
-                            name = element.title
+                            title = element.title
+                        }
+                        if ("username" in element) {
+                            username = element.username
                         }
                     }
                 }
                 return name.toLowerCase().includes(text.toLowerCase())
+                    || title.toLowerCase().includes(text.toLowerCase())
+                    || username.toLowerCase().includes(text.toLowerCase())
             })
         }
         setSugestions(sugestions => finalSugestions)
@@ -164,7 +171,11 @@ export default function InputTextAutoComplete(props: InputTextAutoCompleteProps)
                                 }}
                                 type="button"
                                 className="text-left text-gray-600 dark:text-gray-300 w-full px-2 py-4 hover:bg-gray-300 dark:hover:bg-gray-700">
-                                {element && typeof element === "string" ? element : "name" in element && element.name}
+                                {element && typeof element === "string" ? element
+                                    : "name" in element ? element.name
+                                        : "title" in element ? element.title
+                                            : "username" in element && element.username
+                                }
                             </button>
                         ))}
                     </div>

@@ -1,29 +1,25 @@
-import { ServicePayment } from "../../../interfaces/objectInterfaces"
+import { PaymentConversor } from "../../../db/converters"
+import { Payment } from "../../../interfaces/objectInterfaces"
+import { db, PAYMENT_COLLECTION_NAME } from "../../../db/firebaseDB"
 import { collection, doc, getDocs, query, where } from "firebase/firestore"
-import { ServiceConversor, ServicePaymentConversor } from "../../../db/converters"
-import { db, SERVICE_COLLECTION_NAME, SERVICE_PAYMENT_COLLECTION_NAME } from "../../../db/firebaseDB"
 
 export default async function handler(req, res) {
     const { method } = req
-    const serviceCollection = collection(db, SERVICE_COLLECTION_NAME).withConverter(ServiceConversor)
-    const servicePaymentCollection = collection(db, SERVICE_PAYMENT_COLLECTION_NAME).withConverter(ServicePaymentConversor)
-
+    const PaymentCollection = collection(db, PAYMENT_COLLECTION_NAME).withConverter(PaymentConversor)
     switch (method) {
         case 'GET':
             let resGET = { status: "ERROR", error: {}, message: "", list: [] }
             let list = []
             try {
                 const { id } = req.query
-                const serviceDocRef = doc(serviceCollection, id)
-                const queryServicePayment = query(servicePaymentCollection, where("service", "==", serviceDocRef))
-                const querySnapshot = await getDocs(queryServicePayment)
+                const queryPayment = query(PaymentCollection, where("project", "==", { id: id }))
+                const querySnapshot = await getDocs(queryPayment)
                 querySnapshot.forEach((doc) => {
                     list = [...list, doc.data()]
                 })
-                list = list.sort((elementOne: ServicePayment, elementTwo: ServicePayment) => {
+                list = list.sort((elementOne: Payment, elementTwo: Payment) => {
                     let indexOne = elementOne.index
                     let indexTwo = elementTwo.index
-
                     return indexTwo - indexOne
                 })
                 resGET = { ...resGET, status: "SUCCESS", list: list }
