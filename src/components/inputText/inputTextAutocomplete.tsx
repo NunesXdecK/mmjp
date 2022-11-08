@@ -22,6 +22,7 @@ interface InputTextAutoCompleteProps {
     onSetText?: (string) => void,
     onValidate?: (boolean) => void,
     onListOptions?: (any) => any,
+    onFilter?: ([], string) => any[],
 }
 
 export default function InputTextAutoComplete(props: InputTextAutoCompleteProps) {
@@ -56,29 +57,31 @@ export default function InputTextAutoComplete(props: InputTextAutoCompleteProps)
     const handleCheckSugestion = (text) => {
         let finalSugestions = []
         if (text.length > 0) {
-            finalSugestions = props?.sugestions?.filter((element, index) => {
-                let name = ""
-                let title = ""
-                let username = ""
-                if (element) {
-                    if (typeof element === "string") {
-                        name = element
-                    } else if (typeof element === "object") {
-                        if ("name" in element) {
-                            name = element.name
-                        }
-                        if ("title" in element) {
-                            title = element.title
-                        }
-                        if ("username" in element) {
-                            username = element.username
+            finalSugestions =
+                (props.onFilter && props.onFilter(props.sugestions, text)) ??
+                props?.sugestions?.filter((element, index) => {
+                    let name = ""
+                    let title = ""
+                    let username = ""
+                    if (element) {
+                        if (typeof element === "string") {
+                            name = element
+                        } else if (typeof element === "object") {
+                            if ("name" in element) {
+                                name = element.name
+                            }
+                            if ("title" in element) {
+                                title = element.title
+                            }
+                            if ("username" in element) {
+                                username = element.username
+                            }
                         }
                     }
-                }
-                return name.toLowerCase().includes(text.toLowerCase())
-                    || title.toLowerCase().includes(text.toLowerCase())
-                    || username.toLowerCase().includes(text.toLowerCase())
-            })
+                    return name.toLowerCase().includes(text.toLowerCase())
+                        || title.toLowerCase().includes(text.toLowerCase())
+                        || username.toLowerCase().includes(text.toLowerCase())
+                })
         }
         setSugestions(sugestions => finalSugestions)
     }

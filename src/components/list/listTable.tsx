@@ -9,15 +9,18 @@ import { STYLE_FOR_INPUT_LOADING_TRANSPARENT } from "../../util/patternValidatio
 interface ListTableProps {
     list?: any[],
     title?: string,
+    className?: string,
     deleteWindowTitle?: string,
     isActive?: number,
     isLoading?: boolean,
+    hideSearch?: boolean,
     onSetIsActive?: (any) => void,
     onShowClick?: (any, number?) => void,
     onEditClick?: (any, number?) => void,
     onDeleteClick?: (any, number) => void,
     onTableHeader?: () => any,
-    onTableRow?: (any) => any,
+    onTableRow?: (any, number?) => any,
+    onFilter?: (string) => any[],
 }
 
 export default function ListTable(props: ListTableProps) {
@@ -42,39 +45,42 @@ export default function ListTable(props: ListTableProps) {
         }
     }
 
-    const filteredList = props.list.filter((element, index) => {
-        let name = ""
-        let title = ""
-        let date = ""
-        let status = ""
-        if (element) {
-            if (typeof element === "string") {
-                name = element
-            } else if (typeof element === "object") {
-                if ("name" in element) {
-                    name = element.name.toString()
-                }
-                if ("title" in element) {
-                    title = element.title.toString()
-                }
-                if ("status" in element) {
-                    status = element.status.toString()
-                }
-                if ("date" in element) {
-                    date = handleUTCToDateShow(element.date)
+    const filteredList =
+        (props.onFilter && props.onFilter(inputSearch)) ??
+        props.list?.filter((element, index) => {
+            let name = ""
+            let title = ""
+            let date = ""
+            let status = ""
+            if (element) {
+                if (typeof element === "string") {
+                    name = element
+                } else if (typeof element === "object") {
+                    if ("name" in element) {
+                        name = element.name.toString()
+                    }
+                    if ("title" in element) {
+                        title = element.title.toString()
+                    }
+                    if ("status" in element) {
+                        status = element.status.toString()
+                    }
+                    if ("date" in element) {
+                        date = handleUTCToDateShow(element.date)
+                    }
                 }
             }
-        }
-        return name.toLowerCase().includes(inputSearch.toLowerCase())
-            || date.toLowerCase().includes(inputSearch.toLowerCase())
-            || title.toLowerCase().includes(inputSearch.toLowerCase())
-            || status.toLowerCase().includes(inputSearch.toLowerCase())
-    })
+            return name.toLowerCase().includes(inputSearch.toLowerCase())
+                || date.toLowerCase().includes(inputSearch.toLowerCase())
+                || title.toLowerCase().includes(inputSearch.toLowerCase())
+                || status.toLowerCase().includes(inputSearch.toLowerCase())
+        }) ??
+        props.list
 
     let pagesArray = []
     const listLenght = filteredList.length
     const pages = Math.ceil(listLenght / perPage)
-    if (listLenght > perPage) {
+    if (pages > 1) {
         let lastPOS = 0
         for (let i = 0; i < listLenght; i++) {
             const lastIndex = lastPOS + perPage
@@ -93,6 +99,9 @@ export default function ListTable(props: ListTableProps) {
     }
 
     let classNameHolder = "rounded p-4 pt-0 dark:text-slate-200"
+    if (props.className) {
+        classNameHolder = classNameHolder + " " + props.className
+    }
     if (props.isLoading) {
         classNameHolder = classNameHolder + " " + STYLE_FOR_INPUT_LOADING_TRANSPARENT
     }
@@ -111,14 +120,16 @@ export default function ListTable(props: ListTableProps) {
                     <div className="bg-gray-200 dark:bg-gray-700 rounded-t">
                         <div className="p-4 sm:flex sm:flex-row items-center justify-between ">
                             <span className="text-2xl">{props.title}</span>
-                            <div className="mt-10 sm:mt-0">
-                                <InputText
-                                    value={inputSearch}
-                                    placeholder="Pesquisa..."
-                                    onSetText={setInputSearch}
-                                    isDisabled={props.isLoading}
-                                />
-                            </div>
+                            {!props.hideSearch && (
+                                <div className="mt-10 sm:mt-0">
+                                    <InputText
+                                        value={inputSearch}
+                                        placeholder="Pesquisa..."
+                                        onSetText={setInputSearch}
+                                        isDisabled={props.isLoading}
+                                    />
+                                </div>
+                            )}
                         </div>
                         {props.onTableHeader && (
                             <div className="px-4 hidden sm:block">

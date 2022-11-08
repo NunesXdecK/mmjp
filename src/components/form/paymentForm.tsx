@@ -56,6 +56,16 @@ export default function PaymentForm(props: PaymentFormProps) {
             subtitle={props.subtitle ?? "Informe os dados básicos"}
         >
             <FormRow>
+                <FormRowColumn unit="1">
+                    <InputText
+                        title="Status"
+                        isDisabled={true}
+                        id="status-payment"
+                        value={props.payment.status}
+                    />
+                </FormRowColumn>
+            </FormRow>
+            <FormRow>
                 <FormRowColumn unit="6">
                     <InputTextAutoComplete
                         title="Descrição"

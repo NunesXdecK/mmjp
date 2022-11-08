@@ -23,53 +23,13 @@ export default async function handler(req, res) {
                 try {
                     service = data
                     serviceNowID = data?.id ?? ""
-                    if (service?.dateString?.length > 0) {
-                        service = { ...service, dateDue: handleGetDateFormatedToUTC(service.dateString) }
-                    }
-                    if (service.dateDue === 0) {
-                        service = { ...service, dateDue: handleNewDateToUTC() }
-                    }
-                    if (service.title?.length > 0) {
-                        service = { ...service, title: service.title?.trim() }
-                    }
-                    if (service.value?.length > 0) {
-                        service = { ...service, value: handleRemoveCurrencyMask(service.value) }
-                    }
-                    if (service.total?.length > 0) {
-                        service = { ...service, total: handleRemoveCurrencyMask(service.total) }
-                    }
-                    if (service.description?.length > 0) {
-                        service = { ...service, description: service.description?.trim() }
-                    }
-                    if (service.professional?.id?.length > 0) {
-                        service = { ...service, professional: { id: service.professional.id } }
-                    } else {
-                        service = { ...service, professional: { id: "" } }
-                    }
-                    if (service.project?.id?.length > 0) {
-                        service = { ...service, project: { id: service.project.id } }
-                    } else {
-                        service = { ...service, project: { id: "" } }
-                    }
-                    let immobilesTargetDocRefsForDB = []
-                    let immobilesOriginDocRefsForDB = []
-                    if (service.immobilesTarget?.length > 0) {
-                        service.immobilesTarget?.map((element, index) => {
-                            if (element.id?.length) {
-                                immobilesTargetDocRefsForDB = [...immobilesTargetDocRefsForDB, { id: element.id }]
-                            }
-                        })
-                        service = { ...service, immobilesTarget: immobilesTargetDocRefsForDB }
-                    }
-                    if (service.immobilesOrigin?.length > 0) {
-                        service.immobilesOrigin?.map((element, index) => {
-                            if (element.id?.length) {
-                                immobilesOriginDocRefsForDB = [...immobilesOriginDocRefsForDB, { id: element.id }]
-                            }
-                        })
-                        service = { ...service, immobilesOrigin: immobilesOriginDocRefsForDB }
-                    }
                     const isSave = serviceNowID === ""
+                    if (service?.dateString) {
+                        delete service.dateString
+                    }
+                    if (service?.priorityView) {
+                        delete service.priority
+                    }
                     if (isSave) {
                         service = { ...service, dateInsertUTC: handleNewDateToUTC() }
                         const docRef = await addDoc(serviceCollection, ServiceConversor.toFirestore(service))

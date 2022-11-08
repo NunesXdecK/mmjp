@@ -12,7 +12,7 @@ interface ListTableItemProps {
     onEditClick?: (any, number?) => void,
     onShowClick?: (any, number?) => void,
     onDeleteClick?: (any, number?) => void,
-    onTableRow?: (any) => any,
+    onTableRow?: (any, number?) => any,
 }
 
 export default function ListTableItem(props: ListTableItemProps) {
@@ -25,7 +25,7 @@ export default function ListTableItem(props: ListTableItemProps) {
             className={className}
             onClick={props.onRowClick}
         >
-            {props.onTableRow(props.element)}
+            {props.onTableRow(props.element, props.index - 1)}
             <ScrollDownTransition isOpen={props.isActive}>
                 <div className="pt-2 flex justify-end gap-2">
                     <Button

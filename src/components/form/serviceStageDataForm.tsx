@@ -50,8 +50,18 @@ export default function ServiceStageDataForm(props: ServiceStageDataFormProps) {
             title={props.title ?? "Dados básicos"}
             subtitle={props.subtitle ?? "Informe os dados básicos"}
         >
-            <FormRow className="py-2">
-                <FormRowColumn unit="4" className="flex flex-col sm:flex-row">
+            <FormRow>
+                <FormRowColumn unit="1">
+                    <InputText
+                        title="Status"
+                        isDisabled={true}
+                        id="status-service-stage"
+                        value={props.serviceStage.status}
+                    />
+                </FormRowColumn>
+            </FormRow>
+            <FormRow>
+                <FormRowColumn unit="4">
                     <InputTextAutoComplete
                         title="Titulo"
                         onBlur={props.onBlur}
@@ -70,7 +80,7 @@ export default function ServiceStageDataForm(props: ServiceStageDataFormProps) {
                         }
                     />
                 </FormRowColumn>
-                <FormRowColumn unit="2" className="flex flex-col sm:flex-row">
+                <FormRowColumn unit="2">
                     <InputText
                         mask="date"
                         maxLength={10}
@@ -89,25 +99,14 @@ export default function ServiceStageDataForm(props: ServiceStageDataFormProps) {
                 </FormRowColumn>
             </FormRow>
             <FormRow>
-                <FormRowColumn unit="2">
-                    <InputText
-                        title="Status"
-                        isDisabled={true}
-                        id="status-stages"
-                        value={props.serviceStage.status}
-                    />
-                </FormRowColumn>
-            </FormRow>
-
-            <FormRow>
                 <FormRowColumn unit="6" className="">
-                    <InputTextArea
-                        title="Descrição"
+                    <InputSelectUser
+                        title="Responsável"
                         onBlur={props.onBlur}
+                        onSet={handleSetResponsible}
                         isLoading={props.isLoading}
-                        value={props.serviceStage.description}
-                        onSetText={handleSetServiceStageDescription}
-                        id={"description-stages" + (props.index ? "-" + props.index : "") + (props.id ? "-" + props.id : "")}
+                        value={props.serviceStage?.responsible?.username}
+                        id={"budget-responsible" + (props.index ? "-" + props.index : "")}
                         isDisabled={
                             props.isDisabled ||
                             (props.serviceStage?.status === "FINALIZADO" || props.serviceStage?.status === "ARQUIVADO")
@@ -117,13 +116,13 @@ export default function ServiceStageDataForm(props: ServiceStageDataFormProps) {
             </FormRow>
             <FormRow>
                 <FormRowColumn unit="6" className="">
-                    <InputSelectUser
-                        title="Responsável"
+                    <InputTextArea
+                        title="Descrição"
                         onBlur={props.onBlur}
-                        onSet={handleSetResponsible}
                         isLoading={props.isLoading}
-                        value={props.serviceStage?.responsible?.name}
-                        id={"budget-responsible" + (props.index ? "-" + props.index : "")}
+                        value={props.serviceStage.description}
+                        onSetText={handleSetServiceStageDescription}
+                        id={"description-stages" + (props.index ? "-" + props.index : "") + (props.id ? "-" + props.id : "")}
                         isDisabled={
                             props.isDisabled ||
                             (props.serviceStage?.status === "FINALIZADO" || props.serviceStage?.status === "ARQUIVADO")
