@@ -1,12 +1,13 @@
-import { TrashIcon } from "@heroicons/react/solid"
-import { useState } from "react"
-import { Immobile } from "../../interfaces/objectInterfaces"
-import Button from "../button/button"
 import Form from "../form/form"
+import { useState } from "react"
+import Button from "../button/button"
 import FormRow from "../form/formRow"
-import FormRowColumn from "../form/formRowColumn"
-import InputSelectImmobile from "../inputText/inputSelectImmobile"
 import ListTable from "../list/listTable"
+import WindowModal from "../modal/windowModal"
+import FormRowColumn from "../form/formRowColumn"
+import { TrashIcon } from "@heroicons/react/solid"
+import InputSelectImmobile from "../inputText/inputSelectImmobile"
+import { defaultImmobile, Immobile } from "../../interfaces/objectInterfaces"
 
 interface SelectImmobileFormNewProps {
     id?: string,
@@ -16,23 +17,38 @@ interface SelectImmobileFormNewProps {
     formClassName?: string,
     isLoading?: boolean,
     isDisabled?: boolean,
-    isMultiple?: boolean,
+    isDisabledExclude?: boolean,
+    isSingle?: boolean,
     value?: Immobile[],
     excludeList?: Immobile[],
-    onSetImmobiles?: (array) => void,
-    onShowMessage?: (FeedbackMessage) => void,
     onSet?: (any?) => void,
     onBlur?: (any?) => void,
+    onShowMessage?: (FeedbackMessage) => void,
 }
 
 export default function SelectImmobileFormNew(props: SelectImmobileFormNewProps) {
     const [index, setIndex] = useState(-1)
     const [isOpenDelete, setIsOpenDelete] = useState(false)
+    const [immobile, setImmobile] = useState<Immobile>(defaultImmobile)
 
     const handleOnSet = (value) => {
         if (props.onSet) {
             props.onSet(value)
         }
+    }
+
+    const handleRemoveImmobile = () => {
+        if (props.isSingle) {
+            handleOnSet([])
+        } else {
+            let localImmobiles = props.value
+            if (localImmobiles.length > -1) {
+                let index = localImmobiles.indexOf(immobile)
+                localImmobiles.splice(index, 1)
+                handleOnSet(localImmobiles)
+            }
+        }
+        setImmobile(defaultImmobile)
     }
 
     const handleAdd = (value: Immobile) => {
@@ -45,8 +61,16 @@ export default function SelectImmobileFormNew(props: SelectImmobileFormNewProps)
         let listItemsFiltered: Immobile[] = []
         if (list?.length > 0) {
             listItemsFiltered = list?.filter((element: Immobile, index) => {
-                if (props.excludeList?.includes(element)) {
-                    return false
+                if (props.excludeList?.length > 0) {
+                    let canAdd = false
+                    props.excludeList.map((elementExcluded, index) => {
+                        if (elementExcluded?.id === element?.id) {
+                            canAdd = true
+                        }
+                    })
+                    if (canAdd) {
+                        return false
+                    }
                 }
                 return element.name.toLowerCase().includes(string.toLowerCase())
             })
@@ -71,10 +95,11 @@ export default function SelectImmobileFormNew(props: SelectImmobileFormNewProps)
                     <Button
                         ignoreClass
                         isLoading={props.isLoading}
-                        isDisabled={props.isDisabled}
-                        className="bg-red-600 hover:bg-red-800 rounded-full p-2"
+                        isDisabled={props.isDisabledExclude}
+                        className="bg-red-600 hover:bg-red-800 disabled:opacity-70 rounded-full p-2"
                         onClick={() => {
-                            console.log(props.value[index])
+                            setImmobile((old) => props.value[index])
+                            setIsOpenDelete(true)
                         }}
                     >
                         <TrashIcon className="text-white block h-4 w-4" aria-hidden="true" />
@@ -84,32 +109,63 @@ export default function SelectImmobileFormNew(props: SelectImmobileFormNewProps)
         )
     }
     return (
-        <Form
-            title={props.title}
-            subtitle={props.subtitle}
-        >
-            <FormRow>
-                <FormRowColumn unit="6">
-                    <InputSelectImmobile
-                        title="Imóvel"
-                        onSet={handleAdd}
-                        onBlur={props.onBlur}
+        <>
+            <Form
+                className="mt-0"
+                title={props.title}
+                subtitle={props.subtitle}
+            >
+                <FormRow>
+                    <FormRowColumn unit="6">
+                        <InputSelectImmobile
+                            title="Imóvel"
+                            onSet={handleAdd}
+                            onBlur={props.onBlur}
+                            isLoading={props.isLoading}
+                            onFilter={handleFilterList}
+                            isDisabled={props.isDisabled}
+                            id={"select-immobile" + (props.id ? "-" + props.id : "")}
+                        />
+                    </FormRowColumn>
+                </FormRow>
+                {props.value?.length > 0 && (
+                    <ListTable
+                        hideSearch
+                        className="p-2"
+                        list={props.value}
+                        onSetIsActive={setIndex}
+                        onTableRow={handlePutRows}
                         isLoading={props.isLoading}
-                        onFilter={handleFilterList}
-                        isDisabled={props.isDisabled}
-                        id={"select-immobile" + (props.id ? "-" + props.id : "")}
+                        onTableHeader={handlePutHeaders}
                     />
-                </FormRowColumn>
-            </FormRow>
-            <ListTable
-                hideSearch
-                className="p-2"
-                list={props.value}
-                onSetIsActive={setIndex}
-                onTableRow={handlePutRows}
-                isLoading={props.isLoading}
-                onTableHeader={handlePutHeaders}
-            />
-        </Form>
+                )}
+            </Form>
+            <WindowModal
+                isOpen={isOpenDelete}
+                setIsOpen={setIsOpenDelete}>
+                <p className="text-center">Deseja realmente deletar {immobile.name}?</p>
+                <div className="flex mt-10 justify-between content-between">
+                    <Button
+                        onClick={(event) => {
+                            event.preventDefault()
+                            setIsOpenDelete(false)
+                        }}
+                    >
+                        Voltar
+                    </Button>
+                    <Button
+                        color="red"
+                        type="submit"
+                        onClick={(event) => {
+                            event.preventDefault()
+                            handleRemoveImmobile()
+                            setIsOpenDelete(false)
+                        }}
+                    >
+                        Excluir
+                    </Button>
+                </div>
+            </WindowModal>
+        </>
     )
 }

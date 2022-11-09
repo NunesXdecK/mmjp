@@ -127,7 +127,6 @@ export default function BudgetDataForm(props: BudgetDataFormProps) {
                                 />
                             </FormRowColumn>
                         </FormRow>
-
                     </Form>
                     <BudgetServicesForm
                         title="Serviços"

@@ -19,6 +19,7 @@ interface ServiceStagePageProps {
     serviceId?: string,
     canSave?: boolean,
     getInfo?: boolean,
+    isDisabled?: boolean,
     canUpdate?: boolean,
     onSetPage?: (any) => void,
     onShowMessage?: (FeedbackMessage) => void,
@@ -190,30 +191,29 @@ export default function ServiceStagePage(props: ServiceStagePageProps) {
 
     return (
         <>
-            <div className="p-4 pb-0">
-                <ActionBar className="flex flex-row justify-end">
-                    <Button
-                        isLoading={isLoading}
-                        isHidden={!props.canUpdate}
-                        onClick={() => {
-                            setIndex(-1)
-                            setIsFirst(true)
-                            setIsLoading(true)
-                            handleBackClick()
-                        }}
-                    >
-                        <RefreshIcon className="block h-4 w-4" aria-hidden="true" />
-                    </Button>
-                    <Button
-                        isLoading={isLoading}
-                        onClick={handleNewClick}
-                        isHidden={!props.canSave}
-                    >
-                        <PlusIcon className="block h-4 w-4" aria-hidden="true" />
-                    </Button>
-                </ActionBar>
-            </div>
-
+            <ActionBar className="flex flex-row justify-end">
+                <Button
+                    isLoading={isLoading}
+                    isHidden={!props.canUpdate}
+                    isDisabled={props.isDisabled}
+                    onClick={() => {
+                        setIndex(-1)
+                        setIsFirst(true)
+                        setIsLoading(true)
+                        handleBackClick()
+                    }}
+                >
+                    <RefreshIcon className="block h-4 w-4" aria-hidden="true" />
+                </Button>
+                <Button
+                    isLoading={isLoading}
+                    onClick={handleNewClick}
+                    isHidden={!props.canSave}
+                    isDisabled={props.isDisabled}
+                >
+                    <PlusIcon className="block h-4 w-4" aria-hidden="true" />
+                </Button>
+            </ActionBar>
             <ListTable
                 title="Etapas"
                 isActive={index}
@@ -223,10 +223,10 @@ export default function ServiceStagePage(props: ServiceStagePageProps) {
                 onTableRow={handlePutRows}
                 onShowClick={handleShowClick}
                 onEditClick={handleEditClick}
+                isDisabled={props.isDisabled}
                 onTableHeader={handlePutHeaders}
                 onDeleteClick={handleDeleteClick}
             />
-
             <WindowModal
                 max
                 title="Etapas"

@@ -185,7 +185,7 @@ export default function Layout(props: LayoutMenuProps) {
                 </div>
             </div>
             <div className="-mt-32 p-6 z-10">
-                <div className="rounded shadow dark:border dark:border-gray-700 dark:shadow-none bg-slate-50 dark:bg-slate-800 z-10">
+                <div className="p-4 rounded shadow dark:border dark:border-gray-700 dark:shadow-none bg-slate-50 dark:bg-slate-800 z-10">
                     {props.children}
                 </div>
             </div>

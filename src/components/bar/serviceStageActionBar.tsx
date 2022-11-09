@@ -123,7 +123,7 @@ export default function ServiceStageActionBarForm(props: ServiceStageActionBarFo
                                 handleSave("FINALIZADO", true)
                             }}
                         >
-                            Finalizar pagamento
+                            Finalizar etapa
                         </MenuButton>
                         <MenuButton
                             isLoading={props.isLoading}
@@ -133,7 +133,7 @@ export default function ServiceStageActionBarForm(props: ServiceStageActionBarFo
                                 handleSave("ARQUIVADO", true)
                             }}
                         >
-                            Arquivar pagamento
+                            Arquivar etapa
                         </MenuButton>
                         <MenuButton
                             isLoading={props.isLoading}
@@ -143,7 +143,7 @@ export default function ServiceStageActionBarForm(props: ServiceStageActionBarFo
                                 handleSave("NORMAL", true)
                             }}
                         >
-                            Reativar pagamento
+                            Reativar etapa
                         </MenuButton>
                     </div>
                 </DropDownButton>

@@ -13,6 +13,7 @@ interface ListTableProps {
     deleteWindowTitle?: string,
     isActive?: number,
     isLoading?: boolean,
+    isDisabled?: boolean,
     hideSearch?: boolean,
     onSetIsActive?: (any) => void,
     onShowClick?: (any, number?) => void,
@@ -98,7 +99,7 @@ export default function ListTable(props: ListTableProps) {
         pagesArray = [...pagesArray, filteredList]
     }
 
-    let classNameHolder = "rounded p-4 pt-0 dark:text-slate-200"
+    let classNameHolder = "rounded dark:text-slate-200"
     if (props.className) {
         classNameHolder = classNameHolder + " " + props.className
     }
@@ -126,7 +127,8 @@ export default function ListTable(props: ListTableProps) {
                                         value={inputSearch}
                                         placeholder="Pesquisa..."
                                         onSetText={setInputSearch}
-                                        isDisabled={props.isLoading}
+                                        isLoading={props.isLoading}
+                                        isDisabled={props.isDisabled}
                                     />
                                 </div>
                             )}
@@ -136,21 +138,26 @@ export default function ListTable(props: ListTableProps) {
                                 {props.onTableHeader()}
                             </div>
                         )}
-                        <div className="border-black my-1" />
+                        {/*
+                        <div className="border border-gray-200 dark:border-gray-800" />
+                        */}
                     </div>
                     <div className="">
                         {pagesArray[handleGetPage(pagesArray)]?.map((element, index) => (
                             <ListTableItem
                                 element={element}
-                                isDisabled={props.isLoading}
                                 onTableRow={props.onTableRow}
                                 onShowClick={props.onShowClick}
                                 onEditClick={props.onEditClick}
                                 index={(page * perPage) + (index + 1)}
-                                isActive={props.isActive - 1 === (page * perPage) + index}
+                                isDisabled={props.isLoading || props.isDisabled}
+                                isActive={!props.isDisabled && (props.isActive - 1 === (page * perPage) + index)}
+                                isLast={pagesArray[handleGetPage(pagesArray)]?.length === index + 1}
                                 key={index + "-" + (element && "id" in element ? element.id : element)}
                                 onRowClick={() => {
-                                    handleSetIsActive((old) => (page * perPage) + (index + 1))
+                                    if (!props.isDisabled) {
+                                        handleSetIsActive((old) => (page * perPage) + (index + 1))
+                                    }
                                 }}
                                 onDeleteClick={() => {
                                     setElement(element)

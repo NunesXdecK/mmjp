@@ -110,6 +110,7 @@ export default function ServiceActionBarForm(props: ServiceActionBarFormProps) {
         if (status?.length > 0) {
             service = { ...service, status: status }
         }
+        let serviceOld = {...service}
         service = handleServiceForDB(service)
         if (props.projectId?.length > 0) {
             service = { ...service, project: { id: props.projectId } }
@@ -130,6 +131,8 @@ export default function ServiceActionBarForm(props: ServiceActionBarFormProps) {
         } else if (isForCloseModal) {
             props.onSet({
                 ...service,
+                immobilesTarget: serviceOld.immobilesTarget,
+                immobilesOrigin: serviceOld.immobilesOrigin,
                 value: handleMountNumberCurrency(service?.value?.toString(), ".", ",", 3, 2),
                 total: handleMountNumberCurrency(service?.total?.toString(), ".", ",", 3, 2),
             })
@@ -163,7 +166,7 @@ export default function ServiceActionBarForm(props: ServiceActionBarFormProps) {
                                 handleSave("FINALIZADO", true)
                             }}
                         >
-                            Finalizar pagamento
+                            Finalizar serviço
                         </MenuButton>
                         <MenuButton
                             isLoading={props.isLoading}
@@ -173,7 +176,7 @@ export default function ServiceActionBarForm(props: ServiceActionBarFormProps) {
                                 handleSave("ARQUIVADO", true)
                             }}
                         >
-                            Arquivar pagamento
+                            Arquivar serviço
                         </MenuButton>
                         <MenuButton
                             isLoading={props.isLoading}
@@ -183,7 +186,7 @@ export default function ServiceActionBarForm(props: ServiceActionBarFormProps) {
                                 handleSave("NORMAL", true)
                             }}
                         >
-                            Reativar pagamento
+                            Reativar serviço
                         </MenuButton>
                     </div>
                 </DropDownButton>

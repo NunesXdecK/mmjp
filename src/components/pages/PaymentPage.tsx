@@ -187,30 +187,27 @@ export default function PaymentPage(props: PaymentPageProps) {
 
     return (
         <>
-            <div className="p-4 pb-0">
-                <ActionBar className="flex flex-row justify-end">
-                    <Button
-                        isLoading={isLoading}
-                        isHidden={!props.canUpdate}
-                        onClick={() => {
-                            setIndex(-1)
-                            setIsFirst(true)
-                            setIsLoading(true)
-                            handleBackClick()
-                        }}
-                    >
-                        <RefreshIcon className="block h-4 w-4" aria-hidden="true" />
-                    </Button>
-                    <Button
-                        isLoading={isLoading}
-                        onClick={handleNewClick}
-                        isHidden={!props.canSave}
-                    >
-                        <PlusIcon className="block h-4 w-4" aria-hidden="true" />
-                    </Button>
-                </ActionBar>
-            </div>
-
+            <ActionBar className="flex flex-row justify-end">
+                <Button
+                    isLoading={isLoading}
+                    isHidden={!props.canUpdate}
+                    onClick={() => {
+                        setIndex(-1)
+                        setIsFirst(true)
+                        setIsLoading(true)
+                        handleBackClick()
+                    }}
+                >
+                    <RefreshIcon className="block h-4 w-4" aria-hidden="true" />
+                </Button>
+                <Button
+                    isLoading={isLoading}
+                    onClick={handleNewClick}
+                    isHidden={!props.canSave}
+                >
+                    <PlusIcon className="block h-4 w-4" aria-hidden="true" />
+                </Button>
+            </ActionBar>
             <ListTable
                 list={payments}
                 isActive={index}

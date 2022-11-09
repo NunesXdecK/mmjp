@@ -54,6 +54,12 @@ export default function InputTextAutoComplete(props: InputTextAutoCompleteProps)
         classNameInput = classNameInput + " ring-red-600 border-red-600  focus:ring-red-600 focus:border-red-600"
     }
 
+    const handleOnSet = (value) => {
+        if (props.onSetText) {
+            props.onSetText(value)
+        }
+    }
+
     const handleCheckSugestion = (text) => {
         let finalSugestions = []
         if (text.length > 0) {
@@ -127,6 +133,9 @@ export default function InputTextAutoComplete(props: InputTextAutoCompleteProps)
                         if (!event?.relatedTarget?.id ||
                             event?.relatedTarget?.id.indexOf(props.id + "-auto-complete-option-") < 0) {
                             handleCheckSugestion("")
+                            if (props.onListOptions) {
+                                handleOnSet("")
+                            }
                         }
                     }}
                     onChange={(event) => {
@@ -141,8 +150,11 @@ export default function InputTextAutoComplete(props: InputTextAutoCompleteProps)
                             }
                         } else {
                             handleCheckSugestion("")
+                            if (props.onListOptions) {
+                                text = ""
+                            }
                         }
-                        props.onSetText(text)
+                        handleOnSet(text)
                     }}
                 />
                 {!isValid && (
@@ -153,9 +165,12 @@ export default function InputTextAutoComplete(props: InputTextAutoCompleteProps)
                 id={props.id + "-suggestions-holder"}
                 className="absolute shadow-m dark:shadow-none mt-2 z-40 bg-slate-50 dark:bg-gray-800 dark:text-slate-200 rounded"
             >
-                {sugestions.length > 0 && (
+                {(props.value.length > 0 && !props.isDisabled) && (
                     <div
                         ref={divRef}
+                        onClick={() => {
+                            handleCheckSugestion("")
+                        }}
                         className="rounded w-full">
                         {props?.onListOptions && props?.onListOptions(handleCheckSugestion)}
                         {sugestions.map((element, index) => (
@@ -166,11 +181,10 @@ export default function InputTextAutoComplete(props: InputTextAutoCompleteProps)
                                 onClick={() => {
                                     if (props?.onClickItem) {
                                         props.onClickItem(element)
-                                    } else if (props?.onSetText) {
-                                        props.onSetText(element)
+                                    } else {
+                                        handleOnSet(element)
                                     }
                                     inputRef.current.focus()
-                                    handleCheckSugestion("")
                                 }}
                                 type="button"
                                 className="text-left text-gray-600 dark:text-gray-300 w-full px-2 py-4 hover:bg-gray-300 dark:hover:bg-gray-700">

@@ -127,8 +127,8 @@ export default function ServicePage(props: ServicePageProps) {
     const handlePutHeaders = () => {
         return (
             <FormRow>
-                <FormRowColumn unit="2">Projeto</FormRowColumn>
-                <FormRowColumn unit="1">Titulo</FormRowColumn>
+                <FormRowColumn unit="2">Titulo</FormRowColumn>
+                <FormRowColumn unit="1">Projeto</FormRowColumn>
                 <FormRowColumn unit="1">Valor</FormRowColumn>
                 <FormRowColumn unit="1">Status</FormRowColumn>
                 <FormRowColumn className="hidden sm:block" unit="1">Prazo</FormRowColumn>
@@ -139,8 +139,8 @@ export default function ServicePage(props: ServicePageProps) {
     const handlePutRows = (element: Service) => {
         return (
             <FormRow>
-                <FormRowColumn unit="2"><ProjectNumberListItem id={element.project.id} /></FormRowColumn>
-                <FormRowColumn unit="1">{element.title}</FormRowColumn>
+                <FormRowColumn unit="2">{element.title}</FormRowColumn>
+                <FormRowColumn unit="1"><ProjectNumberListItem id={element.project.id} /></FormRowColumn>
                 <FormRowColumn unit="1">{handleMountNumberCurrency(element.total.toString(), ".", ",", 3, 2)}</FormRowColumn>
                 <FormRowColumn unit="1">
                     {element.status === "NORMAL" && (
@@ -188,30 +188,27 @@ export default function ServicePage(props: ServicePageProps) {
 
     return (
         <>
-            <div className="p-4 pb-0">
-                <ActionBar className="flex flex-row justify-end">
-                    <Button
-                        isLoading={isLoading}
-                        isHidden={!props.canUpdate}
-                        onClick={() => {
-                            setIndex(-1)
-                            setIsFirst(true)
-                            setIsLoading(true)
-                            handleBackClick()
-                        }}
-                    >
-                        <RefreshIcon className="block h-4 w-4" aria-hidden="true" />
-                    </Button>
-                    <Button
-                        isLoading={isLoading}
-                        onClick={handleNewClick}
-                        isHidden={!props.canSave}
-                    >
-                        <PlusIcon className="block h-4 w-4" aria-hidden="true" />
-                    </Button>
-                </ActionBar>
-            </div>
-
+            <ActionBar className="flex flex-row justify-end">
+                <Button
+                    isLoading={isLoading}
+                    isHidden={!props.canUpdate}
+                    onClick={() => {
+                        setIndex(-1)
+                        setIsFirst(true)
+                        setIsLoading(true)
+                        handleBackClick()
+                    }}
+                >
+                    <RefreshIcon className="block h-4 w-4" aria-hidden="true" />
+                </Button>
+                <Button
+                    isLoading={isLoading}
+                    onClick={handleNewClick}
+                    isHidden={!props.canSave}
+                >
+                    <PlusIcon className="block h-4 w-4" aria-hidden="true" />
+                </Button>
+            </ActionBar>
             <ListTable
                 list={services}
                 isActive={index}
@@ -224,7 +221,6 @@ export default function ServicePage(props: ServicePageProps) {
                 onTableHeader={handlePutHeaders}
                 onDeleteClick={handleDeleteClick}
             />
-
             <WindowModal
                 max
                 title="Serviços"

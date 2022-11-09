@@ -6,6 +6,7 @@ import FormRow from "../form/formRow";
 interface ListTableItemProps {
     index?: number,
     element?: boolean,
+    isLast?: boolean,
     isActive?: boolean,
     isDisabled?: boolean,
     onRowClick?: () => void,
@@ -16,9 +17,12 @@ interface ListTableItemProps {
 }
 
 export default function ListTableItem(props: ListTableItemProps) {
-    let className = "dark:text-slate-200 dark:border-slate-600 border-b items-center mb-2 px-4 py-2"
+    let className = "dark:text-slate-200 items-center px-4 py-2"
     if (props.isActive) {
-        className = className + " bg-indigo-100 dark:bg-gray-700"
+        className = className + " bg-indigo-100 dark:bg-gray-600"
+    }
+    if (!props.isLast) {
+        className = className + " border-b border-gray-200 dark:border-gray-700"
     }
     return (
         <div
@@ -27,7 +31,7 @@ export default function ListTableItem(props: ListTableItemProps) {
         >
             {props.onTableRow(props.element, props.index - 1)}
             <ScrollDownTransition isOpen={props.isActive}>
-                <div className="pt-2 flex justify-end gap-2">
+                <div className="flex justify-end gap-2">
                     <Button
                         color="red"
                         className="max-w-min"
