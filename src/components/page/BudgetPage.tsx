@@ -144,18 +144,34 @@ export default function BudgetPage(props: BudgetPageProps) {
             budget,
             ...budgets,
         ]
-        if (budgets?.length > 0 && index > -1) {
+        if (index > -1) {
             list = [
-                budget,
-                ...budgets.slice(0, (index - 1)),
-                ...budgets.slice(index, budgets.length),
+                ...budgets,
             ]
+            list = list.sort((elementOne: Budget, elementTwo: Budget) => {
+                let dateOne = elementOne.dateInsertUTC
+                let dateTwo = elementTwo.dateInsertUTC
+                if (elementOne.dateLastUpdateUTC > 0 && elementOne.dateLastUpdateUTC > dateOne) {
+                    dateOne = elementOne.dateLastUpdateUTC
+                }
+                if (elementTwo.dateLastUpdateUTC > 0 && elementTwo.dateLastUpdateUTC > dateTwo) {
+                    dateTwo = elementTwo.dateLastUpdateUTC
+                }
+                return dateTwo - dateOne
+            })
         }
         setBudgets((old) => list)
         handleShowMessage(feedbackMessage)
         if (!isForCloseModal) {
             handleBackClick()
             setIndex((old) => -1)
+        } else {
+            setBudget((old) => budget)
+            list.map((element, index) => {
+                if (element.id === budget.id) {
+                    setIndex(index)
+                }
+            })
         }
     }
 

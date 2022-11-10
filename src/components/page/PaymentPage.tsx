@@ -107,18 +107,34 @@ export default function PaymentPage(props: PaymentPageProps) {
             payment,
             ...payments,
         ]
-        if (payments?.length > 0 && index > -1) {
+        if (index > -1) {
             list = [
-                payment,
-                ...payments.slice(0, (index - 1)),
-                ...payments.slice(index, payments.length),
+                ...payments,
             ]
+            list = list.sort((elementOne: Payment, elementTwo: Payment) => {
+                let dateOne = elementOne.dateInsertUTC
+                let dateTwo = elementTwo.dateInsertUTC
+                if (elementOne.dateLastUpdateUTC > 0 && elementOne.dateLastUpdateUTC > dateOne) {
+                    dateOne = elementOne.dateLastUpdateUTC
+                }
+                if (elementTwo.dateLastUpdateUTC > 0 && elementTwo.dateLastUpdateUTC > dateTwo) {
+                    dateTwo = elementTwo.dateLastUpdateUTC
+                }
+                return dateTwo - dateOne
+            })
         }
         handleShowMessage(feedbackMessage)
         setPayments((old) => list)
         if (!isForCloseModal) {
             handleBackClick()
             setIndex((old) => -1)
+        } else {
+            setPayment((old) => payment)
+            list.map((element, index) => {
+                if (element.id === payment.id) {
+                    setIndex(index)
+                }
+            })
         }
     }
 

@@ -108,18 +108,34 @@ export default function ServicePage(props: ServicePageProps) {
             service,
             ...services,
         ]
-        if (services?.length > 0 && index > -1) {
+        if (index > -1) {
             list = [
-                service,
-                ...services.slice(0, (index - 1)),
-                ...services.slice(index, services.length),
+                ...services,
             ]
+            list = list.sort((elementOne: Service, elementTwo: Service) => {
+                let dateOne = elementOne.dateInsertUTC
+                let dateTwo = elementTwo.dateInsertUTC
+                if (elementOne.dateLastUpdateUTC > 0 && elementOne.dateLastUpdateUTC > dateOne) {
+                    dateOne = elementOne.dateLastUpdateUTC
+                }
+                if (elementTwo.dateLastUpdateUTC > 0 && elementTwo.dateLastUpdateUTC > dateTwo) {
+                    dateTwo = elementTwo.dateLastUpdateUTC
+                }
+                return dateTwo - dateOne
+            })
         }
         handleShowMessage(feedbackMessage)
         setServices((old) => list)
         if (!isForCloseModal) {
             handleBackClick()
             setIndex((old) => -1)
+        } else {
+            setService((old) => service)
+            list.map((element, index) => {
+                if (element.id === service.id) {
+                    setIndex(index)
+                }
+            })
         }
     }
 

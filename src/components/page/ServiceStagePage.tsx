@@ -106,18 +106,34 @@ export default function ServiceStagePage(props: ServiceStagePageProps) {
             serviceStage,
             ...serviceStages,
         ]
-        if (serviceStages?.length > 0 && index > -1) {
+        if (index > -1) {
             list = [
-                serviceStage,
-                ...serviceStages.slice(0, (index - 1)),
-                ...serviceStages.slice(index, serviceStages.length),
+                ...serviceStages,
             ]
+            list = list.sort((elementOne: ServiceStage, elementTwo: ServiceStage) => {
+                let dateOne = elementOne.dateInsertUTC
+                let dateTwo = elementTwo.dateInsertUTC
+                if (elementOne.dateLastUpdateUTC > 0 && elementOne.dateLastUpdateUTC > dateOne) {
+                    dateOne = elementOne.dateLastUpdateUTC
+                }
+                if (elementTwo.dateLastUpdateUTC > 0 && elementTwo.dateLastUpdateUTC > dateTwo) {
+                    dateTwo = elementTwo.dateLastUpdateUTC
+                }
+                return dateTwo - dateOne
+            })
         }
         handleShowMessage(feedbackMessage)
         setServiceStages((old) => list)
         if (!isForCloseModal) {
             handleBackClick()
             setIndex((old) => -1)
+        } else {
+            setServiceStage((old) => serviceStage)
+            list.map((element, index) => {
+                if (element.id === serviceStage.id) {
+                    setIndex(index)
+                }
+            })
         }
     }
 

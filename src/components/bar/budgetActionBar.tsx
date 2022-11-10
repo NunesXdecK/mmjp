@@ -117,9 +117,11 @@ export default function BudgetActionBarForm(props: BudgetActionBarFormProps) {
         if (status?.length > 0) {
             budget = { ...budget, status: status }
         }
-        budget = handleBudgetForDB(budget)
-        let res = await handleSaveBudgetInner(budget, true)
-        budget = { ...budget, id: res.id }
+        let budgetForDB = handleBudgetForDB(budget)
+        let res = await handleSaveBudgetInner(budgetForDB, true)
+        budget = { ...budget, 
+            id: res.id,
+         }
         if (res.status === "ERROR") {
             const feedbackMessage: FeedbackMessage = { messages: ["Algo deu errado!"], messageType: "ERROR" }
             handleShowMessage(feedbackMessage)

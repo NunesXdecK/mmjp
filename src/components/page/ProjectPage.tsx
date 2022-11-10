@@ -117,18 +117,34 @@ export default function ProjectPage(props: ProjectPageProps) {
             project,
             ...projects,
         ]
-        if (projects?.length > 0 && index > -1) {
+        if (index > -1) {
             list = [
-                project,
-                ...projects.slice(0, (index - 1)),
-                ...projects.slice(index, projects.length),
+                ...projects,
             ]
+            list = list.sort((elementOne: Project, elementTwo: Project) => {
+                let dateOne = elementOne.dateInsertUTC
+                let dateTwo = elementTwo.dateInsertUTC
+                if (elementOne.dateLastUpdateUTC > 0 && elementOne.dateLastUpdateUTC > dateOne) {
+                    dateOne = elementOne.dateLastUpdateUTC
+                }
+                if (elementTwo.dateLastUpdateUTC > 0 && elementTwo.dateLastUpdateUTC > dateTwo) {
+                    dateTwo = elementTwo.dateLastUpdateUTC
+                }
+                return dateTwo - dateOne
+            })
         }
         setProjects((old) => list)
         handleShowMessage(feedbackMessage)
         if (!isForCloseModal) {
             handleBackClick()
             setIndex((old) => -1)
+        } else {
+            setProject((old) => project)
+            list.map((element, index) => {
+                if (element.id === project.id) {
+                    setIndex(index)
+                }
+            })
         }
     }
 
