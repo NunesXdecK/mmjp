@@ -113,25 +113,22 @@ export default function ProjectPage(props: ProjectPageProps) {
     }
 
     const handleAfterSave = (feedbackMessage: FeedbackMessage, project: Project, isForCloseModal) => {
+        let localIndex = -1
+        projects.map((element, index) => {
+            if (element.id === project.id) {
+                localIndex = index
+            }
+        })
         let list: Project[] = [
             project,
             ...projects,
         ]
-        if (index > -1) {
+        if (localIndex > -1) {
             list = [
-                ...projects,
+                project,
+                ...projects.slice(0, localIndex),
+                ...projects.slice(localIndex + 1, projects.length),
             ]
-            list = list.sort((elementOne: Project, elementTwo: Project) => {
-                let dateOne = elementOne.dateInsertUTC
-                let dateTwo = elementTwo.dateInsertUTC
-                if (elementOne.dateLastUpdateUTC > 0 && elementOne.dateLastUpdateUTC > dateOne) {
-                    dateOne = elementOne.dateLastUpdateUTC
-                }
-                if (elementTwo.dateLastUpdateUTC > 0 && elementTwo.dateLastUpdateUTC > dateTwo) {
-                    dateTwo = elementTwo.dateLastUpdateUTC
-                }
-                return dateTwo - dateOne
-            })
         }
         setProjects((old) => list)
         handleShowMessage(feedbackMessage)
@@ -139,12 +136,7 @@ export default function ProjectPage(props: ProjectPageProps) {
             handleBackClick()
             setIndex((old) => -1)
         } else {
-            setProject((old) => project)
-            list.map((element, index) => {
-                if (element.id === project.id) {
-                    setIndex(index)
-                }
-            })
+            setIndex((old) => 1)
         }
     }
 

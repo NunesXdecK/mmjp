@@ -102,38 +102,30 @@ export default function ServiceStagePage(props: ServiceStagePageProps) {
     }
 
     const handleAfterSave = (feedbackMessage: FeedbackMessage, serviceStage: ServiceStage, isForCloseModal) => {
+        let localIndex = -1
+        serviceStages.map((element, index) => {
+            if (element.id === serviceStage.id) {
+                localIndex = index
+            }
+        })
         let list: ServiceStage[] = [
             serviceStage,
             ...serviceStages,
         ]
-        if (index > -1) {
+        if (localIndex > -1) {
             list = [
-                ...serviceStages,
+                serviceStage,
+                ...serviceStages.slice(0, localIndex),
+                ...serviceStages.slice(localIndex + 1, serviceStages.length),
             ]
-            list = list.sort((elementOne: ServiceStage, elementTwo: ServiceStage) => {
-                let dateOne = elementOne.dateInsertUTC
-                let dateTwo = elementTwo.dateInsertUTC
-                if (elementOne.dateLastUpdateUTC > 0 && elementOne.dateLastUpdateUTC > dateOne) {
-                    dateOne = elementOne.dateLastUpdateUTC
-                }
-                if (elementTwo.dateLastUpdateUTC > 0 && elementTwo.dateLastUpdateUTC > dateTwo) {
-                    dateTwo = elementTwo.dateLastUpdateUTC
-                }
-                return dateTwo - dateOne
-            })
         }
-        handleShowMessage(feedbackMessage)
         setServiceStages((old) => list)
+        handleShowMessage(feedbackMessage)
         if (!isForCloseModal) {
             handleBackClick()
             setIndex((old) => -1)
         } else {
-            setServiceStage((old) => serviceStage)
-            list.map((element, index) => {
-                if (element.id === serviceStage.id) {
-                    setIndex(index)
-                }
-            })
+            setIndex((old) => 1)
         }
     }
 

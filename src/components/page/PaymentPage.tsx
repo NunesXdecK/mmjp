@@ -103,38 +103,30 @@ export default function PaymentPage(props: PaymentPageProps) {
     }
 
     const handleAfterSave = (feedbackMessage: FeedbackMessage, payment: Payment, isForCloseModal) => {
+        let localIndex = -1
+        payments.map((element, index) => {
+            if (element.id === payment.id) {
+                localIndex = index
+            }
+        })
         let list: Payment[] = [
             payment,
             ...payments,
         ]
-        if (index > -1) {
+        if (localIndex > -1) {
             list = [
-                ...payments,
+                payment,
+                ...payments.slice(0, localIndex),
+                ...payments.slice(localIndex + 1, payments.length),
             ]
-            list = list.sort((elementOne: Payment, elementTwo: Payment) => {
-                let dateOne = elementOne.dateInsertUTC
-                let dateTwo = elementTwo.dateInsertUTC
-                if (elementOne.dateLastUpdateUTC > 0 && elementOne.dateLastUpdateUTC > dateOne) {
-                    dateOne = elementOne.dateLastUpdateUTC
-                }
-                if (elementTwo.dateLastUpdateUTC > 0 && elementTwo.dateLastUpdateUTC > dateTwo) {
-                    dateTwo = elementTwo.dateLastUpdateUTC
-                }
-                return dateTwo - dateOne
-            })
         }
-        handleShowMessage(feedbackMessage)
         setPayments((old) => list)
+        handleShowMessage(feedbackMessage)
         if (!isForCloseModal) {
             handleBackClick()
             setIndex((old) => -1)
         } else {
-            setPayment((old) => payment)
-            list.map((element, index) => {
-                if (element.id === payment.id) {
-                    setIndex(index)
-                }
-            })
+            setIndex((old) => 1)
         }
     }
 

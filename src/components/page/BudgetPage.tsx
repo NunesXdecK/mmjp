@@ -140,25 +140,22 @@ export default function BudgetPage(props: BudgetPageProps) {
     }
 
     const handleAfterSave = (feedbackMessage: FeedbackMessage, budget: Budget, isForCloseModal) => {
+        let localIndex = -1
+        budgets.map((element, index) => {
+            if (element.id === budget.id) {
+                localIndex = index
+            }
+        })
         let list: Budget[] = [
             budget,
             ...budgets,
         ]
-        if (index > -1) {
+        if (localIndex > -1) {
             list = [
-                ...budgets,
+                budget,
+                ...budgets.slice(0, localIndex),
+                ...budgets.slice(localIndex + 1, budgets.length),
             ]
-            list = list.sort((elementOne: Budget, elementTwo: Budget) => {
-                let dateOne = elementOne.dateInsertUTC
-                let dateTwo = elementTwo.dateInsertUTC
-                if (elementOne.dateLastUpdateUTC > 0 && elementOne.dateLastUpdateUTC > dateOne) {
-                    dateOne = elementOne.dateLastUpdateUTC
-                }
-                if (elementTwo.dateLastUpdateUTC > 0 && elementTwo.dateLastUpdateUTC > dateTwo) {
-                    dateTwo = elementTwo.dateLastUpdateUTC
-                }
-                return dateTwo - dateOne
-            })
         }
         setBudgets((old) => list)
         handleShowMessage(feedbackMessage)
@@ -166,12 +163,7 @@ export default function BudgetPage(props: BudgetPageProps) {
             handleBackClick()
             setIndex((old) => -1)
         } else {
-            setBudget((old) => budget)
-            list.map((element, index) => {
-                if (element.id === budget.id) {
-                    setIndex(index)
-                }
-            })
+            setIndex((old) => 1)
         }
     }
 

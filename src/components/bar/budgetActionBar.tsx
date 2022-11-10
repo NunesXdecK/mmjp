@@ -119,9 +119,10 @@ export default function BudgetActionBarForm(props: BudgetActionBarFormProps) {
         }
         let budgetForDB = handleBudgetForDB(budget)
         let res = await handleSaveBudgetInner(budgetForDB, true)
-        budget = { ...budget, 
+        budget = {
+            ...budget,
             id: res.id,
-         }
+        }
         if (res.status === "ERROR") {
             const feedbackMessage: FeedbackMessage = { messages: ["Algo deu errado!"], messageType: "ERROR" }
             handleShowMessage(feedbackMessage)
@@ -176,7 +177,11 @@ export default function BudgetActionBarForm(props: BudgetActionBarFormProps) {
                                 const feedbackMessage: FeedbackMessage = { messages: ["Sucesso!"], messageType: "SUCCESS" }
                                 handleShowMessage(feedbackMessage)
                                 if (props.onAfterSave) {
-                                    props.onAfterSave(feedbackMessage, props.budget, false)
+                                    let budget = props.budget
+                                    if (budget.dateString?.length > 0) {
+                                        budget = { ...budget, dateDue: handleGetDateFormatedToUTC(budget.dateString) }
+                                    }
+                                    props.onAfterSave(feedbackMessage, budget, false)
                                 }
                             }}
                         />

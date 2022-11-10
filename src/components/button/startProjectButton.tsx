@@ -23,20 +23,17 @@ export default function StartProjectButton(props: StartProjectButtonProps) {
             body: JSON.stringify({ token: "tokenbemseguro", data: props?.budget?.id }),
         }).then((res) => res.json()).then((res) => res.hasProject)
         if (!hasProject) {
-            console.log(props.budget)
             //mount project number
             const year = new Date().getFullYear()
             let number = ""
             number = number + year + "-"
             props.budget?.clients?.map((element, index) => {
-                console.log(element)
                 if (element?.clientCode?.length > 0) {
                     number = number + element.clientCode + "-"
                 }
             })
             let numberOfProjectsInYear = await fetch("api/projectNumber/" + number).then((res) => res.json()).then((res) => res.data)
             number = number + numberOfProjectsInYear
-            console.log(numberOfProjectsInYear)
             //mount client
             let client = props.budget.clients[0]
             if (client?.id?.length > 0) {
