@@ -10,7 +10,7 @@ import InputTextAutoComplete from "../inputText/inputTextAutocomplete";
 import InputSelectProfessional from "../inputText/inputSelectProfessional";
 import { NOT_NULL_MARK, NUMBER_MARK } from "../../util/patternValidationUtil";
 import { handleMountNumberCurrency, handleValueStringToFloat } from "../../util/maskUtil";
-import ServiceStagePage from "../pages/ServiceStagePage";
+import ServiceStagePage from "../page/ServiceStagePage";
 import Form from "./form";
 
 interface ServiceDataFormProps {
@@ -245,24 +245,27 @@ export default function ServiceDataForm(props: ServiceDataFormProps) {
                         props.isDisabled ||
                         (props.service?.status === "FINALIZADO" || props.service?.status === "ARQUIVADO")
                     }
-                    />
-                    )}
-            <Form
-                title="Etapas"
-                subtitle="Selecione as etapas"
-            >
-                <ServiceStagePage
-                    getInfo
-                    canSave
-                    serviceId={props.service.id}
-                    onSetPage={handleSetServiceStage}
-                    onShowMessage={props.onShowMessage}
-                    isDisabled={
-                        props.isDisabled ||
-                        (props.service?.status === "FINALIZADO" || props.service?.status === "ARQUIVADO")
-                    }
                 />
-            </Form>
+            )}
+            {props.service?.id?.length > 0 && (
+                <Form
+                    title="Etapas"
+                    subtitle="Selecione as etapas"
+                >
+                    <ServiceStagePage
+                        canSave
+                        serviceId={props.service.id}
+                        onSetPage={handleSetServiceStage}
+                        onShowMessage={props.onShowMessage}
+                        getInfo={props.service?.id?.length > 0}
+                        isDisabled={
+                            props.isDisabled ||
+                            props.service?.id?.length === 0 ||
+                            (props.service?.status === "FINALIZADO" || props.service?.status === "ARQUIVADO")
+                        }
+                    />
+                </Form>
+            )}
         </>
     )
 }

@@ -20,6 +20,7 @@ interface ServicePageProps {
     canSave?: boolean,
     getInfo?: boolean,
     canUpdate?: boolean,
+    isDisabled?: boolean,
     onSetPage?: (any) => void,
     onShowMessage?: (FeedbackMessage) => void,
 }
@@ -28,8 +29,8 @@ export default function ServicePage(props: ServicePageProps) {
     const [service, setService] = useState<Service>(defaultService)
     const [services, setServices] = useState<Service[]>([])
     const [index, setIndex] = useState(-1)
-    const [isFirst, setIsFirst] = useState(props.getInfo)
-    const [isLoading, setIsLoading] = useState(props.getInfo)
+    const [isFirst, setIsFirst] = useState(props.getInfo || props.projectId === undefined)
+    const [isLoading, setIsLoading] = useState(props.getInfo || props.projectId === undefined)
     const [isForShow, setIsForShow] = useState(false)
     const [isRegister, setIsRegister] = useState(false)
 
@@ -65,7 +66,11 @@ export default function ServicePage(props: ServicePageProps) {
     }
 
     const handleNewClick = async () => {
-        setService({ ...defaultService, dateString: handleUTCToDateShow(handleNewDateToUTC().toString()) })
+        setService({
+            ...defaultService,
+            status: "NORMAL",
+            dateString: handleUTCToDateShow(handleNewDateToUTC().toString())
+        })
         setIsRegister(true)
         setIndex(-1)
     }
@@ -174,7 +179,7 @@ export default function ServicePage(props: ServicePageProps) {
                     }
                     setIsLoading(false)
                 })
-            } else {
+            } else if (props.projectId === undefined) {
                 fetch("api/services").then((res) => res.json()).then((res) => {
                     setIsFirst(old => false)
                     if (res.list.length) {
@@ -192,6 +197,7 @@ export default function ServicePage(props: ServicePageProps) {
                 <Button
                     isLoading={isLoading}
                     isHidden={!props.canUpdate}
+                    isDisabled={props.isDisabled}
                     onClick={() => {
                         setIndex(-1)
                         setIsFirst(true)
@@ -205,6 +211,7 @@ export default function ServicePage(props: ServicePageProps) {
                     isLoading={isLoading}
                     onClick={handleNewClick}
                     isHidden={!props.canSave}
+                    isDisabled={props.isDisabled}
                 >
                     <PlusIcon className="block h-4 w-4" aria-hidden="true" />
                 </Button>
@@ -218,6 +225,7 @@ export default function ServicePage(props: ServicePageProps) {
                 onTableRow={handlePutRows}
                 onShowClick={handleShowClick}
                 onEditClick={handleEditClick}
+                isDisabled={props.isDisabled}
                 onTableHeader={handlePutHeaders}
                 onDeleteClick={handleDeleteClick}
             />
@@ -243,8 +251,18 @@ export default function ServicePage(props: ServicePageProps) {
                             </div>
                         )}
                         {isForShow && (
-                            <div className="p-4 pb-0">
-                            </div>
+                            <ActionBar
+                                className="bg-slate-50 dark:bg-slate-800 dark:border dark:border-gray-700"
+                            >
+                                <Button
+                                    isLoading={isLoading}
+                                    onClick={() => {
+                                        handleEditClick(service)
+                                    }}
+                                >
+                                    Editar
+                                </Button>
+                            </ActionBar>
                         )}
                     </>
                 )}

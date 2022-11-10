@@ -20,6 +20,7 @@ interface PaymentPageProps {
     canSave?: boolean,
     getInfo?: boolean,
     canUpdate?: boolean,
+    isDisabled?: boolean,
     onSetPage?: (any) => void,
     onShowMessage?: (FeedbackMessage) => void,
 }
@@ -28,8 +29,8 @@ export default function PaymentPage(props: PaymentPageProps) {
     const [payment, setPayment] = useState<Payment>(defaultPayment)
     const [payments, setPayments] = useState<Payment[]>([])
     const [index, setIndex] = useState(-1)
-    const [isFirst, setIsFirst] = useState(props.getInfo)
-    const [isLoading, setIsLoading] = useState(props.getInfo)
+    const [isFirst, setIsFirst] = useState(props.getInfo || props.projectId === undefined)
+    const [isLoading, setIsLoading] = useState(props.getInfo || props.projectId === undefined)
     const [isForShow, setIsForShow] = useState(false)
     const [isRegister, setIsRegister] = useState(false)
 
@@ -65,7 +66,11 @@ export default function PaymentPage(props: PaymentPageProps) {
     }
 
     const handleNewClick = async () => {
-        setPayment({ ...defaultPayment, dateString: handleUTCToDateShow(handleNewDateToUTC().toString()) })
+        setPayment({
+            ...defaultPayment,
+            status: "NORMAL",
+            dateString: handleUTCToDateShow(handleNewDateToUTC().toString()),
+        })
         setIsRegister(true)
         setIndex(-1)
     }
@@ -126,8 +131,8 @@ export default function PaymentPage(props: PaymentPageProps) {
     const handlePutHeaders = () => {
         return (
             <FormRow>
-                <FormRowColumn unit="2">Projeto</FormRowColumn>
-                <FormRowColumn unit="1">Descrição</FormRowColumn>
+                <FormRowColumn unit="2">Descrição</FormRowColumn>
+                <FormRowColumn unit="1">Projeto</FormRowColumn>
                 <FormRowColumn unit="1">Valor</FormRowColumn>
                 <FormRowColumn unit="1">Status</FormRowColumn>
                 <FormRowColumn className="hidden sm:block" unit="1">Prazo</FormRowColumn>
@@ -138,8 +143,8 @@ export default function PaymentPage(props: PaymentPageProps) {
     const handlePutRows = (element: Payment) => {
         return (
             <FormRow>
-                <FormRowColumn unit="2"><ProjectNumberListItem id={element.project.id} /></FormRowColumn>
-                <FormRowColumn unit="1">{element.description}</FormRowColumn>
+                <FormRowColumn unit="2">{element.description}</FormRowColumn>
+                <FormRowColumn unit="1"><ProjectNumberListItem id={element.project.id} /></FormRowColumn>
                 <FormRowColumn unit="1">{handleMountNumberCurrency(element.value.toString(), ".", ",", 3, 2)}</FormRowColumn>
                 <FormRowColumn unit="1">
                     {element.status === "NORMAL" && (
@@ -173,7 +178,7 @@ export default function PaymentPage(props: PaymentPageProps) {
                     }
                     setIsLoading(false)
                 })
-            } else {
+            } else if (props.projectId === undefined) {
                 fetch("api/payments").then((res) => res.json()).then((res) => {
                     setIsFirst(old => false)
                     if (res.list.length) {
@@ -191,6 +196,7 @@ export default function PaymentPage(props: PaymentPageProps) {
                 <Button
                     isLoading={isLoading}
                     isHidden={!props.canUpdate}
+                    isDisabled={props.isDisabled}
                     onClick={() => {
                         setIndex(-1)
                         setIsFirst(true)
@@ -204,6 +210,7 @@ export default function PaymentPage(props: PaymentPageProps) {
                     isLoading={isLoading}
                     onClick={handleNewClick}
                     isHidden={!props.canSave}
+                    isDisabled={props.isDisabled}
                 >
                     <PlusIcon className="block h-4 w-4" aria-hidden="true" />
                 </Button>
@@ -217,6 +224,7 @@ export default function PaymentPage(props: PaymentPageProps) {
                 onTableRow={handlePutRows}
                 onShowClick={handleShowClick}
                 onEditClick={handleEditClick}
+                isDisabled={props.isDisabled}
                 onTableHeader={handlePutHeaders}
                 onDeleteClick={handleDeleteClick}
             />
@@ -243,8 +251,18 @@ export default function PaymentPage(props: PaymentPageProps) {
                             </div>
                         )}
                         {isForShow && (
-                            <div className="p-4 pb-0">
-                            </div>
+                            <ActionBar
+                                className="bg-slate-50 dark:bg-slate-800 dark:border dark:border-gray-700"
+                            >
+                                <Button
+                                    isLoading={isLoading}
+                                    onClick={() => {
+                                        handleEditClick(payment)
+                                    }}
+                                >
+                                    Editar
+                                </Button>
+                            </ActionBar>
                         )}
                     </>
                 )}

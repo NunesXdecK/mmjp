@@ -5,11 +5,15 @@ import DropDownButton from "../button/dropDownButton"
 interface LayoutMenuMobileProps {
     menus?: LayoutMenuItem[],
     onSetPage?: (any) => void,
+    onSetIsOpen?: (any) => void,
 }
 
 export default function LayoutMenuMobile(props: LayoutMenuMobileProps) {
     const aClassName = "text-left w-full rounded block px-2 py-6 text-gray-300 hover:bg-gray-700 hover:text-white disabled:opacity-75"
     const handleSetPage = (value) => {
+        if (props.onSetIsOpen) {
+            props.onSetIsOpen(false)
+        }
         if (props.onSetPage) {
             props.onSetPage(value)
         }
@@ -36,7 +40,7 @@ export default function LayoutMenuMobile(props: LayoutMenuMobileProps) {
                                                 className={aClassName}
                                                 key={index + elementItem.name}
                                                 id={element.name + "-" + elementItem.name + "-" + index}
-                                                onClick={() => handleSetPage(element.value)}
+                                                onClick={() => handleSetPage(elementItem.value)}
                                             >
                                                 {elementItem.name}
                                             </Button>

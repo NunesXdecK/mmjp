@@ -1,12 +1,13 @@
 import Head from "next/head"
 import { useState } from "react"
 import Layout from "../components/layout/layout"
-import BudgetPage from "../components/pages/BudgetPage"
+import BudgetPage from "../components/page/BudgetPage"
 import FeedbackPendency from "../components/modal/feedbackPendencyModal"
 import FeedbackMessageModal, { defaultFeedbackMessage, FeedbackMessage } from "../components/modal/feedbackMessageModal"
-import PaymentPage from "../components/pages/PaymentPage"
-import ServiceStagePage from "../components/pages/ServiceStagePage"
-import ServicePage from "../components/pages/ServicePage"
+import PaymentPage from "../components/page/PaymentPage"
+import ServiceStagePage from "../components/page/ServiceStagePage"
+import ServicePage from "../components/page/ServicePage"
+import ProjectPage from "../components/page/ProjectPage"
 
 export type PageOps =
     "DASHBOARD"
@@ -115,8 +116,9 @@ const [subjectMessage, setSubjectMessage] = useState<SubjectMessage>({
                 <meta name="description" content={title} />
             </Head>
             {page !== "BUDGET" &&
-                page !== "PAYMENT" &&
+                page !== "PROJECT" &&
                 page !== "SERVICE" &&
+                page !== "PAYMENT" &&
                 page !== "SERVICESTAGE" &&
                 (
                     <div className="dark:text-gray-200 py-48 flex flex-row items-center justify-center">
@@ -127,6 +129,14 @@ const [subjectMessage, setSubjectMessage] = useState<SubjectMessage>({
                 <BudgetPage
                     getInfo
                     canSave
+                    canUpdate
+                    onSetPage={setPage}
+                    onShowMessage={handleShowMessage}
+                />
+            )}
+            {page === "PROJECT" && (
+                <ProjectPage
+                    getInfo
                     canUpdate
                     onSetPage={setPage}
                     onShowMessage={handleShowMessage}

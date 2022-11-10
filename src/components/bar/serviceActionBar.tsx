@@ -110,7 +110,7 @@ export default function ServiceActionBarForm(props: ServiceActionBarFormProps) {
         if (status?.length > 0) {
             service = { ...service, status: status }
         }
-        let serviceOld = {...service}
+        let serviceOld = { ...service }
         service = handleServiceForDB(service)
         if (props.projectId?.length > 0) {
             service = { ...service, project: { id: props.projectId } }
@@ -148,12 +148,20 @@ export default function ServiceActionBarForm(props: ServiceActionBarFormProps) {
     return (
         <ActionBar className={props.className + " bg-slate-50 dark:bg-slate-800 dark:border dark:border-gray-700"}>
             <div className="w-full flex flex-row justify-between">
-                <Button
-                    onClick={() => handleSave(props.service.status, false)}
-                    isLoading={props.isLoading}
-                >
-                    Salvar
-                </Button>
+                <div className="flex flex-row gap-2">
+                    <Button
+                        onClick={() => handleSave(props.service.status, false)}
+                        isLoading={props.isLoading}
+                    >
+                        Salvar
+                    </Button>
+                    <Button
+                        onClick={() => handleSave(props.service.status, true)}
+                        isLoading={props.isLoading}
+                    >
+                        Salvar aqui
+                    </Button>
+                </div>
                 <DropDownButton
                     isLeft
                     title="...">

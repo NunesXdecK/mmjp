@@ -166,7 +166,7 @@ export default function Layout(props: LayoutMenuProps) {
                     </div>
                     {isOpen && (
                         <div className="px-2">
-                            <LayoutMenuMobile menus={menus} onSetPage={handleSetPage} />
+                            <LayoutMenuMobile menus={menus} onSetPage={handleSetPage} onSetIsOpen={setIsOpen} />
                             <div className="pt-4 pb-3 border-t border-gray-700">
                                 <div className="flex items-center px-5">
                                     <UserCircleIcon className="block text-gray-300 h-10 w-10" aria-hidden="true" />

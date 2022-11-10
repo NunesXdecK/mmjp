@@ -19,6 +19,7 @@ interface BudgetPageProps {
     getInfo?: boolean,
     canSave?: boolean,
     canUpdate?: boolean,
+    isDisabled?: boolean,
     onSetPage?: (any) => void,
     onShowMessage?: (FeedbackMessage) => void,
 }
@@ -220,6 +221,7 @@ export default function BudgetPage(props: BudgetPageProps) {
                         <Button
                             isLoading={isLoading}
                             isHidden={!props.canUpdate}
+                            isDisabled={props.isDisabled}
                             onClick={() => {
                                 setIndex(-1)
                                 setIsFirst(true)
@@ -233,6 +235,7 @@ export default function BudgetPage(props: BudgetPageProps) {
                             isLoading={isLoading}
                             onClick={handleNewClick}
                             isHidden={!props.canSave}
+                            isDisabled={props.isDisabled}
                         >
                             <PlusIcon className="block h-4 w-4" aria-hidden="true" />
                         </Button>
@@ -246,6 +249,7 @@ export default function BudgetPage(props: BudgetPageProps) {
                         onTableRow={handlePutRows}
                         onShowClick={handleShowClick}
                         onEditClick={handleEditClick}
+                        isDisabled={props.isDisabled}
                         onTableHeader={handlePutHeaders}
                         onDeleteClick={handleDeleteClick}
                     />

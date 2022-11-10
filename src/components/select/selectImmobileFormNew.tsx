@@ -84,7 +84,6 @@ export default function SelectImmobileFormNew(props: SelectImmobileFormNewProps)
             </FormRow>
         )
     }
-
     const handlePutRows = (element: Immobile, index: number) => {
         return (
             <FormRow>
