@@ -107,7 +107,7 @@ export default function PaymentPage(props: PaymentPageProps) {
             payment,
             ...payments,
         ]
-        if (index > -1) {
+        if (payments?.length > 0 && index > -1) {
             list = [
                 payment,
                 ...payments.slice(0, (index - 1)),

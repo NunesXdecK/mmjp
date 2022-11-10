@@ -144,7 +144,7 @@ export default function BudgetPage(props: BudgetPageProps) {
             budget,
             ...budgets,
         ]
-        if (index > -1) {
+        if (budgets?.length > 0 && index > -1) {
             list = [
                 budget,
                 ...budgets.slice(0, (index - 1)),

@@ -16,7 +16,9 @@ export default async function handler(req, res) {
                 if (id) {
                     const docRef = doc(projectCollection, id)
                     let project: Project = (await getDoc(docRef)).data()
-                    resGET = { ...resGET, status: "SUCCESS", data: project.number }
+                    if (project?.number?.length > 0) {
+                        resGET = { ...resGET, status: "SUCCESS", data: project.number }
+                    }
                 } else {
                     resGET = { ...resGET, status: "ERROR", message: "ID invalido!" }
                 }

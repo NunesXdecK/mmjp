@@ -12,7 +12,10 @@ export default function SelectNumberListItem(props: SelectNumberListItemProps) {
         if (isFirst && props?.id?.length > 0) {
             fetch("api/projectNumberForShow/" + props.id).then((res) => res.json()).then((res) => {
                 setIsFirst(false)
-                setProjectNumber(res.data)
+                console.log(res)
+                if (res?.data?.length > 0) {
+                    setProjectNumber(res.data)
+                }
             })
         }
     })

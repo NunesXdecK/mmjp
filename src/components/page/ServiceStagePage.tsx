@@ -47,7 +47,7 @@ export default function ServiceStagePage(props: ServiceStagePageProps) {
     const handleDeleteClick = async (serviceStage, index) => {
         setIsLoading(true)
         let feedbackMessage: FeedbackMessage = { messages: ["Algo deu errado"], messageType: "ERROR" }
-        const res = await fetch("api/serviceStage", {
+        const res = await fetch("api/serviceStageNew", {
             method: "DELETE",
             body: JSON.stringify({ token: "tokenbemseguro", id: serviceStage.id }),
         }).then((res) => res.json())
@@ -106,7 +106,7 @@ export default function ServiceStagePage(props: ServiceStagePageProps) {
             serviceStage,
             ...serviceStages,
         ]
-        if (index > -1) {
+        if (serviceStages?.length > 0 && index > -1) {
             list = [
                 serviceStage,
                 ...serviceStages.slice(0, (index - 1)),
@@ -130,8 +130,8 @@ export default function ServiceStagePage(props: ServiceStagePageProps) {
     const handlePutHeaders = () => {
         return (
             <FormRow>
-                <FormRowColumn unit="2">Serviço</FormRowColumn>
                 <FormRowColumn unit="1">Titulo</FormRowColumn>
+                <FormRowColumn unit="2">Serviço</FormRowColumn>
                 <FormRowColumn unit="1">Responsável</FormRowColumn>
                 <FormRowColumn unit="1">Status</FormRowColumn>
                 <FormRowColumn className="hidden sm:block" unit="1">Prazo</FormRowColumn>
@@ -142,8 +142,8 @@ export default function ServiceStagePage(props: ServiceStagePageProps) {
     const handlePutRows = (element: ServiceStage) => {
         return (
             <FormRow>
-                <FormRowColumn unit="2"><ServiceNameListItem id={element.service.id} /></FormRowColumn>
                 <FormRowColumn unit="1">{element.title}</FormRowColumn>
+                <FormRowColumn unit="2"><ServiceNameListItem id={element.service.id} /></FormRowColumn>
                 <FormRowColumn unit="1"><UserNameListItem id={element.responsible.id} /></FormRowColumn>
                 <FormRowColumn unit="1">
                     {element.status === "NORMAL" && (

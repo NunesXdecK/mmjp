@@ -47,7 +47,7 @@ export default function ServicePage(props: ServicePageProps) {
     const handleDeleteClick = async (service, index) => {
         setIsLoading(true)
         let feedbackMessage: FeedbackMessage = { messages: ["Algo deu errado"], messageType: "ERROR" }
-        const res = await fetch("api/service", {
+        const res = await fetch("api/serviceNew", {
             method: "DELETE",
             body: JSON.stringify({ token: "tokenbemseguro", id: service.id }),
         }).then((res) => res.json())
@@ -108,7 +108,7 @@ export default function ServicePage(props: ServicePageProps) {
             service,
             ...services,
         ]
-        if (index > -1) {
+        if (services?.length > 0 && index > -1) {
             list = [
                 service,
                 ...services.slice(0, (index - 1)),

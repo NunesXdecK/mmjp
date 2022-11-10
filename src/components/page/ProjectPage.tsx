@@ -44,7 +44,7 @@ export default function ProjectPage(props: ProjectPageProps) {
     const handleDeleteClick = async (project, index) => {
         setIsLoading(true)
         let feedbackMessage: FeedbackMessage = { messages: ["Algo deu errado"], messageType: "ERROR" }
-        const res = await fetch("api/project", {
+        const res = await fetch("api/projectNew", {
             method: "DELETE",
             body: JSON.stringify({ token: "tokenbemseguro", id: project.id }),
         }).then((res) => res.json())
@@ -117,7 +117,7 @@ export default function ProjectPage(props: ProjectPageProps) {
             project,
             ...projects,
         ]
-        if (index > -1) {
+        if (projects?.length > 0 && index > -1) {
             list = [
                 project,
                 ...projects.slice(0, (index - 1)),

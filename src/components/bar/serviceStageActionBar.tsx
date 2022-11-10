@@ -27,6 +27,16 @@ export const handleServiceStageForDB = (serviceStage: ServiceStage) => {
     if (serviceStage.dateDue === 0) {
         serviceStage = { ...serviceStage, dateDue: handleNewDateToUTC() }
     }
+    if (serviceStage.service?.id?.length > 0) {
+        serviceStage = { ...serviceStage, service: { id: serviceStage.service.id } }
+    } else {
+        serviceStage = { ...serviceStage, service: { id: "" } }
+    }
+    if (serviceStage.responsible?.id?.length > 0) {
+        serviceStage = { ...serviceStage, responsible: { id: serviceStage.responsible.id } }
+    } else {
+        serviceStage = { ...serviceStage, responsible: { id: "" } }
+    }
     serviceStage = {
         ...serviceStage,
         title: serviceStage.title?.trim(),
@@ -51,7 +61,7 @@ export default function ServiceStageActionBarForm(props: ServiceStageActionBarFo
     const handleSaveServiceStageInner = async (serviceStage, history) => {
         let res = { status: "ERROR", id: "", serviceStage: serviceStage }
         try {
-            const saveRes = await fetch("api/serviceStage", {
+            const saveRes = await fetch("api/serviceStageNew", {
                 method: "POST",
                 body: JSON.stringify({ token: "tokenbemseguro", data: serviceStage, history: history }),
             }).then((res) => res.json())
