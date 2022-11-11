@@ -286,11 +286,9 @@ export const handleProjectValidationForDB = (project: Project) => {
         validation = { ...validation, messages: [...validation.messages, "O campo titulo está em branco."] }
     }
 
-    if (project.status !== "ORÇAMENTO") {
-        clientsCheck = project?.clients?.length > 0 ?? false
-        if (!clientsCheck) {
-            validation = { ...validation, messages: [...validation.messages, "O projeto precisa de ao menos um cliente."] }
-        }
+    clientsCheck = project?.clients?.length > 0 ?? false
+    if (!clientsCheck) {
+        validation = { ...validation, messages: [...validation.messages, "O projeto precisa de ao menos um cliente."] }
     }
 
     project.clients.map((element, index) => {
