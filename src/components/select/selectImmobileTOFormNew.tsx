@@ -60,10 +60,9 @@ export default function SelectImmobileTOFormNew(props: SelectImmobileTOFormNewPr
                             onClick={() => {
                                 setIsUnion(false)
                                 setIsDismemberment(true)
-                                handleOnSetTarget([props.valueTarget[0]])
-                                handleOnSetOrigin([])
+                                handleOnSetTarget(props.valueTarget[0] ? [props.valueTarget[0]] : [])
                             }}
-                        >
+                            >
                             Desmembramento
                         </Button>
                     )}
@@ -72,8 +71,7 @@ export default function SelectImmobileTOFormNew(props: SelectImmobileTOFormNewPr
                             onClick={() => {
                                 setIsUnion(true)
                                 setIsDismemberment(false)
-                                handleOnSetTarget([])
-                                handleOnSetOrigin([])
+                                handleOnSetOrigin(props.valueOrigin[0] ? [props.valueOrigin[0]] : [])
                             }}
                         >
                             União
