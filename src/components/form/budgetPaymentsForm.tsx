@@ -69,8 +69,8 @@ export default function BudgetPaymentsForm(props: BudgetPaymentsFormProps) {
                                 ...defaultBudgetPayment,
                                 status: props.status ?? "ORÇAMENTO",
                                 index: props.budgetPayments?.length,
-                                dateString: handleUTCToDateShow((handleNewDateToUTC() + 2592000000) + ""),
                             }])
+                            //dateString: handleUTCToDateShow((handleNewDateToUTC() + 2592000000) + ""),
                         }
                     }}>
                     <span className="block sm:hidden">+</span>

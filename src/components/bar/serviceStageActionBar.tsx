@@ -5,7 +5,7 @@ import DropDownButton from "../button/dropDownButton";
 import { FeedbackMessage } from "../modal/feedbackMessageModal";
 import { handleServiceStageValidationForDB } from "../../util/validationUtil";
 import { handleGetDateFormatedToUTC, handleNewDateToUTC } from "../../util/dateUtils";
-import { ServiceStage, defaultServiceStage } from "../../interfaces/objectInterfaces";
+import { ServiceStage, defaultServiceStage, ServiceStageStatus } from "../../interfaces/objectInterfaces";
 
 interface ServiceStageActionBarFormProps {
     serviceId?: string,
@@ -23,9 +23,6 @@ interface ServiceStageActionBarFormProps {
 export const handleServiceStageForDB = (serviceStage: ServiceStage) => {
     if (serviceStage?.dateString?.length > 0) {
         serviceStage = { ...serviceStage, dateDue: handleGetDateFormatedToUTC(serviceStage.dateString) }
-    }
-    if (serviceStage.dateDue === 0) {
-        serviceStage = { ...serviceStage, dateDue: handleNewDateToUTC() }
     }
     if (serviceStage.service?.id?.length > 0) {
         serviceStage = { ...serviceStage, service: { id: serviceStage.service.id } }
@@ -45,6 +42,21 @@ export const handleServiceStageForDB = (serviceStage: ServiceStage) => {
     return serviceStage
 }
 
+export const handleSaveServiceStageInner = async (serviceStage, history) => {
+    let res = { status: "ERROR", id: "", serviceStage: serviceStage }
+    serviceStage = handleServiceStageForDB(serviceStage)
+    try {
+        const saveRes = await fetch("api/serviceStageNew", {
+            method: "POST",
+            body: JSON.stringify({ token: "tokenbemseguro", data: serviceStage, history: history }),
+        }).then((res) => res.json())
+        res = { ...res, status: "SUCCESS", id: saveRes.id, serviceStage: { ...serviceStage, id: saveRes.id } }
+    } catch (e) {
+        console.error("Error adding document: ", e)
+    }
+    return res
+}
+
 export default function ServiceStageActionBarForm(props: ServiceStageActionBarFormProps) {
     const handleSetIsLoading = (value: boolean) => {
         if (props.onSetIsLoading) {
@@ -58,21 +70,8 @@ export default function ServiceStageActionBarForm(props: ServiceStageActionBarFo
         }
     }
 
-    const handleSaveServiceStageInner = async (serviceStage, history) => {
-        let res = { status: "ERROR", id: "", serviceStage: serviceStage }
-        try {
-            const saveRes = await fetch("api/serviceStageNew", {
-                method: "POST",
-                body: JSON.stringify({ token: "tokenbemseguro", data: serviceStage, history: history }),
-            }).then((res) => res.json())
-            res = { ...res, status: "SUCCESS", id: saveRes.id, serviceStage: { ...serviceStage, id: saveRes.id } }
-        } catch (e) {
-            console.error("Error adding document: ", e)
-        }
-        return res
-    }
 
-    const handleSave = async (status: "ORÇAMENTO" | "NORMAL" | "ARQUIVADO" | "FINALIZADO" | "PENDENTE", isForCloseModal) => {
+    const handleSave = async (status: ServiceStageStatus, isForCloseModal) => {
         const isServiceStageValid = handleServiceStageValidationForDB(props.serviceStage)
         if (!isServiceStageValid.validation) {
             const feedbackMessage: FeedbackMessage = { messages: [...isServiceStageValid.messages], messageType: "ERROR" }
@@ -116,19 +115,21 @@ export default function ServiceStageActionBarForm(props: ServiceStageActionBarFo
         <ActionBar className={props.className + " bg-slate-50 dark:bg-slate-800 dark:border dark:border-gray-700"}>
             <div className="w-full flex flex-row justify-between">
                 <Button
-                    onClick={() => handleSave(props.serviceStage.status, false)}
                     isLoading={props.isLoading}
+                    onClick={() => handleSave(props.serviceStage.status, false)}
                 >
                     Salvar
                 </Button>
                 <DropDownButton
                     isLeft
-                    title="...">
+                    title="..."
+                    isLoading={props.isLoading}
+                >
                     <div className="w-full flex flex-col">
                         <MenuButton
                             isLoading={props.isLoading}
-                            isHidden={props.serviceStage.status !== "NORMAL"}
-                            isDisabled={props.serviceStage.status !== "NORMAL"}
+                            isHidden={props.serviceStage.status !== "PARADO" && props.serviceStage.status !== "EM ANDAMENTO"}
+                            isDisabled={props.serviceStage.status !== "PARADO" && props.serviceStage.status !== "EM ANDAMENTO"}
                             onClick={() => {
                                 handleSave("FINALIZADO", true)
                             }}
@@ -137,23 +138,33 @@ export default function ServiceStageActionBarForm(props: ServiceStageActionBarFo
                         </MenuButton>
                         <MenuButton
                             isLoading={props.isLoading}
-                            isHidden={props.serviceStage.status !== "NORMAL"}
-                            isDisabled={props.serviceStage.status !== "NORMAL"}
+                            isHidden={props.serviceStage.status !== "PARADO" && props.serviceStage.status !== "EM ANDAMENTO"}
+                            isDisabled={props.serviceStage.status !== "PARADO" && props.serviceStage.status !== "EM ANDAMENTO"}
                             onClick={() => {
-                                handleSave("ARQUIVADO", true)
+                                handleSave("PENDENTE", true)
                             }}
                         >
-                            Arquivar etapa
+                            Colocar em pendencia
                         </MenuButton>
                         <MenuButton
                             isLoading={props.isLoading}
-                            isHidden={props.serviceStage.status === "NORMAL"}
-                            isDisabled={props.serviceStage.status === "NORMAL"}
+                            isHidden={props.serviceStage.status === "PARADO"}
+                            isDisabled={props.serviceStage.status === "PARADO"}
                             onClick={() => {
-                                handleSave("NORMAL", true)
+                                handleSave("EM ANDAMENTO", true)
                             }}
                         >
-                            Reativar etapa
+                            Colocar em andamento
+                        </MenuButton>
+                        <MenuButton
+                            isLoading={props.isLoading}
+                            isHidden={props.serviceStage.status === "PARADO"}
+                            isDisabled={props.serviceStage.status === "PARADO"}
+                            onClick={() => {
+                                handleSave("PARADO", true)
+                            }}
+                        >
+                            Parar etapa
                         </MenuButton>
                     </div>
                 </DropDownButton>

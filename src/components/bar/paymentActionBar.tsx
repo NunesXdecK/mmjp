@@ -5,7 +5,7 @@ import DropDownButton from "../button/dropDownButton";
 import { handleRemoveCurrencyMask } from "../../util/maskUtil";
 import { FeedbackMessage } from "../modal/feedbackMessageModal";
 import { handlePaymentValidationForDB } from "../../util/validationUtil";
-import { Payment, defaultPayment } from "../../interfaces/objectInterfaces";
+import { Payment, defaultPayment, PaymentStatus } from "../../interfaces/objectInterfaces";
 import { handleGetDateFormatedToUTC, handleNewDateToUTC } from "../../util/dateUtils";
 
 interface PaymentActionBarFormProps {
@@ -25,17 +25,25 @@ export const handlePaymentForDB = (payment: Payment) => {
     if (payment?.dateString?.length > 0) {
         payment = { ...payment, dateDue: handleGetDateFormatedToUTC(payment.dateString) }
     }
-    if (payment.dateDue === 0) {
-        payment = { ...payment, dateDue: handleNewDateToUTC() }
-    }
-    if (payment?.value?.length > 0) {
-        payment = { ...payment, value: handleRemoveCurrencyMask(payment.value) }
-    }
     payment = {
         ...payment,
         description: payment.description?.trim(),
     }
     return payment
+}
+
+export const handleSavePaymentInner = async (payment, history) => {
+    let res = { status: "ERROR", id: "", payment: payment }
+    try {
+        const saveRes = await fetch("api/payment", {
+            method: "POST",
+            body: JSON.stringify({ token: "tokenbemseguro", data: payment, history: history }),
+        }).then((res) => res.json())
+        res = { ...res, status: "SUCCESS", id: saveRes.id, payment: { ...payment, id: saveRes.id } }
+    } catch (e) {
+        console.error("Error adding document: ", e)
+    }
+    return res
 }
 
 export default function PaymentActionBarForm(props: PaymentActionBarFormProps) {
@@ -51,21 +59,8 @@ export default function PaymentActionBarForm(props: PaymentActionBarFormProps) {
         }
     }
 
-    const handleSavePaymentInner = async (payment, history) => {
-        let res = { status: "ERROR", id: "", payment: payment }
-        try {
-            const saveRes = await fetch("api/payment", {
-                method: "POST",
-                body: JSON.stringify({ token: "tokenbemseguro", data: payment, history: history }),
-            }).then((res) => res.json())
-            res = { ...res, status: "SUCCESS", id: saveRes.id, payment: { ...payment, id: saveRes.id } }
-        } catch (e) {
-            console.error("Error adding document: ", e)
-        }
-        return res
-    }
 
-    const handleSave = async (status: "NORMAL" | "ARQUIVADO" | "FINALIZADO" | "PENDENTE", isForCloseModal) => {
+    const handleSave = async (status: PaymentStatus, isForCloseModal) => {
         const isPaymentValid = handlePaymentValidationForDB(props.payment)
         if (!isPaymentValid.validation) {
             const feedbackMessage: FeedbackMessage = { messages: [...isPaymentValid.messages], messageType: "ERROR" }
@@ -109,41 +104,33 @@ export default function PaymentActionBarForm(props: PaymentActionBarFormProps) {
         <ActionBar className={props.className + " bg-slate-50 dark:bg-slate-800 dark:border dark:border-gray-700"}>
             <div className="w-full flex flex-row justify-between">
                 <Button
-                    onClick={() => handleSave(props.payment.status, false)}
                     isLoading={props.isLoading}
+                    onClick={() => handleSave(props.payment.status, false)}
                 >
                     Salvar
                 </Button>
                 <DropDownButton
                     isLeft
-                    title="...">
+                    title="..."
+                    isLoading={props.isLoading}
+                >
                     <div className="w-full flex flex-col">
                         <MenuButton
                             isLoading={props.isLoading}
-                            isHidden={props.payment.status !== "NORMAL"}
-                            isDisabled={props.payment.status !== "NORMAL"}
+                            isHidden={props.payment.status === "PAGO"}
+                            isDisabled={props.payment.status === "PAGO"}
                             onClick={() => {
-                                handleSave("FINALIZADO", true)
+                                handleSave("PAGO", true)
                             }}
                         >
                             Finalizar pagamento
                         </MenuButton>
                         <MenuButton
                             isLoading={props.isLoading}
-                            isHidden={props.payment.status !== "NORMAL"}
-                            isDisabled={props.payment.status !== "NORMAL"}
+                            isHidden={props.payment.status === "EM ABERTO"}
+                            isDisabled={props.payment.status === "EM ABERTO"}
                             onClick={() => {
-                                handleSave("ARQUIVADO", true)
-                            }}
-                        >
-                            Arquivar pagamento
-                        </MenuButton>
-                        <MenuButton
-                            isLoading={props.isLoading}
-                            isHidden={props.payment.status === "NORMAL"}
-                            isDisabled={props.payment.status === "NORMAL"}
-                            onClick={() => {
-                                handleSave("NORMAL", true)
+                                handleSave("EM ABERTO", true)
                             }}
                         >
                             Reativar pagamento

@@ -6,11 +6,12 @@ import { useEffect, useState } from "react"
 import WindowModal from "../modal/windowModal"
 import FormRowColumn from "../form/formRowColumn"
 import ProjectDataForm from "../form/projectDataForm"
-import ProjectActionBarForm from "../bar/projectActionBar"
+import ProjectActionBarForm, { handleSaveProjectInner } from "../bar/projectActionBar"
 import { PlusIcon, RefreshIcon } from "@heroicons/react/solid"
 import { FeedbackMessage } from "../modal/feedbackMessageModal"
 import { handleUTCToDateShow, handleNewDateToUTC } from "../../util/dateUtils"
 import { Project, Company, defaultProject, Person } from "../../interfaces/objectInterfaces"
+import SwiftInfoButton from "../button/switchInfoButton"
 
 interface ProjectPageProps {
     id?: string,
@@ -163,21 +164,11 @@ export default function ProjectPage(props: ProjectPageProps) {
                 <FormRowColumn unit="3">{element.title}</FormRowColumn>
                 <FormRowColumn unit="1">{element.number}</FormRowColumn>
                 <FormRowColumn unit="1">
-                    {element.status === "NORMAL" && (
-                        <span className="rounded text-slate-600 bg-slate-300 py-1 px-2 text-xs font-bold">
-                            {element.status}
-                        </span>
-                    )}
-                    {element.status === "ARQUIVADO" && (
-                        <span className="rounded text-red-600 bg-red-300 py-1 px-2 text-xs font-bold">
-                            {element.status}
-                        </span>
-                    )}
-                    {element.status === "FINALIZADO" && (
-                        <span className="rounded text-green-600 bg-green-300 py-1 px-2 text-xs font-bold">
-                            {element.status}
-                        </span>
-                    )}
+                    <SwiftInfoButton
+                        isDisabled={true}
+                        id={element.id + "-"}
+                        value={element.status}
+                    />
                 </FormRowColumn>
                 <FormRowColumn className="hidden sm:block" unit="1">{handleUTCToDateShow(element.dateDue.toString())}</FormRowColumn>
             </FormRow>
@@ -275,6 +266,7 @@ export default function ProjectPage(props: ProjectPageProps) {
                         onSet={setProject}
                         isLoading={isLoading}
                         onShowMessage={handleShowMessage}
+                        isDisabled={project.status === "FINALIZADO"}
                     />
                 )}
                 {isForShow && (

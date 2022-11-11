@@ -10,9 +10,10 @@ import { FeedbackMessage } from "../modal/feedbackMessageModal"
 import ProjectNumberListItem from "../list/projectNumberListItem"
 import { Service, defaultService } from "../../interfaces/objectInterfaces"
 import { handleUTCToDateShow, handleNewDateToUTC } from "../../util/dateUtils"
-import ServiceActionBarForm from "../bar/serviceActionBar"
+import ServiceActionBarForm, { handleSaveServiceInner } from "../bar/serviceActionBar"
 import ServiceDataForm from "../form/serviceDataForm"
 import { handleMountNumberCurrency } from "../../util/maskUtil"
+import SwiftInfoButton from "../button/switchInfoButton"
 
 interface ServicePageProps {
     id?: string,
@@ -68,8 +69,8 @@ export default function ServicePage(props: ServicePageProps) {
     const handleNewClick = async () => {
         setService({
             ...defaultService,
-            status: "NORMAL",
-            dateString: handleUTCToDateShow(handleNewDateToUTC().toString())
+            status: "PARADO",
+            dateString: ""
         })
         setIsRegister(true)
         setIndex(-1)
@@ -156,21 +157,29 @@ export default function ServicePage(props: ServicePageProps) {
                 <FormRowColumn unit="1"><ProjectNumberListItem id={element.project.id} /></FormRowColumn>
                 <FormRowColumn unit="1">{handleMountNumberCurrency(element.total.toString(), ".", ",", 3, 2)}</FormRowColumn>
                 <FormRowColumn unit="1">
-                    {element.status === "NORMAL" && (
-                        <span className="rounded text-slate-600 bg-slate-300 py-1 px-2 text-xs font-bold">
-                            {element.status}
-                        </span>
-                    )}
-                    {element.status === "ARQUIVADO" && (
-                        <span className="rounded text-red-600 bg-red-300 py-1 px-2 text-xs font-bold">
-                            {element.status}
-                        </span>
-                    )}
-                    {element.status === "FINALIZADO" && (
-                        <span className="rounded text-green-600 bg-green-300 py-1 px-2 text-xs font-bold">
-                            {element.status}
-                        </span>
-                    )}
+                    <SwiftInfoButton
+                        id={element.id + "-"}
+                        value={element.status}
+                        values={[
+                            "EM ANDAMENTO",
+                            "FINALIZADO",
+                            "PARADO",
+                            "PENDENTE",
+                        ]}
+                        onClick={async (value) => {
+                            const service = { ...element, status: value }
+                            let feedbackMessage: FeedbackMessage = { messages: ["Algo deu errado!"], messageType: "ERROR" }
+                            setIsLoading(true)
+                            const res = await handleSaveServiceInner(service, true)
+                            setIsLoading(false)
+                            if (res.status === "ERROR") {
+                                handleShowMessage(feedbackMessage)
+                                return
+                            }
+                            feedbackMessage = { messages: ["Sucesso!"], messageType: "SUCCESS" }
+                            handleAfterSave(feedbackMessage, service, true)
+                        }}
+                    />
                 </FormRowColumn>
                 <FormRowColumn className="hidden sm:block" unit="1">{handleUTCToDateShow(element.dateDue.toString())}</FormRowColumn>
             </FormRow>
@@ -281,6 +290,7 @@ export default function ServicePage(props: ServicePageProps) {
                             service={service}
                             onSet={setService}
                             isLoading={isLoading}
+                            isDisabled={service.status === "FINALIZADO"}
                         />
                     )}
                     {isForShow && (

@@ -158,12 +158,7 @@ export default function BudgetView(props: BudgetViewProps) {
                             >
                                 <InfoView title="Projeto">{budget.title}</InfoView>
                                 <InfoView title="Data">{handleUTCToDateShow(budget.dateDue.toString())}</InfoView>
-                                {budget.status === "FINALIZADO" && (
-                                    <InfoView title="Status"><span className="rounded-sm px-2 py-1 text-green-100 bg-green-600 text-[0.8rem] font-bold">{budget.status}</span></InfoView>
-                                )}
-                                {budget.status === "ARQUIVADO" && (
-                                    <InfoView title="Status"><span className="rounded-sm px-2 py-1 text-orange-100 bg-orange-600 text-[0.8rem] font-bold">{budget.status}</span></InfoView>
-                                )}
+                                
                                 <ScrollDownTransition isOpen={false}>
                                     <InfoView title="Data criação">{handleUTCToDateShow(budget.dateInsertUTC.toString())}</InfoView>
                                     {budget.dateLastUpdateUTC > 0 && <InfoView title="Data atualização">{handleUTCToDateShow(budget.dateLastUpdateUTC.toString())}</InfoView>}

@@ -6,7 +6,7 @@ import DropDownButton from "../button/dropDownButton";
 import StartProjectButton from "../button/startProjectButton";
 import { FeedbackMessage } from "../modal/feedbackMessageModal";
 import { handleProjectValidationForDB } from "../../util/validationUtil";
-import { Project, defaultProject } from "../../interfaces/objectInterfaces";
+import { Project, defaultProject, ProjectStatus } from "../../interfaces/objectInterfaces";
 import { handleGetDateFormatedToUTC, handleNewDateToUTC } from "../../util/dateUtils";
 
 interface ProjectActionBarFormProps {
@@ -19,6 +19,45 @@ interface ProjectActionBarFormProps {
     onSetIsLoading?: (boolean) => void,
     onAfterSave?: (object, any?, boolean?) => void,
     onShowMessage?: (FeedbackMessage) => void,
+}
+
+export const handleProjectForDB = (project: Project) => {
+    if (project?.dateString?.length > 0) {
+        project = { ...project, dateDue: handleGetDateFormatedToUTC(project.dateString) }
+    }
+    let clients = []
+    if (project.clients && project.clients.length) {
+        project.clients?.map((element, index) => {
+            if (element && "id" in element && element.id.length) {
+                if ("cpf" in element) {
+                    clients = [...clients, { id: element.id, cpf: "" }]
+                } else if ("cnpj" in element) {
+                    clients = [...clients, { id: element.id, cnpj: "" }]
+                }
+            }
+        })
+    }
+    project = {
+        ...project,
+        clients: clients,
+        title: project.title.trim(),
+    }
+    return project
+}
+
+export const handleSaveProjectInner = async (project, history) => {
+    let res = { status: "ERROR", id: "", project: project }
+    project = handleProjectForDB(project)
+    try {
+        const saveRes = await fetch("api/projectNew", {
+            method: "POST",
+            body: JSON.stringify({ token: "tokenbemseguro", data: project, history: history }),
+        }).then((res) => res.json())
+        res = { ...res, status: "SUCCESS", id: saveRes.id, project: { ...project, id: saveRes.id } }
+    } catch (e) {
+        console.error("Error adding document: ", e)
+    }
+    return res
 }
 
 export default function ProjectActionBarForm(props: ProjectActionBarFormProps) {
@@ -34,48 +73,8 @@ export default function ProjectActionBarForm(props: ProjectActionBarFormProps) {
         }
     }
 
-    const handleProjectForDB = (project: Project) => {
-        if (project?.dateString?.length > 0) {
-            project = { ...project, dateDue: handleGetDateFormatedToUTC(project.dateString) }
-        }
-        if (project.dateDue === 0) {
-            project = { ...project, dateDue: handleNewDateToUTC() }
-        }
-        let clients = []
-        if (project.clients && project.clients.length) {
-            project.clients?.map((element, index) => {
-                if (element && "id" in element && element.id.length) {
-                    if ("cpf" in element) {
-                        clients = [...clients, { id: element.id, cpf: "" }]
-                    } else if ("cnpj" in element) {
-                        clients = [...clients, { id: element.id, cnpj: "" }]
-                    }
-                }
-            })
-        }
-        project = {
-            ...project,
-            clients: clients,
-            title: project.title.trim(),
-        }
-        return project
-    }
 
-    const handleSaveProjectInner = async (project, history) => {
-        let res = { status: "ERROR", id: "", project: project }
-        try {
-            const saveRes = await fetch("api/projectNew", {
-                method: "POST",
-                body: JSON.stringify({ token: "tokenbemseguro", data: project, history: history }),
-            }).then((res) => res.json())
-            res = { ...res, status: "SUCCESS", id: saveRes.id, project: { ...project, id: saveRes.id } }
-        } catch (e) {
-            console.error("Error adding document: ", e)
-        }
-        return res
-    }
-
-    const handleSave = async (status: "ORÇAMENTO" | "NORMAL" | "ARQUIVADO" | "FINALIZADO", isForCloseModal) => {
+    const handleSave = async (status: ProjectStatus, isForCloseModal) => {
         const isProjectValid = handleProjectValidationForDB(props.project)
         if (!isProjectValid.validation) {
             const feedbackMessage: FeedbackMessage = { messages: [...isProjectValid.messages], messageType: "ERROR" }
@@ -121,32 +120,6 @@ export default function ProjectActionBarForm(props: ProjectActionBarFormProps) {
                 >
                     Salvar
                 </Button>
-                <DropDownButton
-                    isLeft
-                    title="...">
-                    <div className="w-full flex flex-col">
-                        <MenuButton
-                            isLoading={props.isLoading}
-                            isHidden={props.project.status !== "ARQUIVADO"}
-                            isDisabled={props.project.status !== "ARQUIVADO"}
-                            onClick={() => {
-                                handleSave("NORMAL", true)
-                            }}
-                        >
-                            Reativar projeto
-                        </MenuButton>
-                        <MenuButton
-                            isLoading={props.isLoading}
-                            isHidden={props.project.status !== "NORMAL"}
-                            isDisabled={props.project.status !== "NORMAL"}
-                            onClick={() => {
-                                handleSave("ARQUIVADO", true)
-                            }}
-                        >
-                            Arquivar projeto
-                        </MenuButton>
-                    </div>
-                </DropDownButton>
             </div>
         </ActionBar>
     )

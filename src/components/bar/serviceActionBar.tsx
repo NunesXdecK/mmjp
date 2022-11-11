@@ -5,7 +5,7 @@ import DropDownButton from "../button/dropDownButton";
 import { handleMountNumberCurrency, handleRemoveCurrencyMask } from "../../util/maskUtil";
 import { FeedbackMessage } from "../modal/feedbackMessageModal";
 import { handleServiceValidationForDBNew } from "../../util/validationUtil";
-import { Service, defaultService } from "../../interfaces/objectInterfaces";
+import { Service, defaultService, ServiceStatus } from "../../interfaces/objectInterfaces";
 import { handleGetDateFormatedToUTC, handleNewDateToUTC } from "../../util/dateUtils";
 
 interface ServiceActionBarFormProps {
@@ -24,9 +24,6 @@ interface ServiceActionBarFormProps {
 export const handleServiceForDB = (service: Service) => {
     if (service?.dateString?.length > 0) {
         service = { ...service, dateDue: handleGetDateFormatedToUTC(service.dateString) }
-    }
-    if (service.dateDue === 0) {
-        service = { ...service, dateDue: handleNewDateToUTC() }
     }
     if (service.title?.length > 0) {
         service = { ...service, title: service.title?.trim() }
@@ -71,6 +68,21 @@ export const handleServiceForDB = (service: Service) => {
     return service
 }
 
+export const handleSaveServiceInner = async (service, history) => {
+    let res = { status: "ERROR", id: "", service: service }
+    service = handleServiceForDB(service)
+    try {
+        const saveRes = await fetch("api/serviceNew", {
+            method: "POST",
+            body: JSON.stringify({ token: "tokenbemseguro", data: service, history: history }),
+        }).then((res) => res.json())
+        res = { ...res, status: "SUCCESS", id: saveRes.id, service: { ...service, id: saveRes.id } }
+    } catch (e) {
+        console.error("Error adding document: ", e)
+    }
+    return res
+}
+
 export default function ServiceActionBarForm(props: ServiceActionBarFormProps) {
     const handleSetIsLoading = (value: boolean) => {
         if (props.onSetIsLoading) {
@@ -84,21 +96,7 @@ export default function ServiceActionBarForm(props: ServiceActionBarFormProps) {
         }
     }
 
-    const handleSaveServiceInner = async (service, history) => {
-        let res = { status: "ERROR", id: "", service: service }
-        try {
-            const saveRes = await fetch("api/serviceNew", {
-                method: "POST",
-                body: JSON.stringify({ token: "tokenbemseguro", data: service, history: history }),
-            }).then((res) => res.json())
-            res = { ...res, status: "SUCCESS", id: saveRes.id, service: { ...service, id: saveRes.id } }
-        } catch (e) {
-            console.error("Error adding document: ", e)
-        }
-        return res
-    }
-
-    const handleSave = async (status: "ORÇAMENTO" | "NORMAL" | "ARQUIVADO" | "FINALIZADO" | "PENDENTE", isForCloseModal) => {
+    const handleSave = async (status: ServiceStatus, isForCloseModal) => {
         const isServiceValid = handleServiceValidationForDBNew(props.service)
         if (!isServiceValid.validation) {
             const feedbackMessage: FeedbackMessage = { messages: [...isServiceValid.messages], messageType: "ERROR" }
@@ -111,7 +109,6 @@ export default function ServiceActionBarForm(props: ServiceActionBarFormProps) {
             service = { ...service, status: status }
         }
         let serviceOld = { ...service }
-        service = handleServiceForDB(service)
         if (props.projectId?.length > 0) {
             service = { ...service, project: { id: props.projectId } }
         }
@@ -150,51 +147,63 @@ export default function ServiceActionBarForm(props: ServiceActionBarFormProps) {
             <div className="w-full flex flex-row justify-between">
                 <div className="flex flex-row gap-2">
                     <Button
-                        onClick={() => handleSave(props.service.status, true)}
                         isLoading={props.isLoading}
+                        onClick={() => handleSave(props.service.status, true)}
                     >
                         Salvar
                     </Button>
                     <Button
-                        onClick={() => handleSave(props.service.status, false)}
                         isLoading={props.isLoading}
+                        onClick={() => handleSave(props.service.status, false)}
                     >
                         Salvar e sair
                     </Button>
                 </div>
                 <DropDownButton
                     isLeft
-                    title="...">
+                    title="..."
+                    isLoading={props.isLoading}
+                >
                     <div className="w-full flex flex-col">
                         <MenuButton
                             isLoading={props.isLoading}
-                            isHidden={props.service.status !== "NORMAL"}
-                            isDisabled={props.service.status !== "NORMAL"}
+                            isHidden={props.service.status !== "PARADO" && props.service.status !== "EM ANDAMENTO"}
+                            isDisabled={props.service.status !== "PARADO" && props.service.status !== "EM ANDAMENTO"}
                             onClick={() => {
                                 handleSave("FINALIZADO", true)
                             }}
                         >
-                            Finalizar serviço
+                            Finalizar etapa
                         </MenuButton>
                         <MenuButton
                             isLoading={props.isLoading}
-                            isHidden={props.service.status !== "NORMAL"}
-                            isDisabled={props.service.status !== "NORMAL"}
+                            isHidden={props.service.status !== "PARADO" && props.service.status !== "EM ANDAMENTO"}
+                            isDisabled={props.service.status !== "PARADO" && props.service.status !== "EM ANDAMENTO"}
                             onClick={() => {
-                                handleSave("ARQUIVADO", true)
+                                handleSave("PENDENTE", true)
                             }}
                         >
-                            Arquivar serviço
+                            Colocar em pendencia
                         </MenuButton>
                         <MenuButton
                             isLoading={props.isLoading}
-                            isHidden={props.service.status === "NORMAL"}
-                            isDisabled={props.service.status === "NORMAL"}
+                            isHidden={props.service.status === "PARADO"}
+                            isDisabled={props.service.status === "PARADO"}
                             onClick={() => {
-                                handleSave("NORMAL", true)
+                                handleSave("EM ANDAMENTO", true)
                             }}
                         >
-                            Reativar serviço
+                            Colocar em andamento
+                        </MenuButton>
+                        <MenuButton
+                            isLoading={props.isLoading}
+                            isHidden={props.service.status === "PARADO"}
+                            isDisabled={props.service.status === "PARADO"}
+                            onClick={() => {
+                                handleSave("PARADO", true)
+                            }}
+                        >
+                            Parar etapa
                         </MenuButton>
                     </div>
                 </DropDownButton>

@@ -47,10 +47,9 @@ export default function StartProjectButton(props: StartProjectButtonProps) {
             let project: Project = {
                 ...defaultProject,
                 number: number,
-                status: "NORMAL",
+                status: "PARADO",
                 clients: [client],
                 title: props.budget.title,
-                dateDue: props.budget.dateDue,
                 budget: { id: props.budget.id },
             }
             //save project
@@ -75,17 +74,16 @@ export default function StartProjectButton(props: StartProjectButtonProps) {
                 await Promise.all(
                     props?.budget?.services?.map(async (element, index) => {
                         let service: BudgetService = element
-                        let serviceNew =
+                        let serviceNew: Service =
                         {
                             ...defaultService,
-                            status: "NORMAL",
+                            status: "PARADO",
                             title: service.title,
                             value: service.value,
                             total: service.total,
                             index: service.index,
                             quantity: service.quantity,
                             project: { id: projectSaveRes?.id },
-                            dateDue: props.budget.dateDue,
                             professional: { id: professional.id },
                         }
                         await fetch("api/serviceNew", {
@@ -101,7 +99,7 @@ export default function StartProjectButton(props: StartProjectButtonProps) {
                         let paymentNew: Payment =
                         {
                             ...defaultPayment,
-                            status: "NORMAL",
+                            status: "EM ABERTO",
                             value: payment.value,
                             index: payment.index,
                             dateDue: payment.dateDue,
@@ -128,8 +126,8 @@ export default function StartProjectButton(props: StartProjectButtonProps) {
                 <MenuButton
                     isLoading={props.isLoading}
                     onClick={handleCreateProject}
-                    isHidden={props.budget.status !== "FINALIZADO"}
-                    isDisabled={props.budget.status !== "FINALIZADO"}
+                    isHidden={props.budget.status !== "APROVADO"}
+                    isDisabled={props.budget.status !== "APROVADO"}
                 >
                     Iniciar projeto
                 </MenuButton>

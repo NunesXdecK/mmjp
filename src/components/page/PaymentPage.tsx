@@ -10,9 +10,11 @@ import { FeedbackMessage } from "../modal/feedbackMessageModal"
 import ProjectNumberListItem from "../list/projectNumberListItem"
 import { Payment, defaultPayment } from "../../interfaces/objectInterfaces"
 import { handleUTCToDateShow, handleNewDateToUTC } from "../../util/dateUtils"
-import PaymentActionBarForm from "../bar/paymentActionBar"
+import PaymentActionBarForm, { handleSavePaymentInner } from "../bar/paymentActionBar"
 import PaymentForm from "../form/paymentForm"
 import { handleMountNumberCurrency } from "../../util/maskUtil"
+import SwiftInfoButton from "../button/switchInfoButton"
+import { handleSaveProjectInner } from "../bar/projectActionBar"
 
 interface PaymentPageProps {
     id?: string,
@@ -68,8 +70,8 @@ export default function PaymentPage(props: PaymentPageProps) {
     const handleNewClick = async () => {
         setPayment({
             ...defaultPayment,
-            status: "NORMAL",
-            dateString: handleUTCToDateShow(handleNewDateToUTC().toString()),
+            status: "EM ABERTO",
+            dateString: "",
         })
         setIsRegister(true)
         setIndex(-1)
@@ -155,21 +157,28 @@ export default function PaymentPage(props: PaymentPageProps) {
                 <FormRowColumn unit="1"><ProjectNumberListItem id={element.project.id} /></FormRowColumn>
                 <FormRowColumn unit="1">{handleMountNumberCurrency(element.value.toString(), ".", ",", 3, 2)}</FormRowColumn>
                 <FormRowColumn unit="1">
-                    {element.status === "NORMAL" && (
-                        <span className="rounded text-slate-600 bg-slate-300 py-1 px-2 text-xs font-bold">
-                            {element.status}
-                        </span>
-                    )}
-                    {element.status === "ARQUIVADO" && (
-                        <span className="rounded text-red-600 bg-red-300 py-1 px-2 text-xs font-bold">
-                            {element.status}
-                        </span>
-                    )}
-                    {element.status === "FINALIZADO" && (
-                        <span className="rounded text-green-600 bg-green-300 py-1 px-2 text-xs font-bold">
-                            {element.status}
-                        </span>
-                    )}
+                    <SwiftInfoButton
+                        id={element.id + "-"}
+                        value={element.status}
+                        isDisabled={props.isDisabled}
+                        values={[
+                            "EM ABERTO",
+                            "PAGO",
+                        ]}
+                        onClick={async (value) => {
+                            const payment = { ...element, status: value }
+                            let feedbackMessage: FeedbackMessage = { messages: ["Algo deu errado!"], messageType: "ERROR" }
+                            setIsLoading(true)
+                            const res = await handleSavePaymentInner(payment, true)
+                            setIsLoading(false)
+                            if (res.status === "ERROR") {
+                                handleShowMessage(feedbackMessage)
+                                return
+                            }
+                            feedbackMessage = { messages: ["Sucesso!"], messageType: "SUCCESS" }
+                            handleAfterSave(feedbackMessage, payment, true)
+                        }}
+                    />
                 </FormRowColumn>
                 <FormRowColumn className="hidden sm:block" unit="1">{handleUTCToDateShow(element.dateDue.toString())}</FormRowColumn>
             </FormRow>
@@ -281,6 +290,7 @@ export default function PaymentPage(props: PaymentPageProps) {
                             payment={payment}
                             onSet={setPayment}
                             isLoading={isLoading}
+                            isDisabled={payment.status === "PAGO"}
                         />
                     )}
                     {isForShow && (

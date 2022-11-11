@@ -87,10 +87,7 @@ export default function BudgetDataForm(props: BudgetDataFormProps) {
                                         "União",
                                         "Licenciamento"
                                     ]}
-                                    isDisabled={
-                                        props.isDisabled ||
-                                        (props.budget.status === "FINALIZADO" || props.budget.status === "ARQUIVADO")
-                                    }
+                                    isDisabled={props.isDisabled}
                                 />
                             </FormRowColumn>
                             <FormRowColumn unit="2">
@@ -104,10 +101,7 @@ export default function BudgetDataForm(props: BudgetDataFormProps) {
                                     value={props.budget.dateString}
                                     onValidate={handleChangeFormValidation}
                                     id={"budget-date" + (props.index ? "-" + props.index : "")}
-                                    isDisabled={
-                                        props.isDisabled ||
-                                        (props.budget.status === "FINALIZADO" || props.budget.status === "ARQUIVADO")
-                                    }
+                                    isDisabled={props.isDisabled}
                                 />
                             </FormRowColumn>
                         </FormRow>
@@ -120,10 +114,7 @@ export default function BudgetDataForm(props: BudgetDataFormProps) {
                                     isLoading={props.isLoading}
                                     value={props.budget.clients[0]?.name}
                                     id={"budget-client" + (props.index ? "-" + props.index : "")}
-                                    isDisabled={
-                                        props.isDisabled ||
-                                        (props.budget.status === "FINALIZADO" || props.budget.status === "ARQUIVADO")
-                                    }
+                                    isDisabled={props.isDisabled}
                                 />
                             </FormRowColumn>
                         </FormRow>
@@ -137,9 +128,7 @@ export default function BudgetDataForm(props: BudgetDataFormProps) {
                         onShowMessage={props.onShowMessage}
                         budgetServices={props.budget.services}
                         id={"budget-service-form" + (props.index ? "-" + props.index : "")}
-                        isDisabled={props.isDisabled ||
-                            (props.budget.status === "FINALIZADO" ||
-                                props.budget.status === "ARQUIVADO")}
+                        isDisabled={props.isDisabled}
                     />
                     <BudgetPaymentsForm
                         title="Pagamentos"
@@ -150,9 +139,7 @@ export default function BudgetDataForm(props: BudgetDataFormProps) {
                         onShowMessage={props.onShowMessage}
                         budgetPayments={props.budget.payments}
                         id={"budget-payment-form" + (props.index ? "-" + props.index : "")}
-                        isDisabled={props.isDisabled ||
-                            (props.budget.status === "FINALIZADO" ||
-                                props.budget.status === "ARQUIVADO")}
+                        isDisabled={props.isDisabled}
                     />
                 </>
             )}

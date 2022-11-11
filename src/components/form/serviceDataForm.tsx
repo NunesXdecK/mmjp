@@ -105,18 +105,15 @@ export default function ServiceDataForm(props: ServiceDataFormProps) {
                         <InputTextAutoComplete
                             title="Titulo"
                             onBlur={props.onBlur}
+                            onSetText={handleSetTitle}
                             validation={NOT_NULL_MARK}
                             value={props.service.title}
                             isLoading={props.isLoading}
-                            onSetText={handleSetTitle}
+                            isDisabled={props.isDisabled}
                             validationMessage="Titulo em branco."
                             onValidate={handleChangeFormValidation}
                             id={"title-service-" + (props.index ?? 0) + "-" + props.id}
                             sugestions={["Ambiental", "Desmembramento", "Georeferenciamento", "União", "Licenciamento"]}
-                            isDisabled={
-                                props.isDisabled ||
-                                (props.service?.status === "FINALIZADO" || props.service?.status === "ARQUIVADO")
-                            }
                         />
                     </FormRowColumn>
                     <FormRowColumn unit="2">
@@ -125,15 +122,12 @@ export default function ServiceDataForm(props: ServiceDataFormProps) {
                             title="Prazo"
                             maxLength={10}
                             onBlur={props.onBlur}
-                            isLoading={props.isLoading}
-                            value={props.service.dateString}
                             onSetText={handleSetDate}
+                            isLoading={props.isLoading}
+                            isDisabled={props.isDisabled}
+                            value={props.service.dateString}
                             onValidate={handleChangeFormValidation}
                             id={"date-due-service-" + props.index + "-" + props.id}
-                            isDisabled={
-                                props.isDisabled ||
-                                (props.service?.status === "FINALIZADO" || props.service?.status === "ARQUIVADO")
-                            }
                         />
                     </FormRowColumn>
                 </FormRow>
@@ -142,15 +136,12 @@ export default function ServiceDataForm(props: ServiceDataFormProps) {
                         <InputTextCurrency
                             title="Valor"
                             onBlur={props.onBlur}
+                            onSet={handleSetValue}
                             isLoading={props.isLoading}
                             value={props.service.value}
-                            onSet={handleSetValue}
+                            isDisabled={props.isDisabled}
                             onValidate={handleChangeFormValidation}
                             id={"value-service-" + (props.index ?? 0) + "-" + props.id}
-                            isDisabled={
-                                props.isDisabled ||
-                                (props.service?.status === "FINALIZADO" || props.service?.status === "ARQUIVADO")
-                            }
                         />
                     </FormRowColumn>
                     <FormRowColumn unit="2">
@@ -160,13 +151,10 @@ export default function ServiceDataForm(props: ServiceDataFormProps) {
                             validation={NUMBER_MARK}
                             isLoading={props.isLoading}
                             onSetText={handleSetQuantity}
+                            isDisabled={props.isDisabled}
                             value={props.service.quantity}
                             onValidate={handleChangeFormValidation}
                             id={"quantity-service-" + (props.index ?? 0) + "-" + props.id}
-                            isDisabled={
-                                props.isDisabled ||
-                                (props.service?.status === "FINALIZADO" || props.service?.status === "ARQUIVADO")
-                            }
                         />
                     </FormRowColumn>
                     <FormRowColumn unit="2" className="flex flex-col sm:flex-row">
@@ -186,12 +174,9 @@ export default function ServiceDataForm(props: ServiceDataFormProps) {
                             onBlur={props.onBlur}
                             isLoading={props.isLoading}
                             onSet={handleSetProfessional}
+                            isDisabled={props.isDisabled}
                             value={props.service?.professional?.title}
                             id={"budget-professional" + (props.index ? "-" + props.index : "")}
-                            isDisabled={
-                                props.isDisabled ||
-                                (props.service?.status === "FINALIZADO" || props.service?.status === "ARQUIVADO")
-                            }
                         />
                     </FormRowColumn>
                 </FormRow>
@@ -201,13 +186,10 @@ export default function ServiceDataForm(props: ServiceDataFormProps) {
                             title="Descrição"
                             onBlur={props.onBlur}
                             isLoading={props.isLoading}
+                            isDisabled={props.isDisabled}
                             onSetText={handleSetDescription}
                             value={props.service.description}
                             id={"description-service-" + props.index + "-" + props.id}
-                            isDisabled={
-                                props.isDisabled ||
-                                (props.service?.status === "FINALIZADO" || props.service?.status === "ARQUIVADO")
-                            }
                         />
                     </FormRowColumn>
                 </FormRow>
@@ -216,55 +198,14 @@ export default function ServiceDataForm(props: ServiceDataFormProps) {
                 <>
                     <SelectImmobileTOForm
                         title="Imóveis"
+                        isDisabled={props.isDisabled}
                         subtitle="Selecione os imóveis"
                         onSetTarget={handleSetImmobileTarget}
                         onSetOrigin={handleSetImmobileOrigin}
                         valueTarget={props.service.immobilesTarget}
                         valueOrigin={props.service.immobilesOrigin}
                         id={"immobiles-service-" + props.index + "-" + props.id}
-                        isDisabled={
-                            props.isDisabled ||
-                            (props.service?.status === "FINALIZADO" || props.service?.status === "ARQUIVADO")
-                        }
                     />
-                    {/*
-                    <SelectImmobileFormNew
-                        title="Imóvel alvo"
-                        onSet={handleSetImmobileTarget}
-                        subtitle="Selecione o imóvel alvo"
-                        value={props.service.immobilesTarget}
-                        id={"immobile-target-service-" + props.index + "-" + props.id}
-                        excludeList={[...props.service.immobilesTarget, ...props.service.immobilesOrigin]}
-                        isDisabled={
-                            props.isDisabled ||
-                            (props.service?.immobilesOrigin?.length > 1 && props.service?.immobilesTarget?.length >= 1) ||
-                            (props.service?.status === "FINALIZADO" || props.service?.status === "ARQUIVADO")
-                        }
-                        isDisabledExclude={
-                            props.isDisabled ||
-                            (props.service?.status === "FINALIZADO" || props.service?.status === "ARQUIVADO")
-                        }
-                    />
-                    {(props.service?.immobilesOrigin?.length > 0 || props.service?.immobilesTarget?.length > 0) && (
-                        <SelectImmobileFormNew
-                            title="Imóvel de origem"
-                            onSet={handleSetImmobileOrigin}
-                            value={props.service.immobilesOrigin}
-                            subtitle="Selecione o imóvel de origem"
-                            id={"immobile-origin-service-" + props.index + "-" + props.id}
-                            excludeList={[...props.service.immobilesTarget, ...props.service.immobilesOrigin]}
-                            isDisabled={
-                                props.isDisabled ||
-                                (props.service?.immobilesTarget?.length > 1 && props.service?.immobilesOrigin?.length >= 1) ||
-                                (props.service?.status === "FINALIZADO" || props.service?.status === "ARQUIVADO")
-                            }
-                            isDisabledExclude={
-                                props.isDisabled ||
-                                (props.service?.status === "FINALIZADO" || props.service?.status === "ARQUIVADO")
-                            }
-                        />
-                    )}
-                */}
                     <Form
                         title="Etapas"
                         subtitle="Selecione as etapas"
@@ -272,14 +213,10 @@ export default function ServiceDataForm(props: ServiceDataFormProps) {
                         <ServiceStagePage
                             canSave
                             serviceId={props.service.id}
+                            isDisabled={props.isDisabled}
                             onSetPage={handleSetServiceStage}
                             onShowMessage={props.onShowMessage}
                             getInfo={props.service?.id?.length > 0}
-                            isDisabled={
-                                props.isDisabled ||
-                                props.service?.id?.length === 0 ||
-                                (props.service?.status === "FINALIZADO" || props.service?.status === "ARQUIVADO")
-                            }
                         />
                     </Form>
                 </>

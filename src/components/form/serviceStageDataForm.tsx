@@ -68,16 +68,13 @@ export default function ServiceStageDataForm(props: ServiceStageDataFormProps) {
                         holderClassName="w-full"
                         validation={NOT_NULL_MARK}
                         isLoading={props.isLoading}
+                        isDisabled={props.isDisabled}
                         value={props.serviceStage.title}
                         sugestions={["Planta", "Memorial"]}
                         onSetText={handleSetServiceStageTitle}
                         onValidate={handleChangeFormValidation}
                         validationMessage="O titulo não pode ficar em branco."
                         id={"service-stage-title" + (props.index ? "-" + props.index : "") + (props.id ? "-" + props.id : "")}
-                        isDisabled={
-                            props.isDisabled ||
-                            (props.serviceStage?.status === "FINALIZADO" || props.serviceStage?.status === "ARQUIVADO")
-                        }
                     />
                 </FormRowColumn>
                 <FormRowColumn unit="2">
@@ -87,14 +84,11 @@ export default function ServiceStageDataForm(props: ServiceStageDataFormProps) {
                         title="Prazo"
                         onBlur={props.onBlur}
                         isLoading={props.isLoading}
+                        isDisabled={props.isDisabled}
+                        value={props.serviceStage.dateString}
                         onSetText={handleSetServiceStageDate}
                         onValidate={handleChangeFormValidation}
                         id={"date-due-stages" + (props.index ? "-" + props.index : "") + (props.id ? "-" + props.id : "")}
-                        value={props.serviceStage.dateString}
-                        isDisabled={
-                            props.isDisabled ||
-                            (props.serviceStage?.status === "FINALIZADO" || props.serviceStage?.status === "ARQUIVADO")
-                        }
                     />
                 </FormRowColumn>
             </FormRow>
@@ -103,14 +97,11 @@ export default function ServiceStageDataForm(props: ServiceStageDataFormProps) {
                     <InputSelectUser
                         title="Responsável"
                         onBlur={props.onBlur}
-                        onSet={handleSetResponsible}
                         isLoading={props.isLoading}
+                        onSet={handleSetResponsible}
+                        isDisabled={props.isDisabled}
                         value={props.serviceStage?.responsible?.username}
                         id={"budget-responsible" + (props.index ? "-" + props.index : "")}
-                        isDisabled={
-                            props.isDisabled ||
-                            (props.serviceStage?.status === "FINALIZADO" || props.serviceStage?.status === "ARQUIVADO")
-                        }
                     />
                 </FormRowColumn>
             </FormRow>
@@ -120,13 +111,10 @@ export default function ServiceStageDataForm(props: ServiceStageDataFormProps) {
                         title="Descrição"
                         onBlur={props.onBlur}
                         isLoading={props.isLoading}
+                        isDisabled={props.isDisabled}
                         value={props.serviceStage.description}
                         onSetText={handleSetServiceStageDescription}
                         id={"description-stages" + (props.index ? "-" + props.index : "") + (props.id ? "-" + props.id : "")}
-                        isDisabled={
-                            props.isDisabled ||
-                            (props.serviceStage?.status === "FINALIZADO" || props.serviceStage?.status === "ARQUIVADO")
-                        }
                     />
                 </FormRowColumn>
             </FormRow>

@@ -7,8 +7,9 @@ import BudgetView from "../view/budgetView"
 import WindowModal from "../modal/windowModal"
 import FormRowColumn from "../form/formRowColumn"
 import BudgetDataForm from "../form/budgetDataForm"
-import BudgetActionBarForm from "../bar/budgetActionBar"
+import BudgetActionBarForm, { handleSaveBudgetInner } from "../bar/budgetActionBar"
 import ContractPrintView from "../view/contractPrintView"
+import SwiftInfoButton from "../button/switchInfoButton"
 import { PlusIcon, RefreshIcon } from "@heroicons/react/solid"
 import { FeedbackMessage } from "../modal/feedbackMessageModal"
 import { handleUTCToDateShow, handleNewDateToUTC } from "../../util/dateUtils"
@@ -69,7 +70,10 @@ export default function BudgetPage(props: BudgetPageProps) {
     }
 
     const handleNewClick = async () => {
-        setBudget({ ...defaultBudget, dateString: handleUTCToDateShow(handleNewDateToUTC().toString()) })
+        setBudget({
+            ...defaultBudget,
+            dateString: handleUTCToDateShow(handleNewDateToUTC().toString())
+        })
         setIsRegister(true)
         setIndex(-1)
     }
@@ -93,9 +97,9 @@ export default function BudgetPage(props: BudgetPageProps) {
         setIsForShow(value)
     }
 
-    const handleShowClick = (project) => {
+    const handleShowClick = (budget) => {
         setIsLoading(true)
-        setBudget({ ...defaultBudget, ...project })
+        setBudget({ ...defaultBudget, ...budget })
         setIsForShow(true)
         setIsLoading(false)
     }
@@ -188,21 +192,29 @@ export default function BudgetPage(props: BudgetPageProps) {
             <FormRow>
                 <FormRowColumn unit="4">{element.title}</FormRowColumn>
                 <FormRowColumn unit="1">
-                    {element.status === "ORÇAMENTO" && (
-                        <span className="rounded text-slate-600 bg-slate-300 py-1 px-2 text-xs font-bold">
-                            {element.status}
-                        </span>
-                    )}
-                    {element.status === "ARQUIVADO" && (
-                        <span className="rounded text-red-600 bg-red-300 py-1 px-2 text-xs font-bold">
-                            {element.status}
-                        </span>
-                    )}
-                    {element.status === "FINALIZADO" && (
-                        <span className="rounded text-green-600 bg-green-300 py-1 px-2 text-xs font-bold">
-                            {element.status}
-                        </span>
-                    )}
+                    <SwiftInfoButton
+                        id={element.id + "-"}
+                        value={element.status}
+                        isDisabled={props.isDisabled}
+                        values={[
+                            "APROVADO",
+                            "NEGOCIANDO",
+                            "REJEITADO",
+                        ]}
+                        onClick={async (value) => {
+                            const budget = { ...element, status: value }
+                            let feedbackMessage: FeedbackMessage = { messages: ["Algo deu errado!"], messageType: "ERROR" }
+                            setIsLoading(true)
+                            const res = await handleSaveBudgetInner(budget, true)
+                            setIsLoading(false)
+                            if (res.status === "ERROR") {
+                                handleShowMessage(feedbackMessage)
+                                return
+                            }
+                            feedbackMessage = { messages: ["Sucesso!"], messageType: "SUCCESS" }
+                            handleAfterSave(feedbackMessage, budget, true)
+                        }}
+                    />
                 </FormRowColumn>
                 <FormRowColumn className="hidden sm:block" unit="1">{handleUTCToDateShow(element.dateDue.toString())}</FormRowColumn>
             </FormRow>
@@ -330,6 +342,11 @@ export default function BudgetPage(props: BudgetPageProps) {
                         onSet={setBudget}
                         isLoading={isLoading}
                         onShowMessage={handleShowMessage}
+                        isDisabled={
+                            budget.status === "VENCIDO" ||
+                            budget.status === "APROVADO" ||
+                            budget.status === "REJEITADO"
+                        }
                     />
                 )}
                 {isForShow && (

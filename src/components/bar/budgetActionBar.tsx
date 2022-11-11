@@ -7,7 +7,7 @@ import StartProjectButton from "../button/startProjectButton";
 import { FeedbackMessage } from "../modal/feedbackMessageModal";
 import { handleBudgetValidationForDB } from "../../util/validationUtil";
 import { handleGetDateFormatedToUTC, handleNewDateToUTC } from "../../util/dateUtils";
-import { Budget, BudgetPayment, defaultBudget } from "../../interfaces/objectInterfaces";
+import { Budget, BudgetPayment, BudgetStatus, defaultBudget } from "../../interfaces/objectInterfaces";
 
 interface BudgetActionBarFormProps {
     className?: string,
@@ -23,9 +23,63 @@ interface BudgetActionBarFormProps {
     onShowMessage?: (FeedbackMessage) => void,
 }
 
+const handleBudgetForDB = (budget: Budget) => {
+    if (budget?.dateString?.length > 0) {
+        budget = { ...budget, dateDue: handleGetDateFormatedToUTC(budget.dateString) }
+    }
+    let clients = []
+    if (budget.clients && budget.clients.length) {
+        budget.clients?.map((element, index) => {
+            if (element && "id" in element && element.id.length) {
+                if ("cpf" in element) {
+                    clients = [...clients, { id: element.id, cpf: "" }]
+                } else if ("cnpj" in element) {
+                    clients = [...clients, { id: element.id, cnpj: "" }]
+                }
+            }
+        })
+    }
+    let payments = []
+    if (budget.payments && budget.payments?.length) {
+        budget.payments?.map((element: BudgetPayment, index) => {
+            let payment = { ...element }
+            payment = { ...payment, dateDue: handleGetDateFormatedToUTC(payment.dateString) }
+            payments = [...payments, payment]
+        })
+    }
+    budget = {
+        ...budget,
+        clients: clients,
+        payments: payments,
+        title: budget.title.trim(),
+    }
+    return budget
+}
+
+export const handleSaveBudgetInner = async (budget, history) => {
+    let res = { status: "ERROR", id: "", budget: budget }
+    let budgetForDB = handleBudgetForDB(budget)
+    try {
+        const saveRes = await fetch("api/budget", {
+            method: "POST",
+            body: JSON.stringify({ token: "tokenbemseguro", data: budgetForDB, history: history }),
+        }).then((res) => res.json())
+        res = { ...res, status: "SUCCESS", id: saveRes.id, budget: { ...budgetForDB, id: saveRes.id } }
+    } catch (e) {
+        console.error("Error adding document: ", e)
+    }
+    return res
+}
+
 export default function BudgetActionBarForm(props: BudgetActionBarFormProps) {
     const [isFirst, setIsFirst] = useState(true)
     const [hasProject, setHasProject] = useState(true)
+
+    const canSwitchStatus =
+        props.budget.status === "APROVADO"
+        || props.budget.status === "VENCIDO"
+        || props.budget.status === "REJEITADO"
+        || props.budget.status === "NEGOCIANDO"
 
     const handleSetIsLoading = (value: boolean) => {
         if (props.onSetIsLoading) {
@@ -37,42 +91,6 @@ export default function BudgetActionBarForm(props: BudgetActionBarFormProps) {
         if (props.onShowMessage) {
             props.onShowMessage(feedbackMessage)
         }
-    }
-
-    const handleBudgetForDB = (budget: Budget) => {
-        if (budget?.dateString?.length > 0) {
-            budget = { ...budget, dateDue: handleGetDateFormatedToUTC(budget.dateString) }
-        }
-        if (budget.dateDue === 0) {
-            budget = { ...budget, dateDue: handleNewDateToUTC() }
-        }
-        let clients = []
-        if (budget.clients && budget.clients.length) {
-            budget.clients?.map((element, index) => {
-                if (element && "id" in element && element.id.length) {
-                    if ("cpf" in element) {
-                        clients = [...clients, { id: element.id, cpf: "" }]
-                    } else if ("cnpj" in element) {
-                        clients = [...clients, { id: element.id, cnpj: "" }]
-                    }
-                }
-            })
-        }
-        let payments = []
-        if (budget.payments && budget.payments?.length) {
-            budget.payments?.map((element: BudgetPayment, index) => {
-                let payment = { ...element }
-                payment = { ...payment, dateDue: handleGetDateFormatedToUTC(payment.dateString) }
-                payments = [...payments, payment]
-            })
-        }
-        budget = {
-            ...budget,
-            clients: clients,
-            payments: payments,
-            title: budget.title.trim(),
-        }
-        return budget
     }
 
     const handleStartProjectButton = async (id) => {
@@ -91,21 +109,7 @@ export default function BudgetActionBarForm(props: BudgetActionBarFormProps) {
         return hasProject
     }
 
-    const handleSaveBudgetInner = async (budget, history) => {
-        let res = { status: "ERROR", id: "", budget: budget }
-        try {
-            const saveRes = await fetch("api/budget", {
-                method: "POST",
-                body: JSON.stringify({ token: "tokenbemseguro", data: budget, history: history }),
-            }).then((res) => res.json())
-            res = { ...res, status: "SUCCESS", id: saveRes.id, budget: { ...budget, id: saveRes.id } }
-        } catch (e) {
-            console.error("Error adding document: ", e)
-        }
-        return res
-    }
-
-    const handleSave = async (status: "ORÇAMENTO" | "ARQUIVADO" | "FINALIZADO", isForCloseModal) => {
+    const handleSave = async (status: BudgetStatus, isForCloseModal) => {
         const isBudgetValid = handleBudgetValidationForDB(props.budget)
         if (!isBudgetValid.validation) {
             const feedbackMessage: FeedbackMessage = { messages: [...isBudgetValid.messages], messageType: "ERROR" }
@@ -117,8 +121,7 @@ export default function BudgetActionBarForm(props: BudgetActionBarFormProps) {
         if (status?.length > 0) {
             budget = { ...budget, status: status }
         }
-        let budgetForDB = handleBudgetForDB(budget)
-        let res = await handleSaveBudgetInner(budgetForDB, true)
+        let res = await handleSaveBudgetInner(budget, true)
         budget = {
             ...budget,
             id: res.id,
@@ -165,7 +168,9 @@ export default function BudgetActionBarForm(props: BudgetActionBarFormProps) {
                 </Button>
                 <DropDownButton
                     isLeft
-                    title="...">
+                    title="..."
+                    isLoading={props.isLoading}
+                >
                     <div className="w-full flex flex-col">
                         <StartProjectButton
                             budget={props.budget}
@@ -187,23 +192,33 @@ export default function BudgetActionBarForm(props: BudgetActionBarFormProps) {
                         />
                         <MenuButton
                             isLoading={props.isLoading}
-                            isHidden={props.budget.status !== "ORÇAMENTO"}
-                            isDisabled={props.budget.status !== "ORÇAMENTO"}
+                            isHidden={props.budget.status === "APROVADO"}
+                            isDisabled={props.budget.status === "APROVADO"}
                             onClick={() => {
-                                handleSave("FINALIZADO", true)
+                                handleSave("APROVADO", true)
                             }}
                         >
-                            Finalizar orçamento
+                            Aprovar orçamento
                         </MenuButton>
                         <MenuButton
                             isLoading={props.isLoading}
-                            isHidden={props.budget.status === "ORÇAMENTO"}
-                            isDisabled={props.budget.status === "ORÇAMENTO"}
+                            isHidden={props.budget.status === "NEGOCIANDO"}
+                            isDisabled={props.budget.status === "NEGOCIANDO"}
                             onClick={() => {
-                                handleSave("ORÇAMENTO", true)
+                                handleSave("NEGOCIANDO", true)
                             }}
                         >
-                            Reativar orçamento
+                            Negociar orçamento
+                        </MenuButton>
+                        <MenuButton
+                            isLoading={props.isLoading}
+                            isHidden={props.budget.status === "REJEITADO"}
+                            isDisabled={props.budget.status === "REJEITADO"}
+                            onClick={() => {
+                                handleSave("REJEITADO", true)
+                            }}
+                        >
+                            Rejeitar orçamento
                         </MenuButton>
                         <MenuButton
                             isLoading={props.isLoading}
@@ -218,16 +233,6 @@ export default function BudgetActionBarForm(props: BudgetActionBarFormProps) {
                             isHidden={!props.onPrintContract}
                         >
                             Imprimir contrato
-                        </MenuButton>
-                        <MenuButton
-                            isLoading={props.isLoading}
-                            isHidden={props.budget.status !== "ORÇAMENTO"}
-                            isDisabled={props.budget.status !== "ORÇAMENTO"}
-                            onClick={() => {
-                                handleSave("ARQUIVADO", true)
-                            }}
-                        >
-                            Arquivar orçamento
                         </MenuButton>
                     </div>
                 </DropDownButton>

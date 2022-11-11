@@ -10,9 +10,10 @@ import ServiceNameListItem from "../list/serviceNameListItem"
 import { PlusIcon, RefreshIcon } from "@heroicons/react/solid"
 import { FeedbackMessage } from "../modal/feedbackMessageModal"
 import ServiceStageDataForm from "../form/serviceStageDataForm"
-import ServiceStageActionBarForm from "../bar/serviceStageActionBar"
+import ServiceStageActionBarForm, { handleSaveServiceStageInner } from "../bar/serviceStageActionBar"
 import { handleUTCToDateShow, handleNewDateToUTC } from "../../util/dateUtils"
 import { ServiceStage, defaultServiceStage } from "../../interfaces/objectInterfaces"
+import SwiftInfoButton from "../button/switchInfoButton"
 
 interface ServiceStagePageProps {
     id?: string,
@@ -68,7 +69,7 @@ export default function ServiceStagePage(props: ServiceStagePageProps) {
     const handleNewClick = async () => {
         setServiceStage({
             ...defaultServiceStage,
-            status: "NORMAL",
+            status: "PARADO",
             index: serviceStages.length,
             dateString: handleUTCToDateShow(handleNewDateToUTC().toString()),
         })
@@ -154,21 +155,30 @@ export default function ServiceStagePage(props: ServiceStagePageProps) {
                 <FormRowColumn unit="2"><ServiceNameListItem id={element.service.id} /></FormRowColumn>
                 <FormRowColumn unit="1"><UserNameListItem id={element.responsible.id} /></FormRowColumn>
                 <FormRowColumn unit="1">
-                    {element.status === "NORMAL" && (
-                        <span className="rounded text-slate-600 bg-slate-300 py-1 px-2 text-xs font-bold">
-                            {element.status}
-                        </span>
-                    )}
-                    {element.status === "ARQUIVADO" && (
-                        <span className="rounded text-red-600 bg-red-300 py-1 px-2 text-xs font-bold">
-                            {element.status}
-                        </span>
-                    )}
-                    {element.status === "FINALIZADO" && (
-                        <span className="rounded text-green-600 bg-green-300 py-1 px-2 text-xs font-bold">
-                            {element.status}
-                        </span>
-                    )}
+                    <SwiftInfoButton
+                        id={element.id + "-"}
+                        value={element.status}
+                        isDisabled={props.isDisabled}
+                        values={[
+                            "EM ANDAMENTO",
+                            "FINALIZADO",
+                            "PARADO",
+                            "PENDENTE",
+                        ]}
+                        onClick={async (value) => {
+                            const serviceStage = { ...element, status: value }
+                            let feedbackMessage: FeedbackMessage = { messages: ["Algo deu errado!"], messageType: "ERROR" }
+                            setIsLoading(true)
+                            const res = await handleSaveServiceStageInner(serviceStage, true)
+                            setIsLoading(false)
+                            if (res.status === "ERROR") {
+                                handleShowMessage(feedbackMessage)
+                                return
+                            }
+                            feedbackMessage = { messages: ["Sucesso!"], messageType: "SUCCESS" }
+                            handleAfterSave(feedbackMessage, serviceStage, true)
+                        }}
+                    />
                 </FormRowColumn>
                 <FormRowColumn className="hidden sm:block" unit="1">{handleUTCToDateShow(element.dateDue.toString())}</FormRowColumn>
             </FormRow>
@@ -279,6 +289,7 @@ export default function ServiceStagePage(props: ServiceStagePageProps) {
                             isLoading={isLoading}
                             onSet={setServiceStage}
                             serviceStage={serviceStage}
+                            isDisabled={serviceStage.status === "FINALIZADO"}
                         />
                     )}
                     {isForShow && (

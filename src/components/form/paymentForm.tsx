@@ -73,12 +73,12 @@ export default function PaymentForm(props: PaymentFormProps) {
                         isLoading={props.isLoading}
                         validation={NOT_NULL_MARK}
                         isDisabled={props.isDisabled}
-                        sugestions={["Entrada", "Parcela", "Saida"]}
-                        onValidate={handleChangeFormValidation}
-                        id={"description-payment-" + (props.index ?? 0) + "-" + props.id}
-                        onSetText={handleSetServicePaymentDescription}
                         value={props.payment.description}
+                        onValidate={handleChangeFormValidation}
+                        sugestions={["Entrada", "Parcela", "Saida"]}
+                        onSetText={handleSetServicePaymentDescription}
                         validationMessage="A descrição não pode ficar em branco."
+                        id={"description-payment-" + (props.index ?? 0) + "-" + props.id}
                     />
                 </FormRowColumn>
             </FormRow>
