@@ -27,7 +27,12 @@ export default function WindowModal(props: WindowModalProps) {
         }
     }
 
-    let painel: HTMLInputElement = document.querySelector("#" + "modal-painel-" + props.id)
+    let painel: HTMLInputElement = null
+    try {
+        painel = document?.querySelector("#" + "modal-painel-" + props.id)
+    } catch (err) {
+        console.error(err)
+    }
     if (props.isOpen) {
         document.body.style.overflowY = "hidden"
     } else if (painel !== null) {

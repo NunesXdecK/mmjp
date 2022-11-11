@@ -2,6 +2,7 @@ interface FormProps {
     title?: string,
     subtitle?: string,
     className?: string,
+    ignoreClass?: boolean,
     titleRight?: any,
     children?: any,
 }
@@ -11,9 +12,14 @@ export default function Form(props: FormProps) {
     let className = "p-4"
     let classNameHolder = "px-2 py-4 sm:p-4 rounded-lg shadow dark:shadow-none print:shadow-none print:px-0 print:py-0"
     let classNameContent = ""
+    className = "mb-4 rounded shadow dark:shadow-none dark:border dark:border-gray-700 p-4"
 
     if (props.className) {
         className = props.className
+    }
+    
+    if (props.ignoreClass) {
+        className = ""
     }
 
     if (false && props.title) {
@@ -22,7 +28,7 @@ export default function Form(props: FormProps) {
     }
 
     return (
-        <div className="mb-4 rounded shadow dark:shadow-none dark:border dark:border-gray-700 p-4">
+        <div className={className}>
             <div className="flex flex-row justify-between items-center p-2">
                 <div>
                     <h3 className="text-lg font-medium leading-6 text-gray-900 dark:text-gray-200">{props.title}</h3>

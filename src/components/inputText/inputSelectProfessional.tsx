@@ -136,11 +136,11 @@ export default function InputSelectProfessional(props: InputSelectProfessionalPr
                 <InputTextAutoComplete
                     value={text}
                     id={props.id}
-                    sugestions={professionals}
                     title={props.title}
                     onSetText={setText}
                     onBlur={props.onBlur}
                     onClickItem={handleAdd}
+                    sugestions={professionals}
                     isLoading={props.isLoading}
                     onListOptions={handlePutActions}
                     isDisabled={isSelected || props.isDisabled}

@@ -7,6 +7,7 @@ interface InputTextAutoCompleteProps {
     value?: string,
     title?: string,
     validation?: string,
+    placeholder?: string,
     holderClassName?: string,
     validationMessage?: string,
     maxLength?: number,
@@ -124,6 +125,7 @@ export default function InputTextAutoComplete(props: InputTextAutoCompleteProps)
                     className={classNameInput}
                     maxLength={props.maxLength}
                     required={props.isRequired}
+                    placeholder={props.placeholder}
                     id={props.id + "-auto-complete"}
                     disabled={props.isDisabled || props.isLoading}
                     onBlur={(event) => {
@@ -133,9 +135,11 @@ export default function InputTextAutoComplete(props: InputTextAutoCompleteProps)
                         if (!event?.relatedTarget?.id ||
                             event?.relatedTarget?.id.indexOf(props.id + "-auto-complete-option-") < 0) {
                             handleCheckSugestion("")
+                            /*
                             if (props.onListOptions) {
                                 handleOnSet("")
                             }
+                            */
                         }
                     }}
                     onChange={(event) => {
@@ -150,9 +154,11 @@ export default function InputTextAutoComplete(props: InputTextAutoCompleteProps)
                             }
                         } else {
                             handleCheckSugestion("")
+                            /*
                             if (props.onListOptions) {
                                 text = ""
                             }
+                            */
                         }
                         handleOnSet(text)
                     }}

@@ -150,16 +150,16 @@ export default function ServiceActionBarForm(props: ServiceActionBarFormProps) {
             <div className="w-full flex flex-row justify-between">
                 <div className="flex flex-row gap-2">
                     <Button
-                        onClick={() => handleSave(props.service.status, false)}
+                        onClick={() => handleSave(props.service.status, true)}
                         isLoading={props.isLoading}
                     >
                         Salvar
                     </Button>
                     <Button
-                        onClick={() => handleSave(props.service.status, true)}
+                        onClick={() => handleSave(props.service.status, false)}
                         isLoading={props.isLoading}
                     >
-                        Salvar aqui
+                        Salvar e sair
                     </Button>
                 </div>
                 <DropDownButton

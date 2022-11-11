@@ -16,6 +16,7 @@ interface InputSelectImmobileProps {
     inputTitle?: string,
     validation?: string,
     buttonTitle?: string,
+    placeholder?: string,
     formClassName?: string,
     validationMessage?: string,
     validationMessageButton?: string,
@@ -149,6 +150,7 @@ export default function InputSelectImmobile(props: InputSelectImmobileProps) {
                     onClickItem={handleAdd}
                     onFilter={props.onFilter}
                     isLoading={props.isLoading}
+                    placeholder={props.placeholder}
                     onListOptions={handlePutActions}
                     isDisabled={isSelected || props.isDisabled}
                 />

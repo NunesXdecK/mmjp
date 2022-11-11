@@ -12,6 +12,8 @@ import { NOT_NULL_MARK, NUMBER_MARK } from "../../util/patternValidationUtil";
 import { handleMountNumberCurrency, handleValueStringToFloat } from "../../util/maskUtil";
 import ServiceStagePage from "../page/ServiceStagePage";
 import Form from "./form";
+import SelectImmobileTOForm from "../select/selectImmobileTOForm";
+import SelectImmobileTOFormNew from "../select/selectImmobileTOFormNew";
 
 interface ServiceDataFormProps {
     id?: string,
@@ -35,7 +37,6 @@ export default function ServiceDataForm(props: ServiceDataFormProps) {
     const handleSetDate = (value) => { handleSet({ ...props.service, dateString: value }) }
     const handleSetDescription = (value) => { handleSet({ ...props.service, description: value }) }
     const handleSetProfessional = (value) => { handleSet({ ...props.service, professional: value }) }
-    const handleSetServiceStage = (value) => { handleSet({ ...props.service, serviceStages: value }) }
     const handleSetImmobileTarget = (value) => { handleSet({ ...props.service, immobilesTarget: value }) }
     const handleSetImmobileOrigin = (value) => { handleSet({ ...props.service, immobilesOrigin: value }) }
 
@@ -183,8 +184,8 @@ export default function ServiceDataForm(props: ServiceDataFormProps) {
                         <InputSelectProfessional
                             title="Profissional"
                             onBlur={props.onBlur}
-                            onSet={handleSetProfessional}
                             isLoading={props.isLoading}
+                            onSet={handleSetProfessional}
                             value={props.service?.professional?.title}
                             id={"budget-professional" + (props.index ? "-" + props.index : "")}
                             isDisabled={
@@ -211,60 +212,77 @@ export default function ServiceDataForm(props: ServiceDataFormProps) {
                     </FormRowColumn>
                 </FormRow>
             </Form>
-            <SelectImmobileFormNew
-                title="Imóvel alvo"
-                onSet={handleSetImmobileTarget}
-                subtitle="Selecione o imóvel alvo"
-                value={props.service.immobilesTarget}
-                id={"immobile-target-service-" + props.index + "-" + props.id}
-                excludeList={[...props.service.immobilesTarget, ...props.service.immobilesOrigin]}
-                isDisabled={
-                    props.isDisabled ||
-                    (props.service?.immobilesOrigin?.length > 1 && props.service?.immobilesTarget?.length >= 1) ||
-                    (props.service?.status === "FINALIZADO" || props.service?.status === "ARQUIVADO")
-                }
-                isDisabledExclude={
-                    props.isDisabled ||
-                    (props.service?.status === "FINALIZADO" || props.service?.status === "ARQUIVADO")
-                }
-            />
-            {(props.service?.immobilesOrigin?.length > 0 || props.service?.immobilesTarget?.length > 0) && (
-                <SelectImmobileFormNew
-                    title="Imóvel de origem"
-                    onSet={handleSetImmobileOrigin}
-                    value={props.service.immobilesOrigin}
-                    subtitle="Selecione o imóvel de origem"
-                    id={"immobile-origin-service-" + props.index + "-" + props.id}
-                    excludeList={[...props.service.immobilesTarget, ...props.service.immobilesOrigin]}
-                    isDisabled={
-                        props.isDisabled ||
-                        (props.service?.immobilesTarget?.length > 1 && props.service?.immobilesOrigin?.length >= 1) ||
-                        (props.service?.status === "FINALIZADO" || props.service?.status === "ARQUIVADO")
-                    }
-                    isDisabledExclude={
-                        props.isDisabled ||
-                        (props.service?.status === "FINALIZADO" || props.service?.status === "ARQUIVADO")
-                    }
-                />
-            )}
             {props.service?.id?.length > 0 && (
-                <Form
-                    title="Etapas"
-                    subtitle="Selecione as etapas"
-                >
-                    <ServiceStagePage
-                        canSave
-                        serviceId={props.service.id}
-                        onSetPage={handleSetServiceStage}
-                        onShowMessage={props.onShowMessage}
-                        getInfo={props.service?.id?.length > 0}
+                <>
+                    <SelectImmobileTOFormNew
+                        title="Imóveis"
+                        subtitle="Selecione os imóveis"
+                        onSetTarget={handleSetImmobileTarget}
+                        onSetOrigin={handleSetImmobileOrigin}
+                        valueTarget={props.service.immobilesTarget}
+                        valueOrigin={props.service.immobilesOrigin}
+                        id={"immobiles-service-" + props.index + "-" + props.id}
                         isDisabled={
                             props.isDisabled ||
-                            props.service?.id?.length === 0 ||
                             (props.service?.status === "FINALIZADO" || props.service?.status === "ARQUIVADO")
                         }
                     />
-                </Form>
+                    {/*
+                    <SelectImmobileFormNew
+                        title="Imóvel alvo"
+                        onSet={handleSetImmobileTarget}
+                        subtitle="Selecione o imóvel alvo"
+                        value={props.service.immobilesTarget}
+                        id={"immobile-target-service-" + props.index + "-" + props.id}
+                        excludeList={[...props.service.immobilesTarget, ...props.service.immobilesOrigin]}
+                        isDisabled={
+                            props.isDisabled ||
+                            (props.service?.immobilesOrigin?.length > 1 && props.service?.immobilesTarget?.length >= 1) ||
+                            (props.service?.status === "FINALIZADO" || props.service?.status === "ARQUIVADO")
+                        }
+                        isDisabledExclude={
+                            props.isDisabled ||
+                            (props.service?.status === "FINALIZADO" || props.service?.status === "ARQUIVADO")
+                        }
+                    />
+                    {(props.service?.immobilesOrigin?.length > 0 || props.service?.immobilesTarget?.length > 0) && (
+                        <SelectImmobileFormNew
+                            title="Imóvel de origem"
+                            onSet={handleSetImmobileOrigin}
+                            value={props.service.immobilesOrigin}
+                            subtitle="Selecione o imóvel de origem"
+                            id={"immobile-origin-service-" + props.index + "-" + props.id}
+                            excludeList={[...props.service.immobilesTarget, ...props.service.immobilesOrigin]}
+                            isDisabled={
+                                props.isDisabled ||
+                                (props.service?.immobilesTarget?.length > 1 && props.service?.immobilesOrigin?.length >= 1) ||
+                                (props.service?.status === "FINALIZADO" || props.service?.status === "ARQUIVADO")
+                            }
+                            isDisabledExclude={
+                                props.isDisabled ||
+                                (props.service?.status === "FINALIZADO" || props.service?.status === "ARQUIVADO")
+                            }
+                        />
+                    )}
+                    <Form
+                        title="Etapas"
+                        subtitle="Selecione as etapas"
+                    >
+                        <ServiceStagePage
+                            canSave
+                            serviceId={props.service.id}
+                            onSetPage={handleSetServiceStage}
+                            onShowMessage={props.onShowMessage}
+                            getInfo={props.service?.id?.length > 0}
+                            isDisabled={
+                                props.isDisabled ||
+                                props.service?.id?.length === 0 ||
+                                (props.service?.status === "FINALIZADO" || props.service?.status === "ARQUIVADO")
+                            }
+                        />
+                    </Form>
+                    */}
+                </>
             )}
         </>
     )

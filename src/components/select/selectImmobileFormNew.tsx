@@ -13,7 +13,9 @@ interface SelectImmobileFormNewProps {
     id?: string,
     title?: string,
     subtitle?: string,
+    listTitle?: string,
     inputTitle?: string,
+    placeholder?: string,
     formClassName?: string,
     isLoading?: boolean,
     isDisabled?: boolean,
@@ -110,19 +112,20 @@ export default function SelectImmobileFormNew(props: SelectImmobileFormNewProps)
     return (
         <>
             <Form
-                className="mt-0"
+                ignoreClass
                 title={props.title}
                 subtitle={props.subtitle}
             >
                 <FormRow>
                     <FormRowColumn unit="6">
                         <InputSelectImmobile
-                            title="Imóvel"
                             onSet={handleAdd}
                             onBlur={props.onBlur}
+                            title={props.inputTitle}
                             isLoading={props.isLoading}
                             onFilter={handleFilterList}
                             isDisabled={props.isDisabled}
+                            placeholder={props.placeholder}
                             id={"select-immobile" + (props.id ? "-" + props.id : "")}
                         />
                     </FormRowColumn>
@@ -132,6 +135,7 @@ export default function SelectImmobileFormNew(props: SelectImmobileFormNewProps)
                         hideSearch
                         className="p-2"
                         list={props.value}
+                        title={props.listTitle}
                         onSetIsActive={setIndex}
                         onTableRow={handlePutRows}
                         isLoading={props.isLoading}
