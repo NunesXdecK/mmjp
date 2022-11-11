@@ -1,19 +1,18 @@
+import Form from "./form";
 import FormRow from "./formRow";
 import { useState } from "react";
 import FormRowColumn from "./formRowColumn";
 import InputText from "../inputText/inputText";
 import InputTextArea from "../inputText/inputTextArea";
+import ServiceStagePage from "../page/ServiceStagePage";
 import { Service } from "../../interfaces/objectInterfaces";
 import InputTextCurrency from "../inputText/inputTextCurrency";
+import SelectImmobileTOForm from "../select/selectImmobileTOForm";
 import SelectImmobileFormNew from "../select/selectImmobileFormNew";
 import InputTextAutoComplete from "../inputText/inputTextAutocomplete";
 import InputSelectProfessional from "../inputText/inputSelectProfessional";
 import { NOT_NULL_MARK, NUMBER_MARK } from "../../util/patternValidationUtil";
 import { handleMountNumberCurrency, handleValueStringToFloat } from "../../util/maskUtil";
-import ServiceStagePage from "../page/ServiceStagePage";
-import Form from "./form";
-import SelectImmobileTOForm from "../select/selectImmobileTOForm";
-import SelectImmobileTOFormNew from "../select/selectImmobileTOFormNew";
 
 interface ServiceDataFormProps {
     id?: string,
@@ -37,6 +36,7 @@ export default function ServiceDataForm(props: ServiceDataFormProps) {
     const handleSetDate = (value) => { handleSet({ ...props.service, dateString: value }) }
     const handleSetDescription = (value) => { handleSet({ ...props.service, description: value }) }
     const handleSetProfessional = (value) => { handleSet({ ...props.service, professional: value }) }
+    const handleSetServiceStage = (value) => { handleSet({ ...props.service, serviceStages: value }) }
     const handleSetImmobileTarget = (value) => { handleSet({ ...props.service, immobilesTarget: value }) }
     const handleSetImmobileOrigin = (value) => { handleSet({ ...props.service, immobilesOrigin: value }) }
 
@@ -214,7 +214,7 @@ export default function ServiceDataForm(props: ServiceDataFormProps) {
             </Form>
             {props.service?.id?.length > 0 && (
                 <>
-                    <SelectImmobileTOFormNew
+                    <SelectImmobileTOForm
                         title="Imóveis"
                         subtitle="Selecione os imóveis"
                         onSetTarget={handleSetImmobileTarget}
@@ -264,6 +264,7 @@ export default function ServiceDataForm(props: ServiceDataFormProps) {
                             }
                         />
                     )}
+                */}
                     <Form
                         title="Etapas"
                         subtitle="Selecione as etapas"
@@ -281,7 +282,6 @@ export default function ServiceDataForm(props: ServiceDataFormProps) {
                             }
                         />
                     </Form>
-                    */}
                 </>
             )}
         </>
