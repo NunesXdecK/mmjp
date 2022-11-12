@@ -12,6 +12,7 @@ import { FeedbackMessage } from "../modal/feedbackMessageModal"
 import { handleUTCToDateShow, handleNewDateToUTC } from "../../util/dateUtils"
 import { Project, Company, defaultProject, Person } from "../../interfaces/objectInterfaces"
 import SwiftInfoButton from "../button/switchInfoButton"
+import ProjectStatusButton from "../button/projectStatusButton"
 
 interface ProjectPageProps {
     id?: string,
@@ -64,7 +65,10 @@ export default function ProjectPage(props: ProjectPageProps) {
     }
 
     const handleNewClick = async () => {
-        setProject({ ...defaultProject, dateString: handleUTCToDateShow(handleNewDateToUTC().toString()) })
+        setProject({
+            ...defaultProject,
+            dateString: ""
+        })
         setIsRegister(true)
         setIndex(-1)
     }
@@ -164,13 +168,14 @@ export default function ProjectPage(props: ProjectPageProps) {
                 <FormRowColumn unit="3">{element.title}</FormRowColumn>
                 <FormRowColumn unit="1">{element.number}</FormRowColumn>
                 <FormRowColumn unit="1">
-                    <SwiftInfoButton
-                        isDisabled={true}
-                        id={element.id + "-"}
+                    <ProjectStatusButton
+                        id={element.id}
+                        project={element}
                         value={element.status}
+                        onAfter={handleAfterSave}
                     />
                 </FormRowColumn>
-                <FormRowColumn className="hidden sm:block" unit="1">{handleUTCToDateShow(element.dateDue.toString())}</FormRowColumn>
+                <FormRowColumn className="hidden sm:block" unit="1">{handleUTCToDateShow(element.dateDue?.toString())}</FormRowColumn>
             </FormRow>
         )
     }

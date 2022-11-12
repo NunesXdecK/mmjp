@@ -2,12 +2,12 @@ import Head from "next/head"
 import { useState } from "react"
 import Layout from "../components/layout/layout"
 import BudgetPage from "../components/page/BudgetPage"
-import FeedbackPendency from "../components/modal/feedbackPendencyModal"
-import FeedbackMessageModal, { defaultFeedbackMessage, FeedbackMessage } from "../components/modal/feedbackMessageModal"
 import PaymentPage from "../components/page/PaymentPage"
-import ServiceStagePage from "../components/page/ServiceStagePage"
 import ServicePage from "../components/page/ServicePage"
 import ProjectPage from "../components/page/ProjectPage"
+import ServiceStagePage from "../components/page/ServiceStagePage"
+import FeedbackPendency from "../components/modal/feedbackPendencyModal"
+import FeedbackMessageModal, { defaultFeedbackMessage, FeedbackMessage } from "../components/modal/feedbackMessageModal"
 
 export type PageOps =
     "DASHBOARD"
@@ -25,7 +25,7 @@ export default function Index(props: IndexProps) {
     const [feedbackMessage, setFeedbackMessage] = useState<FeedbackMessage>(defaultFeedbackMessage)
 
     const handleShowMessage = (feedbackMessage: FeedbackMessage) => {
-        if (isFeedbackOpen === false) {
+        if (feedbackMessage && isFeedbackOpen === false) {
             setFeedbackMessage(feedbackMessage)
             setIsFeedbackOpen((isFeedbackOpen) => true)
             setTimeout(() => setIsFeedbackOpen((isFeedbackOpen) => false), 2000)
@@ -35,8 +35,8 @@ export default function Index(props: IndexProps) {
     let title = ""
     switch (page) {
         default:
-            title = "Orçamentos"
-            window.history.pushState({}, "", "/budget");
+            title = "Dashboard"
+            window.history.pushState({}, "", "/dashboard");
             break
         case "DASHBOARD":
             title = "Dashboard"
@@ -189,8 +189,8 @@ const [subjectMessage, setSubjectMessage] = useState<SubjectMessage>({
         */}
             <FeedbackMessageModal
                 isOpen={isFeedbackOpen}
-                feedbackMessage={feedbackMessage}
                 setIsOpen={setIsFeedbackOpen}
+                feedbackMessage={feedbackMessage}
             />
 
             <FeedbackPendency />

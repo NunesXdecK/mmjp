@@ -24,6 +24,8 @@ interface ServiceActionBarFormProps {
 export const handleServiceForDB = (service: Service) => {
     if (service?.dateString?.length > 0) {
         service = { ...service, dateDue: handleGetDateFormatedToUTC(service.dateString) }
+    } else {
+        service = { ...service, dateDue: 0 }
     }
     if (service.title?.length > 0) {
         service = { ...service, title: service.title?.trim() }

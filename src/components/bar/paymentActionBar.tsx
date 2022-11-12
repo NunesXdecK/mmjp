@@ -24,6 +24,11 @@ interface PaymentActionBarFormProps {
 export const handlePaymentForDB = (payment: Payment) => {
     if (payment?.dateString?.length > 0) {
         payment = { ...payment, dateDue: handleGetDateFormatedToUTC(payment.dateString) }
+    } else {
+        payment = { ...payment, dateDue: 0 }
+    }
+    if (payment?.project?.id?.length > 0) {
+        payment = { ...payment, project: { id: payment.project.id } }
     }
     payment = {
         ...payment,
@@ -33,13 +38,14 @@ export const handlePaymentForDB = (payment: Payment) => {
 }
 
 export const handleSavePaymentInner = async (payment, history) => {
-    let res = { status: "ERROR", id: "", payment: payment }
+    let res = { status: "ERROR", id: "", payment: payment, pstatus: "" }
+    payment = handlePaymentForDB(payment)
     try {
         const saveRes = await fetch("api/payment", {
             method: "POST",
             body: JSON.stringify({ token: "tokenbemseguro", data: payment, history: history }),
         }).then((res) => res.json())
-        res = { ...res, status: "SUCCESS", id: saveRes.id, payment: { ...payment, id: saveRes.id } }
+        res = { ...res, status: "SUCCESS", id: saveRes.id, payment: { ...payment, id: saveRes.id, status: saveRes.pstatus } }
     } catch (e) {
         console.error("Error adding document: ", e)
     }
@@ -72,12 +78,11 @@ export default function PaymentActionBarForm(props: PaymentActionBarFormProps) {
         if (status?.length > 0) {
             payment = { ...payment, status: status }
         }
-        payment = handlePaymentForDB(payment)
         if (props.projectId?.length > 0) {
             payment = { ...payment, project: { id: props.projectId } }
         }
         let res = await handleSavePaymentInner(payment, true)
-        payment = { ...payment, id: res.id }
+        payment = { ...payment, id: res.id, status: res.payment.status }
         if (res.status === "ERROR") {
             const feedbackMessage: FeedbackMessage = { messages: ["Algo deu errado!"], messageType: "ERROR" }
             handleShowMessage(feedbackMessage)

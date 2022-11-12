@@ -1,7 +1,7 @@
 import { ServiceConversor, ServiceStageConversor } from "../../../db/converters"
-import { addDoc, collection, deleteDoc, doc, updateDoc } from "firebase/firestore"
+import { addDoc, collection, deleteDoc, doc, getDoc, updateDoc } from "firebase/firestore"
 import { db, HISTORY_COLLECTION_NAME, SERVICE_COLLECTION_NAME, SERVICE_STAGE_COLLECTION_NAME } from "../../../db/firebaseDB"
-import { ServiceStage } from "../../../interfaces/objectInterfaces"
+import { Service, ServiceStage } from "../../../interfaces/objectInterfaces"
 import { handleNewDateToUTC } from "../../../util/dateUtils"
 
 export default async function handler(req, res) {
@@ -44,6 +44,19 @@ export default async function handler(req, res) {
                 } catch (err) {
                     console.error(err)
                     resPOST = { ...resPOST, status: "ERROR", error: err }
+                }
+                if (serviceStage.status === "PENDENTE" && serviceStage.service?.id?.length > 0) {
+                    const docRef = doc(serviceCollection, serviceStage.service?.id)
+                    let service: Service = (await getDoc(docRef)).data()
+                    if (service.id?.length > 0 && service.status !== "PENDENTE" && service.status !== "FINALIZADO") {
+                        service = { ...service, status: "PENDENTE", dateLastUpdateUTC: handleNewDateToUTC() }
+                        const docRef = doc(serviceCollection, service.id)
+                        await updateDoc(docRef, ServiceConversor.toFirestore(service))
+                        if (history) {
+                            const dataForHistory = { ...ServiceConversor.toFirestore(service), databaseid: service.id, databasename: SERVICE_COLLECTION_NAME }
+                            await addDoc(historyCollection, dataForHistory)
+                        }
+                    }
                 }
             } else {
                 resPOST = { ...resPOST, status: "ERROR", message: "Token invalido!" }

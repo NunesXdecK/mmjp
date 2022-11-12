@@ -14,6 +14,7 @@ import ServiceActionBarForm, { handleSaveServiceInner } from "../bar/serviceActi
 import ServiceDataForm from "../form/serviceDataForm"
 import { handleMountNumberCurrency } from "../../util/maskUtil"
 import SwiftInfoButton from "../button/switchInfoButton"
+import ServiceStatusButton from "../button/ServiceStatusButton"
 
 interface ServicePageProps {
     id?: string,
@@ -22,6 +23,7 @@ interface ServicePageProps {
     getInfo?: boolean,
     canUpdate?: boolean,
     isDisabled?: boolean,
+    isStatusDisabled?: boolean,
     onSetPage?: (any) => void,
     onShowMessage?: (FeedbackMessage) => void,
 }
@@ -132,6 +134,20 @@ export default function ServicePage(props: ServicePageProps) {
         }
     }
 
+    const handleStatusClick = async (element, value) => {
+        const service = { ...element, status: value }
+        let feedbackMessage: FeedbackMessage = { messages: ["Algo deu errado!"], messageType: "ERROR" }
+        setIsLoading(true)
+        const res = await handleSaveServiceInner(service, true)
+        setIsLoading(false)
+        if (res.status === "ERROR") {
+            handleShowMessage(feedbackMessage)
+            return
+        }
+        feedbackMessage = { messages: ["Sucesso!"], messageType: "SUCCESS" }
+        handleAfterSave(feedbackMessage, service, true)
+    }
+
     const handleShowMessage = (feedbackMessage: FeedbackMessage) => {
         if (props.onShowMessage) {
             props.onShowMessage(feedbackMessage)
@@ -157,31 +173,18 @@ export default function ServicePage(props: ServicePageProps) {
                 <FormRowColumn unit="1"><ProjectNumberListItem id={element.project.id} /></FormRowColumn>
                 <FormRowColumn unit="1">{handleMountNumberCurrency(element.total.toString(), ".", ",", 3, 2)}</FormRowColumn>
                 <FormRowColumn unit="1">
-                    <SwiftInfoButton
-                        id={element.id + "-"}
+                    <ServiceStatusButton
+                        id={element.id}
+                        service={element}
                         value={element.status}
-                        values={[
-                            "EM ANDAMENTO",
-                            "FINALIZADO",
-                            "PARADO",
-                            "PENDENTE",
-                        ]}
+                        onAfter={handleAfterSave}
+                        isDisabled={props.isDisabled || props.isStatusDisabled}
                         onClick={async (value) => {
-                            const service = { ...element, status: value }
-                            let feedbackMessage: FeedbackMessage = { messages: ["Algo deu errado!"], messageType: "ERROR" }
-                            setIsLoading(true)
-                            const res = await handleSaveServiceInner(service, true)
-                            setIsLoading(false)
-                            if (res.status === "ERROR") {
-                                handleShowMessage(feedbackMessage)
-                                return
-                            }
-                            feedbackMessage = { messages: ["Sucesso!"], messageType: "SUCCESS" }
-                            handleAfterSave(feedbackMessage, service, true)
+                            handleStatusClick(element, value)
                         }}
                     />
                 </FormRowColumn>
-                <FormRowColumn className="hidden sm:block" unit="1">{handleUTCToDateShow(element.dateDue.toString())}</FormRowColumn>
+                <FormRowColumn className="hidden sm:block" unit="1">{handleUTCToDateShow(element.dateDue?.toString())}</FormRowColumn>
             </FormRow>
         )
     }

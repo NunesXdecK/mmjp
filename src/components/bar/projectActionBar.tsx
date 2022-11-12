@@ -1,9 +1,5 @@
 import ActionBar from "./actionBar";
 import Button from "../button/button";
-import { useEffect, useState } from "react";
-import MenuButton from "../button/menuButton";
-import DropDownButton from "../button/dropDownButton";
-import StartProjectButton from "../button/startProjectButton";
 import { FeedbackMessage } from "../modal/feedbackMessageModal";
 import { handleProjectValidationForDB } from "../../util/validationUtil";
 import { Project, defaultProject, ProjectStatus } from "../../interfaces/objectInterfaces";
@@ -24,6 +20,8 @@ interface ProjectActionBarFormProps {
 export const handleProjectForDB = (project: Project) => {
     if (project?.dateString?.length > 0) {
         project = { ...project, dateDue: handleGetDateFormatedToUTC(project.dateString) }
+    } else {
+        project = { ...project, dateDue: 0 }
     }
     let clients = []
     if (project.clients && project.clients.length) {

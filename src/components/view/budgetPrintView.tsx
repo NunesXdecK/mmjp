@@ -112,7 +112,7 @@ export default function BudgetPrintView(props: BudgetPrintViewProps) {
                         {project.number && (<InfoView title="Codigo">{project.number}</InfoView>)}
                         {project.title && (<InfoView title="Titulo">{project.title}</InfoView>)}
                         {project.dateDue === 0 && project.dateString?.length && (<InfoView title="Data">{project.dateString}</InfoView>)}
-                        {project.dateDue > 0 && (<InfoView title="Data">{handleUTCToDateShow(project.dateDue.toString())}</InfoView>)}
+                        {project.dateDue > 0 && (<InfoView title="Data">{handleUTCToDateShow(project.dateDue?.toString())}</InfoView>)}
                         {props.dataInside && handlePutData()}
                     </InfoHolderView>
                     {!props.dataInside && handlePutData()}

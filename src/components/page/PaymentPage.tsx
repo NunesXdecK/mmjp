@@ -15,6 +15,7 @@ import PaymentForm from "../form/paymentForm"
 import { handleMountNumberCurrency } from "../../util/maskUtil"
 import SwiftInfoButton from "../button/switchInfoButton"
 import { handleSaveProjectInner } from "../bar/projectActionBar"
+import PaymentStatusButton from "../button/paymentStatusButton"
 
 interface PaymentPageProps {
     id?: string,
@@ -23,6 +24,7 @@ interface PaymentPageProps {
     getInfo?: boolean,
     canUpdate?: boolean,
     isDisabled?: boolean,
+    isStatusDisabled?: boolean,
     onSetPage?: (any) => void,
     onShowMessage?: (FeedbackMessage) => void,
 }
@@ -132,6 +134,20 @@ export default function PaymentPage(props: PaymentPageProps) {
         }
     }
 
+    const handleStatusClick = async (element, value) => {
+        const payment = { ...element, status: value }
+        let feedbackMessage: FeedbackMessage = { messages: ["Algo deu errado!"], messageType: "ERROR" }
+        setIsLoading(true)
+        const res = await handleSavePaymentInner(payment, true)
+        setIsLoading(false)
+        if (res.status === "ERROR") {
+            handleShowMessage(feedbackMessage)
+            return
+        }
+        feedbackMessage = { messages: ["Sucesso!"], messageType: "SUCCESS" }
+        handleAfterSave(feedbackMessage, payment, true)
+    }
+
     const handleShowMessage = (feedbackMessage: FeedbackMessage) => {
         if (props.onShowMessage) {
             props.onShowMessage(feedbackMessage)
@@ -157,30 +173,18 @@ export default function PaymentPage(props: PaymentPageProps) {
                 <FormRowColumn unit="1"><ProjectNumberListItem id={element.project.id} /></FormRowColumn>
                 <FormRowColumn unit="1">{handleMountNumberCurrency(element.value.toString(), ".", ",", 3, 2)}</FormRowColumn>
                 <FormRowColumn unit="1">
-                    <SwiftInfoButton
-                        id={element.id + "-"}
+                    <PaymentStatusButton
+                        id={element.id}
+                        payment={element}
                         value={element.status}
-                        isDisabled={props.isDisabled}
-                        values={[
-                            "EM ABERTO",
-                            "PAGO",
-                        ]}
+                        onAfter={handleAfterSave}
+                        isDisabled={props.isDisabled || props.isStatusDisabled}
                         onClick={async (value) => {
-                            const payment = { ...element, status: value }
-                            let feedbackMessage: FeedbackMessage = { messages: ["Algo deu errado!"], messageType: "ERROR" }
-                            setIsLoading(true)
-                            const res = await handleSavePaymentInner(payment, true)
-                            setIsLoading(false)
-                            if (res.status === "ERROR") {
-                                handleShowMessage(feedbackMessage)
-                                return
-                            }
-                            feedbackMessage = { messages: ["Sucesso!"], messageType: "SUCCESS" }
-                            handleAfterSave(feedbackMessage, payment, true)
+                            handleStatusClick(element, value)
                         }}
                     />
                 </FormRowColumn>
-                <FormRowColumn className="hidden sm:block" unit="1">{handleUTCToDateShow(element.dateDue.toString())}</FormRowColumn>
+                <FormRowColumn className="hidden sm:block" unit="1">{handleUTCToDateShow(element.dateDue?.toString())}</FormRowColumn>
             </FormRow>
         )
     }

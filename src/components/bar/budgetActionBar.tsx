@@ -5,8 +5,8 @@ import MenuButton from "../button/menuButton";
 import DropDownButton from "../button/dropDownButton";
 import StartProjectButton from "../button/startProjectButton";
 import { FeedbackMessage } from "../modal/feedbackMessageModal";
+import { handleGetDateFormatedToUTC } from "../../util/dateUtils";
 import { handleBudgetValidationForDB } from "../../util/validationUtil";
-import { handleGetDateFormatedToUTC, handleNewDateToUTC } from "../../util/dateUtils";
 import { Budget, BudgetPayment, BudgetStatus, defaultBudget } from "../../interfaces/objectInterfaces";
 
 interface BudgetActionBarFormProps {
@@ -26,6 +26,8 @@ interface BudgetActionBarFormProps {
 const handleBudgetForDB = (budget: Budget) => {
     if (budget?.dateString?.length > 0) {
         budget = { ...budget, dateDue: handleGetDateFormatedToUTC(budget.dateString) }
+    } else {
+        budget = { ...budget, dateDue: 0 }
     }
     let clients = []
     if (budget.clients && budget.clients.length) {

@@ -20,8 +20,9 @@ interface ServiceStagePageProps {
     serviceId?: string,
     canSave?: boolean,
     getInfo?: boolean,
-    isDisabled?: boolean,
     canUpdate?: boolean,
+    isDisabled?: boolean,
+    isStatusDisabled?: boolean,
     onSetPage?: (any) => void,
     onShowMessage?: (FeedbackMessage) => void,
 }
@@ -71,7 +72,7 @@ export default function ServiceStagePage(props: ServiceStagePageProps) {
             ...defaultServiceStage,
             status: "PARADO",
             index: serviceStages.length,
-            dateString: handleUTCToDateShow(handleNewDateToUTC().toString()),
+            dateString: "",
         })
         setIsRegister(true)
         setIndex(-1)
@@ -158,7 +159,7 @@ export default function ServiceStagePage(props: ServiceStagePageProps) {
                     <SwiftInfoButton
                         id={element.id + "-"}
                         value={element.status}
-                        isDisabled={props.isDisabled}
+                        isDisabled={props.isDisabled || props.isStatusDisabled}
                         values={[
                             "EM ANDAMENTO",
                             "FINALIZADO",
@@ -180,7 +181,7 @@ export default function ServiceStagePage(props: ServiceStagePageProps) {
                         }}
                     />
                 </FormRowColumn>
-                <FormRowColumn className="hidden sm:block" unit="1">{handleUTCToDateShow(element.dateDue.toString())}</FormRowColumn>
+                <FormRowColumn className="hidden sm:block" unit="1">{handleUTCToDateShow(element.dateDue?.toString())}</FormRowColumn>
             </FormRow>
         )
     }

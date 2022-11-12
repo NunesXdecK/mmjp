@@ -145,6 +145,7 @@ export default function ProjectDataForm(props: ProjectDataFormProps) {
                     >
                         <ServicePage
                             canSave
+                            isStatusDisabled
                             projectId={props.project.id}
                             onSetPage={handleSetServices}
                             getInfo={props.project.id.length > 0}
@@ -162,6 +163,7 @@ export default function ProjectDataForm(props: ProjectDataFormProps) {
                     >
                         <PaymentPage
                             canSave
+                            isStatusDisabled
                             projectId={props.project.id}
                             onSetPage={handleSetServices}
                             getInfo={props.project.id.length > 0}

@@ -23,6 +23,8 @@ interface ServiceStageActionBarFormProps {
 export const handleServiceStageForDB = (serviceStage: ServiceStage) => {
     if (serviceStage?.dateString?.length > 0) {
         serviceStage = { ...serviceStage, dateDue: handleGetDateFormatedToUTC(serviceStage.dateString) }
+    } else {
+        serviceStage = { ...serviceStage, dateDue: 0 }
     }
     if (serviceStage.service?.id?.length > 0) {
         serviceStage = { ...serviceStage, service: { id: serviceStage.service.id } }

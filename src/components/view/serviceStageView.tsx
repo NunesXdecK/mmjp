@@ -114,7 +114,7 @@ export default function ServiceStageView(props: ServiceStageViewProps) {
                                     <InfoView classNameHolder="w-full" title="Lista de espera">{serviceStage.priorityView + ""}</InfoView>
                                 )}
                                 <InfoView title="Etapa">{serviceStage.title}</InfoView>
-                                <InfoView title="Data">{handleUTCToDateShow(serviceStage.dateDue.toString())}</InfoView>
+                                <InfoView title="Data">{handleUTCToDateShow(serviceStage.dateDue?.toString())}</InfoView>
                                 {serviceStage.status === "FINALIZADO" && (
                                     <InfoView classNameHolder="w-full" classNameInfo="rounded-sm px-2 py-1 text-green-100 bg-green-600 text-[0.8rem] font-bold" title="">{serviceStage.status}</InfoView>
                                 )}

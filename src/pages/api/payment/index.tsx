@@ -12,7 +12,7 @@ export default async function handler(req, res) {
 
     switch (method) {
         case "POST":
-            let resPOST = { status: "ERROR", error: {}, id: "", message: "" }
+            let resPOST = { status: "ERROR", error: {}, id: "", message: "", pstatus: "" }
             let { token, data, history } = JSON.parse(body)
             let nowID = data?.id ?? ""
             let payment: Payment = data
@@ -22,6 +22,12 @@ export default async function handler(req, res) {
             if (token === "tokenbemseguro") {
                 try {
                     const isSave = nowID === ""
+                    const dateNow = handleNewDateToUTC()
+                    let status = payment.status
+                    if (payment.status !== "PAGO" && payment.dateDue > 0) {
+                        status = payment.dateDue < dateNow ? "ATRASADO" : "EM ABERTO"
+                        payment = { ...payment, status: status }
+                    }
                     if (isSave) {
                         payment = { ...payment, dateInsertUTC: handleNewDateToUTC() }
                         const docRef = await addDoc(paymentCollection, PaymentConversor.toFirestore(payment))
@@ -35,7 +41,7 @@ export default async function handler(req, res) {
                         const dataForHistory = { ...PaymentConversor.toFirestore(payment), databaseid: nowID, databasename: PAYMENT_COLLECTION_NAME }
                         await addDoc(historyCollection, dataForHistory)
                     }
-                    resPOST = { ...resPOST, status: "SUCCESS", id: nowID }
+                    resPOST = { ...resPOST, status: "SUCCESS", id: nowID, pstatus: status }
                 } catch (err) {
                     console.error(err)
                     resPOST = { ...resPOST, status: "ERROR", error: err }

@@ -21,6 +21,7 @@ interface BudgetPageProps {
     canSave?: boolean,
     canUpdate?: boolean,
     isDisabled?: boolean,
+    isStatusDisabled?: boolean,
     onSetPage?: (any) => void,
     onShowMessage?: (FeedbackMessage) => void,
 }
@@ -129,7 +130,7 @@ export default function BudgetPage(props: BudgetPageProps) {
         let localPayments = []
         if (localBudget?.payments?.length > 0) {
             localBudget.payments.map((element: BudgetPayment, index) => {
-                localPayments = [...localPayments, { ...element, dateString: handleUTCToDateShow(element.dateDue.toString()) }]
+                localPayments = [...localPayments, { ...element, dateString: handleUTCToDateShow(element.dateDue?.toString()) }]
             })
         }
         localBudget = {
@@ -195,7 +196,7 @@ export default function BudgetPage(props: BudgetPageProps) {
                     <SwiftInfoButton
                         id={element.id + "-"}
                         value={element.status}
-                        isDisabled={props.isDisabled}
+                        isDisabled={props.isDisabled || props.isStatusDisabled}
                         values={[
                             "APROVADO",
                             "NEGOCIANDO",
@@ -216,7 +217,7 @@ export default function BudgetPage(props: BudgetPageProps) {
                         }}
                     />
                 </FormRowColumn>
-                <FormRowColumn className="hidden sm:block" unit="1">{handleUTCToDateShow(element.dateDue.toString())}</FormRowColumn>
+                <FormRowColumn className="hidden sm:block" unit="1">{handleUTCToDateShow(element.dateDue?.toString())}</FormRowColumn>
             </FormRow>
         )
     }

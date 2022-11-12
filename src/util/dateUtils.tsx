@@ -42,25 +42,33 @@ export const handleUTCToDate = (utc: string) => {
 }
 
 export const handleUTCToDateShow = (utc: string) => {
+    let dateShow = "n/a"
     {/*
     const tz = Intl.DateTimeFormat().resolvedOptions().timeZone;
     date.toLocaleString("en-US", { timeZone: tz })
 */}
-    const date = new Date(parseInt(utc))
-    const month = (date.getMonth() + 1).toString().length > 1 ? (date.getMonth() + 1) : "0" + (date.getMonth() + 1)
-    const day = date.getUTCDate().toString().length === 1 ? "0" + date.getUTCDate() : date.getUTCDate()
-    return day + "/" + month + "/" + date.getFullYear()
+    if (utc && utc !== "0") {
+        const date = new Date(parseInt(utc))
+        const month = (date.getMonth() + 1).toString().length > 1 ? (date.getMonth() + 1) : "0" + (date.getMonth() + 1)
+        const day = date.getUTCDate().toString().length === 1 ? "0" + date.getUTCDate() : date.getUTCDate()
+        dateShow = day + "/" + month + "/" + date.getFullYear()
+    }
+    return dateShow
 }
 
 export const handleUTCToDateFullShow = (utc: string) => {
+    let dateShow = "n/a"
     {/*
     const tz = Intl.DateTimeFormat().resolvedOptions().timeZone;
     date.toLocaleString("en-US", { timeZone: tz })
 */}
-    const date = new Date(parseInt(utc))
-    const month = (date.getMonth() + 1).toString().length > 1 ? (date.getMonth() + 1) : "0" + (date.getMonth() + 1)
-    const day = date.getUTCDate().toString().length === 1 ? "0" + date.getUTCDate() : date.getUTCDate()
-    const hour = date.getHours().toString().length === 1 ? "0" + date.getHours() : date.getHours()
-    const minute = date.getMinutes().toString().length === 1 ? "0" + date.getMinutes() : date.getMinutes()
-    return hour + ":" + minute + " de " + day + "/" + month + "/" + date.getFullYear()
+    if (utc && utc !== "0") {
+        const date = new Date(parseInt(utc))
+        const month = (date.getMonth() + 1).toString().length > 1 ? (date.getMonth() + 1) : "0" + (date.getMonth() + 1)
+        const day = date.getUTCDate().toString().length === 1 ? "0" + date.getUTCDate() : date.getUTCDate()
+        const hour = date.getHours().toString().length === 1 ? "0" + date.getHours() : date.getHours()
+        const minute = date.getMinutes().toString().length === 1 ? "0" + date.getMinutes() : date.getMinutes()
+        dateShow = hour + ":" + minute + " de " + day + "/" + month + "/" + date.getFullYear()
+    }
+    return dateShow
 }

@@ -212,6 +212,7 @@ export default function ServiceDataForm(props: ServiceDataFormProps) {
                     >
                         <ServiceStagePage
                             canSave
+                            isStatusDisabled
                             serviceId={props.service.id}
                             isDisabled={props.isDisabled}
                             onSetPage={handleSetServiceStage}

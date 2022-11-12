@@ -102,7 +102,7 @@ export default function ServicePaymentView(props: ServicePaymentViewProps) {
                             >
                                 <InfoView title="Pagamento">{servicePayment.description}</InfoView>
                                 <InfoView title="Valor">{handleMountNumberCurrency(servicePayment.value.toString(), ".", ",", 3, 2)}</InfoView>
-                                <InfoView title="Data">{handleUTCToDateShow(servicePayment.dateDue.toString())}</InfoView>
+                                <InfoView title="Data">{handleUTCToDateShow(servicePayment.dateDue?.toString())}</InfoView>
                                 {servicePayment.status === "FINALIZADO" && (
                                     <InfoView classNameHolder="w-full" classNameInfo="rounded-sm px-2 py-1 text-green-100 bg-green-600 text-[0.8rem] font-bold" title="">{servicePayment.status}</InfoView>
                                 )}
