@@ -1,14 +1,13 @@
-import { Service, ServicePayment, ServiceStage } from "../../../interfaces/objectInterfaces"
-import { ServiceConversor, ServicePaymentConversor, ServiceStageConversor } from "../../../db/converters"
-import { addDoc, collection, deleteDoc, doc, getDoc, getDocs, query, updateDoc, where } from "firebase/firestore"
-import { db, SERVICE_COLLECTION_NAME, SERVICE_PAYMENT_COLLECTION_NAME, SERVICE_STAGE_COLLECTION_NAME } from "../../../db/firebaseDB"
+import { collection, getDocs, query, where } from "firebase/firestore"
+import { ServiceConversor, PaymentConversor, ServiceStageConversor } from "../../../db/converters"
+import { db, SERVICE_COLLECTION_NAME, PAYMENT_COLLECTION_NAME, SERVICE_STAGE_COLLECTION_NAME } from "../../../db/firebaseDB"
 
 export default async function handler(req, res) {
     const { method, body } = req
 
     const serviceCollection = collection(db, SERVICE_COLLECTION_NAME).withConverter(ServiceConversor)
     const serviceStageCollection = collection(db, SERVICE_STAGE_COLLECTION_NAME).withConverter(ServiceStageConversor)
-    const servicePaymentCollection = collection(db, SERVICE_PAYMENT_COLLECTION_NAME).withConverter(ServicePaymentConversor)
+    const paymentCollection = collection(db, PAYMENT_COLLECTION_NAME).withConverter(PaymentConversor)
 
     switch (method) {
         case 'GET':
@@ -16,7 +15,7 @@ export default async function handler(req, res) {
             let messages = []
             let serviceQuantity = 0
             let serviceStageQuantity = 0
-            let servicePaymentQuantity = 0
+            let paymentQuantity = 0
             try {
                 const queryService = query(serviceCollection, where("status", "==", "PENDENTE"))
                 const querySnapshotService = await getDocs(queryService)
@@ -28,10 +27,10 @@ export default async function handler(req, res) {
                 querySnapshotServiceStage.forEach((doc) => {
                     serviceStageQuantity++
                 })
-                const queryServicePayment = query(servicePaymentCollection, where("status", "==", "PENDENTE"))
-                const querySnapshotServicePayment = await getDocs(queryServicePayment)
-                querySnapshotServicePayment.forEach((doc) => {
-                    servicePaymentQuantity++
+                const queryPayment = query(paymentCollection, where("status", "==", "ATRASADO"))
+                const querySnapshotPayment = await getDocs(queryPayment)
+                querySnapshotPayment.forEach((doc) => {
+                    paymentQuantity++
                 })
                 if (serviceQuantity > 0) {
                     if (serviceQuantity === 1) {
@@ -47,11 +46,11 @@ export default async function handler(req, res) {
                         messages = [...messages, serviceStageQuantity + " etapas estão pendentes."]
                     }
                 }
-                if (servicePaymentQuantity > 0) {
-                    if (servicePaymentQuantity === 1) {
-                        messages = [...messages, servicePaymentQuantity + " pagamento está pendente."]
+                if (paymentQuantity > 0) {
+                    if (paymentQuantity === 1) {
+                        messages = [...messages, paymentQuantity + " pagamento está atrasado."]
                     } else {
-                        messages = [...messages, servicePaymentQuantity + " pagamentos estão pendentes."]
+                        messages = [...messages, paymentQuantity + " pagamentos estão atrasados."]
                     }
                 }
                 resGET = { status: "SUCCESS", error: {}, messages: messages }

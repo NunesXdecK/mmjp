@@ -21,8 +21,8 @@ export default function ListTableItem(props: ListTableItemProps) {
     if (props.isActive) {
         className = className + " bg-indigo-100 dark:bg-gray-600"
     }
+    className = className + " border-b border-gray-200 dark:border-gray-700"
     if (!props.isLast) {
-        className = className + " border-b border-gray-200 dark:border-gray-700"
     }
     return (
         <div

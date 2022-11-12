@@ -8,6 +8,7 @@ import ProjectPage from "../components/page/ProjectPage"
 import ServiceStagePage from "../components/page/ServiceStagePage"
 import FeedbackPendency from "../components/modal/feedbackPendencyModal"
 import FeedbackMessageModal, { defaultFeedbackMessage, FeedbackMessage } from "../components/modal/feedbackMessageModal"
+import PersonPage from "../components/page/PersonPage"
 
 export type PageOps =
     "DASHBOARD"
@@ -33,6 +34,7 @@ export default function Index(props: IndexProps) {
     }
 
     let title = ""
+    let update = false
     switch (page) {
         default:
             title = "Dashboard"
@@ -67,18 +69,22 @@ export default function Index(props: IndexProps) {
             window.history.pushState({}, "", "/budget");
             break
         case "PROJECT":
+            update = true
             title = "Projetos"
             window.history.pushState({}, "", "/project");
             break
         case "SERVICE":
+            update = true
             title = "Serviços"
             window.history.pushState({}, "", "/service");
             break
         case "SERVICESTAGE":
+            update = true
             title = "Etapas"
             window.history.pushState({}, "", "/servicestage");
             break
         case "PAYMENT":
+            update = true
             title = "Pagamentos"
             window.history.pushState({}, "", "/payment");
             break
@@ -115,7 +121,9 @@ const [subjectMessage, setSubjectMessage] = useState<SubjectMessage>({
                 <link rel="icon" href="/favicon.ico" />
                 <meta name="description" content={title} />
             </Head>
-            {page !== "BUDGET" &&
+            {
+                page !== "PERSON" &&
+                page !== "BUDGET" &&
                 page !== "PROJECT" &&
                 page !== "SERVICE" &&
                 page !== "PAYMENT" &&
@@ -125,6 +133,15 @@ const [subjectMessage, setSubjectMessage] = useState<SubjectMessage>({
                         {title}
                     </div>
                 )}
+            {page === "PERSON" && (
+                <PersonPage
+                    getInfo
+                    canSave
+                    canUpdate
+                    onSetPage={setPage}
+                    onShowMessage={handleShowMessage}
+                />
+            )}
             {page === "BUDGET" && (
                 <BudgetPage
                     getInfo
@@ -192,8 +209,7 @@ const [subjectMessage, setSubjectMessage] = useState<SubjectMessage>({
                 setIsOpen={setIsFeedbackOpen}
                 feedbackMessage={feedbackMessage}
             />
-
-            <FeedbackPendency />
+            <FeedbackPendency update={update} />
         </Layout >
     )
 }
