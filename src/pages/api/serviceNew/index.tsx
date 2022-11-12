@@ -1,14 +1,15 @@
-import { Service } from "../../../interfaces/objectInterfaces"
+import { Project, Service } from "../../../interfaces/objectInterfaces"
 import { handleRemoveCurrencyMask } from "../../../util/maskUtil"
 import { handleGetDateFormatedToUTC, handleNewDateToUTC } from "../../../util/dateUtils"
-import { addDoc, collection, deleteDoc, doc, getDocs, query, updateDoc, where } from "firebase/firestore"
-import { ServiceConversor, ServicePaymentConversor, ServiceStageConversor } from "../../../db/converters"
-import { db, HISTORY_COLLECTION_NAME, SERVICE_COLLECTION_NAME, SERVICE_PAYMENT_COLLECTION_NAME, SERVICE_STAGE_COLLECTION_NAME } from "../../../db/firebaseDB"
+import { addDoc, collection, deleteDoc, doc, getDoc, getDocs, query, updateDoc, where } from "firebase/firestore"
+import { ProjectConversor, ServiceConversor, ServicePaymentConversor, ServiceStageConversor } from "../../../db/converters"
+import { db, HISTORY_COLLECTION_NAME, PROJECT_COLLECTION_NAME, SERVICE_COLLECTION_NAME, SERVICE_PAYMENT_COLLECTION_NAME, SERVICE_STAGE_COLLECTION_NAME } from "../../../db/firebaseDB"
 
 export default async function handler(req, res) {
     const { method, body } = req
 
     const historyCollection = collection(db, HISTORY_COLLECTION_NAME)
+    const projectCollection = collection(db, PROJECT_COLLECTION_NAME).withConverter(ProjectConversor)
     const serviceCollection = collection(db, SERVICE_COLLECTION_NAME).withConverter(ServiceConversor)
     const serviceStageCollection = collection(db, SERVICE_STAGE_COLLECTION_NAME).withConverter(ServiceStageConversor)
     const servicePaymentCollection = collection(db, SERVICE_PAYMENT_COLLECTION_NAME).withConverter(ServicePaymentConversor)
@@ -46,6 +47,23 @@ export default async function handler(req, res) {
                 } catch (err) {
                     console.error(err)
                     resPOST = { ...resPOST, status: "ERROR", error: err }
+                }
+                if (service.project?.id?.length > 0) {
+                    try {
+                        const projectDocRef = doc(projectCollection, service.project.id)
+                        let project: Project = (await getDoc(projectDocRef)).data()
+                        if (project.id?.length > 0 && project.status !== "PENDENTE") {
+                            project = { ...project, status: "PENDENTE", dateLastUpdateUTC: handleNewDateToUTC() }
+                            await updateDoc(projectDocRef, ProjectConversor.toFirestore(project))
+                            if (history) {
+                                const projectDataForHistory = { ...ProjectConversor.toFirestore(project), databaseid: project.id, databasename: PROJECT_COLLECTION_NAME }
+                                await addDoc(historyCollection, projectDataForHistory)
+                            }
+                        }
+                    } catch (err) {
+                        console.error(err)
+                        resPOST = { ...resPOST, status: "ERROR", error: err }
+                    }
                 }
                 resPOST = { ...resPOST, status: "SUCCESS", id: serviceNowID }
             } else {

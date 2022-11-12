@@ -1,13 +1,14 @@
-import { ServiceConversor, ServiceStageConversor } from "../../../db/converters"
+import { ProjectConversor, ServiceConversor, ServiceStageConversor } from "../../../db/converters"
 import { addDoc, collection, deleteDoc, doc, getDoc, updateDoc } from "firebase/firestore"
-import { db, HISTORY_COLLECTION_NAME, SERVICE_COLLECTION_NAME, SERVICE_STAGE_COLLECTION_NAME } from "../../../db/firebaseDB"
-import { Service, ServiceStage } from "../../../interfaces/objectInterfaces"
+import { db, HISTORY_COLLECTION_NAME, PROJECT_COLLECTION_NAME, SERVICE_COLLECTION_NAME, SERVICE_STAGE_COLLECTION_NAME } from "../../../db/firebaseDB"
+import { Project, Service, ServiceStage } from "../../../interfaces/objectInterfaces"
 import { handleNewDateToUTC } from "../../../util/dateUtils"
 
 export default async function handler(req, res) {
     const { method, body } = req
 
     const historyCollection = collection(db, HISTORY_COLLECTION_NAME)
+    const projectCollection = collection(db, PROJECT_COLLECTION_NAME).withConverter(ProjectConversor)
     const serviceCollection = collection(db, SERVICE_COLLECTION_NAME).withConverter(ServiceConversor)
     const serviceStageCollection = collection(db, SERVICE_STAGE_COLLECTION_NAME).withConverter(ServiceStageConversor)
 
@@ -48,14 +49,30 @@ export default async function handler(req, res) {
                 if (serviceStage.status === "PENDENTE" && serviceStage.service?.id?.length > 0) {
                     const docRef = doc(serviceCollection, serviceStage.service?.id)
                     let service: Service = (await getDoc(docRef)).data()
-                    if (service.id?.length > 0 && service.status !== "PENDENTE" && service.status !== "FINALIZADO") {
+                    if (service.id?.length > 0 && service.status !== "PENDENTE") {
                         service = { ...service, status: "PENDENTE", dateLastUpdateUTC: handleNewDateToUTC() }
-                        const docRef = doc(serviceCollection, service.id)
                         await updateDoc(docRef, ServiceConversor.toFirestore(service))
                         if (history) {
-                            const dataForHistory = { ...ServiceConversor.toFirestore(service), databaseid: service.id, databasename: SERVICE_COLLECTION_NAME }
-                            await addDoc(historyCollection, dataForHistory)
+                            const serviceDataForHistory = { ...ServiceConversor.toFirestore(service), databaseid: service.id, databasename: SERVICE_COLLECTION_NAME }
+                            await addDoc(historyCollection, serviceDataForHistory)
                         }
+                        if (service.project?.id?.length > 0) {
+                            const projectDocRef = doc(projectCollection, service.project.id)
+                            let project: Project = (await getDoc(projectDocRef)).data()
+                            if (project.id?.length > 0 && project.status !== "PENDENTE") {
+                                project = { ...project, status: "PENDENTE", dateLastUpdateUTC: handleNewDateToUTC() }
+                                await updateDoc(projectDocRef, ProjectConversor.toFirestore(project))
+                                if (history) {
+                                    const projectDataForHistory = { ...ProjectConversor.toFirestore(project), databaseid: project.id, databasename: PROJECT_COLLECTION_NAME }
+                                    await addDoc(historyCollection, projectDataForHistory)
+                                }
+                            }
+                        }
+                    }
+                    try {
+                    } catch (err) {
+                        console.error(err)
+                        resPOST = { ...resPOST, status: "ERROR", error: err }
                     }
                 }
             } else {
