@@ -13,7 +13,7 @@ import { handleUTCToDateShow, handleNewDateToUTC } from "../../util/dateUtils"
 import ServiceActionBarForm, { handleSaveServiceInner } from "../bar/serviceActionBar"
 import ServiceDataForm from "../form/serviceDataForm"
 import { handleMountNumberCurrency } from "../../util/maskUtil"
-import ServiceStatusButton from "../button/ServiceStatusButton"
+import ServiceStatusButton from "../button/serviceStatusButton"
 
 interface ServicePageProps {
     id?: string,
