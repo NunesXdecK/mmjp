@@ -5,14 +5,14 @@ import ListTable from "../list/listTable"
 import { useEffect, useState } from "react"
 import WindowModal from "../modal/windowModal"
 import FormRowColumn from "../form/formRowColumn"
-import { handleMaskCPF } from "../../util/maskUtil"
-import PersonDataForm from "../form/personDataForm"
-import PersonActionBarForm from "../bar/personActionBar"
+import { handleMaskCNPJ } from "../../util/maskUtil"
+import CompanyDataForm from "../form/companyDataForm"
+import CompanyActionBarForm from "../bar/companyActionBar"
 import { PlusIcon, RefreshIcon } from "@heroicons/react/solid"
 import { FeedbackMessage } from "../modal/feedbackMessageModal"
-import { Person, defaultPerson } from "../../interfaces/objectInterfaces"
+import { Company, defaultCompany } from "../../interfaces/objectInterfaces"
 
-interface PersonPageProps {
+interface CompanyPageProps {
     id?: string,
     canSave?: boolean,
     getInfo?: boolean,
@@ -23,9 +23,9 @@ interface PersonPageProps {
     onShowMessage?: (FeedbackMessage) => void,
 }
 
-export default function PersonPage(props: PersonPageProps) {
-    const [person, setPerson] = useState<Person>(defaultPerson)
-    const [persons, setPersons] = useState<Person[]>([])
+export default function CompanyPage(props: CompanyPageProps) {
+    const [company, setCompany] = useState<Company>(defaultCompany)
+    const [companys, setCompanys] = useState<Company[]>([])
     const [index, setIndex] = useState(-1)
     const [isFirst, setIsFirst] = useState(props.getInfo)
     const [isLoading, setIsLoading] = useState(props.getInfo)
@@ -36,18 +36,18 @@ export default function PersonPage(props: PersonPageProps) {
         if (event) {
             event.preventDefault()
         }
-        setPerson(defaultPerson)
+        setCompany(defaultCompany)
         setIndex(-1)
         setIsForShow(false)
         setIsRegister(false)
     }
 
-    const handleDeleteClick = async (person, index) => {
+    const handleDeleteClick = async (company, index) => {
         setIsLoading(true)
         let feedbackMessage: FeedbackMessage = { messages: ["Algo deu errado"], messageType: "ERROR" }
-        const res = await fetch("api/personNew", {
+        const res = await fetch("api/companyNew", {
             method: "DELETE",
-            body: JSON.stringify({ token: "tokenbemseguro", id: person.id }),
+            body: JSON.stringify({ token: "tokenbemseguro", id: company.id }),
         }).then((res) => res.json())
         if (res.status === "SUCCESS") {
             feedbackMessage = { messages: ["Removido com sucesso!"], messageType: "SUCCESS" }
@@ -55,17 +55,17 @@ export default function PersonPage(props: PersonPageProps) {
             feedbackMessage = { messages: ["Algo deu errado"], messageType: "ERROR" }
         }
         const list = [
-            ...persons.slice(0, (index - 1)),
-            ...persons.slice(index, persons.length),
+            ...companys.slice(0, (index - 1)),
+            ...companys.slice(index, companys.length),
         ]
-        setPersons(list)
+        setCompanys(list)
         setIsLoading(false)
         handleShowMessage(feedbackMessage)
     }
 
     const handleNewClick = async () => {
-        setPerson({
-            ...defaultPerson,
+        setCompany({
+            ...defaultCompany,
         })
         setIsRegister(true)
         setIndex(-1)
@@ -78,42 +78,42 @@ export default function PersonPage(props: PersonPageProps) {
 
     const handleShowClick = (project) => {
         setIsLoading(true)
-        setPerson({ ...defaultPerson, ...project })
+        setCompany({ ...defaultCompany, ...project })
         setIsForShow(true)
         setIsLoading(false)
     }
 
-    const handleEditClick = async (person, index?) => {
+    const handleEditClick = async (company, index?) => {
         setIsLoading(true)
         setIsForShow(false)
-        let localPerson: Person = await fetch("api/person/" + person?.id).then((res) => res.json()).then((res) => res.data)
-        localPerson = {
-            ...localPerson,
+        let localCompany: Company = await fetch("api/company/" + company?.id).then((res) => res.json()).then((res) => res.data)
+        localCompany = {
+            ...localCompany,
         }
         setIsLoading(false)
         setIsRegister(true)
-        setPerson(localPerson)
+        setCompany(localCompany)
     }
 
-    const handleAfterSave = (feedbackMessage: FeedbackMessage, person: Person, isForCloseModal) => {
+    const handleAfterSave = (feedbackMessage: FeedbackMessage, company: Company, isForCloseModal) => {
         let localIndex = -1
-        persons.map((element, index) => {
-            if (element.id === person.id) {
+        companys.map((element, index) => {
+            if (element.id === company.id) {
                 localIndex = index
             }
         })
-        let list: Person[] = [
-            person,
-            ...persons,
+        let list: Company[] = [
+            company,
+            ...companys,
         ]
         if (localIndex > -1) {
             list = [
-                person,
-                ...persons.slice(0, localIndex),
-                ...persons.slice(localIndex + 1, persons.length),
+                company,
+                ...companys.slice(0, localIndex),
+                ...companys.slice(localIndex + 1, companys.length),
             ]
         }
-        setPersons((old) => list)
+        setCompanys((old) => list)
         handleShowMessage(feedbackMessage)
         if (!isForCloseModal) {
             handleBackClick()
@@ -134,27 +134,27 @@ export default function PersonPage(props: PersonPageProps) {
             <FormRow>
                 <FormRowColumn unit="1">Codigo</FormRowColumn>
                 <FormRowColumn unit="3">Nome</FormRowColumn>
-                <FormRowColumn unit="2">CPF</FormRowColumn>
+                <FormRowColumn unit="2">CNPJ</FormRowColumn>
             </FormRow>
         )
     }
 
-    const handlePutRows = (element: Person) => {
+    const handlePutRows = (element: Company) => {
         return (
             <FormRow>
                 <FormRowColumn unit="1">{element.clientCode?.length > 0 ? element.clientCode : "n/a"}</FormRowColumn>
                 <FormRowColumn unit="3">{element.name}</FormRowColumn>
-                <FormRowColumn unit="2">{handleMaskCPF(element.cpf)}</FormRowColumn>
+                <FormRowColumn unit="2">{handleMaskCNPJ(element.cnpj)}</FormRowColumn>
             </FormRow>
         )
     }
 
     useEffect(() => {
         if (isFirst) {
-            fetch("api/persons/").then((res) => res.json()).then((res) => {
+            fetch("api/companies/").then((res) => res.json()).then((res) => {
                 setIsFirst(old => false)
                 if (res.list.length) {
-                    setPersons(res.list)
+                    setCompanys(res.list)
                 }
                 setIsLoading(false)
             })
@@ -187,9 +187,9 @@ export default function PersonPage(props: PersonPageProps) {
                 </Button>
             </ActionBar>
             <ListTable
-                title="Pessoas"
+                title="Empresas"
                 isActive={index}
-                list={persons}
+                list={companys}
                 isLoading={isLoading}
                 onSetIsActive={setIndex}
                 onTableRow={handlePutRows}
@@ -201,17 +201,17 @@ export default function PersonPage(props: PersonPageProps) {
             />
             <WindowModal
                 max
-                title="Pessoa"
+                title="Empresa"
+                id="service-stage-register-modal"
                 setIsOpen={handleCloseModal}
                 isOpen={isRegister || isForShow}
-                id="service-stage-register-modal"
                 headerBottom={(
                     <>
                         {isRegister && (
                             <div className="p-4 pb-0">
-                                <PersonActionBarForm
-                                    person={person}
-                                    onSet={setPerson}
+                                <CompanyActionBarForm
+                                    company={company}
+                                    onSet={setCompany}
                                     isLoading={isLoading}
                                     onSetIsLoading={setIsLoading}
                                     onAfterSave={handleAfterSave}
@@ -226,7 +226,7 @@ export default function PersonPage(props: PersonPageProps) {
                                 <Button
                                     isLoading={isLoading}
                                     onClick={() => {
-                                        handleEditClick(person)
+                                        handleEditClick(company)
                                     }}
                                 >
                                     Editar
@@ -238,9 +238,9 @@ export default function PersonPage(props: PersonPageProps) {
             >
                 <>
                     {isRegister && (
-                        <PersonDataForm
-                            person={person}
-                            onSet={setPerson}
+                        <CompanyDataForm
+                            company={company}
+                            onSet={setCompany}
                             isLoading={isLoading}
                         />
                     )}

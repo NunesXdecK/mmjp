@@ -4,7 +4,7 @@ import { useState } from "react";
 import FormRowColumn from "./formRowColumn";
 import InputText from "../inputText/inputText";
 import InputTextArea from "../inputText/inputTextArea";
-import InputSelectUser from "../inputText/inputSelectUsers";
+import InputSelectUser from "../inputText/inputSelectUser";
 import { ServiceStage } from "../../interfaces/objectInterfaces";
 import { NOT_NULL_MARK } from "../../util/patternValidationUtil";
 import InputTextAutoComplete from "../inputText/inputTextAutocomplete";

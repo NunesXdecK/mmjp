@@ -93,7 +93,7 @@ export default function ServiceStagePage(props: ServiceStagePageProps) {
     const handleEditClick = async (serviceStage, index?) => {
         setIsLoading(true)
         setIsForShow(false)
-        let localServiceStage: ServiceStage = await fetch("api/serviceStage/" + serviceStage?.id).then((res) => res.json()).then((res) => res.data)
+        let localServiceStage: ServiceStage = await fetch("api/serviceStageNew/" + serviceStage?.id).then((res) => res.json()).then((res) => res.data)
         localServiceStage = {
             ...localServiceStage,
             dateString: handleUTCToDateShow(localServiceStage?.dateDue?.toString()),
@@ -248,7 +248,7 @@ export default function ServiceStagePage(props: ServiceStagePageProps) {
             />
             <WindowModal
                 max
-                title="Etapas"
+                title="Etapa"
                 id="service-stage-register-modal"
                 setIsOpen={handleCloseModal}
                 isOpen={isRegister || isForShow}

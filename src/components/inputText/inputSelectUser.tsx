@@ -1,16 +1,16 @@
 import Button from "../button/button";
 import { useEffect, useState } from "react";
 import WindowModal from "../modal/windowModal";
-import ProfessionalForm from "../form/professionalForm";
+import UserForm from "../form/userForm";
 import { XCircleIcon } from "@heroicons/react/outline";
 import { PlusCircleIcon } from "@heroicons/react/solid";
 import InputTextAutoComplete from "./inputTextAutocomplete";
 import { FeedbackMessage } from "../modal/feedbackMessageModal";
-import { defaultProfessional, Professional } from "../../interfaces/objectInterfaces";
-import ProfessionalDataForm from "../form/professionalDataForm";
-import ProfessionalActionBarForm from "../bar/professionalActionBar";
+import { defaultUser, User } from "../../interfaces/objectInterfaces";
+import UserDataForm from "../form/userDataForm";
+import UserActionBarForm from "../bar/userActionBar";
 
-interface InputSelectProfessionalProps {
+interface InputSelectUserProps {
     id?: string,
     title?: string,
     value?: string,
@@ -28,7 +28,7 @@ interface InputSelectProfessionalProps {
     isDisabled?: boolean,
     validationButton?: boolean,
     isMultipleSelect?: boolean,
-    professionals?: Professional[],
+    users?: User[],
     onSet?: (any) => void,
     onBlur?: (any?) => void,
     onFinishAdd?: (any?) => void,
@@ -38,29 +38,29 @@ interface InputSelectProfessionalProps {
     onFilter?: ([], string) => any[],
 }
 
-export default function InputSelectProfessional(props: InputSelectProfessionalProps) {
+export default function InputSelectUser(props: InputSelectUserProps) {
     const [isOpen, setIsOpen] = useState(false)
     const [isFirst, setIsFirst] = useState(true)
     const [isSelected, setIsSelected] = useState(props.value?.length > 0)
     const [isRegister, setIsRegister] = useState(false)
 
     const [text, setText] = useState<string>(props.value ?? "")
-    const [professional, setProfessional] = useState<Professional>(defaultProfessional)
+    const [user, setUser] = useState<User>(defaultUser)
 
-    const [professionals, setProfessionals] = useState<Professional[]>([])
+    const [users, setUsers] = useState<User[]>([])
 
     const handleNewClick = () => {
         setIsOpen(true)
         setIsRegister(false)
-        setProfessional(defaultProfessional)
+        setUser(defaultUser)
     }
 
     const handleBackClick = (event?) => {
         if (event) {
             event.preventDefault()
         }
-        setProfessionals([])
-        setProfessional(defaultProfessional)
+        setUsers([])
+        setUser(defaultUser)
         setIsOpen(false)
         setIsFirst(true)
         setIsRegister(false)
@@ -74,21 +74,21 @@ export default function InputSelectProfessional(props: InputSelectProfessionalPr
         }
     }
 
-    const handleAdd = (professional: Professional) => {
+    const handleAdd = (user: User) => {
         let canAdd = true
         if (props.onValidate) {
-            canAdd = props.onValidate(professional)
+            canAdd = props.onValidate(user)
         }
 
         if (canAdd) {
             if (!props.notSet) {
-                setText(professional.title)
+                setText(user.username)
                 setIsSelected(true)
             } else {
                 setText("")
             }
             if (props.onSet) {
-                props.onSet(professional)
+                props.onSet(user)
                 setIsOpen(false)
             }
             if (props.onFinishAdd) {
@@ -119,7 +119,7 @@ export default function InputSelectProfessional(props: InputSelectProfessionalPr
             >
                 <div className="w-full text-left flex flex-row gap-1">
                     <PlusCircleIcon className="text-indigo-600 dark:text-gray-200 block h-5 w-5" aria-hidden="true" />
-                    Novo profissional
+                    Novo usuário
                 </div>
             </Button>
         )
@@ -127,10 +127,10 @@ export default function InputSelectProfessional(props: InputSelectProfessionalPr
 
     useEffect(() => {
         if (isFirst) {
-            fetch("api/professionals").then((res) => res.json()).then((res) => {
+            fetch("api/users").then((res) => res.json()).then((res) => {
                 setIsFirst(old => false)
                 if (res.list.length) {
-                    setProfessionals(res.list)
+                    setUsers(res.list)
                 }
                 if (props.onSetLoading) {
                     props.onSetLoading(false)
@@ -148,7 +148,7 @@ export default function InputSelectProfessional(props: InputSelectProfessionalPr
                     title={props.title}
                     onSetText={setText}
                     onBlur={props.onBlur}
-                    sugestions={professionals}
+                    sugestions={users}
                     onClickItem={handleAdd}
                     onFilter={props.onFilter}
                     isLoading={props.isLoading}
@@ -164,7 +164,7 @@ export default function InputSelectProfessional(props: InputSelectProfessionalPr
                         className="p-0 top-8 right-2 absolute"
                         onClick={() => {
                             setText("")
-                            handleAdd(defaultProfessional)
+                            handleAdd(defaultUser)
                             setIsSelected(false)
                         }}
                     >
@@ -176,15 +176,15 @@ export default function InputSelectProfessional(props: InputSelectProfessionalPr
                 max
                 isOpen={isOpen}
                 setIsOpen={setIsOpen}
-                id={props.id + "-window-modal-register-professional"}
+                id={props.id + "-window-modal-register-user"}
                 onClose={() => {
                     setIsRegister(false)
                 }}
                 headerBottom={(
                     <div className="p-4 pb-0">
-                        <ProfessionalActionBarForm
-                            onSet={setProfessional}
-                            professional={professional}
+                        <UserActionBarForm
+                            user={user}
+                            onSet={setUser}
                             isLoading={props.isLoading}
                             onAfterSave={handleAfterSave}
                             onSetIsLoading={props.onSetLoading}
@@ -195,9 +195,9 @@ export default function InputSelectProfessional(props: InputSelectProfessionalPr
             >
                 <>
                     {isOpen && (
-                        <ProfessionalDataForm
-                            onSet={setProfessional}
-                            professional={professional}
+                        <UserDataForm
+                            user={user}
+                            onSet={setUser}
                             title="Informações pessoais"
                             onShowMessage={props.onShowMessage}
                             subtitle="Dados importantes sobre o usuário" />

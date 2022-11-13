@@ -2,57 +2,57 @@ import ActionBar from "./actionBar";
 import Button from "../button/button";
 import { FeedbackMessage } from "../modal/feedbackMessageModal";
 import { handleCheckClientCode } from "../inputText/inputClientCode";
-import { handlePersonValidationForDB } from "../../util/validationUtil";
-import { Person, defaultPerson } from "../../interfaces/objectInterfaces";
-import { handleRemoveCEPMask, handleRemoveCPFMask, handleRemoveTelephoneMask } from "../../util/maskUtil";
+import { handleCompanyValidationForDB } from "../../util/validationUtil";
+import { Company, defaultCompany } from "../../interfaces/objectInterfaces";
+import { handleRemoveCEPMask, handleRemoveCNPJMask, handleRemoveTelephoneMask } from "../../util/maskUtil";
 
-interface PersonActionBarFormProps {
+interface CompanyActionBarFormProps {
     className?: string,
     isLoading?: boolean,
     isMultiple?: boolean,
     isDisabled?: boolean,
-    person?: Person,
+    company?: Company,
     onSet?: (any) => void,
     onSetIsLoading?: (boolean) => void,
     onAfterSave?: (object, any?, boolean?) => void,
     onShowMessage?: (FeedbackMessage) => void,
 }
 
-export const handlePersonForDB = (person: Person) => {
-    if (person.address && person.address?.cep) {
-        person = { ...person, address: { ...person.address, cep: handleRemoveCEPMask(person.address.cep) } }
+export const handleCompanyForDB = (company: Company) => {
+    if (company.address && company.address?.cep) {
+        company = { ...company, address: { ...company.address, cep: handleRemoveCEPMask(company.address.cep) } }
     }
     let telephonesWithNoMask = []
-    if (person.telephones && person.telephones.length) {
-        person.telephones?.map((element, index) => {
+    if (company.telephones && company.telephones.length) {
+        company.telephones?.map((element, index) => {
             telephonesWithNoMask = [...telephonesWithNoMask, handleRemoveTelephoneMask(element)]
         })
     }
-    person = {
-        ...person,
-        name: person.name.trim(),
+    company = {
+        ...company,
+        name: company.name.trim(),
         telephones: telephonesWithNoMask,
-        cpf: handleRemoveCPFMask(person.cpf),
+        cnpj: handleRemoveCNPJMask(company.cnpj),
     }
-    return person
+    return company
 }
 
-export const handleSavePersonInner = async (person, history) => {
-    let res = { status: "ERROR", id: "", person: person }
-    person = handlePersonForDB(person)
+export const handleSaveCompanyInner = async (company, history) => {
+    let res = { status: "ERROR", id: "", company: company }
+    company = handleCompanyForDB(company)
     try {
-        const saveRes = await fetch("api/person", {
+        const saveRes = await fetch("api/company", {
             method: "POST",
-            body: JSON.stringify({ token: "tokenbemseguro", data: person, history: history }),
+            body: JSON.stringify({ token: "tokenbemseguro", data: company, history: history }),
         }).then((res) => res.json())
-        res = { ...res, status: "SUCCESS", id: saveRes.id, person: { ...person, id: saveRes.id } }
+        res = { ...res, status: "SUCCESS", id: saveRes.id, company: { ...company, id: saveRes.id } }
     } catch (e) {
         console.error("Error adding document: ", e)
     }
     return res
 }
 
-export default function PersonActionBarForm(props: PersonActionBarFormProps) {
+export default function CompanyActionBarForm(props: CompanyActionBarFormProps) {
     const handleSetIsLoading = (value: boolean) => {
         if (props.onSetIsLoading) {
             props.onSetIsLoading(value)
@@ -65,9 +65,9 @@ export default function PersonActionBarForm(props: PersonActionBarFormProps) {
         }
     }
 
-    const handlePersonValidationForDBInner = (person, isSearching) => {
-        let isValid = handlePersonValidationForDB(person)
-        if (person.clientCode.length > 0) {
+    const handleCompanyValidationForDBInner = (company, isSearching) => {
+        let isValid = handleCompanyValidationForDB(company)
+        if (company.clientCode.length > 0) {
             if (isSearching) {
                 isValid = {
                     ...isValid,
@@ -81,17 +81,17 @@ export default function PersonActionBarForm(props: PersonActionBarFormProps) {
 
     const handleSave = async (isForCloseModal) => {
         handleSetIsLoading(true)
-        let person = props.person
-        let resCC = await handleCheckClientCode(person.clientCode, person.id)
-        const isValid = handlePersonValidationForDBInner(person, resCC.data)
+        let company = props.company
+        let resCC = await handleCheckClientCode(company.clientCode, company.id)
+        const isValid = handleCompanyValidationForDBInner(company, resCC.data)
         if (!isValid.validation) {
             handleSetIsLoading(false)
             const feedbackMessage: FeedbackMessage = { messages: isValid.messages, messageType: "ERROR" }
             handleShowMessage(feedbackMessage)
             return
         }
-        let res = await handleSavePersonInner(person, true)
-        person = { ...person, id: res.id }
+        let res = await handleSaveCompanyInner(company, true)
+        company = { ...company, id: res.id }
         if (res.status === "ERROR") {
             const feedbackMessage: FeedbackMessage = { messages: ["Algo deu errado!"], messageType: "ERROR" }
             handleShowMessage(feedbackMessage)
@@ -102,12 +102,12 @@ export default function PersonActionBarForm(props: PersonActionBarFormProps) {
         const feedbackMessage: FeedbackMessage = { messages: ["Sucesso!"], messageType: "SUCCESS" }
         handleShowMessage(feedbackMessage)
         if (props.isMultiple && props.onSet) {
-            props.onSet(defaultPerson)
+            props.onSet(defaultCompany)
         } else if (isForCloseModal) {
-            props.onSet(person)
+            props.onSet(company)
         }
         if (props.onAfterSave) {
-            props.onAfterSave(feedbackMessage, person, isForCloseModal)
+            props.onAfterSave(feedbackMessage, company, isForCloseModal)
         }
     }
 

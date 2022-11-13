@@ -232,7 +232,7 @@ export default function ProjectPage(props: ProjectPageProps) {
             />
             <WindowModal
                 max
-                title="Projetos"
+                title="Projeto"
                 id="project-register-modal"
                 setIsOpen={handleCloseModal}
                 isOpen={isRegister || isForShow}

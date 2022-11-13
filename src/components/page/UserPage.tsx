@@ -5,14 +5,14 @@ import ListTable from "../list/listTable"
 import { useEffect, useState } from "react"
 import WindowModal from "../modal/windowModal"
 import FormRowColumn from "../form/formRowColumn"
-import { handleMaskCPF } from "../../util/maskUtil"
-import PersonDataForm from "../form/personDataForm"
-import PersonActionBarForm from "../bar/personActionBar"
 import { PlusIcon, RefreshIcon } from "@heroicons/react/solid"
+import UserDataForm from "../form/userDataForm"
 import { FeedbackMessage } from "../modal/feedbackMessageModal"
-import { Person, defaultPerson } from "../../interfaces/objectInterfaces"
+import UserActionBarForm from "../bar/userActionBar"
+import { User, defaultUser } from "../../interfaces/objectInterfaces"
+import PersonNameListItem from "../list/personNameListItem"
 
-interface PersonPageProps {
+interface UserPageProps {
     id?: string,
     canSave?: boolean,
     getInfo?: boolean,
@@ -23,9 +23,9 @@ interface PersonPageProps {
     onShowMessage?: (FeedbackMessage) => void,
 }
 
-export default function PersonPage(props: PersonPageProps) {
-    const [person, setPerson] = useState<Person>(defaultPerson)
-    const [persons, setPersons] = useState<Person[]>([])
+export default function UserPage(props: UserPageProps) {
+    const [user, setUser] = useState<User>(defaultUser)
+    const [users, setUsers] = useState<User[]>([])
     const [index, setIndex] = useState(-1)
     const [isFirst, setIsFirst] = useState(props.getInfo)
     const [isLoading, setIsLoading] = useState(props.getInfo)
@@ -36,18 +36,18 @@ export default function PersonPage(props: PersonPageProps) {
         if (event) {
             event.preventDefault()
         }
-        setPerson(defaultPerson)
+        setUser(defaultUser)
         setIndex(-1)
         setIsForShow(false)
         setIsRegister(false)
     }
 
-    const handleDeleteClick = async (person, index) => {
+    const handleDeleteClick = async (user, index) => {
         setIsLoading(true)
         let feedbackMessage: FeedbackMessage = { messages: ["Algo deu errado"], messageType: "ERROR" }
-        const res = await fetch("api/personNew", {
+        const res = await fetch("api/userNew", {
             method: "DELETE",
-            body: JSON.stringify({ token: "tokenbemseguro", id: person.id }),
+            body: JSON.stringify({ token: "tokenbemseguro", id: user.id }),
         }).then((res) => res.json())
         if (res.status === "SUCCESS") {
             feedbackMessage = { messages: ["Removido com sucesso!"], messageType: "SUCCESS" }
@@ -55,17 +55,17 @@ export default function PersonPage(props: PersonPageProps) {
             feedbackMessage = { messages: ["Algo deu errado"], messageType: "ERROR" }
         }
         const list = [
-            ...persons.slice(0, (index - 1)),
-            ...persons.slice(index, persons.length),
+            ...users.slice(0, (index - 1)),
+            ...users.slice(index, users.length),
         ]
-        setPersons(list)
+        setUsers(list)
         setIsLoading(false)
         handleShowMessage(feedbackMessage)
     }
 
     const handleNewClick = async () => {
-        setPerson({
-            ...defaultPerson,
+        setUser({
+            ...defaultUser,
         })
         setIsRegister(true)
         setIndex(-1)
@@ -78,42 +78,42 @@ export default function PersonPage(props: PersonPageProps) {
 
     const handleShowClick = (project) => {
         setIsLoading(true)
-        setPerson({ ...defaultPerson, ...project })
+        setUser({ ...defaultUser, ...project })
         setIsForShow(true)
         setIsLoading(false)
     }
 
-    const handleEditClick = async (person, index?) => {
+    const handleEditClick = async (user, index?) => {
         setIsLoading(true)
         setIsForShow(false)
-        let localPerson: Person = await fetch("api/person/" + person?.id).then((res) => res.json()).then((res) => res.data)
-        localPerson = {
-            ...localPerson,
+        let localUser: User = await fetch("api/user/" + user?.id).then((res) => res.json()).then((res) => res.data)
+        localUser = {
+            ...localUser,
         }
         setIsLoading(false)
         setIsRegister(true)
-        setPerson(localPerson)
+        setUser(localUser)
     }
 
-    const handleAfterSave = (feedbackMessage: FeedbackMessage, person: Person, isForCloseModal) => {
+    const handleAfterSave = (feedbackMessage: FeedbackMessage, user: User, isForCloseModal) => {
         let localIndex = -1
-        persons.map((element, index) => {
-            if (element.id === person.id) {
+        users.map((element, index) => {
+            if (element.id === user.id) {
                 localIndex = index
             }
         })
-        let list: Person[] = [
-            person,
-            ...persons,
+        let list: User[] = [
+            user,
+            ...users,
         ]
         if (localIndex > -1) {
             list = [
-                person,
-                ...persons.slice(0, localIndex),
-                ...persons.slice(localIndex + 1, persons.length),
+                user,
+                ...users.slice(0, localIndex),
+                ...users.slice(localIndex + 1, users.length),
             ]
         }
-        setPersons((old) => list)
+        setUsers((old) => list)
         handleShowMessage(feedbackMessage)
         if (!isForCloseModal) {
             handleBackClick()
@@ -132,29 +132,29 @@ export default function PersonPage(props: PersonPageProps) {
     const handlePutHeaders = () => {
         return (
             <FormRow>
-                <FormRowColumn unit="1">Codigo</FormRowColumn>
-                <FormRowColumn unit="3">Nome</FormRowColumn>
-                <FormRowColumn unit="2">CPF</FormRowColumn>
+                <FormRowColumn unit="2">Nome</FormRowColumn>
+                <FormRowColumn unit="2">Username</FormRowColumn>
+                <FormRowColumn unit="2">E-mail</FormRowColumn>
             </FormRow>
         )
     }
 
-    const handlePutRows = (element: Person) => {
+    const handlePutRows = (element: User) => {
         return (
             <FormRow>
-                <FormRowColumn unit="1">{element.clientCode?.length > 0 ? element.clientCode : "n/a"}</FormRowColumn>
-                <FormRowColumn unit="3">{element.name}</FormRowColumn>
-                <FormRowColumn unit="2">{handleMaskCPF(element.cpf)}</FormRowColumn>
+                <FormRowColumn unit="2"><PersonNameListItem id={element.person?.id} /></FormRowColumn>
+                <FormRowColumn unit="2">{element.username}</FormRowColumn>
+                <FormRowColumn unit="2">{element.email}</FormRowColumn>
             </FormRow>
         )
     }
 
     useEffect(() => {
         if (isFirst) {
-            fetch("api/persons/").then((res) => res.json()).then((res) => {
+            fetch("api/users/").then((res) => res.json()).then((res) => {
                 setIsFirst(old => false)
                 if (res.list.length) {
-                    setPersons(res.list)
+                    setUsers(res.list)
                 }
                 setIsLoading(false)
             })
@@ -187,9 +187,9 @@ export default function PersonPage(props: PersonPageProps) {
                 </Button>
             </ActionBar>
             <ListTable
-                title="Pessoas"
+                title="Profissionais"
                 isActive={index}
-                list={persons}
+                list={users}
                 isLoading={isLoading}
                 onSetIsActive={setIndex}
                 onTableRow={handlePutRows}
@@ -201,17 +201,17 @@ export default function PersonPage(props: PersonPageProps) {
             />
             <WindowModal
                 max
-                title="Pessoa"
+                title="Profissional"
+                id="service-stage-register-modal"
                 setIsOpen={handleCloseModal}
                 isOpen={isRegister || isForShow}
-                id="service-stage-register-modal"
                 headerBottom={(
                     <>
                         {isRegister && (
                             <div className="p-4 pb-0">
-                                <PersonActionBarForm
-                                    person={person}
-                                    onSet={setPerson}
+                                <UserActionBarForm
+                                    user={user}
+                                    onSet={setUser}
                                     isLoading={isLoading}
                                     onSetIsLoading={setIsLoading}
                                     onAfterSave={handleAfterSave}
@@ -226,7 +226,7 @@ export default function PersonPage(props: PersonPageProps) {
                                 <Button
                                     isLoading={isLoading}
                                     onClick={() => {
-                                        handleEditClick(person)
+                                        handleEditClick(user)
                                     }}
                                 >
                                     Editar
@@ -238,10 +238,10 @@ export default function PersonPage(props: PersonPageProps) {
             >
                 <>
                     {isRegister && (
-                        <PersonDataForm
-                            person={person}
-                            onSet={setPerson}
+                        <UserDataForm
                             isLoading={isLoading}
+                            onSet={setUser}
+                            user={user}
                         />
                     )}
                     {isForShow && (

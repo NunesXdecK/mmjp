@@ -1,47 +1,47 @@
-import { ProfessionalConversor, PersonConversor } from "../../../db/converters"
+import { ProfessionalConversor } from "../../../db/converters"
 import { addDoc, collection, deleteDoc, doc, updateDoc } from "firebase/firestore"
-import { db, PROFESSIONAL_COLLECTION_NAME, PERSON_COLLECTION_NAME, HISTORY_COLLECTION_NAME } from "../../../db/firebaseDB"
+import { db, PROFESSIONAL_COLLECTION_NAME, HISTORY_COLLECTION_NAME } from "../../../db/firebaseDB"
+import { Professional } from "../../../interfaces/objectInterfaces"
+import { handleNewDateToUTC } from "../../../util/dateUtils"
 
 export default async function handler(req, res) {
     const { method, body } = req
 
     const historyCollection = collection(db, HISTORY_COLLECTION_NAME)
-    const personCollection = collection(db, PERSON_COLLECTION_NAME).withConverter(PersonConversor)
     const professionalCollection = collection(db, PROFESSIONAL_COLLECTION_NAME).withConverter(ProfessionalConversor)
 
     switch (method) {
         case "POST":
             let resPOST = { status: "ERROR", error: {}, id: "", message: "" }
-            try {
-                let { token, data, history } = JSON.parse(body)
-                if (token === "tokenbemseguro") {
-                    let nowID = data?.id ?? ""
-                    if (data.person && "id" in data.person && data.person?.id.length) {
-                        /*
-                        const docRef = doc(personCollection, data.person.id)
-                        data = { ...data, person: docRef }
-                        */
-                        data = { ...data, person: { id: data.person.id } }
+            let { token, data, history } = JSON.parse(body)
+            if (token === "tokenbemseguro") {
+                let nowID = data?.id ?? ""
+                const isSave = nowID === ""
+                let professional: Professional = data
+                try {
+                    if (professional.oldData) {
+                        delete professional.oldData
                     }
-                    const isSave = nowID === ""
                     if (isSave) {
-                        const docRef = await addDoc(professionalCollection, ProfessionalConversor.toFirestore(data))
+                        professional = { ...professional, dateInsertUTC: handleNewDateToUTC() }
+                        const docRef = await addDoc(professionalCollection, ProfessionalConversor.toFirestore(professional))
                         nowID = docRef.id
                     } else {
+                        professional = { ...professional, dateLastUpdateUTC: handleNewDateToUTC() }
                         const docRef = doc(professionalCollection, nowID)
-                        await updateDoc(docRef, ProfessionalConversor.toFirestore(data))
+                        await updateDoc(docRef, ProfessionalConversor.toFirestore(professional))
                     }
                     if (history) {
-                        const dataForHistory = { ...ProfessionalConversor.toFirestore(data), databaseid: nowID, databasename: PROFESSIONAL_COLLECTION_NAME }
+                        const dataForHistory = { ...ProfessionalConversor.toFirestore(professional), databaseid: nowID, databasename: PROFESSIONAL_COLLECTION_NAME }
                         await addDoc(historyCollection, dataForHistory)
                     }
                     resPOST = { ...resPOST, status: "SUCCESS", id: nowID }
-                } else {
-                    resPOST = { ...resPOST, status: "ERROR", message: "Token invalido!" }
+                } catch (err) {
+                    console.error(err)
+                    resPOST = { ...resPOST, status: "ERROR", error: err }
                 }
-            } catch (err) {
-                console.error(err)
-                resPOST = { ...resPOST, status: "ERROR", error: err }
+            } else {
+                resPOST = { ...resPOST, status: "ERROR", message: "Token invalido!" }
             }
             res.status(200).json(resPOST)
             break

@@ -7,6 +7,8 @@ import { PlusCircleIcon } from "@heroicons/react/solid";
 import InputTextAutoComplete from "./inputTextAutocomplete";
 import { FeedbackMessage } from "../modal/feedbackMessageModal";
 import { defaultImmobile, Immobile } from "../../interfaces/objectInterfaces";
+import ImmobileActionBarForm from "../bar/immobileActionBar";
+import ImmobileDataForm from "../form/immobileDataForm";
 
 interface InputSelectImmobileProps {
     id?: string,
@@ -79,7 +81,7 @@ export default function InputSelectImmobile(props: InputSelectImmobileProps) {
         }
 
         if (canAdd) {
-            if (props.notSet) {
+            if (!props.notSet) {
                 setText(immobile.name)
                 setIsSelected(true)
             } else {
@@ -170,25 +172,33 @@ export default function InputSelectImmobile(props: InputSelectImmobileProps) {
                     </Button>
                 )}
             </div>
-
             <WindowModal
                 max
                 isOpen={isOpen}
                 setIsOpen={setIsOpen}
-                id={props.id + "-window-modal-register-person-company"}
+                id={props.id + "-window-modal-register-immobile"}
                 onClose={() => {
                     setIsRegister(false)
                 }}
+                headerBottom={(
+                    <div className="p-4 pb-0">
+                        <ImmobileActionBarForm
+                            immobile={immobile}
+                            onSet={setImmobile}
+                            isLoading={props.isLoading}
+                            onAfterSave={handleAfterSave}
+                            onSetIsLoading={props.onSetLoading}
+                            onShowMessage={props.onShowMessage}
+                        />
+                    </div>
+                )}
             >
                 <>
                     {isOpen && (
-                        <ImmobileForm
+                        <ImmobileDataForm
                             immobile={immobile}
-                            isBack={true}
-                            canMultiple={false}
-                            onBack={handleBackClick}
+                            onSet={setImmobile}
                             title="Informações pessoais"
-                            onAfterSave={handleAfterSave}
                             onShowMessage={props.onShowMessage}
                             subtitle="Dados importantes sobre o usuário" />
                     )}

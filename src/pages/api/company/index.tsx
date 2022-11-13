@@ -1,53 +1,47 @@
-import { CompanyConversor, PersonConversor } from "../../../db/converters"
+import { CompanyConversor } from "../../../db/converters"
+import { handleNewDateToUTC } from "../../../util/dateUtils"
+import { Company } from "../../../interfaces/objectInterfaces"
 import { addDoc, collection, deleteDoc, doc, updateDoc } from "firebase/firestore"
-import { db, COMPANY_COLLECTION_NAME, PERSON_COLLECTION_NAME, HISTORY_COLLECTION_NAME } from "../../../db/firebaseDB"
+import { db, COMPANY_COLLECTION_NAME, HISTORY_COLLECTION_NAME } from "../../../db/firebaseDB"
 
 export default async function handler(req, res) {
     const { method, body } = req
 
     const historyCollection = collection(db, HISTORY_COLLECTION_NAME)
-    const personCollection = collection(db, PERSON_COLLECTION_NAME).withConverter(PersonConversor)
     const companyCollection = collection(db, COMPANY_COLLECTION_NAME).withConverter(CompanyConversor)
 
     switch (method) {
         case "POST":
             let resPOST = { status: "ERROR", error: {}, id: "", message: "" }
-            try {
-                let { token, data, history } = JSON.parse(body)
-                if (token === "tokenbemseguro") {
-                    let nowID = data?.id ?? ""
-                    let docRefsForDB = []
-                    if (data.owners?.length > 0) {
-                        data.owners?.map((element, index) => {
-                            if (element.id?.length) {
-                                /*
-                                const docRef = doc(personCollection, element.id)
-                                docRefsForDB = [...docRefsForDB, docRef]
-                                */
-                                docRefsForDB = [...docRefsForDB, { id: element.id }]
-                            }
-                        })
-                        data = { ...data, owners: docRefsForDB }
+            let { token, data, history } = JSON.parse(body)
+            if (token === "tokenbemseguro") {
+                let nowID = data?.id ?? ""
+                const isSave = nowID === ""
+                let company: Company = data
+                try {
+                    if (company.oldData) {
+                        delete company.oldData
                     }
-                    const isSave = nowID === ""
                     if (isSave) {
-                        const docRef = await addDoc(companyCollection, CompanyConversor.toFirestore(data))
+                        company = { ...company, dateInsertUTC: handleNewDateToUTC() }
+                        const docRef = await addDoc(companyCollection, CompanyConversor.toFirestore(company))
                         nowID = docRef.id
                     } else {
+                        company = { ...company, dateLastUpdateUTC: handleNewDateToUTC() }
                         const docRef = doc(companyCollection, nowID)
-                        await updateDoc(docRef, CompanyConversor.toFirestore(data))
+                        await updateDoc(docRef, CompanyConversor.toFirestore(company))
                     }
                     if (history) {
-                        const dataForHistory = { ...CompanyConversor.toFirestore(data), databaseid: nowID, databasename: COMPANY_COLLECTION_NAME }
+                        const dataForHistory = { ...CompanyConversor.toFirestore(company), databaseid: nowID, databasename: COMPANY_COLLECTION_NAME }
                         await addDoc(historyCollection, dataForHistory)
                     }
                     resPOST = { ...resPOST, status: "SUCCESS", id: nowID }
-                } else {
-                    resPOST = { ...resPOST, status: "ERROR", message: "Token invalido!" }
+                } catch (err) {
+                    console.error(err)
+                    resPOST = { ...resPOST, status: "ERROR", error: err }
                 }
-            } catch (err) {
-                console.error(err)
-                resPOST = { ...resPOST, status: "ERROR", error: err }
+            } else {
+                resPOST = { ...resPOST, status: "ERROR", message: "Token invalido!" }
             }
             res.status(200).json(resPOST)
             break

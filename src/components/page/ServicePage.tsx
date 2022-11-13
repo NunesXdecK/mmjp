@@ -250,7 +250,7 @@ export default function ServicePage(props: ServicePageProps) {
             />
             <WindowModal
                 max
-                title="Serviços"
+                title="Serviço"
                 id="service-register-modal"
                 setIsOpen={handleCloseModal}
                 isOpen={isRegister || isForShow}

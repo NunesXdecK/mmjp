@@ -9,6 +9,10 @@ import ServiceStagePage from "../components/page/ServiceStagePage"
 import FeedbackPendency from "../components/modal/feedbackPendencyModal"
 import FeedbackMessageModal, { defaultFeedbackMessage, FeedbackMessage } from "../components/modal/feedbackMessageModal"
 import PersonPage from "../components/page/PersonPage"
+import CompanyPage from "../components/page/CompanyPage"
+import ProfessionalPage from "../components/page/ProfessionalPage"
+import ImmobilePage from "../components/page/ImmobilePage"
+import UserPage from "../components/page/UserPage"
 
 export type PageOps =
     "DASHBOARD"
@@ -21,7 +25,7 @@ interface IndexProps {
 }
 
 export default function Index(props: IndexProps) {
-    const [page, setPage] = useState<PageOps>(props.page ?? "BUDGET")
+    const [page, setPage] = useState<PageOps>(props.page ?? "DASHBOARD")
     const [isFeedbackOpen, setIsFeedbackOpen] = useState(false)
     const [feedbackMessage, setFeedbackMessage] = useState<FeedbackMessage>(defaultFeedbackMessage)
 
@@ -122,12 +126,7 @@ const [subjectMessage, setSubjectMessage] = useState<SubjectMessage>({
                 <meta name="description" content={title} />
             </Head>
             {
-                page !== "PERSON" &&
-                page !== "BUDGET" &&
-                page !== "PROJECT" &&
-                page !== "SERVICE" &&
-                page !== "PAYMENT" &&
-                page !== "SERVICESTAGE" &&
+                page === "DASHBOARD" &&
                 (
                     <div className="dark:text-gray-200 py-48 flex flex-row items-center justify-center">
                         {title}
@@ -135,6 +134,42 @@ const [subjectMessage, setSubjectMessage] = useState<SubjectMessage>({
                 )}
             {page === "PERSON" && (
                 <PersonPage
+                    getInfo
+                    canSave
+                    canUpdate
+                    onSetPage={setPage}
+                    onShowMessage={handleShowMessage}
+                />
+            )}
+            {page === "COMPANY" && (
+                <CompanyPage
+                    getInfo
+                    canSave
+                    canUpdate
+                    onSetPage={setPage}
+                    onShowMessage={handleShowMessage}
+                />
+            )}
+            {page === "PROFESSIONAL" && (
+                <ProfessionalPage
+                    getInfo
+                    canSave
+                    canUpdate
+                    onSetPage={setPage}
+                    onShowMessage={handleShowMessage}
+                />
+            )}
+            {page === "IMMOBILE" && (
+                <ImmobilePage
+                    getInfo
+                    canSave
+                    canUpdate
+                    onSetPage={setPage}
+                    onShowMessage={handleShowMessage}
+                />
+            )}
+            {page === "USER" && (
+                <UserPage
                     getInfo
                     canSave
                     canUpdate

@@ -18,15 +18,16 @@ export default async function handler(req, res) {
                 if (id) {
                     const docRef = doc(companyCollection, id)
                     let data: Company = (await getDoc(docRef)).data()
-                    await Promise.all(data.owners.map(async (element, index) => {
-                        const personDocRef = doc(personCollection, element.id)
-                        if (personDocRef) {
-                            const personData: Person = (await getDoc(personDocRef)).data()
-                            if (personData) {
-                                ownersArray = [...ownersArray, personData]
+                    await Promise.all(
+                        data.owners.map(async (element, index) => {
+                            const personDocRef = doc(personCollection, element.id)
+                            if (personDocRef) {
+                                const personData: Person = (await getDoc(personDocRef)).data()
+                                if (personData) {
+                                    ownersArray = [...ownersArray, personData]
+                                }
                             }
-                        }
-                    }))
+                        }))
                     data = { ...data, owners: ownersArray }
                     resGET = { ...resGET, status: "SUCCESS", data: data }
                 } else {

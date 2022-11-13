@@ -8,6 +8,10 @@ import { PlusCircleIcon } from "@heroicons/react/solid";
 import InputTextAutoComplete from "./inputTextAutocomplete";
 import { FeedbackMessage } from "../modal/feedbackMessageModal";
 import { Company, defaultCompany, defaultPerson, Person } from "../../interfaces/objectInterfaces";
+import CompanyDataForm from "../form/companyDataForm";
+import PersonDataForm from "../form/personDataForm";
+import PersonActionBarForm from "../bar/personActionBar";
+import CompanyActionBarForm from "../bar/companyActionBar";
 
 interface InputSelectPersonCompanyProps {
     id?: string,
@@ -17,9 +21,12 @@ interface InputSelectPersonCompanyProps {
     inputTitle?: string,
     validation?: string,
     buttonTitle?: string,
+    placeholder?: string,
     formClassName?: string,
     validationMessage?: string,
     validationMessageButton?: string,
+    isFull?: boolean,
+    notSet?: boolean,
     isLocked?: boolean,
     isLoading?: boolean,
     isDisabled?: boolean,
@@ -32,6 +39,7 @@ interface InputSelectPersonCompanyProps {
     onSetLoading?: (any) => void,
     onShowMessage?: (FeedbackMessage) => void,
     onValidate?: (any) => boolean,
+    onFilter?: ([], string) => any[],
 }
 
 export default function InputSelectPersonCompany(props: InputSelectPersonCompanyProps) {
@@ -89,8 +97,12 @@ export default function InputSelectPersonCompany(props: InputSelectPersonCompany
         }
 
         if (canAdd) {
-            setText(personOrCompany.name)
-            setIsSelected(true)
+            if (!props.notSet) {
+                setText(personOrCompany.name)
+                setIsSelected(true)
+            } else {
+                setText("")
+            }
             if (props.onSet) {
                 props.onSet(personOrCompany)
                 setIsOpen(false)
@@ -151,7 +163,11 @@ export default function InputSelectPersonCompany(props: InputSelectPersonCompany
 
     useEffect(() => {
         if (isFirst) {
-            fetch("api/personsAndCompanies").then((res) => res.json()).then((res) => {
+            let url = "api/personsAndCompanies"
+            if (props.isFull) {
+                url = "api/personsAndCompaniesFull"
+            }
+            fetch(url).then((res) => res.json()).then((res) => {
                 setIsFirst(old => false)
                 if (res.list.length) {
                     setPersonsAndCompanies(res.list)
@@ -173,7 +189,9 @@ export default function InputSelectPersonCompany(props: InputSelectPersonCompany
                     onSetText={setText}
                     onBlur={props.onBlur}
                     onClickItem={handleAdd}
+                    onFilter={props.onFilter}
                     isLoading={props.isLoading}
+                    placeholder={props.placeholder}
                     sugestions={personsAndCompanies}
                     onListOptions={handlePutActions}
                     isDisabled={isSelected || props.isDisabled}
@@ -194,7 +212,6 @@ export default function InputSelectPersonCompany(props: InputSelectPersonCompany
                     </Button>
                 )}
             </div>
-
             <WindowModal
                 max
                 isOpen={isOpen}
@@ -204,31 +221,57 @@ export default function InputSelectPersonCompany(props: InputSelectPersonCompany
                     setIsRegisterPerson(false)
                     setIsRegisterCompany(false)
                 }}
+                headerBottom={(
+                    <>
+                        {isOpen && (
+                            <>
+                                {isRegisterPerson && (
+                                    <div className="p-4 pb-0">
+                                        <PersonActionBarForm
+                                            person={person}
+                                            onSet={setPerson}
+                                            isLoading={props.isLoading}
+                                            onAfterSave={handleAfterSave}
+                                            onSetIsLoading={props.onSetLoading}
+                                            onShowMessage={props.onShowMessage}
+                                        />
+                                    </div>
+                                )}
+                                {isRegisterCompany && (
+                                    <div className="p-4 pb-0">
+                                        <CompanyActionBarForm
+                                            company={company}
+                                            onSet={setCompany}
+                                            isLoading={props.isLoading}
+                                            onAfterSave={handleAfterSave}
+                                            onSetIsLoading={props.onSetLoading}
+                                            onShowMessage={props.onShowMessage}
+                                        />
+                                    </div>
+                                )}
+                            </>
+                        )}
+                    </>
+                )}
             >
                 <>
                     {isOpen && (
                         <>
                             {isRegisterPerson && (
-                                <PersonForm
-                                    isBack={true}
+                                <PersonDataForm
                                     person={person}
-                                    canMultiple={false}
-                                    onBack={handleBackClick}
+                                    onSet={setPerson}
                                     title="Informações pessoais"
-                                    onAfterSave={handleAfterSave}
                                     onShowMessage={props.onShowMessage}
-                                    subtitle="Dados importantes sobre a pessoa" />
+                                    subtitle="Dados importantes sobre o usuário" />
                             )}
                             {isRegisterCompany && (
-                                <CompanyForm
-                                    isBack={true}
+                                <CompanyDataForm
                                     company={company}
-                                    canMultiple={false}
-                                    onBack={handleBackClick}
-                                    title="Informações pessoais"
-                                    onAfterSave={handleAfterSave}
+                                    onSet={setCompany}
+                                    title="Informações empresariais"
                                     onShowMessage={props.onShowMessage}
-                                    subtitle="Dados importantes sobre a pessoa" />
+                                    subtitle="Dados importantes sobre a empresa" />
                             )}
                         </>
                     )}

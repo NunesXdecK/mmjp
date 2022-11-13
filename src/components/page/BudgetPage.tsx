@@ -264,7 +264,7 @@ export default function BudgetPage(props: BudgetPageProps) {
                     <ListTable
                         list={budgets}
                         isActive={index}
-                        title="Orçamento"
+                        title="Orçamentos"
                         isLoading={isLoading}
                         onSetIsActive={setIndex}
                         onTableRow={handlePutRows}
