@@ -204,18 +204,16 @@ export default function PersonPage(props: PersonPageProps) {
                 isOpen={isRegister || isForShow}
                 id="service-stage-register-modal"
                 headerBottom={(
-                    <>
+                    <div className="p-4 pb-0">
                         {isRegister && (
-                            <div className="p-4 pb-0">
-                                <PersonActionBarForm
-                                    person={person}
-                                    onSet={setPerson}
-                                    isLoading={isLoading}
-                                    onSetIsLoading={setIsLoading}
-                                    onAfterSave={handleAfterSave}
-                                    onShowMessage={handleShowMessage}
-                                />
-                            </div>
+                            <PersonActionBarForm
+                                person={person}
+                                onSet={setPerson}
+                                isLoading={isLoading}
+                                onSetIsLoading={setIsLoading}
+                                onAfterSave={handleAfterSave}
+                                onShowMessage={handleShowMessage}
+                            />
                         )}
                         {isForShow && (
                             <ActionBar
@@ -231,7 +229,7 @@ export default function PersonPage(props: PersonPageProps) {
                                 </Button>
                             </ActionBar>
                         )}
-                    </>
+                    </div>
                 )}
             >
                 <>

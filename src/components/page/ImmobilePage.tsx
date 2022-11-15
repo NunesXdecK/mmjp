@@ -201,18 +201,16 @@ export default function ImmobilePage(props: ImmobilePageProps) {
                 setIsOpen={handleCloseModal}
                 isOpen={isRegister || isForShow}
                 headerBottom={(
-                    <>
+                    <div className="p-4 pb-0">
                         {isRegister && (
-                            <div className="p-4 pb-0">
-                                <ImmobileActionBarForm
-                                    immobile={immobile}
-                                    onSet={setImmobile}
-                                    isLoading={isLoading}
-                                    onSetIsLoading={setIsLoading}
-                                    onAfterSave={handleAfterSave}
-                                    onShowMessage={handleShowMessage}
-                                />
-                            </div>
+                            <ImmobileActionBarForm
+                                immobile={immobile}
+                                onSet={setImmobile}
+                                isLoading={isLoading}
+                                onSetIsLoading={setIsLoading}
+                                onAfterSave={handleAfterSave}
+                                onShowMessage={handleShowMessage}
+                            />
                         )}
                         {isForShow && (
                             <ActionBar
@@ -228,7 +226,7 @@ export default function ImmobilePage(props: ImmobilePageProps) {
                                 </Button>
                             </ActionBar>
                         )}
-                    </>
+                    </div>
                 )}
             >
                 <>

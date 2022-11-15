@@ -1,9 +1,9 @@
-import { handlePrepareLoginTokenForDB } from "../../../util/converterUtil"
+import { handlePrepareLoginTokenForDB } from "../login"
+import { handleNewDateToUTC } from "../../../util/dateUtils"
 import { LoginTokenConversor, UserConversor } from "../../../db/converters"
 import { User, LoginToken, defaultLoginToken } from "../../../interfaces/objectInterfaces"
 import { collection, doc, getDoc, getDocs, query, updateDoc, where } from "firebase/firestore"
 import { db, LOGIN_TOKEN_COLLECTION_NAME, USER_COLLECTION_NAME } from "../../../db/firebaseDB"
-import { handleNewDateToUTC } from "../../../util/dateUtils"
 
 const delay = (amount = 750) => new Promise(resolve => setTimeout(resolve, amount))
 

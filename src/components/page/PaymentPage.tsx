@@ -251,19 +251,17 @@ export default function PaymentPage(props: PaymentPageProps) {
                 setIsOpen={handleCloseModal}
                 isOpen={isRegister || isForShow}
                 headerBottom={(
-                    <>
+                    <div className="p-4 pb-0">
                         {isRegister && (
-                            <div className="p-4 pb-0">
-                                <PaymentActionBarForm
-                                    payment={payment}
-                                    onSet={setPayment}
-                                    isLoading={isLoading}
-                                    projectId={props.projectId}
-                                    onSetIsLoading={setIsLoading}
-                                    onAfterSave={handleAfterSave}
-                                    onShowMessage={handleShowMessage}
-                                />
-                            </div>
+                            <PaymentActionBarForm
+                                payment={payment}
+                                onSet={setPayment}
+                                isLoading={isLoading}
+                                projectId={props.projectId}
+                                onSetIsLoading={setIsLoading}
+                                onAfterSave={handleAfterSave}
+                                onShowMessage={handleShowMessage}
+                            />
                         )}
                         {isForShow && (
                             <ActionBar
@@ -279,7 +277,7 @@ export default function PaymentPage(props: PaymentPageProps) {
                                 </Button>
                             </ActionBar>
                         )}
-                    </>
+                    </div>
                 )}
             >
                 <>

@@ -204,18 +204,16 @@ export default function CompanyPage(props: CompanyPageProps) {
                 setIsOpen={handleCloseModal}
                 isOpen={isRegister || isForShow}
                 headerBottom={(
-                    <>
+                    <div className="p-4 pb-0">
                         {isRegister && (
-                            <div className="p-4 pb-0">
-                                <CompanyActionBarForm
-                                    company={company}
-                                    onSet={setCompany}
-                                    isLoading={isLoading}
-                                    onSetIsLoading={setIsLoading}
-                                    onAfterSave={handleAfterSave}
-                                    onShowMessage={handleShowMessage}
-                                />
-                            </div>
+                            <CompanyActionBarForm
+                                company={company}
+                                onSet={setCompany}
+                                isLoading={isLoading}
+                                onSetIsLoading={setIsLoading}
+                                onAfterSave={handleAfterSave}
+                                onShowMessage={handleShowMessage}
+                            />
                         )}
                         {isForShow && (
                             <ActionBar
@@ -231,7 +229,7 @@ export default function CompanyPage(props: CompanyPageProps) {
                                 </Button>
                             </ActionBar>
                         )}
-                    </>
+                    </div>
                 )}
             >
                 <>

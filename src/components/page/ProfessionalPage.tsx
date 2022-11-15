@@ -205,18 +205,16 @@ export default function ProfessionalPage(props: ProfessionalPageProps) {
                 setIsOpen={handleCloseModal}
                 isOpen={isRegister || isForShow}
                 headerBottom={(
-                    <>
+                    <div className="p-4 pb-0">
                         {isRegister && (
-                            <div className="p-4 pb-0">
-                                <ProfessionalActionBarForm
-                                    professional={professional}
-                                    onSet={setProfessional}
-                                    isLoading={isLoading}
-                                    onSetIsLoading={setIsLoading}
-                                    onAfterSave={handleAfterSave}
-                                    onShowMessage={handleShowMessage}
-                                />
-                            </div>
+                            <ProfessionalActionBarForm
+                                professional={professional}
+                                onSet={setProfessional}
+                                isLoading={isLoading}
+                                onSetIsLoading={setIsLoading}
+                                onAfterSave={handleAfterSave}
+                                onShowMessage={handleShowMessage}
+                            />
                         )}
                         {isForShow && (
                             <ActionBar
@@ -232,7 +230,7 @@ export default function ProfessionalPage(props: ProfessionalPageProps) {
                                 </Button>
                             </ActionBar>
                         )}
-                    </>
+                    </div>
                 )}
             >
                 <>

@@ -1,12 +1,26 @@
 import { v4 as uuid } from "uuid"
 import { handleNewDateToUTC } from "../../../util/dateUtils"
-import { handlePrepareLoginTokenForDB } from "../../../util/converterUtil"
 import { LoginTokenConversor, UserConversor } from "../../../db/converters"
 import { addDoc, collection, getDocs, query, where } from "firebase/firestore"
 import { db, LOGIN_TOKEN_COLLECTION_NAME, USER_COLLECTION_NAME } from "../../../db/firebaseDB"
 import { User, defaultUser, LoginToken, defaultLoginToken } from "../../../interfaces/objectInterfaces"
 
 const delay = (amount = 750) => new Promise(resolve => setTimeout(resolve, amount))
+
+export const handlePrepareLoginTokenForDB = (loginToken: LoginToken) => {
+    if (loginToken.dateInsertUTC === 0) {
+        loginToken = { ...loginToken, dateInsertUTC: handleNewDateToUTC() }
+    }
+    if (loginToken && "id" in loginToken && loginToken.id.length) {
+        loginToken = { ...loginToken, dateLastUpdateUTC: handleNewDateToUTC() }
+    }
+    if (loginToken.user?.id?.length) {
+        loginToken = { ...loginToken, user: { id: loginToken.user.id } }
+    } else {
+        loginToken = { ...loginToken, user: {} }
+    }
+    return loginToken
+}
 
 export default async function handler(req, res) {
     const { method, body } = req

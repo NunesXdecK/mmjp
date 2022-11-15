@@ -251,19 +251,17 @@ export default function ServicePage(props: ServicePageProps) {
                 setIsOpen={handleCloseModal}
                 isOpen={isRegister || isForShow}
                 headerBottom={(
-                    <>
+                    <div className="p-4 pb-0">
                         {isRegister && (
-                            <div className="p-4 pb-0">
-                                <ServiceActionBarForm
-                                    service={service}
-                                    onSet={setService}
-                                    isLoading={isLoading}
-                                    projectId={props.projectId}
-                                    onSetIsLoading={setIsLoading}
-                                    onAfterSave={handleAfterSave}
-                                    onShowMessage={handleShowMessage}
-                                />
-                            </div>
+                            <ServiceActionBarForm
+                                service={service}
+                                onSet={setService}
+                                isLoading={isLoading}
+                                projectId={props.projectId}
+                                onSetIsLoading={setIsLoading}
+                                onAfterSave={handleAfterSave}
+                                onShowMessage={handleShowMessage}
+                            />
                         )}
                         {isForShow && (
                             <ActionBar
@@ -279,7 +277,7 @@ export default function ServicePage(props: ServicePageProps) {
                                 </Button>
                             </ActionBar>
                         )}
-                    </>
+                    </div>
                 )}
             >
                 <>
