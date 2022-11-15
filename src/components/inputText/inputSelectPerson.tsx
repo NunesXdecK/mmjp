@@ -1,14 +1,13 @@
 import Button from "../button/button";
 import { useEffect, useState } from "react";
 import WindowModal from "../modal/windowModal";
-import PersonForm from "../form/personForm";
+import PersonDataForm from "../form/personDataForm";
 import { XCircleIcon } from "@heroicons/react/outline";
 import { PlusCircleIcon } from "@heroicons/react/solid";
+import PersonActionBarForm from "../bar/personActionBar";
 import InputTextAutoComplete from "./inputTextAutocomplete";
 import { FeedbackMessage } from "../modal/feedbackMessageModal";
 import { defaultPerson, Person } from "../../interfaces/objectInterfaces";
-import PersonDataForm from "../form/personDataForm";
-import PersonActionBarForm from "../bar/personActionBar";
 
 interface InputSelectPersonProps {
     id?: string,

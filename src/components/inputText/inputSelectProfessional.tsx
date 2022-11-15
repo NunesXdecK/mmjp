@@ -4,10 +4,10 @@ import WindowModal from "../modal/windowModal";
 import { XCircleIcon } from "@heroicons/react/outline";
 import { PlusCircleIcon } from "@heroicons/react/solid";
 import InputTextAutoComplete from "./inputTextAutocomplete";
-import { FeedbackMessage } from "../modal/feedbackMessageModal";
-import { defaultProfessional, Professional } from "../../interfaces/objectInterfaces";
 import ProfessionalDataForm from "../form/professionalDataForm";
+import { FeedbackMessage } from "../modal/feedbackMessageModal";
 import ProfessionalActionBarForm from "../bar/professionalActionBar";
+import { defaultProfessional, Professional } from "../../interfaces/objectInterfaces";
 
 interface InputSelectProfessionalProps {
     id?: string,

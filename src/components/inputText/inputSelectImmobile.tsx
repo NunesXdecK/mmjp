@@ -1,14 +1,13 @@
 import Button from "../button/button";
 import { useEffect, useState } from "react";
 import WindowModal from "../modal/windowModal";
-import ImmobileForm from "../form/immobileForm";
 import { XCircleIcon } from "@heroicons/react/outline";
 import { PlusCircleIcon } from "@heroicons/react/solid";
+import ImmobileDataForm from "../form/immobileDataForm";
 import InputTextAutoComplete from "./inputTextAutocomplete";
+import ImmobileActionBarForm from "../bar/immobileActionBar";
 import { FeedbackMessage } from "../modal/feedbackMessageModal";
 import { defaultImmobile, Immobile } from "../../interfaces/objectInterfaces";
-import ImmobileActionBarForm from "../bar/immobileActionBar";
-import ImmobileDataForm from "../form/immobileDataForm";
 
 interface InputSelectImmobileProps {
     id?: string,

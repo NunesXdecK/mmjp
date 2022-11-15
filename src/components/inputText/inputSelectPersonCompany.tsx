@@ -1,17 +1,15 @@
 import Button from "../button/button";
-import PersonForm from "../form/personForm";
 import { useEffect, useState } from "react";
-import CompanyForm from "../form/companyForm";
 import WindowModal from "../modal/windowModal";
+import PersonDataForm from "../form/personDataForm";
+import CompanyDataForm from "../form/companyDataForm";
 import { XCircleIcon } from "@heroicons/react/outline";
 import { PlusCircleIcon } from "@heroicons/react/solid";
+import PersonActionBarForm from "../bar/personActionBar";
+import CompanyActionBarForm from "../bar/companyActionBar";
 import InputTextAutoComplete from "./inputTextAutocomplete";
 import { FeedbackMessage } from "../modal/feedbackMessageModal";
 import { Company, defaultCompany, defaultPerson, Person } from "../../interfaces/objectInterfaces";
-import CompanyDataForm from "../form/companyDataForm";
-import PersonDataForm from "../form/personDataForm";
-import PersonActionBarForm from "../bar/personActionBar";
-import CompanyActionBarForm from "../bar/companyActionBar";
 
 interface InputSelectPersonCompanyProps {
     id?: string,
