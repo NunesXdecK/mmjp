@@ -46,7 +46,7 @@ export default function ImmobilePage(props: ImmobilePageProps) {
     const handleDeleteClick = async (immobile, index) => {
         setIsLoading(true)
         let feedbackMessage: FeedbackMessage = { messages: ["Algo deu errado"], messageType: "ERROR" }
-        const res = await fetch("api/immobileNew", {
+        const res = await fetch("api/immobile", {
             method: "DELETE",
             body: JSON.stringify({ token: "tokenbemseguro", id: immobile.id }),
         }).then((res) => res.json())

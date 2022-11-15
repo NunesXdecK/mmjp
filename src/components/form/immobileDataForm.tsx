@@ -7,8 +7,8 @@ import InputText from "../inputText/inputText";
 import InputSelect from "../inputText/inputSelect";
 import { Immobile } from "../../interfaces/objectInterfaces";
 import InputImmobilePoints from "../inputText/inputImmobilePoints";
+import SelectPersonCompanyForm from "../select/selectPersonCompanyForm";
 import { CCIR_MARK, NOT_NULL_MARK, NUMBER_MARK } from "../../util/patternValidationUtil";
-import SelectPersonCompanyFormNew from "../select/selectPersonCompanyFormNew";
 
 interface ImmobileDataFormProps {
     title?: string,
@@ -210,7 +210,7 @@ export default function ImmobileDataForm(props: ImmobileDataFormProps) {
                     </FormRowColumn>
                 </FormRow>
             </Form>
-            <SelectPersonCompanyFormNew
+            <SelectPersonCompanyForm
                 isFull
                 id="immobile-owners"
                 title="Proprietários"

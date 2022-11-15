@@ -9,7 +9,7 @@ import { TrashIcon } from "@heroicons/react/solid"
 import InputSelectPerson from "../inputText/inputSelectPerson"
 import { defaultPerson, Person } from "../../interfaces/objectInterfaces"
 
-interface SelectPersonFormNewProps {
+interface SelectPersonFormProps {
     id?: string,
     title?: string,
     subtitle?: string,
@@ -28,7 +28,7 @@ interface SelectPersonFormNewProps {
     onShowMessage?: (FeedbackMessage) => void,
 }
 
-export default function SelectPersonFormNew(props: SelectPersonFormNewProps) {
+export default function SelectPersonForm(props: SelectPersonFormProps) {
     const [index, setIndex] = useState(-1)
     const [isOpenDelete, setIsOpenDelete] = useState(false)
     const [person, setPerson] = useState<Person>(defaultPerson)

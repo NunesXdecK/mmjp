@@ -5,15 +5,15 @@ import ListTable from "../list/listTable"
 import { useEffect, useState } from "react"
 import WindowModal from "../modal/windowModal"
 import FormRowColumn from "../form/formRowColumn"
+import ServiceDataForm from "../form/serviceDataForm"
+import { handleUTCToDateShow } from "../../util/dateUtils"
 import { PlusIcon, RefreshIcon } from "@heroicons/react/solid"
+import { handleMountNumberCurrency } from "../../util/maskUtil"
+import ServiceStatusButton from "../button/serviceStatusButton"
 import { FeedbackMessage } from "../modal/feedbackMessageModal"
 import ProjectNumberListItem from "../list/projectNumberListItem"
 import { Service, defaultService } from "../../interfaces/objectInterfaces"
-import { handleUTCToDateShow, handleNewDateToUTC } from "../../util/dateUtils"
 import ServiceActionBarForm, { handleSaveServiceInner } from "../bar/serviceActionBar"
-import ServiceDataForm from "../form/serviceDataForm"
-import { handleMountNumberCurrency } from "../../util/maskUtil"
-import ServiceStatusButton from "../button/serviceStatusButton"
 
 interface ServicePageProps {
     id?: string,
@@ -92,7 +92,7 @@ export default function ServicePage(props: ServicePageProps) {
     const handleEditClick = async (service, index?) => {
         setIsLoading(true)
         setIsForShow(false)
-        let localService: Service = await fetch("api/serviceNew/" + service?.id).then((res) => res.json()).then((res) => res.data)
+        let localService: Service = await fetch("api/service/" + service?.id).then((res) => res.json()).then((res) => res.data)
         localService = {
             ...localService,
             index: services.length,

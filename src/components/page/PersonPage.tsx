@@ -45,7 +45,7 @@ export default function PersonPage(props: PersonPageProps) {
     const handleDeleteClick = async (person, index) => {
         setIsLoading(true)
         let feedbackMessage: FeedbackMessage = { messages: ["Algo deu errado"], messageType: "ERROR" }
-        const res = await fetch("api/personNew", {
+        const res = await fetch("api/person", {
             method: "DELETE",
             body: JSON.stringify({ token: "tokenbemseguro", id: person.id }),
         }).then((res) => res.json())

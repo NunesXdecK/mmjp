@@ -5,17 +5,15 @@ import ListTable from "../list/listTable"
 import { useEffect, useState } from "react"
 import WindowModal from "../modal/windowModal"
 import FormRowColumn from "../form/formRowColumn"
+import PaymentDataForm from "../form/paymentDataForm"
+import { handleUTCToDateShow } from "../../util/dateUtils"
 import { PlusIcon, RefreshIcon } from "@heroicons/react/solid"
 import { FeedbackMessage } from "../modal/feedbackMessageModal"
+import { handleMountNumberCurrency } from "../../util/maskUtil"
+import PaymentStatusButton from "../button/paymentStatusButton"
 import ProjectNumberListItem from "../list/projectNumberListItem"
 import { Payment, defaultPayment } from "../../interfaces/objectInterfaces"
-import { handleUTCToDateShow, handleNewDateToUTC } from "../../util/dateUtils"
 import PaymentActionBarForm, { handleSavePaymentInner } from "../bar/paymentActionBar"
-import PaymentForm from "../form/paymentForm"
-import { handleMountNumberCurrency } from "../../util/maskUtil"
-import SwiftInfoButton from "../button/switchInfoButton"
-import { handleSaveProjectInner } from "../bar/projectActionBar"
-import PaymentStatusButton from "../button/paymentStatusButton"
 
 interface PaymentPageProps {
     id?: string,
@@ -286,7 +284,7 @@ export default function PaymentPage(props: PaymentPageProps) {
             >
                 <>
                     {isRegister && (
-                        <PaymentForm
+                        <PaymentDataForm
                             payment={payment}
                             onSet={setPayment}
                             isLoading={isLoading}

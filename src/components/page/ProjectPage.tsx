@@ -6,13 +6,12 @@ import { useEffect, useState } from "react"
 import WindowModal from "../modal/windowModal"
 import FormRowColumn from "../form/formRowColumn"
 import ProjectDataForm from "../form/projectDataForm"
-import ProjectActionBarForm, { handleSaveProjectInner } from "../bar/projectActionBar"
+import ProjectActionBarForm from "../bar/projectActionBar"
+import { handleUTCToDateShow } from "../../util/dateUtils"
 import { PlusIcon, RefreshIcon } from "@heroicons/react/solid"
 import { FeedbackMessage } from "../modal/feedbackMessageModal"
-import { handleUTCToDateShow, handleNewDateToUTC } from "../../util/dateUtils"
-import { Project, Company, defaultProject, Person } from "../../interfaces/objectInterfaces"
-import SwiftInfoButton from "../button/switchInfoButton"
 import ProjectStatusButton from "../button/projectStatusButton"
+import { Project, Company, defaultProject, Person } from "../../interfaces/objectInterfaces"
 
 interface ProjectPageProps {
     id?: string,

@@ -46,7 +46,7 @@ export default function ProfessionalPage(props: ProfessionalPageProps) {
     const handleDeleteClick = async (professional, index) => {
         setIsLoading(true)
         let feedbackMessage: FeedbackMessage = { messages: ["Algo deu errado"], messageType: "ERROR" }
-        const res = await fetch("api/professionalNew", {
+        const res = await fetch("api/professional", {
             method: "DELETE",
             body: JSON.stringify({ token: "tokenbemseguro", id: professional.id }),
         }).then((res) => res.json())

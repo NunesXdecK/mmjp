@@ -1,311 +1,149 @@
-import Form from "../form/form";
-import List from "../list/list";
-import FormRow from "../form/formRow";
-import Button from "../button/button";
-import IOSModal from "../modal/iosModal";
-import { useEffect, useState } from "react";
-import InputText from "../inputText/inputText";
-import WindowModal from "../modal/windowModal";
-import ImmobileForm from "../form/immobileForm";
-import FormRowColumn from "../form/formRowColumn";
-import FeedbackMessageText from "../modal/feedbackMessageText";
-import { PencilAltIcon, TrashIcon } from "@heroicons/react/outline";
-import { defaultImmobile, Immobile } from "../../interfaces/objectInterfaces";
-import { defaultFeedbackMessage, FeedbackMessage } from "../modal/feedbackMessageModal";
-import ImmobileView from "../view/immobileView";
+import Form from "../form/form"
+import { useState } from "react"
+import Button from "../button/button"
+import FormRow from "../form/formRow"
+import ListTable from "../list/listTable"
+import WindowModal from "../modal/windowModal"
+import FormRowColumn from "../form/formRowColumn"
+import { TrashIcon } from "@heroicons/react/solid"
+import InputSelectImmobile from "../inputText/inputSelectImmobile"
+import { defaultImmobile, Immobile } from "../../interfaces/objectInterfaces"
 
 interface SelectImmobileFormProps {
     id?: string,
     title?: string,
     subtitle?: string,
+    listTitle?: string,
     inputTitle?: string,
-    validation?: string,
-    buttonTitle?: string,
+    placeholder?: string,
     formClassName?: string,
-    validationMessage?: string,
-    validationMessageButton?: string,
-    isLocked?: boolean,
     isLoading?: boolean,
-    validationButton?: boolean,
-    isMultipleSelect?: boolean,
-    immobiles?: Immobile[],
-    onFinishAdd?: (any?) => void,
-    onSetLoading?: (any) => void,
-    onSetImmobiles?: (array) => void,
+    isDisabled?: boolean,
+    isDisabledExclude?: boolean,
+    isSingle?: boolean,
+    value?: Immobile[],
+    excludeList?: Immobile[],
+    onSet?: (any?) => void,
+    onBlur?: (any?) => void,
     onShowMessage?: (FeedbackMessage) => void,
-    onValidate?: (any) => boolean,
 }
 
 export default function SelectImmobileForm(props: SelectImmobileFormProps) {
-    const [isFirst, setIsFirst] = useState(true)
-    const [isOpen, setIsOpen] = useState(false)
+    const [index, setIndex] = useState(-1)
     const [isOpenDelete, setIsOpenDelete] = useState(false)
-    const [isRegister, setIsRegister] = useState(false)
-    const [isInvalid, setIsInvalid] = useState(props.validationButton)
-
-    const [editIndex, setEditIndex] = useState(-1)
-
     const [immobile, setImmobile] = useState<Immobile>(defaultImmobile)
 
-    const [immobiles, setImmobiles] = useState<Immobile[]>([])
-
-    const handleNewClick = () => {
-        setIsRegister(true)
-        setImmobile(defaultImmobile)
-    }
-
-    const handleBackClick = (event?) => {
-        if (event) {
-            event.preventDefault()
-        }
-        setImmobiles([])
-        setImmobile(defaultImmobile)
-        setIsFirst(true)
-        setIsRegister(false)
-    }
-
-    const handleFilterList = (string) => {
-        let listItems = [...immobiles]
-        let listItemsFiltered: Immobile[] = []
-        listItemsFiltered = listItems.filter((element: Immobile, index) => {
-            return element.name.toLowerCase().includes(string.toLowerCase())
-        })
-        return listItemsFiltered
-    }
-
-    const handleAfterSave = (feedbackMessage: FeedbackMessage, immobile) => {
-        handleAdd(immobile)
-        handleBackClick()
-        if (props.onShowMessage) {
-            props.onShowMessage(feedbackMessage)
-        }
-    }
-
-    const handleAdd = (immobile) => {
-        let localImmobiles = props.immobiles ?? []
-        let canAdd = true
-
-        localImmobiles?.map((element, index) => {
-            if (element.name === immobile.name) {
-                canAdd = false
-            }
-        })
-
-        if (canAdd && props.onValidate) {
-            canAdd = props.onValidate(immobile)
-        }
-
-        if (canAdd) {
-            if (props.isMultipleSelect) {
-                if (editIndex > -1) {
-                    localImmobiles = [
-                        ...localImmobiles.slice(0, editIndex),
-                        immobile,
-                        ...localImmobiles.slice(editIndex + 1, localImmobiles.length),
-                    ]
-                } else {
-                    localImmobiles = [...localImmobiles, immobile]
-                }
-            } else {
-                localImmobiles = [immobile]
-            }
-            setEditIndex(-1)
-            if (props.onSetImmobiles) {
-                props.onSetImmobiles(localImmobiles)
-                setIsOpen(false)
-            }
-            if (props.onFinishAdd) {
-                props.onFinishAdd()
-            }
-        } else {
-            let feedbackMessage: FeedbackMessage = { messages: [props?.validationMessage], messageType: "ERROR" }
-            if (props.onShowMessage) {
-                props.onShowMessage(feedbackMessage)
-            }
+    const handleOnSet = (value) => {
+        if (props.onSet) {
+            props.onSet(value)
         }
     }
 
     const handleRemoveImmobile = () => {
-        if (!props.isMultipleSelect) {
-            props.onSetImmobiles([])
+        if (props.isSingle) {
+            handleOnSet([])
         } else {
-            let localImmobiles = props.immobiles
+            let localImmobiles = props.value
             if (localImmobiles.length > -1) {
                 let index = localImmobiles.indexOf(immobile)
                 localImmobiles.splice(index, 1)
-                if (props.onSetImmobiles) {
-                    props.onSetImmobiles(localImmobiles)
-                }
+                handleOnSet(localImmobiles)
             }
         }
         setImmobile(defaultImmobile)
     }
 
-    const handlePutActions = (index) => {
-        return (
-            <>
-                {!props.isLocked && (
-                    <>
-                        <Button
-                            type="button"
-                            isLoading={props.isLoading}
-                            isDisabled={props.isLoading}
-                            className="ml-2 h-fit self-end"
-                            onClick={(event) => {
-                                event.preventDefault()
-                                setEditIndex(index)
-                                setIsOpen(true)
-                            }}
-                        >
-                            <PencilAltIcon className="text-white block h-5 w-5" aria-hidden="true" />
-                        </Button>
-                        <Button
-                            type="submit"
-                            color="red"
-                            isLoading={props.isLoading}
-                            isDisabled={props.isLoading}
-                            className="ml-2 h-fit self-end"
-                        >
-                            <TrashIcon className="text-white block h-5 w-5" aria-hidden="true" />
-                        </Button>
-                    </>
-                )}
-            </>
-        )
+    const handleAdd = (value: Immobile) => {
+        if (!props.excludeList?.includes(value)) {
+            handleOnSet([...props.value, value])
+        }
     }
 
-    useEffect(() => {
-        if (isOpen && isFirst) {
-            fetch("api/immobilesNormal").then((res) => res.json()).then((res) => {
-                setIsFirst(old => false)
-                if (res.list.length) {
-                    setImmobiles(res.list)
+    const handleFilterList = (list, string) => {
+        let listItemsFiltered: Immobile[] = []
+        if (list?.length > 0) {
+            listItemsFiltered = list?.filter((element: Immobile, index) => {
+                if (props.excludeList?.length > 0) {
+                    let canAdd = false
+                    props.excludeList.map((elementExcluded, index) => {
+                        if (elementExcluded?.id === element?.id) {
+                            canAdd = true
+                        }
+                    })
+                    if (canAdd) {
+                        return false
+                    }
                 }
-                if (props.onSetLoading) {
-                    props.onSetLoading(false)
-                }
+                return element.name.toLowerCase().includes(string.toLowerCase())
             })
         }
-    })
-
+        return listItemsFiltered
+    }
+    const handlePutHeaders = () => {
+        return (
+            <FormRow>
+                <FormRowColumn unit="6">Nome</FormRowColumn>
+            </FormRow>
+        )
+    }
+    const handlePutRows = (element: Immobile, index: number) => {
+        return (
+            <FormRow>
+                <FormRowColumn unit="6" className="flex flex-row justify-between items-center">
+                    <div>
+                        {element.name}
+                    </div>
+                    <Button
+                        ignoreClass
+                        isLoading={props.isLoading}
+                        isDisabled={props.isDisabledExclude}
+                        className="bg-red-600 hover:bg-red-800 disabled:opacity-70 rounded-full p-2"
+                        onClick={() => {
+                            setImmobile((old) => props.value[index])
+                            setIsOpenDelete(true)
+                        }}
+                    >
+                        <TrashIcon className="text-white block h-4 w-4" aria-hidden="true" />
+                    </Button>
+                </FormRowColumn>
+            </FormRow>
+        )
+    }
     return (
         <>
             <Form
+                ignoreClass
                 title={props.title}
                 subtitle={props.subtitle}
-                className={props.formClassName}
             >
-
-                {!props.isLocked && (
-                    <FormRow className="">
-                        <FormRowColumn unit="6" className="flex flex-col items-end justify-self-end">
-                            <Button
-                                type="button"
-                                className="w-fit"
-                                isLoading={props.isLoading}
-                                isDisabled={props.isLoading}
-                                onClick={(event) => {
-                                    event.preventDefault()
-                                    if (props.validationButton) {
-                                        setIsInvalid(true)
-                                        setTimeout(() => setIsInvalid((old) => false), 2000)
-                                    } else {
-                                        setIsOpen(true)
-                                    }
-                                }}
-                            >
-                                {props.buttonTitle}
-                            </Button>
-                            <FeedbackMessageText
-                                isOpen={isInvalid}
-                                setIsOpen={setIsInvalid}
-                                feedbackMessage={
-                                    {
-                                        ...defaultFeedbackMessage,
-                                        messages: [props.validationMessageButton],
-                                        messageType: "ERROR"
-                                    }} />
-                        </FormRowColumn>
-                    </FormRow>
+                <FormRow>
+                    <FormRowColumn unit="6">
+                        <InputSelectImmobile
+                            notSet
+                            onSet={handleAdd}
+                            onBlur={props.onBlur}
+                            title={props.inputTitle}
+                            isLoading={props.isLoading}
+                            onFilter={handleFilterList}
+                            isDisabled={props.isDisabled}
+                            placeholder={props.placeholder}
+                            id={"select-immobile" + (props.id ? "-" + props.id : "")}
+                        />
+                    </FormRowColumn>
+                </FormRow>
+                {props.value?.length > 0 && (
+                    <ListTable
+                        hideSearch
+                        className="p-2"
+                        list={props.value}
+                        title={props.listTitle}
+                        onSetIsActive={setIndex}
+                        onTableRow={handlePutRows}
+                        isLoading={props.isLoading}
+                        onTableHeader={handlePutHeaders}
+                    />
                 )}
-
-                {props.immobiles?.map((element, index) => (
-                    <form key={index + element.dateInsertUTC}
-                        onSubmit={(event) => {
-                            event.preventDefault()
-                            setImmobile(element)
-                            setIsOpenDelete(true)
-                        }}>
-                        <FormRow>
-                            <FormRowColumn unit="6" className="flex flex-col sm:flex-row">
-                                <InputText
-                                    title="Nome"
-                                    isDisabled={true}
-                                    value={element.name}
-                                    holderClassName="w-full"
-                                    isLoading={props.isLoading}
-                                    id={"immobile-title-" + index}
-                                />
-
-                                <div className="min-w-fit flex-col mt-4 sm:mt-0 self-end hidden sm:block">
-                                    {handlePutActions(index)}
-                                </div>
-                            </FormRowColumn>
-                            <FormRowColumn unit="6" className="flex justify-end sm:hidden">
-                                {handlePutActions(index)}
-                            </FormRowColumn>
-                        </FormRow>
-                    </form>
-                ))}
             </Form>
-
-            <IOSModal
-                isOpen={isOpen}
-                setIsOpen={setIsOpen}>
-                <>
-                    {isOpen && (
-                        <>
-                            {!isRegister ? (
-                                <List
-                                    haveNew
-                                    canSelect
-                                    autoSearch
-                                    onSelectClick={handleAdd}
-                                    title={"Lista de imóveis"}
-                                    isLoading={props.isLoading}
-                                    onNewClick={handleNewClick}
-                                    onFilterList={handleFilterList}
-                                    onTitle={(element: Immobile) => {
-                                        return (
-                                            <ImmobileView
-                                                title=""
-                                                hideData
-                                                hideBorder
-                                                hidePaddingMargin
-                                                immobile={element}
-                                            />)
-                                    }}
-                                    onInfo={(element: Immobile) => {
-                                        return (<p>{element.name}</p>)
-                                    }}
-                                    onShowMessage={props.onShowMessage}
-                                />
-                            ) : (
-                                <ImmobileForm
-                                    isBack={true}
-                                    immobile={immobile}
-                                    canMultiple={false}
-                                    onBack={handleBackClick}
-                                    title="Informações do imóvel"
-                                    onAfterSave={handleAfterSave}
-                                    onShowMessage={props.onShowMessage}
-                                    subtitle="Dados importantes sobre o imóvel" />
-                            )}
-                        </>
-                    )}
-                </>
-            </IOSModal>
-
             <WindowModal
                 isOpen={isOpenDelete}
                 setIsOpen={setIsOpenDelete}>

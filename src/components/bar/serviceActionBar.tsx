@@ -114,7 +114,7 @@ export const handleSaveServiceInner = async (service, history) => {
     let res = { status: "ERROR", id: "", service: service }
     service = handleServiceForDB(service)
     try {
-        const saveRes = await fetch("api/serviceNew", {
+        const saveRes = await fetch("api/service", {
             method: "POST",
             body: JSON.stringify({ token: "tokenbemseguro", data: service, history: history }),
         }).then((res) => res.json())

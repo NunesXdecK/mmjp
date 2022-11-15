@@ -1,7 +1,6 @@
 import Button from "../button/button";
 import { useEffect, useState } from "react";
 import WindowModal from "../modal/windowModal";
-import ProfessionalForm from "../form/professionalForm";
 import { XCircleIcon } from "@heroicons/react/outline";
 import { PlusCircleIcon } from "@heroicons/react/solid";
 import InputTextAutoComplete from "./inputTextAutocomplete";

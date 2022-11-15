@@ -67,7 +67,7 @@ export const handleSaveServiceStageInner = async (serviceStage, history) => {
     let res = { status: "ERROR", id: "", serviceStage: serviceStage }
     serviceStage = handleServiceStageForDB(serviceStage)
     try {
-        const saveRes = await fetch("api/serviceStageNew", {
+        const saveRes = await fetch("api/serviceStage", {
             method: "POST",
             body: JSON.stringify({ token: "tokenbemseguro", data: serviceStage, history: history }),
         }).then((res) => res.json())

@@ -6,14 +6,14 @@ import { useEffect, useState } from "react"
 import WindowModal from "../modal/windowModal"
 import FormRowColumn from "../form/formRowColumn"
 import UserNameListItem from "../list/userNameListItem"
+import SwiftInfoButton from "../button/switchInfoButton"
+import { handleUTCToDateShow } from "../../util/dateUtils"
 import ServiceNameListItem from "../list/serviceNameListItem"
 import { PlusIcon, RefreshIcon } from "@heroicons/react/solid"
 import { FeedbackMessage } from "../modal/feedbackMessageModal"
 import ServiceStageDataForm from "../form/serviceStageDataForm"
-import ServiceStageActionBarForm, { handleSaveServiceStageInner } from "../bar/serviceStageActionBar"
-import { handleUTCToDateShow, handleNewDateToUTC } from "../../util/dateUtils"
 import { ServiceStage, defaultServiceStage } from "../../interfaces/objectInterfaces"
-import SwiftInfoButton from "../button/switchInfoButton"
+import ServiceStageActionBarForm, { handleSaveServiceStageInner } from "../bar/serviceStageActionBar"
 
 interface ServiceStagePageProps {
     id?: string,
@@ -49,7 +49,7 @@ export default function ServiceStagePage(props: ServiceStagePageProps) {
     const handleDeleteClick = async (serviceStage, index) => {
         setIsLoading(true)
         let feedbackMessage: FeedbackMessage = { messages: ["Algo deu errado"], messageType: "ERROR" }
-        const res = await fetch("api/serviceStageNew", {
+        const res = await fetch("api/serviceStage", {
             method: "DELETE",
             body: JSON.stringify({ token: "tokenbemseguro", id: serviceStage.id }),
         }).then((res) => res.json())
@@ -93,7 +93,7 @@ export default function ServiceStagePage(props: ServiceStagePageProps) {
     const handleEditClick = async (serviceStage, index?) => {
         setIsLoading(true)
         setIsForShow(false)
-        let localServiceStage: ServiceStage = await fetch("api/serviceStageNew/" + serviceStage?.id).then((res) => res.json()).then((res) => res.data)
+        let localServiceStage: ServiceStage = await fetch("api/serviceStage/" + serviceStage?.id).then((res) => res.json()).then((res) => res.data)
         localServiceStage = {
             ...localServiceStage,
             dateString: handleUTCToDateShow(localServiceStage?.dateDue?.toString()),

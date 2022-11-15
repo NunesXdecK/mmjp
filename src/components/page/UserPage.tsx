@@ -4,13 +4,13 @@ import ActionBar from "../bar/actionBar"
 import ListTable from "../list/listTable"
 import { useEffect, useState } from "react"
 import WindowModal from "../modal/windowModal"
-import FormRowColumn from "../form/formRowColumn"
-import { PlusIcon, RefreshIcon } from "@heroicons/react/solid"
 import UserDataForm from "../form/userDataForm"
-import { FeedbackMessage } from "../modal/feedbackMessageModal"
+import FormRowColumn from "../form/formRowColumn"
 import UserActionBarForm from "../bar/userActionBar"
-import { User, defaultUser } from "../../interfaces/objectInterfaces"
 import PersonNameListItem from "../list/personNameListItem"
+import { PlusIcon, RefreshIcon } from "@heroicons/react/solid"
+import { FeedbackMessage } from "../modal/feedbackMessageModal"
+import { User, defaultUser } from "../../interfaces/objectInterfaces"
 
 interface UserPageProps {
     id?: string,
@@ -45,7 +45,7 @@ export default function UserPage(props: UserPageProps) {
     const handleDeleteClick = async (user, index) => {
         setIsLoading(true)
         let feedbackMessage: FeedbackMessage = { messages: ["Algo deu errado"], messageType: "ERROR" }
-        const res = await fetch("api/userNew", {
+        const res = await fetch("api/user", {
             method: "DELETE",
             body: JSON.stringify({ token: "tokenbemseguro", id: user.id }),
         }).then((res) => res.json())

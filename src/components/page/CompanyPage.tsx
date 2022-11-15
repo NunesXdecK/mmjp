@@ -45,7 +45,7 @@ export default function CompanyPage(props: CompanyPageProps) {
     const handleDeleteClick = async (company, index) => {
         setIsLoading(true)
         let feedbackMessage: FeedbackMessage = { messages: ["Algo deu errado"], messageType: "ERROR" }
-        const res = await fetch("api/companyNew", {
+        const res = await fetch("api/company", {
             method: "DELETE",
             body: JSON.stringify({ token: "tokenbemseguro", id: company.id }),
         }).then((res) => res.json())

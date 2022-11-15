@@ -7,12 +7,12 @@ import BudgetView from "../view/budgetView"
 import WindowModal from "../modal/windowModal"
 import FormRowColumn from "../form/formRowColumn"
 import BudgetDataForm from "../form/budgetDataForm"
-import BudgetActionBarForm, { handleSaveBudgetInner } from "../bar/budgetActionBar"
 import ContractPrintView from "../view/contractPrintView"
 import SwiftInfoButton from "../button/switchInfoButton"
 import { PlusIcon, RefreshIcon } from "@heroicons/react/solid"
 import { FeedbackMessage } from "../modal/feedbackMessageModal"
 import { handleUTCToDateShow, handleNewDateToUTC } from "../../util/dateUtils"
+import BudgetActionBarForm, { handleSaveBudgetInner } from "../bar/budgetActionBar"
 import { Budget, BudgetPayment, Company, defaultBudget, Person } from "../../interfaces/objectInterfaces"
 
 interface BudgetPageProps {

@@ -73,7 +73,7 @@ export const handleSaveProjectInner = async (project, history) => {
     let res = { status: "ERROR", id: "", project: project }
     project = handleProjectForDB(project)
     try {
-        const saveRes = await fetch("api/projectNew", {
+        const saveRes = await fetch("api/project", {
             method: "POST",
             body: JSON.stringify({ token: "tokenbemseguro", data: project, history: history }),
         }).then((res) => res.json())

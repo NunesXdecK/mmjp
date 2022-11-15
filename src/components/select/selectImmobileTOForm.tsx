@@ -1,7 +1,7 @@
 import Form from "../form/form"
 import { useState } from "react"
 import Button from "../button/button"
-import SelectImmobileFormNew from "./selectImmobileFormNew"
+import SelectImmobileForm from "./selectImmobileForm"
 import { Immobile } from "../../interfaces/objectInterfaces"
 
 interface SelectImmobileTOFormProps {
@@ -80,7 +80,7 @@ export default function SelectImmobileTOForm(props: SelectImmobileTOFormProps) {
                 </div>
             )}
         >
-            <SelectImmobileFormNew
+            <SelectImmobileForm
                 listTitle="Imóveis"
                 onSet={props.onSetTarget}
                 value={props.valueTarget}
@@ -98,7 +98,7 @@ export default function SelectImmobileTOForm(props: SelectImmobileTOFormProps) {
                 }
             />
             {(isUnion || isDismemberment) && (
-                <SelectImmobileFormNew
+                <SelectImmobileForm
                     listTitle="Imóveis"
                     onSet={props.onSetOrigin}
                     value={props.valueOrigin}

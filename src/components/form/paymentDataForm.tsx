@@ -9,7 +9,7 @@ import { NOT_NULL_MARK } from "../../util/patternValidationUtil";
 import InputTextAutoComplete from "../inputText/inputTextAutocomplete";
 import InputTextArea from "../inputText/inputTextArea";
 
-interface PaymentFormProps {
+interface PaymentDataFormProps {
     id?: string,
     title?: string,
     subtitle?: string,
@@ -22,7 +22,7 @@ interface PaymentFormProps {
     onUpdateServiceValue?: (any, number) => void,
 }
 
-export default function PaymentForm(props: PaymentFormProps) {
+export default function PaymentDataForm(props: PaymentDataFormProps) {
     const [isOpen, setIsOpen] = useState(false)
 
     const [isFormValid, setIsFormValid] = useState(false)

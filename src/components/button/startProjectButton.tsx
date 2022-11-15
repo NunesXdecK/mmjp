@@ -86,7 +86,7 @@ export default function StartProjectButton(props: StartProjectButtonProps) {
                             project: { id: projectSaveRes?.id },
                             professional: { id: professional.id },
                         }
-                        await fetch("api/serviceNew", {
+                        await fetch("api/service", {
                             method: "POST",
                             body: JSON.stringify({ token: "tokenbemseguro", data: serviceNew, history: history }),
                         })
