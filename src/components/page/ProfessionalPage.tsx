@@ -153,10 +153,8 @@ export default function ProfessionalPage(props: ProfessionalPageProps) {
     useEffect(() => {
         if (isFirst) {
             fetch("api/professionals/").then((res) => res.json()).then((res) => {
+                setProfessionals(res.list ?? [])
                 setIsFirst(old => false)
-                if (res.list.length) {
-                    setProfessionals(res.list)
-                }
                 setIsLoading(false)
             })
         }

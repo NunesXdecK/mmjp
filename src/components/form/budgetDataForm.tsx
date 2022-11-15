@@ -63,7 +63,7 @@ export default function BudgetDataForm(props: BudgetDataFormProps) {
                                 <InputText
                                     title="Status"
                                     isDisabled={true}
-                                    id="status-budget"
+                                    id="budget-status"
                                     value={props.budget.status}
                                 />
                             </FormRowColumn>

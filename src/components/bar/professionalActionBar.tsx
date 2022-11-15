@@ -1,7 +1,7 @@
 import ActionBar from "./actionBar";
 import Button from "../button/button";
 import { FeedbackMessage } from "../modal/feedbackMessageModal";
-import { handleProfessionalValidationForDB } from "../../util/validationUtil";
+import { handleValidationNotNull, ValidationReturn } from "../../util/validationUtil";
 import { Professional, defaultProfessional } from "../../interfaces/objectInterfaces";
 
 interface ProfessionalActionBarFormProps {
@@ -14,6 +14,20 @@ interface ProfessionalActionBarFormProps {
     onSetIsLoading?: (boolean) => void,
     onAfterSave?: (object, any?, boolean?) => void,
     onShowMessage?: (FeedbackMessage) => void,
+}
+
+export const handleProfessionalValidationForDB = (professional: Professional) => {
+    let validation: ValidationReturn = { validation: false, messages: [] }
+    let titleCheck = handleValidationNotNull(professional.title)
+    let personCheck = professional?.person?.id?.length > 0 ?? false
+    if (!titleCheck) {
+        validation = { ...validation, messages: [...validation.messages, "O campo titúlo está em branco."] }
+    }
+    if (!personCheck) {
+        validation = { ...validation, messages: [...validation.messages, "O profissional precisa de dados básicos."] }
+    }
+    validation = { ...validation, validation: titleCheck && personCheck }
+    return validation
 }
 
 export const handleProfessionalForDB = (professional: Professional) => {

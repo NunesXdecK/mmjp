@@ -1,11 +1,9 @@
 import ActionBar from "./actionBar";
 import Button from "../button/button";
 import { FeedbackMessage } from "../modal/feedbackMessageModal";
-import { handleCheckClientCode } from "../inputText/inputClientCode";
-import { handleUserValidationForDB } from "../../util/validationUtil";
 import { User, defaultUser } from "../../interfaces/objectInterfaces";
-import { handleRemoveCEPMask, handleRemoveCPFMask, handleRemoveTelephoneMask } from "../../util/maskUtil";
 import { handleCheckUserEmail, handleCheckUsername } from "../form/userDataForm";
+import { handleValidationNotNull, ValidationReturn } from "../../util/validationUtil";
 
 interface UserActionBarFormProps {
     className?: string,
@@ -41,6 +39,45 @@ export const handleSaveUserInner = async (user, history) => {
         console.error("Error adding document: ", e)
     }
     return res
+}
+
+export const handleUserValidationForDB = (user: User) => {
+    let validation: ValidationReturn = { validation: false, messages: [] }
+    let userNameCheck = handleValidationNotNull(user.username)
+    let emailCheck = handleValidationNotNull(user.email)
+    let passwordCheck = handleValidationNotNull(user.password)
+    let passwordConfirmCheck = handleValidationNotNull(user.passwordConfirm)
+    let passwordsEqual = user.password === user.passwordConfirm
+    let personCheck = user?.person?.id?.length > 0 ?? false
+    if (!userNameCheck) {
+        validation = { ...validation, messages: [...validation.messages, "O campo Username está em branco."] }
+    }
+    if (!emailCheck) {
+        validation = { ...validation, messages: [...validation.messages, "O campo E-mail está em branco."] }
+    }
+    if (!passwordCheck) {
+        validation = { ...validation, messages: [...validation.messages, "O campo Senha está em branco."] }
+    }
+    /*
+    if (!passwordConfirmCheck) {
+        validation = { ...validation, messages: [...validation.messages, "O campo Confirme a senha está em branco."] }
+    }
+    */
+    if (!passwordsEqual) {
+        validation = { ...validation, messages: [...validation.messages, "As senhas estão diferentes"] }
+    }
+    if (!personCheck) {
+        validation = { ...validation, messages: [...validation.messages, "O usuário precisa de dados básicos."] }
+    }
+    validation = {
+        ...validation,
+        validation:
+            userNameCheck &&
+            personCheck &&
+            passwordCheck &&
+            passwordsEqual
+    }
+    return validation
 }
 
 export default function UserActionBarForm(props: UserActionBarFormProps) {

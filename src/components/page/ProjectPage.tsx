@@ -183,10 +183,8 @@ export default function ProjectPage(props: ProjectPageProps) {
     useEffect(() => {
         if (isFirst) {
             fetch("api/projects").then((res) => res.json()).then((res) => {
+                setProjects(res.list ?? [])
                 setIsFirst(old => false)
-                if (res.list.length) {
-                    setProjects(res.list)
-                }
                 setIsLoading(false)
             })
         }

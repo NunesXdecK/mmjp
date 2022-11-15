@@ -95,7 +95,7 @@ export default function ServiceDataForm(props: ServiceDataFormProps) {
                         <InputText
                             title="Status"
                             isDisabled={true}
-                            id="status-service"
+                            id="service-status"
                             value={props.service.status}
                         />
                     </FormRowColumn>
@@ -112,7 +112,7 @@ export default function ServiceDataForm(props: ServiceDataFormProps) {
                             isDisabled={props.isDisabled}
                             validationMessage="Titulo em branco."
                             onValidate={handleChangeFormValidation}
-                            id={"title-service-" + (props.index ?? 0) + "-" + props.id}
+                            id={"service-title" + (props.index ?? 0) + "-" + props.id}
                             sugestions={["Ambiental", "Desmembramento", "Georeferenciamento", "União", "Licenciamento"]}
                         />
                     </FormRowColumn>
@@ -127,7 +127,7 @@ export default function ServiceDataForm(props: ServiceDataFormProps) {
                             isDisabled={props.isDisabled}
                             value={props.service.dateString}
                             onValidate={handleChangeFormValidation}
-                            id={"date-due-service-" + props.index + "-" + props.id}
+                            id={"service-date-due" + props.index + "-" + props.id}
                         />
                     </FormRowColumn>
                 </FormRow>
@@ -141,7 +141,7 @@ export default function ServiceDataForm(props: ServiceDataFormProps) {
                             value={props.service.value}
                             isDisabled={props.isDisabled}
                             onValidate={handleChangeFormValidation}
-                            id={"value-service-" + (props.index ?? 0) + "-" + props.id}
+                            id={"service-value" + (props.index ?? 0) + "-" + props.id}
                         />
                     </FormRowColumn>
                     <FormRowColumn unit="2">
@@ -154,7 +154,7 @@ export default function ServiceDataForm(props: ServiceDataFormProps) {
                             isDisabled={props.isDisabled}
                             value={props.service.quantity}
                             onValidate={handleChangeFormValidation}
-                            id={"quantity-service-" + (props.index ?? 0) + "-" + props.id}
+                            id={"service-quantity" + (props.index ?? 0) + "-" + props.id}
                         />
                     </FormRowColumn>
                     <FormRowColumn unit="2" className="flex flex-col sm:flex-row">
@@ -163,7 +163,7 @@ export default function ServiceDataForm(props: ServiceDataFormProps) {
                             title="Total"
                             isLoading={props.isLoading}
                             value={props.service.total}
-                            id={"total-service-" + (props.index ?? 0) + "-" + props.id}
+                            id={"service-total" + (props.index ?? 0) + "-" + props.id}
                         />
                     </FormRowColumn>
                 </FormRow>
@@ -176,7 +176,7 @@ export default function ServiceDataForm(props: ServiceDataFormProps) {
                             onSet={handleSetProfessional}
                             isDisabled={props.isDisabled}
                             value={props.service?.professional?.title}
-                            id={"budget-professional" + (props.index ? "-" + props.index : "")}
+                            id={"service-professional" + (props.index ? "-" + props.index : "")}
                         />
                     </FormRowColumn>
                 </FormRow>
@@ -189,7 +189,7 @@ export default function ServiceDataForm(props: ServiceDataFormProps) {
                             isDisabled={props.isDisabled}
                             onSetText={handleSetDescription}
                             value={props.service.description}
-                            id={"description-service-" + props.index + "-" + props.id}
+                            id={"service-description" + props.index + "-" + props.id}
                         />
                     </FormRowColumn>
                 </FormRow>
@@ -204,7 +204,7 @@ export default function ServiceDataForm(props: ServiceDataFormProps) {
                         onSetOrigin={handleSetImmobileOrigin}
                         valueTarget={props.service.immobilesTarget}
                         valueOrigin={props.service.immobilesOrigin}
-                        id={"immobiles-service-" + props.index + "-" + props.id}
+                        id={"service-immobiles" + props.index + "-" + props.id}
                     />
                     <Form
                         title="Etapas"

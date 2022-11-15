@@ -3,8 +3,8 @@ import Button from "../button/button";
 import MenuButton from "../button/menuButton";
 import DropDownButton from "../button/dropDownButton";
 import { FeedbackMessage } from "../modal/feedbackMessageModal";
-import { handleServiceStageValidationForDB } from "../../util/validationUtil";
-import { handleGetDateFormatedToUTC, handleNewDateToUTC } from "../../util/dateUtils";
+import { handleGetDateFormatedToUTC } from "../../util/dateUtils";
+import { handleValidationNotNull, ValidationReturn } from "../../util/validationUtil";
 import { ServiceStage, defaultServiceStage, ServiceStageStatus } from "../../interfaces/objectInterfaces";
 
 interface ServiceStageActionBarFormProps {
@@ -18,6 +18,25 @@ interface ServiceStageActionBarFormProps {
     onSetIsLoading?: (boolean) => void,
     onAfterSave?: (object, any, boolean) => void,
     onShowMessage?: (FeedbackMessage) => void,
+}
+
+export const handleServiceStageValidationForDB = (serviceStage: ServiceStage, isForValidService?) => {
+    let validation: ValidationReturn = { validation: false, messages: [] }
+    let titleCheck = handleValidationNotNull(serviceStage.title)
+    let serviceCheck = true
+
+    if (!titleCheck) {
+        validation = { ...validation, messages: [...validation.messages, "A etapa " + (serviceStage.index + 1) + " está com o titulo em branco."] }
+    }
+
+    if (isForValidService) {
+        serviceCheck = serviceStage?.service?.id?.length > 0 ?? false
+        if (!serviceCheck) {
+            validation = { ...validation, messages: [...validation.messages, "A etapa " + (serviceStage.index + 1) + " precisa de um serviço referente."] }
+        }
+    }
+    validation = { ...validation, validation: titleCheck && serviceCheck }
+    return validation
 }
 
 export const handleServiceStageForDB = (serviceStage: ServiceStage) => {

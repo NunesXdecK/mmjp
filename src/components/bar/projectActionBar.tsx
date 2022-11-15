@@ -1,9 +1,9 @@
 import ActionBar from "./actionBar";
 import Button from "../button/button";
 import { FeedbackMessage } from "../modal/feedbackMessageModal";
-import { handleProjectValidationForDB } from "../../util/validationUtil";
+import { handleGetDateFormatedToUTC } from "../../util/dateUtils";
+import { handleValidationNotNull, ValidationReturn } from "../../util/validationUtil";
 import { Project, defaultProject, ProjectStatus } from "../../interfaces/objectInterfaces";
-import { handleGetDateFormatedToUTC, handleNewDateToUTC } from "../../util/dateUtils";
 
 interface ProjectActionBarFormProps {
     className?: string,
@@ -15,6 +15,32 @@ interface ProjectActionBarFormProps {
     onSetIsLoading?: (boolean) => void,
     onAfterSave?: (object, any?, boolean?) => void,
     onShowMessage?: (FeedbackMessage) => void,
+}
+
+export const handleProjectValidationForDB = (project: Project) => {
+    let validation: ValidationReturn = { validation: false, messages: [] }
+    let nameCheck = handleValidationNotNull(project.title)
+    let clientsCheck = true
+    let clientsOnBaseCheck = true
+
+    if (!nameCheck) {
+        validation = { ...validation, messages: [...validation.messages, "O campo titulo está em branco."] }
+    }
+
+    clientsCheck = project?.clients?.length > 0 ?? false
+    if (!clientsCheck) {
+        validation = { ...validation, messages: [...validation.messages, "O projeto precisa de ao menos um cliente."] }
+    }
+
+    project.clients.map((element, index) => {
+        if (!handleValidationNotNull(element.id)) {
+            clientsOnBaseCheck = false
+            validation = { ...validation, messages: [...validation.messages, "O cliente não está cadastrado na base."] }
+        }
+    })
+
+    validation = { ...validation, validation: nameCheck && clientsCheck && clientsOnBaseCheck }
+    return validation
 }
 
 export const handleProjectForDB = (project: Project) => {

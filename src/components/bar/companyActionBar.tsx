@@ -2,9 +2,9 @@ import ActionBar from "./actionBar";
 import Button from "../button/button";
 import { FeedbackMessage } from "../modal/feedbackMessageModal";
 import { handleCheckClientCode } from "../inputText/inputClientCode";
-import { handleCompanyValidationForDB } from "../../util/validationUtil";
 import { Company, defaultCompany } from "../../interfaces/objectInterfaces";
 import { handleRemoveCEPMask, handleRemoveCNPJMask, handleRemoveTelephoneMask } from "../../util/maskUtil";
+import { handleValidationCPF, handleValidationNotNull, ValidationReturn } from "../../util/validationUtil";
 
 interface CompanyActionBarFormProps {
     className?: string,
@@ -16,6 +16,24 @@ interface CompanyActionBarFormProps {
     onSetIsLoading?: (boolean) => void,
     onAfterSave?: (object, any?, boolean?) => void,
     onShowMessage?: (FeedbackMessage) => void,
+}
+
+export const handleCompanyValidationForDB = (company: Company) => {
+    let validation: ValidationReturn = { validation: false, messages: [] }
+    let nameCheck = handleValidationNotNull(company.name)
+    let cnpjCheck = true
+
+    if (!nameCheck) {
+        validation = { ...validation, messages: [...validation.messages, "O campo nome está em branco."] }
+    }
+
+    if (!handleValidationCPF(company?.cnpj)) {
+        validation = { ...validation, messages: [...validation.messages, "O campo CNPJ está invalido."] }
+        cnpjCheck = false
+    }
+
+    validation = { ...validation, validation: nameCheck && cnpjCheck }
+    return validation
 }
 
 export const handleCompanyForDB = (company: Company) => {

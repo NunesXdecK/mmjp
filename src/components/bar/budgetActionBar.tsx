@@ -6,7 +6,7 @@ import DropDownButton from "../button/dropDownButton";
 import StartProjectButton from "../button/startProjectButton";
 import { FeedbackMessage } from "../modal/feedbackMessageModal";
 import { handleGetDateFormatedToUTC } from "../../util/dateUtils";
-import { handleBudgetValidationForDB } from "../../util/validationUtil";
+import { handleValidationNotNull, ValidationReturn } from "../../util/validationUtil";
 import { Budget, BudgetPayment, BudgetStatus, defaultBudget } from "../../interfaces/objectInterfaces";
 
 interface BudgetActionBarFormProps {
@@ -21,6 +21,67 @@ interface BudgetActionBarFormProps {
     onSetIsLoading?: (boolean) => void,
     onAfterSave?: (object, any?, boolean?) => void,
     onShowMessage?: (FeedbackMessage) => void,
+}
+
+export const handleBudgetValidationForDB = (budget: Budget) => {
+    let validation: ValidationReturn = { validation: false, messages: [] }
+    let nameCheck = handleValidationNotNull(budget.title)
+    let clientsCheck = budget?.clients?.length > 0 ?? false
+    let servicesCheck = budget?.services?.length > 0 ?? false
+    let paymentsCheck = budget?.payments?.length > 0 ?? false
+    let clientsOnBaseCheck = true
+    let serviceOnBaseCheck = true
+    let paymentOnBaseCheck = true
+
+    if (!nameCheck) {
+        validation = { ...validation, messages: [...validation.messages, "O campo titulo está em branco."] }
+    }
+
+    if (!clientsCheck) {
+        validation = { ...validation, messages: [...validation.messages, "O serviço precisa de um cliente."] }
+    }
+
+    if (!servicesCheck) {
+        validation = { ...validation, messages: [...validation.messages, "O serviço precisa de ao menos um serviço."] }
+    }
+
+    if (!paymentsCheck) {
+        validation = { ...validation, messages: [...validation.messages, "O serviço precisa de ao menos um pagamento."] }
+    }
+
+    budget.clients.map((element, index) => {
+        if (!handleValidationNotNull(element.id)) {
+            clientsOnBaseCheck = false
+            validation = { ...validation, messages: [...validation.messages, "O serviço precisa de um cliente."] }
+        }
+    })
+
+    budget.services.map((element, index) => {
+        if (!handleValidationNotNull(element.title)) {
+            serviceOnBaseCheck = false
+            validation = { ...validation, messages: [...validation.messages, "O serviço " + (index + 1) + " está sem titulo."] }
+        }
+    })
+
+    budget.payments.map((element, index) => {
+        if (!handleValidationNotNull(element.title)) {
+            paymentOnBaseCheck = false
+            validation = { ...validation, messages: [...validation.messages, "O pagamento " + (index + 1) + " está sem titulo."] }
+        }
+    })
+
+    validation = {
+        ...validation,
+        validation:
+            nameCheck &&
+            clientsCheck &&
+            servicesCheck &&
+            paymentsCheck &&
+            clientsOnBaseCheck &&
+            serviceOnBaseCheck &&
+            paymentOnBaseCheck
+    }
+    return validation
 }
 
 const handleBudgetForDB = (budget: Budget) => {

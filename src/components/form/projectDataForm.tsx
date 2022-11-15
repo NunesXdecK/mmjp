@@ -10,6 +10,7 @@ import InputTextAutoComplete from "../inputText/inputTextAutocomplete";
 import InputSelectPersonCompany from "../inputText/inputSelectPersonCompany";
 import ServicePage from "../page/ServicePage";
 import PaymentPage from "../page/PaymentPage";
+import InputTextArea from "../inputText/inputTextArea";
 
 interface ProjectDataFormProps {
     title?: string,
@@ -32,6 +33,7 @@ export default function ProjectDataForm(props: ProjectDataFormProps) {
     const handleSetDate = (value) => { handleSet({ ...props.project, dateString: value }) }
     const handleSetClient = (value) => { handleSet({ ...props.project, clients: [value] }) }
     const handleSetServices = (value) => { handleSet({ ...props.project, services: value }) }
+    const handleSetDescription = (value) => { handleSet({ ...props.project, description: value }) }
 
     const handleSet = (value: Project) => {
         if (props.onSet) {
@@ -58,14 +60,14 @@ export default function ProjectDataForm(props: ProjectDataFormProps) {
                         <InputText
                             title="Status"
                             isDisabled={true}
-                            id="status-project"
+                            id="project-status"
                             value={props.project.status}
                         />
                     </FormRowColumn>
                     <FormRowColumn unit="1">
                         <InputText
-                            id="number"
                             title="Numero"
+                            id="project-number"
                             isLoading={props.isLoading}
                             value={props.project.number}
                             onSetText={handleSetNumber}
@@ -133,6 +135,19 @@ export default function ProjectDataForm(props: ProjectDataFormProps) {
                                 props.isDisabled ||
                                 (props.project.status === "FINALIZADO" || props.project.status === "ARQUIVADO")
                             }
+                        />
+                    </FormRowColumn>
+                </FormRow>
+                <FormRow>
+                    <FormRowColumn unit="6" className="">
+                        <InputTextArea
+                            title="Descrição"
+                            onBlur={props.onBlur}
+                            isLoading={props.isLoading}
+                            isDisabled={props.isDisabled}
+                            onSetText={handleSetDescription}
+                            value={props.project.description}
+                            id={"project-description" + (props.index ? "-" + props.index : "")}
                         />
                     </FormRowColumn>
                 </FormRow>

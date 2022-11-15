@@ -50,6 +50,7 @@ export default async function handler(req, res) {
                         }
                     }
                     if (service.id?.length > 0 && status !== service.status) {
+                        status = service.status
                         service = { ...service, dateLastUpdateUTC: handleNewDateToUTC() }
                         const docRef = doc(serviceCollection, service.id)
                         await updateDoc(docRef, ServiceConversor.toFirestore(service))

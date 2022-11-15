@@ -30,15 +30,15 @@ export default function BudgetServiceForm(props: BudgetServiceFormProps) {
     const [isOpen, setIsOpen] = useState(false)
     const [isFormValid, setIsFormValid] = useState(false)
 
-    const handleSetServiceTitle = (value) => { handleSet({ ...props.budgetService, title: value }) }
+    const handleSetTitle = (value) => { handleSet({ ...props.budgetService, title: value }) }
 
-    const handleSetServiceValue = (value) => {
+    const handleSetValue = (value) => {
         const total = handleCalculateTotal(value, props.budgetService.quantity)
         const totalFormated = handleMountNumberCurrency(total.toString(), ".", ",", 3, 2)
         handleSet({ ...props.budgetService, value: value, total: totalFormated })
     }
 
-    const handleSetServiceQuantity = (value) => {
+    const handleSetQuantity = (value) => {
         const total = handleCalculateTotal(props.budgetService.value, value)
         const totalFormated = handleMountNumberCurrency(total.toString(), ".", ",", 3, 2)
         handleSet({ ...props.budgetService, quantity: value, total: totalFormated })
@@ -83,13 +83,13 @@ export default function BudgetServiceForm(props: BudgetServiceFormProps) {
                         title="Titulo"
                         onBlur={props.onBlur}
                         validation={NOT_NULL_MARK}
+                        onSetText={handleSetTitle}
                         isLoading={props.isLoading}
                         isDisabled={props.isDisabled}
-                        onSetText={handleSetServiceTitle}
                         value={props.budgetService.title}
                         validationMessage="Titulo em branco."
                         onValidate={handleChangeFormValidation}
-                        id={"title-service-" + (props.index ?? 0) + "-" + props.id}
+                        id={"budget-service-title" + (props.index ?? 0) + "-" + props.id}
                         sugestions={["Ambiental", "Desmembramento", "Georeferenciamento", "União", "Licenciamento"]}
                     />
                 </FormRowColumn>
@@ -97,12 +97,12 @@ export default function BudgetServiceForm(props: BudgetServiceFormProps) {
                     <InputTextCurrency
                         title="Valor"
                         onBlur={props.onBlur}
+                        onSet={handleSetValue}
                         isLoading={props.isLoading}
                         isDisabled={props.isDisabled}
-                        onSet={handleSetServiceValue}
                         value={props.budgetService.value}
                         onValidate={handleChangeFormValidation}
-                        id={"value-service-" + (props.index ?? 0) + "-" + props.id}
+                        id={"budget-service-value" + (props.index ?? 0) + "-" + props.id}
                     />
                 </FormRowColumn>
                 <FormRowColumn unit="1">
@@ -112,10 +112,10 @@ export default function BudgetServiceForm(props: BudgetServiceFormProps) {
                         validation={NUMBER_MARK}
                         isLoading={props.isLoading}
                         isDisabled={props.isDisabled}
-                        onSetText={handleSetServiceQuantity}
+                        onSetText={handleSetQuantity}
                         value={props.budgetService.quantity}
                         onValidate={handleChangeFormValidation}
-                        id={"quantity-service-" + (props.index ?? 0) + "-" + props.id}
+                        id={"budget-service-quantity" + (props.index ?? 0) + "-" + props.id}
                     />
                 </FormRowColumn>
                 <FormRowColumn unit="2" className="flex flex-col sm:flex-row">
@@ -124,7 +124,7 @@ export default function BudgetServiceForm(props: BudgetServiceFormProps) {
                         title="Total"
                         isLoading={props.isLoading}
                         value={props.budgetService.total}
-                        id={"total-service-" + (props.index ?? 0) + "-" + props.id}
+                        id={"budget-service-total" + (props.index ?? 0) + "-" + props.id}
                     />
                     {!props.isDisabled && props.onDelete && (
                         <Button

@@ -152,10 +152,8 @@ export default function CompanyPage(props: CompanyPageProps) {
     useEffect(() => {
         if (isFirst) {
             fetch("api/companies/").then((res) => res.json()).then((res) => {
+                setCompanys(res.list ?? [])
                 setIsFirst(old => false)
-                if (res.list.length) {
-                    setCompanys(res.list)
-                }
                 setIsLoading(false)
             })
         }

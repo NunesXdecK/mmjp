@@ -102,8 +102,8 @@ export default function StartProjectButton(props: StartProjectButtonProps) {
                             status: "EM ABERTO",
                             value: payment.value,
                             index: payment.index,
+                            title: payment.title,
                             dateDue: payment.dateDue,
-                            description: payment.description,
                             project: { id: projectSaveRes?.id },
                         }
                         paymentNew = handlePaymentForDB(paymentNew)

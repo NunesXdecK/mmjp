@@ -1,8 +1,8 @@
-import { Company, Person, Professional, Project, ServicePayment, ServiceStage, Immobile, Service, User, SubjectMessage, Budget, Payment } from "../interfaces/objectInterfaces"
 import { handleRemoveCNPJMask } from "./maskUtil"
+import { Company, Person, Professional, Project, ServicePayment, ServiceStage, Immobile, Service, User, SubjectMessage, Budget, Payment } from "../interfaces/objectInterfaces"
 import { CNPJ_PATTERN, CPF_PATTERN, ONLY_CHARACTERS_PATTERN, ONLY_CHARACTERS_PATTERN_TWO, ONLY_SPECIAL_FOR_NUMBER_PATTERN } from "./patternValidationUtil"
 
-interface ValidationReturn {
+export interface ValidationReturn {
     messages: string[],
     validation: boolean,
 }
@@ -256,9 +256,9 @@ export const handleBudgetValidationForDB = (budget: Budget) => {
     })
 
     budget.payments.map((element, index) => {
-        if (!handleValidationNotNull(element.description)) {
+        if (!handleValidationNotNull(element.title)) {
             paymentOnBaseCheck = false
-            validation = { ...validation, messages: [...validation.messages, "O pagamento " + (index + 1) + " está sem descrição."] }
+            validation = { ...validation, messages: [...validation.messages, "O pagamento " + (index + 1) + " está sem titulo."] }
         }
     })
 

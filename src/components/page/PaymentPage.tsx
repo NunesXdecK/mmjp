@@ -157,7 +157,7 @@ export default function PaymentPage(props: PaymentPageProps) {
     const handlePutHeaders = () => {
         return (
             <FormRow>
-                <FormRowColumn unit="2">Descrição</FormRowColumn>
+                <FormRowColumn unit="2">Titulo</FormRowColumn>
                 <FormRowColumn unit="1">Projeto</FormRowColumn>
                 <FormRowColumn unit="1">Valor</FormRowColumn>
                 <FormRowColumn unit="1">Status</FormRowColumn>
@@ -169,7 +169,7 @@ export default function PaymentPage(props: PaymentPageProps) {
     const handlePutRows = (element: Payment) => {
         return (
             <FormRow>
-                <FormRowColumn unit="2">{element.description}</FormRowColumn>
+                <FormRowColumn unit="2">{element.title}</FormRowColumn>
                 <FormRowColumn unit="1"><ProjectNumberListItem id={element.project.id} /></FormRowColumn>
                 <FormRowColumn unit="1">{handleMountNumberCurrency(element.value.toString(), ".", ",", 3, 2)}</FormRowColumn>
                 <FormRowColumn unit="1">
@@ -193,18 +193,14 @@ export default function PaymentPage(props: PaymentPageProps) {
         if (isFirst) {
             if (props.projectId?.length > 0) {
                 fetch("api/payments/" + props.projectId).then((res) => res.json()).then((res) => {
+                    setPayments(res.list ?? [])
                     setIsFirst(old => false)
-                    if (res.list.length) {
-                        setPayments(res.list)
-                    }
                     setIsLoading(false)
                 })
             } else if (props.projectId === undefined) {
                 fetch("api/payments").then((res) => res.json()).then((res) => {
+                    setPayments(res.list ?? [])
                     setIsFirst(old => false)
-                    if (res.list.length) {
-                        setPayments(res.list)
-                    }
                     setIsLoading(false)
                 })
             }

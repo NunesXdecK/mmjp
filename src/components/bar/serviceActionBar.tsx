@@ -2,11 +2,11 @@ import ActionBar from "./actionBar";
 import Button from "../button/button";
 import MenuButton from "../button/menuButton";
 import DropDownButton from "../button/dropDownButton";
-import { handleMountNumberCurrency, handleRemoveCurrencyMask } from "../../util/maskUtil";
 import { FeedbackMessage } from "../modal/feedbackMessageModal";
-import { handleServiceValidationForDBNew } from "../../util/validationUtil";
+import { handleGetDateFormatedToUTC } from "../../util/dateUtils";
+import { handleValidationNotNull, ValidationReturn } from "../../util/validationUtil";
+import { handleMountNumberCurrency, handleRemoveCurrencyMask } from "../../util/maskUtil";
 import { Service, defaultService, ServiceStatus } from "../../interfaces/objectInterfaces";
-import { handleGetDateFormatedToUTC, handleNewDateToUTC } from "../../util/dateUtils";
 
 interface ServiceActionBarFormProps {
     projectId?: string,
@@ -19,6 +19,46 @@ interface ServiceActionBarFormProps {
     onSetIsLoading?: (boolean) => void,
     onAfterSave?: (object, any, boolean) => void,
     onShowMessage?: (FeedbackMessage) => void,
+}
+
+export const handleServiceValidationForDB = (service: Service, isForValidateImmobile?, isForValidPaymentStage?) => {
+    let validation: ValidationReturn = { validation: false, messages: [] }
+    let titleCheck = handleValidationNotNull(service.title)
+    let immobilesTargetCheck = true
+    let immobilesOriginOnBaseCheck = true
+    let immobilesTargetOnBaseCheck = true
+
+    if (!titleCheck) {
+        validation = { ...validation, messages: [...validation.messages, "O campo titulo está em branco."] }
+    }
+
+    if (isForValidateImmobile) {
+        immobilesTargetCheck = service?.immobilesTarget?.length > 0 ?? false
+        if (!immobilesTargetCheck) {
+            validation = { ...validation, messages: [...validation.messages, "O serviço precisa de ao menos um imóvel alvo."] }
+        }
+
+        service?.immobilesTarget?.map((element, index) => {
+            if (!handleValidationNotNull(element.id)) {
+                immobilesTargetOnBaseCheck = false
+                validation = { ...validation, messages: [...validation.messages, "O imóvel alvo " + element.name + " não está cadastrado na base."] }
+            }
+        })
+
+        service?.immobilesOrigin?.map((element, index) => {
+            if (!handleValidationNotNull(element.id)) {
+                immobilesOriginOnBaseCheck = false
+                validation = { ...validation, messages: [...validation.messages, "O imóvel de origem " + element.name + " não está cadastrado na base."] }
+            }
+        })
+    }
+
+    validation = {
+        ...validation,
+        validation: titleCheck && immobilesTargetCheck && immobilesOriginOnBaseCheck && immobilesTargetOnBaseCheck,
+        messages: [...validation.messages]
+    }
+    return validation
 }
 
 export const handleServiceForDB = (service: Service) => {
@@ -99,7 +139,7 @@ export default function ServiceActionBarForm(props: ServiceActionBarFormProps) {
     }
 
     const handleSave = async (status: ServiceStatus, isForCloseModal) => {
-        const isServiceValid = handleServiceValidationForDBNew(props.service)
+        const isServiceValid = handleServiceValidationForDB(props.service)
         if (!isServiceValid.validation) {
             const feedbackMessage: FeedbackMessage = { messages: [...isServiceValid.messages], messageType: "ERROR" }
             handleShowMessage(feedbackMessage)

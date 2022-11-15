@@ -7,6 +7,7 @@ import { Payment } from "../../interfaces/objectInterfaces";
 import InputTextCurrency from "../inputText/inputTextCurrency";
 import { NOT_NULL_MARK } from "../../util/patternValidationUtil";
 import InputTextAutoComplete from "../inputText/inputTextAutocomplete";
+import InputTextArea from "../inputText/inputTextArea";
 
 interface PaymentFormProps {
     id?: string,
@@ -26,15 +27,16 @@ export default function PaymentForm(props: PaymentFormProps) {
 
     const [isFormValid, setIsFormValid] = useState(false)
 
-    const handleSetServicePaymentValue = (value) => {
+    const handleSetValue = (value) => {
         if (props.onUpdateServiceValue) {
             props.onUpdateServiceValue(value, props.index)
         } else {
             handleSet({ ...props.payment, value: value })
         }
     }
-    const handleSetServicePaymentDate = (value) => { handleSet({ ...props.payment, dateString: value }) }
-    const handleSetServicePaymentDescription = (value) => { handleSet({ ...props.payment, description: value }) }
+    const handleSetTitle = (value) => { handleSet({ ...props.payment, title: value }) }
+    const handleSetDate = (value) => { handleSet({ ...props.payment, dateString: value }) }
+    const handleSetDescription = (value) => { handleSet({ ...props.payment, description: value }) }
 
     const handleSet = (element) => {
         if (props.onSet) {
@@ -68,17 +70,17 @@ export default function PaymentForm(props: PaymentFormProps) {
             <FormRow>
                 <FormRowColumn unit="6">
                     <InputTextAutoComplete
-                        title="Descrição"
+                        title="Titulo"
                         onBlur={props.onBlur}
-                        isLoading={props.isLoading}
                         validation={NOT_NULL_MARK}
+                        onSetText={handleSetTitle}
+                        value={props.payment.title}
+                        isLoading={props.isLoading}
                         isDisabled={props.isDisabled}
-                        value={props.payment.description}
                         onValidate={handleChangeFormValidation}
                         sugestions={["Entrada", "Parcela", "Saida"]}
-                        onSetText={handleSetServicePaymentDescription}
                         validationMessage="A descrição não pode ficar em branco."
-                        id={"description-payment-" + (props.index ?? 0) + "-" + props.id}
+                        id={"payment-title" + (props.index ?? 0) + "-" + props.id}
                     />
                 </FormRowColumn>
             </FormRow>
@@ -91,9 +93,9 @@ export default function PaymentForm(props: PaymentFormProps) {
                         isLoading={props.isLoading}
                         isDisabled={props.isDisabled}
                         value={props.payment.value}
-                        onSet={handleSetServicePaymentValue}
+                        onSet={handleSetValue}
                         onValidate={handleChangeFormValidation}
-                        id={"value-payment-" + (props.index ?? 0) + "-" + props.id}
+                        id={"payment-value" + (props.index ?? 0) + "-" + props.id}
                         validationMessage="O titulo da etapa não pode ficar em branco."
                     />
                 </FormRowColumn>
@@ -106,10 +108,23 @@ export default function PaymentForm(props: PaymentFormProps) {
                         onBlur={props.onBlur}
                         isLoading={props.isLoading}
                         isDisabled={props.isDisabled}
-                        onSetText={handleSetServicePaymentDate}
+                        onSetText={handleSetDate}
                         onValidate={handleChangeFormValidation}
-                        id={"date-due-payment-" + (props.index ?? 0) + "-" + props.id}
+                        id={"payment-date-due" + (props.index ?? 0) + "-" + props.id}
                         value={props.payment.dateString}
+                    />
+                </FormRowColumn>
+            </FormRow>
+            <FormRow>
+                <FormRowColumn unit="6" className="">
+                    <InputTextArea
+                        title="Descrição"
+                        onBlur={props.onBlur}
+                        isLoading={props.isLoading}
+                        isDisabled={props.isDisabled}
+                        value={props.payment.description}
+                        onSetText={handleSetDescription}
+                        id={"payment-description" + (props.index ? "-" + props.index : "") + (props.id ? "-" + props.id : "")}
                     />
                 </FormRowColumn>
             </FormRow>

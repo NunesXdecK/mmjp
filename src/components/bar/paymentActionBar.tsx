@@ -2,11 +2,10 @@ import ActionBar from "./actionBar";
 import Button from "../button/button";
 import MenuButton from "../button/menuButton";
 import DropDownButton from "../button/dropDownButton";
-import { handleRemoveCurrencyMask } from "../../util/maskUtil";
 import { FeedbackMessage } from "../modal/feedbackMessageModal";
-import { handlePaymentValidationForDB } from "../../util/validationUtil";
+import { handleGetDateFormatedToUTC } from "../../util/dateUtils";
+import { handleValidationNotNull, ValidationReturn } from "../../util/validationUtil";
 import { Payment, defaultPayment, PaymentStatus } from "../../interfaces/objectInterfaces";
-import { handleGetDateFormatedToUTC, handleNewDateToUTC } from "../../util/dateUtils";
 
 interface PaymentActionBarFormProps {
     projectId?: string,
@@ -19,6 +18,28 @@ interface PaymentActionBarFormProps {
     onSetIsLoading?: (boolean) => void,
     onAfterSave?: (object, any, boolean) => void,
     onShowMessage?: (FeedbackMessage) => void,
+}
+
+export const handlePaymentValidationForDB = (payment: Payment, isForValidService?) => {
+    let validation: ValidationReturn = { validation: false, messages: [] }
+    let valueCheck = handleValidationNotNull(payment.value)
+    let descriptionCheck = handleValidationNotNull(payment.description)
+    let projectCheck = true
+    if (!valueCheck) {
+        validation = { ...validation, messages: [...validation.messages, "O pagamento " + (payment.description) + " está com o valor em branco."] }
+    }
+    if (!descriptionCheck) {
+        validation
+            = { ...validation, messages: [...validation.messages, "O pagamento " + (payment.description) + " está com a descrição em branco."] }
+    }
+    if (isForValidService) {
+        projectCheck = payment?.project?.id?.length > 0 ?? false
+        if (!projectCheck) {
+            validation = { ...validation, messages: [...validation.messages, "O pagamento " + (payment.description) + " precisa de um serviço referente."] }
+        }
+    }
+    validation = { ...validation, validation: descriptionCheck && valueCheck && projectCheck }
+    return validation
 }
 
 export const handlePaymentForDB = (payment: Payment) => {
@@ -64,7 +85,6 @@ export default function PaymentActionBarForm(props: PaymentActionBarFormProps) {
             props.onShowMessage(feedbackMessage)
         }
     }
-
 
     const handleSave = async (status: PaymentStatus, isForCloseModal) => {
         const isPaymentValid = handlePaymentValidationForDB(props.payment)

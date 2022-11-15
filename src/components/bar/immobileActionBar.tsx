@@ -1,9 +1,9 @@
 import ActionBar from "./actionBar";
 import Button from "../button/button";
-import { FeedbackMessage } from "../modal/feedbackMessageModal";
-import { handleImmobileValidationForDB } from "../../util/validationUtil";
-import { Immobile, defaultImmobile } from "../../interfaces/objectInterfaces";
 import { handleRemoveCEPMask } from "../../util/maskUtil";
+import { FeedbackMessage } from "../modal/feedbackMessageModal";
+import { Immobile, defaultImmobile } from "../../interfaces/objectInterfaces";
+import { handleValidationNotNull, ValidationReturn } from "../../util/validationUtil";
 
 interface ImmobileActionBarFormProps {
     className?: string,
@@ -15,6 +15,30 @@ interface ImmobileActionBarFormProps {
     onSetIsLoading?: (boolean) => void,
     onAfterSave?: (object, any?, boolean?) => void,
     onShowMessage?: (FeedbackMessage) => void,
+}
+
+export const handleImmobileValidationForDB = (immobile: Immobile) => {
+    let validation: ValidationReturn = { validation: false, messages: [] }
+    let nameCheck = handleValidationNotNull(immobile.name)
+    let ownersCheck = immobile?.owners?.length > 0 ?? false
+    let ownersOnBaseCheck = true
+
+    if (!nameCheck) {
+        validation = { ...validation, messages: [...validation.messages, "O campo nome está em branco."] }
+    }
+
+    if (!ownersCheck) {
+        validation = { ...validation, messages: [...validation.messages, "O imóvel precisa de ao menos um proprietário."] }
+    }
+
+    immobile.owners.map((element, index) => {
+        if (!handleValidationNotNull(element.id)) {
+            ownersOnBaseCheck = false
+            validation = { ...validation, messages: [...validation.messages, "O proprietário não está cadastrado na base."] }
+        }
+    })
+    validation = { ...validation, validation: nameCheck && ownersCheck && ownersOnBaseCheck }
+    return validation
 }
 
 export const handleImmobileForDB = (immobile: Immobile) => {

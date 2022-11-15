@@ -150,9 +150,9 @@ export default function ListTable(props: ListTableProps) {
                                 onShowClick={props.onShowClick}
                                 onEditClick={props.onEditClick}
                                 index={(page * perPage) + (index + 1)}
+                                isLast={pagesArray[handleGetPage(pagesArray)]?.length === index + 1}
                                 isDisabled={props.isLoading || props.isDisabled}
                                 isActive={!props.isDisabled && (props.isActive - 1 === (page * perPage) + index)}
-                                isLast={pagesArray[handleGetPage(pagesArray)]?.length === index + 1}
                                 key={index + "-" + (element && "id" in element ? element.id : element)}
                                 onRowClick={() => {
                                     if (!props.isDisabled) {

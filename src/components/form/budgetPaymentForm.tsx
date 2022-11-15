@@ -31,15 +31,15 @@ export default function BudgetPaymentForm(props: BudgetPaymentFormProps) {
 
     const [isFormValid, setIsFormValid] = useState(false)
 
-    const handleSetServicePaymentValue = (value) => {
+    const handleSetValue = (value) => {
         if (props.onUpdateServiceValue) {
             props.onUpdateServiceValue(value, props.index)
         } else {
             handleSet({ ...props.budgetPayment, value: value })
         }
     }
-    const handleSetServicePaymentDate = (value) => { handleSet({ ...props.budgetPayment, dateString: value }) }
-    const handleSetServicePaymentDescription = (value) => { handleSet({ ...props.budgetPayment, description: value }) }
+    const handleSetDate = (value) => { handleSet({ ...props.budgetPayment, dateString: value }) }
+    const handleSetDescription = (value) => { handleSet({ ...props.budgetPayment, title: value }) }
 
     const handleSet = (element) => {
         if (props.onSet) {
@@ -60,17 +60,17 @@ export default function BudgetPaymentForm(props: BudgetPaymentFormProps) {
             <FormRow>
                 <FormRowColumn unit="2">
                     <InputTextAutoComplete
-                        title="Descrição"
+                        title="Titulo"
                         onBlur={props.onBlur}
                         isLoading={props.isLoading}
                         validation={NOT_NULL_MARK}
                         isDisabled={props.isDisabled}
-                        sugestions={["Entrada", "Parcela", "Saida"]}
+                        onSetText={handleSetDescription}
+                        value={props.budgetPayment.title}
                         onValidate={handleChangeFormValidation}
-                        id={"description-payment-" + (props.index ?? 0) + "-" + props.id}
-                        onSetText={handleSetServicePaymentDescription}
-                        value={props.budgetPayment.description}
+                        sugestions={["Entrada", "Parcela", "Saida"]}
                         validationMessage="A descrição não pode ficar em branco."
+                        id={"budget-payment-description" + (props.index ?? 0) + "-" + props.id}
                     />
                 </FormRowColumn>
 
@@ -78,13 +78,13 @@ export default function BudgetPaymentForm(props: BudgetPaymentFormProps) {
                     <InputTextCurrency
                         title="Valor"
                         onBlur={props.onBlur}
+                        onSet={handleSetValue}
                         isLoading={props.isLoading}
                         isDisabled={props.isDisabled}
                         value={props.budgetPayment.value}
-                        onSet={handleSetServicePaymentValue}
                         onValidate={handleChangeFormValidation}
-                        id={"value-payment-" + (props.index ?? 0) + "-" + props.id}
                         validationMessage="O titulo da etapa não pode ficar em branco."
+                        id={"budget-payment-value" + (props.index ?? 0) + "-" + props.id}
                     />
                 </FormRowColumn>
 
@@ -94,12 +94,12 @@ export default function BudgetPaymentForm(props: BudgetPaymentFormProps) {
                         maxLength={10}
                         title="Vencimento"
                         onBlur={props.onBlur}
+                        onSetText={handleSetDate}
                         isLoading={props.isLoading}
                         isDisabled={props.isDisabled}
-                        onSetText={handleSetServicePaymentDate}
-                        onValidate={handleChangeFormValidation}
-                        id={"date-due-payment-" + (props.index ?? 0) + "-" + props.id}
                         value={props.budgetPayment.dateString}
+                        onValidate={handleChangeFormValidation}
+                        id={"budget-payment-date-due" + (props.index ?? 0) + "-" + props.id}
                     />
 
                     {props.onDelete && !props.isDisabled && (
@@ -123,7 +123,7 @@ export default function BudgetPaymentForm(props: BudgetPaymentFormProps) {
             <WindowModal
                 isOpen={isOpen}
                 setIsOpen={setIsOpen}>
-                <p className="text-center">Deseja realmente deletar {props.budgetPayment.description}?</p>
+                <p className="text-center">Deseja realmente deletar {props.budgetPayment.title}?</p>
                 <div className="flex mt-10 justify-between content-between">
                     <Button
                         onClick={(event) => {

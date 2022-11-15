@@ -26,9 +26,9 @@ interface ServiceStageDataFormProps {
 export default function ServiceStageDataForm(props: ServiceStageDataFormProps) {
     const [isFormValid, setIsFormValid] = useState(true)
 
-    const handleSetServiceStageTitle = (value) => { handleSet({ ...props.serviceStage, title: value }) }
-    const handleSetServiceStageDate = (value) => { handleSet({ ...props.serviceStage, dateString: value }) }
-    const handleSetServiceStageDescription = (value) => { handleSet({ ...props.serviceStage, description: value }) }
+    const handleSetTitle = (value) => { handleSet({ ...props.serviceStage, title: value }) }
+    const handleSetDate = (value) => { handleSet({ ...props.serviceStage, dateString: value }) }
+    const handleSetDescription = (value) => { handleSet({ ...props.serviceStage, description: value }) }
     const handleSetResponsible = (value) => { handleSet({ ...props.serviceStage, responsible: value }) }
 
     const handleSet = (value: ServiceStage) => {
@@ -67,11 +67,11 @@ export default function ServiceStageDataForm(props: ServiceStageDataFormProps) {
                         onBlur={props.onBlur}
                         holderClassName="w-full"
                         validation={NOT_NULL_MARK}
+                        onSetText={handleSetTitle}
                         isLoading={props.isLoading}
                         isDisabled={props.isDisabled}
                         value={props.serviceStage.title}
                         sugestions={["Planta", "Memorial"]}
-                        onSetText={handleSetServiceStageTitle}
                         onValidate={handleChangeFormValidation}
                         validationMessage="O titulo não pode ficar em branco."
                         id={"service-stage-title" + (props.index ? "-" + props.index : "") + (props.id ? "-" + props.id : "")}
@@ -83,10 +83,10 @@ export default function ServiceStageDataForm(props: ServiceStageDataFormProps) {
                         maxLength={10}
                         title="Prazo"
                         onBlur={props.onBlur}
+                        onSetText={handleSetDate}
                         isLoading={props.isLoading}
                         isDisabled={props.isDisabled}
                         value={props.serviceStage.dateString}
-                        onSetText={handleSetServiceStageDate}
                         onValidate={handleChangeFormValidation}
                         id={"date-due-stages" + (props.index ? "-" + props.index : "") + (props.id ? "-" + props.id : "")}
                     />
@@ -112,8 +112,8 @@ export default function ServiceStageDataForm(props: ServiceStageDataFormProps) {
                         onBlur={props.onBlur}
                         isLoading={props.isLoading}
                         isDisabled={props.isDisabled}
+                        onSetText={handleSetDescription}
                         value={props.serviceStage.description}
-                        onSetText={handleSetServiceStageDescription}
                         id={"description-stages" + (props.index ? "-" + props.index : "") + (props.id ? "-" + props.id : "")}
                     />
                 </FormRowColumn>

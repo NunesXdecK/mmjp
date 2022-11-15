@@ -1,3 +1,4 @@
+export type ImmobileStatus = "NORMAL" | "DESMEMBRADO" | "UNIFICADO"
 export type BudgetStatus = "ORÇAMENTO" | "VENCIDO" | "NEGOCIANDO" | "REJEITADO" | "APROVADO"
 export type ProjectStatus = "PARADO" | "EM ANDAMENTO" | "PENDENTE" | "FINALIZADO" | "ARQUIVADO"
 export type ServiceStatus = "PARADO" | "EM ANDAMENTO" | "PENDENTE" | "FINALIZADO"
@@ -102,11 +103,11 @@ export interface Immobile {
     ccirNumber?: string,
     comarcaCode?: string,
     registration?: string,
-    status?: "NORMAL" | "DESMEMBRADO" | "UNIFICADO",
     dateInsertUTC?: number,
     dateLastUpdateUTC?: number,
-    oldData?: any,
+    status?: ImmobileStatus,
     address?: Address,
+    oldData?: any,
     owners?: any[],
     points?: any[],
 }
@@ -119,9 +120,9 @@ export interface Budget {
     dateDue?: number,
     dateInsertUTC?: number,
     dateLastUpdateUTC?: number,
-    clients?: (Person | Company)[],
     services?: BudgetService[],
     payments?: BudgetPayment[],
+    clients?: (Person | Company)[],
 }
 
 export interface BudgetService {
@@ -134,8 +135,8 @@ export interface BudgetService {
 
 export interface BudgetPayment {
     value?: string,
+    title?: string,
     dateString?: string,
-    description?: string,
     index?: number,
     dateDue?: number,
 }
@@ -145,6 +146,7 @@ export interface Project {
     title?: string,
     number?: string,
     dateString?: string,
+    description?: string,
     dateDue?: number,
     priority?: number,
     priorityView?: number,
@@ -199,6 +201,7 @@ export interface ServiceStage {
 export interface Payment {
     id?: string,
     value?: string,
+    title?: string,
     dateString?: string,
     description?: string,
     index?: number,
@@ -362,8 +365,8 @@ export const defaultBudgetService: BudgetService = {
 
 export const defaultBudgetPayment: BudgetPayment = {
     value: "0",
+    title: "",
     dateString: "",
-    description: "",
     index: -1,
     dateDue: 0,
 }
@@ -373,6 +376,7 @@ export const defaultProject: Project = {
     title: "",
     number: "",
     dateString: "",
+    description: "",
     status: "PARADO",
     dateDue: 0,
     priority: 0,
@@ -423,6 +427,7 @@ export const defaultServiceStage: ServiceStage = {
 
 export const defaultPayment: Payment = {
     id: "",
+    title: "",
     value: "0",
     dateString: "",
     description: "",

@@ -225,13 +225,14 @@ export const BudgetConversor = {
 export const ProjectConversor = {
     toFirestore(data) {
         return {
-            dateDue: data.dateDue,
             title: data.title,
             number: data.number,
             status: data.status,
             budget: data.budget,
+            dateDue: data.dateDue,
             clients: data.clients,
             priority: data.priority,
+            description: data.description,
             dateInsertUTC: data.dateInsertUTC,
             dateLastUpdateUTC: data.dateLastUpdateUTC,
         }
@@ -242,7 +243,8 @@ export const ProjectConversor = {
             id: snapshot?.id ?? "",
             title: data.title ?? "",
             number: data.number ?? "",
-            status: data.status ?? "ORÇAMENTO",
+            description: data.description ?? "",
+            status: data.status ?? "PARADO",
             dateDue: data.dateDue ?? 0,
             priority: data.priority ?? 0,
             dateInsertUTC: data.dateInsertUTC ?? 0,
@@ -281,7 +283,7 @@ export const ServiceConversor = {
             value: data.value ?? "",
             total: data.total ?? "",
             quantity: data.quantity ?? "1",
-            status: data.status ?? "ORÇAMENTO",
+            status: data.status ?? "PARADO",
             description: data.description ?? "",
             dateDue: data.dateDue ?? 0,
             index: data.index ?? 0,
@@ -333,6 +335,7 @@ export const PaymentConversor = {
     toFirestore(data) {
         return {
             value: data.value,
+            title: data.title,
             index: data.index,
             status: data.status,
             project: data.project,
@@ -347,8 +350,9 @@ export const PaymentConversor = {
         const data = snapshot?.data(options)
         return {
             id: snapshot?.id ?? "",
+            title: data.title ?? "",
             value: data.value ?? "",
-            status: data.status ?? "ORÇAMENTO",
+            status: data.status ?? "EM ABERTO",
             description: data.description ?? "",
             index: data.index ?? 0,
             dateDue: data.dateDue ?? 0,
@@ -407,7 +411,7 @@ export const SubjectMessageConversor = {
         return {
             id: snapshot?.id ?? "",
             text: data.text ?? "",
-            referenceId: data.referenceId ?? "ORÇAMENTO",
+            referenceId: data.referenceId ?? "",
             referenceBase: data.referenceBase ?? "",
             dateInsertUTC: data.dateInsertUTC ?? 0,
             dateLastUpdateUTC: data.dateLastUpdateUTC ?? 0,

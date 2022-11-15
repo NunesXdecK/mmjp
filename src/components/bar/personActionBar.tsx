@@ -2,9 +2,9 @@ import ActionBar from "./actionBar";
 import Button from "../button/button";
 import { FeedbackMessage } from "../modal/feedbackMessageModal";
 import { handleCheckClientCode } from "../inputText/inputClientCode";
-import { handlePersonValidationForDB } from "../../util/validationUtil";
 import { Person, defaultPerson } from "../../interfaces/objectInterfaces";
 import { handleRemoveCEPMask, handleRemoveCPFMask, handleRemoveTelephoneMask } from "../../util/maskUtil";
+import { handleValidationCPF, handleValidationOnlyTextNotNull, ValidationReturn } from "../../util/validationUtil";
 
 interface PersonActionBarFormProps {
     className?: string,
@@ -16,6 +16,26 @@ interface PersonActionBarFormProps {
     onSetIsLoading?: (boolean) => void,
     onAfterSave?: (object, any?, boolean?) => void,
     onShowMessage?: (FeedbackMessage) => void,
+}
+
+export const handlePersonValidationForDB = (person: Person) => {
+    let validation: ValidationReturn = { validation: false, messages: [] }
+    let nameCheck = true
+    let cpfCheck = true
+
+    if (!handleValidationOnlyTextNotNull(person?.name)) {
+        validation = { ...validation, messages: [...validation.messages, "O campo nome está em branco."] }
+        nameCheck = false
+    }
+
+    if (!handleValidationCPF(person?.cpf)) {
+        validation = { ...validation, messages: [...validation.messages, "O campo CPF está invalido."] }
+        cpfCheck = false
+    }
+
+    validation = { ...validation, validation: nameCheck && cpfCheck }
+
+    return validation
 }
 
 export const handlePersonForDB = (person: Person) => {

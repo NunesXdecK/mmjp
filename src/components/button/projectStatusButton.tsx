@@ -45,9 +45,9 @@ export default function ProjectStatusButton(props: ProjectStatusButtonProps) {
                 <div className="animate-pulse p-2 w-full bg-gray-300 dark:bg-gray-700"></div>
             ) : (
                 <SwiftInfoButton
+                    value={value}
                     isDisabled={true}
                     id={props.id + "-"}
-                    value={props.value}
                 />
             )}
         </>

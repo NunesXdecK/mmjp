@@ -88,7 +88,7 @@ export default function BudgetPaymentsForm(props: BudgetPaymentsFormProps) {
                     isLoading={props.isLoading}
                     isDisabled={props.isDisabled}
                     onFinishAdd={props.onFinishAdd}
-                    key={"payments-" + index + props.id}
+                    key={"budget-payments-" + index + props.id}
                     onUpdateServiceValue={props.onUpdateBudgetValue}
                 />
             ))}

@@ -89,6 +89,7 @@ export default function UserPage(props: UserPageProps) {
         let localUser: User = await fetch("api/user/" + user?.id).then((res) => res.json()).then((res) => res.data)
         localUser = {
             ...localUser,
+            passwordConfirm: localUser.password,
         }
         setIsLoading(false)
         setIsRegister(true)
@@ -152,10 +153,8 @@ export default function UserPage(props: UserPageProps) {
     useEffect(() => {
         if (isFirst) {
             fetch("api/users/").then((res) => res.json()).then((res) => {
+                setUsers(res.list ?? [])
                 setIsFirst(old => false)
-                if (res.list.length) {
-                    setUsers(res.list)
-                }
                 setIsLoading(false)
             })
         }

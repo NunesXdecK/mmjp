@@ -190,18 +190,14 @@ export default function ServiceStagePage(props: ServiceStagePageProps) {
         if (isFirst) {
             if (props.serviceId?.length > 0) {
                 fetch("api/serviceStages/" + props.serviceId).then((res) => res.json()).then((res) => {
+                    setServiceStages(res.list ?? [])
                     setIsFirst(old => false)
-                    if (res.list.length) {
-                        setServiceStages(res.list)
-                    }
                     setIsLoading(false)
                 })
             } else if (props.serviceId === undefined) {
                 fetch("api/serviceStages").then((res) => res.json()).then((res) => {
+                    setServiceStages(res.list ?? [])
                     setIsFirst(old => false)
-                    if (res.list.length) {
-                        setServiceStages(res.list)
-                    }
                     setIsLoading(false)
                 })
             }

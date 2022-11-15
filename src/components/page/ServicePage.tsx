@@ -192,18 +192,14 @@ export default function ServicePage(props: ServicePageProps) {
         if (isFirst) {
             if (props.projectId?.length > 0) {
                 fetch("api/services/" + props.projectId).then((res) => res.json()).then((res) => {
+                    setServices(res.list ?? [])
                     setIsFirst(old => false)
-                    if (res.list.length) {
-                        setServices(res.list)
-                    }
                     setIsLoading(false)
                 })
             } else if (props.projectId === undefined) {
                 fetch("api/services").then((res) => res.json()).then((res) => {
+                    setServices(res.list ?? [])
                     setIsFirst(old => false)
-                    if (res.list.length) {
-                        setServices(res.list)
-                    }
                     setIsLoading(false)
                 })
             }

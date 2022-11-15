@@ -178,7 +178,12 @@ export default function InputTextAutoComplete(props: InputTextAutoCompleteProps)
                             handleCheckSugestion("")
                         }}
                         className="rounded w-full">
-                        {props?.onListOptions && props?.onListOptions(handleCheckSugestion)}
+                        <div
+                            onClick={() => {
+                                handleOnSet("")
+                            }}>
+                            {props?.onListOptions && props?.onListOptions(handleCheckSugestion)}
+                        </div>
                         {sugestions.map((element, index) => (
                             <button
                                 id={props.id + "-auto-complete-option-" + index}

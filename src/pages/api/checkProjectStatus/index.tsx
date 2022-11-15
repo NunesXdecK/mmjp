@@ -65,6 +65,7 @@ export default async function handler(req, res) {
                         }
                     }
                     if (project.id?.length > 0 && status !== project.status) {
+                        status = project.status
                         project = { ...project, dateLastUpdateUTC: handleNewDateToUTC() }
                         const docRef = doc(projectCollection, project.id)
                         await updateDoc(docRef, ProjectConversor.toFirestore(project))
