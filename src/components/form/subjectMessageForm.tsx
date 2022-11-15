@@ -8,9 +8,9 @@ import InputTextArea from "../inputText/inputTextArea"
 import { FeedbackMessage } from "../modal/feedbackMessageModal"
 import ScrollDownTransition from "../animation/scrollDownTransition"
 import FeedbackMessageSaveText from "../modal/feedbackMessageSavingText"
-import { handlePrepareSubjectMessageForDB } from "../../util/converterUtil"
 import { defaultSubjectMessage, SubjectMessage } from "../../interfaces/objectInterfaces"
 import { handleIsEqual, handleSubjectMessageValidationForDB } from "../../util/validationUtil"
+import { handleNewDateToUTC } from "../../util/dateUtils"
 
 interface SubjectMessageFormProps {
     title?: string,
@@ -28,6 +28,21 @@ interface SubjectMessageFormProps {
     onAfterSave?: (object, any?) => void,
     onSelectSubjectMessage?: (object) => void,
     onShowMessage?: (FeedbackMessage) => void,
+}
+
+export const handlePrepareSubjectMessageForDB = (subjectMessage: SubjectMessage) => {
+    if (subjectMessage.dateInsertUTC === 0) {
+        subjectMessage = { ...subjectMessage, dateInsertUTC: handleNewDateToUTC() }
+    }
+
+    if (subjectMessage && "id" in subjectMessage && subjectMessage.id.length) {
+        subjectMessage = { ...subjectMessage, dateLastUpdateUTC: handleNewDateToUTC() }
+    }
+    subjectMessage = {
+        ...subjectMessage,
+        text: subjectMessage.text.trim()
+    }
+    return subjectMessage
 }
 
 export default function SubjectMessageForm(props: SubjectMessageFormProps) {
