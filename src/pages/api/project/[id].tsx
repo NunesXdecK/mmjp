@@ -38,25 +38,6 @@ export default async function handler(req, res) {
                                     }
                                 }
                             }
-                            /*
-                            if (element.path.includes(PERSON_COLLECTION_NAME)) {
-                                const docRef = doc(personCollection, element.id)
-                                if (docRef) {
-                                    const data: Person = (await getDoc(docRef)).data()
-                                    if (data) {
-                                        clients = [...clients, data]
-                                    }
-                                }
-                            } else if (element.path.includes(COMPANY_COLLECTION_NAME)) {
-                                const docRef = doc(companyCollection, element.id)
-                                if (docRef) {
-                                    const data: Company = (await getDoc(docRef)).data()
-                                    if (data) {
-                                        clients = [...clients, data]
-                                    }
-                                }
-                            }
-                            */
                         }))
                     }
                     project = { ...project, clients: clients }
