@@ -15,7 +15,7 @@ interface BudgetPaymentViewProps {
 export default function BudgetPaymentView(props: BudgetPaymentViewProps) {
 
     const hasData =
-        props.budgetPayment?.description?.length ||
+        props.budgetPayment?.title?.length ||
         props.budgetPayment?.value?.length ||
         props.budgetPayment?.dateDue > 0
 
@@ -24,13 +24,13 @@ export default function BudgetPaymentView(props: BudgetPaymentViewProps) {
             {hasData && (
                 <>
                     <FormRow className="-m-2 mb-2 p-2 text-gray-900 dark:text-gray-200 hidden sm:grid">
-                        <FormRowColumn unit="3">{props.budgetPayment.description}</FormRowColumn>
+                        <FormRowColumn unit="3">{props.budgetPayment.title}</FormRowColumn>
                         <FormRowColumn unit="1" className="text-center">{handleUTCToDateShow(props.budgetPayment.dateDue?.toString())}</FormRowColumn>
                         <FormRowColumn unit="2" className="text-center">{handleMountNumberCurrency(props.budgetPayment.value.toString(), ".", ",", 3, 2)}</FormRowColumn>
                     </FormRow>
 
                     <InfoHolderView
-                        title={(props.index > -1 ? props.index + " - " : "") + props.budgetPayment.description}
+                        title={(props.index > -1 ? props.index + " - " : "") + props.budgetPayment.title}
                         classNameHolder="block sm:hidden"
                     >
                         <div className="flex flex-row flex-wrap">
