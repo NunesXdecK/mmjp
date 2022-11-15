@@ -45,8 +45,8 @@ export default function ServiceStatusButton(props: ServiceStatusButtonProps) {
                 <div className="animate-pulse p-2 w-full bg-gray-300 dark:bg-gray-700"></div>
             ) : (
                 <SwiftInfoButton
+                    value={value}
                     id={props.id + "-"}
-                    value={props.value}
                     isDisabled={props.isDisabled}
                     values={[
                         "EM ANDAMENTO",
