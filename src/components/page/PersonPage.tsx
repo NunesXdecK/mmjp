@@ -168,7 +168,10 @@ export default function PersonPage(props: PersonPageProps) {
 
     return (
         <>
-            <ActionBar className="flex flex-row justify-end">
+            <ActionBar
+                isHidden={!props.canSave}
+                className="flex flex-row justify-end"
+            >
                 <Button
                     isLoading={props.isLoading}
                     onClick={handleNewClick}

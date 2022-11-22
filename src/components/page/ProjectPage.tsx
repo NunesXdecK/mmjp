@@ -220,7 +220,10 @@ export default function ProjectPage(props: ProjectPageProps) {
 
     return (
         <>
-            <ActionBar className="flex flex-row justify-end">
+            <ActionBar
+                isHidden={!props.canSave}
+                className="flex flex-row justify-end"
+            >
                 <Button
                     isLoading={props.isLoading}
                     onClick={handleNewClick}
@@ -286,7 +289,7 @@ export default function ProjectPage(props: ProjectPageProps) {
                         onShowMessage={handleShowMessage}
                         onSetIsLoading={props.onSetIsLoading}
                         isDisabled={project.status === "FINALIZADO"}
-                        prevPath={[{ path: "P-" + project.number + "/", onClick: null }]}
+                        prevPath={[{ path: "P-" + project.number, onClick: null }]}
                     />
                 )}
                 {isForShow && (

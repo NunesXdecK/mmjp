@@ -167,18 +167,37 @@ export default function ServicePage(props: ServicePageProps) {
     }
 
     const handlePutModalTitle = (short: boolean) => {
-        let path = { s: "Service-" + service.title + "/", onClick: null }
-        if (short) {
-            path = { ...path, s: "S-" + service.title + "/", onClick: null }
+        let paths = []
+        try {
+            let prevPath: NavBarPath = {
+                ...props.prevPath[props.prevPath?.length - 1],
+                onClick: handleBackClick,
+                path: props.prevPath[props.prevPath?.length - 1]?.path + "/",
+            }
+            let path: NavBarPath = { path: "Service", onClick: null }
+            if (short) {
+                //path = { ...path, path: "S" }
+            }
+            if (service.id?.length > 0) {
+                path = { ...path, path: path.path + "-" + service.title, onClick: null }
+            }
+            paths = [
+                ...props.prevPath.slice(0, props.prevPath?.length - 2),
+                prevPath,
+                path
+            ]
+        } catch (err) {
+            console.error(err)
         }
-        const paths = [
-            ...props.prevPath.slice(0, props.prevPath?.length - 2),
-            { ...props.prevPath[props.prevPath?.length - 1], onClick: handleBackClick },
-            path
-        ]
-        return (
-            <NavBar pathList={paths} />
-        )
+        if (short) {
+            return paths
+        } else {
+            return (
+                <>
+                    {paths?.length > 0 ? (<NavBar pathList={paths} />) : "Serviço"}
+                </>
+            )
+        }
     }
 
     const handlePutHeaders = () => {
@@ -236,7 +255,10 @@ export default function ServicePage(props: ServicePageProps) {
 
     return (
         <>
-            <ActionBar className="flex flex-row justify-end">
+            <ActionBar
+                isHidden={!props.canSave}
+                className="flex flex-row justify-end"
+            >
                 <Button
                     isLoading={props.isLoading}
                     onClick={handleNewClick}
@@ -301,9 +323,10 @@ export default function ServicePage(props: ServicePageProps) {
                             service={service}
                             onSet={setService}
                             isLoading={props.isLoading}
+                            onShowMessage={handleShowMessage}
                             onSetIsLoading={props.onSetIsLoading}
+                            prevPath={(handlePutModalTitle(true))}
                             isDisabled={service.status === "FINALIZADO"}
-                            prevPathLinkName={(handlePutModalTitle(true))}
                         />
                     )}
                     {isForShow && (

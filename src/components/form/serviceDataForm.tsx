@@ -20,7 +20,7 @@ interface ServiceDataFormProps {
     index?: number,
     isLoading?: boolean,
     isDisabled?: boolean,
-    prevPathLinkName?: any,
+    prevPath?: any,
     service?: Service,
     onBlur?: (any) => void,
     onDelete?: (number) => void,
@@ -214,12 +214,14 @@ export default function ServiceDataForm(props: ServiceDataFormProps) {
                         <ServiceStagePage
                             canSave
                             isStatusDisabled
+                            prevPath={props.prevPath}
+                            isLoading={props.isLoading}
                             serviceId={props.service.id}
                             isDisabled={props.isDisabled}
                             onSetPage={handleSetServiceStage}
                             onShowMessage={props.onShowMessage}
+                            onSetIsLoading={props.onSetIsLoading}
                             getInfo={props.service?.id?.length > 0}
-                            prevPathLinkName={props.prevPathLinkName}
                         />
                     </Form>
                 </>

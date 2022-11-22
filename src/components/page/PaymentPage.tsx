@@ -2,7 +2,7 @@ import FormRow from "../form/formRow"
 import Button from "../button/button"
 import ActionBar from "../bar/actionBar"
 import ListTable from "../list/listTable"
-import { NavBarPath } from "../bar/navBar"
+import NavBar, { NavBarPath } from "../bar/navBar"
 import { useEffect, useState } from "react"
 import WindowModal from "../modal/windowModal"
 import { PlusIcon } from "@heroicons/react/solid"
@@ -166,19 +166,37 @@ export default function PaymentPage(props: PaymentPageProps) {
     }
 
     const handlePutModalTitle = (short: boolean) => {
-        return (
-            <>
-                <Button
-                    ignoreClass
-                    onClick={() => handleCloseModal(false)}
-                    className="hover:text-blue-200"
-                >
-                </Button>
-                {short ? "P" : "Pagamento"}
-                {payment.id?.length > 0 ? "-" : ""}
-                {payment.title}
-            </>
-        )
+        let paths = []
+        try {
+            let prevPath: NavBarPath = {
+                ...props.prevPath[props.prevPath?.length - 1],
+                onClick: handleBackClick,
+                path: props.prevPath[props.prevPath?.length - 1]?.path + "/",
+            }
+            let path: NavBarPath = { path: "Pagamento", onClick: null }
+            if (short) {
+                //path = { ...path, path: "S" }
+            }
+            if (payment.id?.length > 0) {
+                path = { ...path, path: path.path + "-" + payment.title, onClick: null }
+            }
+            paths = [
+                ...props.prevPath.slice(0, props.prevPath?.length - 2),
+                prevPath,
+                path
+            ]
+        } catch (err) {
+            console.error(err)
+        }
+        if (short) {
+            return paths
+        } else {
+            return (
+                <>
+                    {paths?.length > 0 ? (<NavBar pathList={paths} />) : "Pagamento"}
+                </>
+            )
+        }
     }
 
     const handlePutHeaders = () => {
@@ -236,7 +254,10 @@ export default function PaymentPage(props: PaymentPageProps) {
 
     return (
         <>
-            <ActionBar className="flex flex-row justify-end">
+            <ActionBar
+                isHidden={!props.canSave}
+                className="flex flex-row justify-end"
+            >
                 <Button
                     isLoading={props.isLoading}
                     onClick={handleNewClick}

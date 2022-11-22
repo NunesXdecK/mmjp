@@ -243,7 +243,10 @@ export default function BudgetPage(props: BudgetPageProps) {
         <>
             {!isPrintBudget && !isPrintContract && (
                 <>
-                    <ActionBar className="flex flex-row justify-end">
+                    <ActionBar
+                        isHidden={!props.canSave}
+                        className="flex flex-row justify-end"
+                    >
                         {/*
                         <Button
                             isLoading={props.isLoading}
@@ -260,9 +263,9 @@ export default function BudgetPage(props: BudgetPageProps) {
                         </Button>
                         */}
                         <Button
-                            isLoading={props.isLoading}
                             onClick={handleNewClick}
                             isHidden={!props.canSave}
+                            isLoading={props.isLoading}
                             isDisabled={props.isDisabled}
                         >
                             <PlusIcon className="block h-4 w-4" aria-hidden="true" />

@@ -168,7 +168,10 @@ export default function ProfessionalPage(props: ProfessionalPageProps) {
 
     return (
         <>
-            <ActionBar className="flex flex-row justify-end">
+            <ActionBar
+                isHidden={!props.canSave}
+                className="flex flex-row justify-end"
+            >
                 <Button
                     isLoading={props.isLoading}
                     onClick={handleNewClick}

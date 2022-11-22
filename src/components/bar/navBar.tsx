@@ -18,8 +18,8 @@ export default function NavBar(props: NavBarProps) {
                 <Button
                     ignoreClass
                     onClick={element.onClick}
-                    key={props.id + "-nav-bar-path"}
-                    className="hover:text-blue-200"
+                    key={props.id + "-" + index + "-nav-bar-path"}
+                    className={element.onClick ? "hover:text-blue-200" : ""}
                 >
                     {element.path}
                 </Button>

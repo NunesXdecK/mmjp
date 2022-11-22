@@ -14,6 +14,7 @@ import { FeedbackMessage } from "../modal/feedbackMessageModal"
 import ServiceStageDataForm from "../form/serviceStageDataForm"
 import { ServiceStage, defaultServiceStage } from "../../interfaces/objectInterfaces"
 import ServiceStageActionBarForm, { handleSaveServiceStageInner } from "../bar/serviceStageActionBar"
+import NavBar, { NavBarPath } from "../bar/navBar"
 
 interface ServiceStagePageProps {
     id?: string,
@@ -25,6 +26,7 @@ interface ServiceStagePageProps {
     isDisabled?: boolean,
     isStatusDisabled?: boolean,
     prevPathLinkName?: any,
+    prevPath?: NavBarPath[],
     onSetPage?: (any) => void,
     onSetIsLoading?: (any) => void,
     onShowMessage?: (FeedbackMessage) => void,
@@ -234,14 +236,37 @@ export default function ServiceStagePage(props: ServiceStagePageProps) {
     }
 
     const handlePutModalTitle = (short: boolean) => {
-        return (
-            <>
-                {props.prevPathLinkName}
-                {short ? "E" : "Etapa"}
-                {serviceStage.id?.length > 0 ? "-" : ""}
-                {serviceStage.title}
-            </>
-        )
+        let paths = []
+        try {
+            let prevPath: NavBarPath = {
+                ...props.prevPath[props.prevPath?.length - 1],
+                onClick: handleBackClick,
+                path: props.prevPath[props.prevPath?.length - 1]?.path + "/",
+            }
+            let path: NavBarPath = { path: "Etapa", onClick: null }
+            if (short) {
+                //path = { ...path, path: "E" }
+            }
+            if (serviceStage.id?.length > 0) {
+                path = { ...path, path: path.path + "-" + serviceStage.title, onClick: null }
+            }
+            paths = [
+                ...props.prevPath.slice(0, props.prevPath?.length - 1),
+                prevPath,
+                path
+            ]
+        } catch (err) {
+            console.error(err)
+        }
+        if (short) {
+            return paths
+        } else {
+            return (
+                <>
+                    {paths?.length > 0 ? (<NavBar pathList={paths} />) : "Etapa"}
+                </>
+            )
+        }
     }
 
     const handlePutHeaders = () => {
@@ -318,7 +343,10 @@ export default function ServiceStagePage(props: ServiceStagePageProps) {
 
     return (
         <>
-            <ActionBar className="flex flex-row justify-end">
+            <ActionBar
+                isHidden={!props.canSave}
+                className="flex flex-row justify-end"
+            >
                 <Button
                     isLoading={props.isLoading}
                     onClick={handleNewClick}
