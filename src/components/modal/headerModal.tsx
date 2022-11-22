@@ -1,6 +1,6 @@
 import { XIcon } from "@heroicons/react/outline";
 interface HeaderModalProps {
-    title?: string,
+    title?: any,
     onClose?: (boolean) => void,
 }
 

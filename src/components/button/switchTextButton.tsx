@@ -27,6 +27,7 @@ export default function SwitchTextButton(props: SwitchButtonProps) {
             <Button
                 isSwitch
                 onClick={props.onClick}
+                isDisabled={props.isDisabled}
                 ignoreClass={props.buttonClassName?.length > 0}
                 className={props.buttonClassName ?? "mr-2 sm:mt-auto w-full"}
             >

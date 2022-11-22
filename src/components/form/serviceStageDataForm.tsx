@@ -21,6 +21,7 @@ interface ServiceStageDataFormProps {
     onBlur?: (any) => void,
     onShowMessage?: (any) => void,
     onSet?: (any, number?) => void,
+    onSetIsLoading?: (boolean) => void,
 }
 
 export default function ServiceStageDataForm(props: ServiceStageDataFormProps) {

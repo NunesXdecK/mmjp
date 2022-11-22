@@ -8,6 +8,7 @@ import FormRowColumn from "../form/formRowColumn"
 import { TrashIcon } from "@heroicons/react/solid"
 import InputSelectImmobile from "../inputText/inputSelectImmobile"
 import { defaultImmobile, Immobile } from "../../interfaces/objectInterfaces"
+import { handleMaskCurrency, handleMaskPerimeter } from "../inputText/inputText"
 
 interface SelectImmobileFormProps {
     id?: string,
@@ -91,7 +92,13 @@ export default function SelectImmobileForm(props: SelectImmobileFormProps) {
             <FormRow>
                 <FormRowColumn unit="6" className="flex flex-row justify-between items-center">
                     <div>
-                        {element.name}
+                        <li>
+                            {element.name}
+                            {element.land?.length > 0 ? ", " + element.land : ""}
+                            {element.county?.length > 0 ? ", " + element.county : ""}
+                            {element.area?.length > 0 ? ", " + handleMaskCurrency(element.area) : ""}
+                            {element.perimeter?.length > 0 ? ", " + handleMaskPerimeter(element.perimeter) : ""}
+                        </li>
                     </div>
                     <Button
                         ignoreClass

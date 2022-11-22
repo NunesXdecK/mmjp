@@ -1,16 +1,16 @@
 import Form from "./form";
 import FormRow from "./formRow";
 import { useState } from "react";
-import ProjectView from "../view/projectView";
+import { NavBarPath } from "../bar/navBar";
 import FormRowColumn from "./formRowColumn";
+import ServicePage from "../page/ServicePage";
+import PaymentPage from "../page/PaymentPage";
 import InputText from "../inputText/inputText";
+import InputTextArea from "../inputText/inputTextArea";
 import { Project } from "../../interfaces/objectInterfaces";
 import { NOT_NULL_MARK } from "../../util/patternValidationUtil";
 import InputTextAutoComplete from "../inputText/inputTextAutocomplete";
 import InputSelectPersonCompany from "../inputText/inputSelectPersonCompany";
-import ServicePage from "../page/ServicePage";
-import PaymentPage from "../page/PaymentPage";
-import InputTextArea from "../inputText/inputTextArea";
 
 interface ProjectDataFormProps {
     title?: string,
@@ -19,9 +19,12 @@ interface ProjectDataFormProps {
     isPrint?: boolean,
     isLoading?: boolean,
     isDisabled?: boolean,
+    pathLink?: any,
     project?: Project,
+    prevPath?: NavBarPath[],
     onBlur?: (any) => void,
     onShowMessage?: (any) => void,
+    onSetIsLoading?: (any) => void,
     onSet?: (any, number?) => void,
 }
 
@@ -161,10 +164,13 @@ export default function ProjectDataForm(props: ProjectDataFormProps) {
                         <ServicePage
                             canSave
                             isStatusDisabled
+                            prevPath={props.prevPath}
+                            isLoading={props.isLoading}
                             projectId={props.project.id}
                             onSetPage={handleSetServices}
-                            getInfo={props.project.id.length > 0}
                             onShowMessage={props.onShowMessage}
+                            onSetIsLoading={props.onSetIsLoading}
+                            getInfo={props.project.id.length > 0}
                             isDisabled={
                                 props.isDisabled ||
                                 props.project?.id?.length === 0 ||
@@ -179,10 +185,13 @@ export default function ProjectDataForm(props: ProjectDataFormProps) {
                         <PaymentPage
                             canSave
                             isStatusDisabled
+                            prevPath={props.prevPath}
+                            isLoading={props.isLoading}
                             projectId={props.project.id}
                             onSetPage={handleSetServices}
-                            getInfo={props.project.id.length > 0}
                             onShowMessage={props.onShowMessage}
+                            onSetIsLoading={props.onSetIsLoading}
+                            getInfo={props.project.id.length > 0}
                             isDisabled={
                                 props.isDisabled ||
                                 props.project?.id?.length === 0 ||

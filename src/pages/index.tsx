@@ -26,6 +26,7 @@ interface IndexProps {
 
 export default function Index(props: IndexProps) {
     const [page, setPage] = useState<PageOps>(props.page ?? "DASHBOARD")
+    const [isLoading, setIsLoading] = useState(false)
     const [isFeedbackOpen, setIsFeedbackOpen] = useState(false)
     const [feedbackMessage, setFeedbackMessage] = useState<FeedbackMessage>(defaultFeedbackMessage)
 
@@ -38,7 +39,6 @@ export default function Index(props: IndexProps) {
     }
 
     let title = ""
-    let update = false
     switch (page) {
         default:
             title = "Dashboard"
@@ -73,22 +73,18 @@ export default function Index(props: IndexProps) {
             window.history.pushState({}, "", "/budget");
             break
         case "PROJECT":
-            update = true
             title = "Projetos"
             window.history.pushState({}, "", "/project");
             break
         case "SERVICE":
-            update = true
             title = "Serviços"
             window.history.pushState({}, "", "/service");
             break
         case "SERVICESTAGE":
-            update = true
             title = "Etapas"
             window.history.pushState({}, "", "/servicestage");
             break
         case "PAYMENT":
-            update = true
             title = "Pagamentos"
             window.history.pushState({}, "", "/payment");
             break
@@ -119,7 +115,10 @@ const [subjectMessage, setSubjectMessage] = useState<SubjectMessage>({
     return (
         <Layout
             title={title}
-            onSetPage={setPage}>
+            onSetPage={setPage}
+            isLoading={isLoading}
+            onSetIsLoading={setIsLoading}
+            >
             <Head>
                 <title>{title}</title>
                 <link rel="icon" href="/favicon.ico" />
@@ -138,6 +137,8 @@ const [subjectMessage, setSubjectMessage] = useState<SubjectMessage>({
                     canSave
                     canUpdate
                     onSetPage={setPage}
+                    isLoading={isLoading}
+                    onSetIsLoading={setIsLoading}
                     onShowMessage={handleShowMessage}
                 />
             )}
@@ -147,6 +148,8 @@ const [subjectMessage, setSubjectMessage] = useState<SubjectMessage>({
                     canSave
                     canUpdate
                     onSetPage={setPage}
+                    isLoading={isLoading}
+                    onSetIsLoading={setIsLoading}
                     onShowMessage={handleShowMessage}
                 />
             )}
@@ -156,6 +159,8 @@ const [subjectMessage, setSubjectMessage] = useState<SubjectMessage>({
                     canSave
                     canUpdate
                     onSetPage={setPage}
+                    isLoading={isLoading}
+                    onSetIsLoading={setIsLoading}
                     onShowMessage={handleShowMessage}
                 />
             )}
@@ -165,6 +170,8 @@ const [subjectMessage, setSubjectMessage] = useState<SubjectMessage>({
                     canSave
                     canUpdate
                     onSetPage={setPage}
+                    isLoading={isLoading}
+                    onSetIsLoading={setIsLoading}
                     onShowMessage={handleShowMessage}
                 />
             )}
@@ -174,6 +181,8 @@ const [subjectMessage, setSubjectMessage] = useState<SubjectMessage>({
                     canSave
                     canUpdate
                     onSetPage={setPage}
+                    isLoading={isLoading}
+                    onSetIsLoading={setIsLoading}
                     onShowMessage={handleShowMessage}
                 />
             )}
@@ -183,6 +192,8 @@ const [subjectMessage, setSubjectMessage] = useState<SubjectMessage>({
                     canSave
                     canUpdate
                     onSetPage={setPage}
+                    isLoading={isLoading}
+                    onSetIsLoading={setIsLoading}
                     onShowMessage={handleShowMessage}
                 />
             )}
@@ -191,6 +202,8 @@ const [subjectMessage, setSubjectMessage] = useState<SubjectMessage>({
                     getInfo
                     canUpdate
                     onSetPage={setPage}
+                    isLoading={isLoading}
+                    onSetIsLoading={setIsLoading}
                     onShowMessage={handleShowMessage}
                 />
             )}
@@ -199,6 +212,8 @@ const [subjectMessage, setSubjectMessage] = useState<SubjectMessage>({
                     getInfo
                     canUpdate
                     onSetPage={setPage}
+                    isLoading={isLoading}
+                    onSetIsLoading={setIsLoading}
                     onShowMessage={handleShowMessage}
                 />
             )}
@@ -207,6 +222,8 @@ const [subjectMessage, setSubjectMessage] = useState<SubjectMessage>({
                     getInfo
                     canUpdate
                     onSetPage={setPage}
+                    isLoading={isLoading}
+                    onSetIsLoading={setIsLoading}
                     onShowMessage={handleShowMessage}
                 />
             )}
@@ -215,6 +232,8 @@ const [subjectMessage, setSubjectMessage] = useState<SubjectMessage>({
                     getInfo
                     canUpdate
                     onSetPage={setPage}
+                    isLoading={isLoading}
+                    onSetIsLoading={setIsLoading}
                     onShowMessage={handleShowMessage}
                 />
             )}
@@ -238,13 +257,13 @@ const [subjectMessage, setSubjectMessage] = useState<SubjectMessage>({
                 setIsOpen={setIsLoading}
                 subjectMessage={subjectMessage}
             />
+                <FeedbackPendency />
         */}
             <FeedbackMessageModal
                 isOpen={isFeedbackOpen}
                 setIsOpen={setIsFeedbackOpen}
                 feedbackMessage={feedbackMessage}
             />
-            <FeedbackPendency update={update} />
         </Layout >
     )
 }

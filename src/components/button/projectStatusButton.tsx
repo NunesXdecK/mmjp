@@ -16,11 +16,11 @@ interface ProjectStatusButtonProps {
 }
 
 export default function ProjectStatusButton(props: ProjectStatusButtonProps) {
-    const [isFirst, setIsFirst] = useState(true)
-    const [value, setValue] = useState(props.value)
-
-    useEffect(() => {
-        if (isFirst) {
+    const [isFirst, setIsFirst] = useState(false)
+    /*
+    const [value, setValue] = useState(props.project?.status ?? props.value)
+useEffect(() => {
+    if (isFirst) {
             fetch("api/checkProjectStatus", {
                 method: "POST",
                 body: JSON.stringify({ token: "tokenbemseguro", id: props.project.id }),
@@ -28,16 +28,15 @@ export default function ProjectStatusButton(props: ProjectStatusButtonProps) {
                 setIsFirst(false)
                 if (res.status === "SUCCESS" && res.data?.length > 0) {
                     setValue(res.data)
-                    /*
                     const project = { ...props.project, status: res.data }
                     if (props.onAfter) {
                         props.onAfter(null, project, false)
                     }
-                    */
                 }
             })
         }
     })
+    */
 
     return (
         <>
@@ -45,9 +44,11 @@ export default function ProjectStatusButton(props: ProjectStatusButtonProps) {
                 <div className="animate-pulse p-2 w-full bg-gray-300 dark:bg-gray-700"></div>
             ) : (
                 <SwiftInfoButton
-                    value={value}
-                    isDisabled={true}
+                    value={props.value}
                     id={props.id + "-"}
+                    onClick={props.onClick}
+                    isDisabled={props.isDisabled}
+                    values={["PARADO", "EM ANDAMENTO", "PENDENTE", "FINALIZADO", "ARQUIVADO"]}
                 />
             )}
         </>

@@ -20,9 +20,11 @@ interface BudgetPageProps {
     getInfo?: boolean,
     canSave?: boolean,
     canUpdate?: boolean,
+    isLoading?: boolean,
     isDisabled?: boolean,
     isStatusDisabled?: boolean,
     onSetPage?: (any) => void,
+    onSetIsLoading?: (any) => void,
     onShowMessage?: (FeedbackMessage) => void,
 }
 
@@ -31,7 +33,6 @@ export default function BudgetPage(props: BudgetPageProps) {
     const [budgets, setBudgets] = useState<Budget[]>([])
     const [index, setIndex] = useState(-1)
     const [isFirst, setIsFirst] = useState(props.getInfo)
-    const [isLoading, setIsLoading] = useState(props.getInfo)
     const [isForShow, setIsForShow] = useState(false)
     const [isRegister, setIsRegister] = useState(false)
     const [isPrintBudget, setIsPrintBudget] = useState(false)
@@ -49,8 +50,14 @@ export default function BudgetPage(props: BudgetPageProps) {
         setIsPrintContract(false)
     }
 
+    const handleSetIsLoading = (value) => {
+        if (props.onSetIsLoading) {
+            props.onSetIsLoading(value)
+        }
+    }
+
     const handleDeleteClick = async (budget, index) => {
-        setIsLoading(true)
+        handleSetIsLoading(true)
         let feedbackMessage: FeedbackMessage = { messages: ["Algo deu errado"], messageType: "ERROR" }
         const res = await fetch("api/budget", {
             method: "DELETE",
@@ -66,7 +73,7 @@ export default function BudgetPage(props: BudgetPageProps) {
             ...budgets.slice(index, budgets.length),
         ]
         setBudgets(list)
-        setIsLoading(false)
+        handleSetIsLoading(false)
         handleShowMessage(feedbackMessage)
     }
 
@@ -99,14 +106,14 @@ export default function BudgetPage(props: BudgetPageProps) {
     }
 
     const handleShowClick = (budget) => {
-        setIsLoading(true)
+        handleSetIsLoading(true)
         setBudget({ ...defaultBudget, ...budget })
         setIsForShow(true)
-        setIsLoading(false)
+        handleSetIsLoading(false)
     }
 
     const handleEditClick = async (budget, index?) => {
-        setIsLoading(true)
+        handleSetIsLoading(true)
         setIsForShow(false)
         let localBudget: Budget = await fetch("api/budget/" + budget?.id).then((res) => res.json()).then((res) => res.data)
         let localClients = []
@@ -139,7 +146,7 @@ export default function BudgetPage(props: BudgetPageProps) {
             payments: localPayments,
             dateString: handleUTCToDateShow(localBudget?.dateDue?.toString()),
         }
-        setIsLoading(false)
+        handleSetIsLoading(false)
         setIsRegister(true)
         setBudget(localBudget)
     }
@@ -205,9 +212,9 @@ export default function BudgetPage(props: BudgetPageProps) {
                         onClick={async (value) => {
                             const budget = { ...element, status: value }
                             let feedbackMessage: FeedbackMessage = { messages: ["Algo deu errado!"], messageType: "ERROR" }
-                            setIsLoading(true)
+                            handleSetIsLoading(true)
                             const res = await handleSaveBudgetInner(budget, true)
-                            setIsLoading(false)
+                            handleSetIsLoading(false)
                             if (res.status === "ERROR") {
                                 handleShowMessage(feedbackMessage)
                                 return
@@ -227,7 +234,7 @@ export default function BudgetPage(props: BudgetPageProps) {
             fetch("api/budgets").then((res) => res.json()).then((res) => {
                 setBudgets(res.list ?? [])
                 setIsFirst(old => false)
-                setIsLoading(false)
+                handleSetIsLoading(false)
             })
         }
     })
@@ -237,21 +244,23 @@ export default function BudgetPage(props: BudgetPageProps) {
             {!isPrintBudget && !isPrintContract && (
                 <>
                     <ActionBar className="flex flex-row justify-end">
+                        {/*
                         <Button
-                            isLoading={isLoading}
+                            isLoading={props.isLoading}
                             isHidden={!props.canUpdate}
                             isDisabled={props.isDisabled}
                             onClick={() => {
                                 setIndex(-1)
                                 setIsFirst(true)
-                                setIsLoading(true)
+                                handleSetIsLoading(true)
                                 handleBackClick()
                             }}
                         >
                             <RefreshIcon className="block h-4 w-4" aria-hidden="true" />
                         </Button>
+                        */}
                         <Button
-                            isLoading={isLoading}
+                            isLoading={props.isLoading}
                             onClick={handleNewClick}
                             isHidden={!props.canSave}
                             isDisabled={props.isDisabled}
@@ -263,7 +272,7 @@ export default function BudgetPage(props: BudgetPageProps) {
                         list={budgets}
                         isActive={index}
                         title="Orçamentos"
-                        isLoading={isLoading}
+                        isLoading={props.isLoading}
                         onSetIsActive={setIndex}
                         onTableRow={handlePutRows}
                         onShowClick={handleShowClick}
@@ -279,7 +288,7 @@ export default function BudgetPage(props: BudgetPageProps) {
                 <div className="p-4 pb-0">
                     <ActionBar>
                         <Button
-                            isLoading={isLoading}
+                            isLoading={props.isLoading}
                             onClick={() => {
                                 setIsRegister(true)
                                 setIsPrintBudget(false)
@@ -310,8 +319,8 @@ export default function BudgetPage(props: BudgetPageProps) {
                             <BudgetActionBarForm
                                 budget={budget}
                                 onSet={setBudget}
-                                isLoading={isLoading}
-                                onSetIsLoading={setIsLoading}
+                                isLoading={props.isLoading}
+                                onSetIsLoading={handleSetIsLoading}
                                 onAfterSave={handleAfterSave}
                                 onShowMessage={handleShowMessage}
                                 onPrintBudget={handlePrintBudget}
@@ -323,7 +332,7 @@ export default function BudgetPage(props: BudgetPageProps) {
                                 className="bg-slate-50 dark:bg-slate-800 dark:border dark:border-gray-700"
                             >
                                 <Button
-                                    isLoading={isLoading}
+                                    isLoading={props.isLoading}
                                     onClick={() => {
                                         handleEditClick(budget)
                                     }}
@@ -339,7 +348,7 @@ export default function BudgetPage(props: BudgetPageProps) {
                     <BudgetDataForm
                         budget={budget}
                         onSet={setBudget}
-                        isLoading={isLoading}
+                        isLoading={props.isLoading}
                         onShowMessage={handleShowMessage}
                         isDisabled={
                             budget.status === "VENCIDO" ||

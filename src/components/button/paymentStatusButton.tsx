@@ -45,14 +45,11 @@ export default function PaymentStatusButton(props: PaymentStatusButtonProps) {
                 <div className="animate-pulse p-2 w-full bg-gray-300 dark:bg-gray-700"></div>
             ) : (
                 <SwiftInfoButton
-                    value={value}
+                    value={props.value}
                     id={props.id + "-"}
-                    isDisabled={props.isDisabled}
-                    values={[
-                        "EM ABERTO",
-                        "PAGO",
-                    ]}
                     onClick={props.onClick}
+                    isDisabled={props.isDisabled}
+                    values={["EM ABERTO", "PAGO", "VENCIDO"]}
                 />
             )}
         </>

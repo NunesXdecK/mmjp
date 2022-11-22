@@ -72,11 +72,11 @@ const handleMaskCNPJ = (text) => {
     return handleMountCNPJMask(text)
 }
 
-const handleMaskPerimeter = (text) => {
+export const handleMaskPerimeter = (text) => {
     return handleMountNumberCurrency(text, ".", ",", 3, 4)
 }
 
-const handleMaskCurrency = (text) => {
+export const handleMaskCurrency = (text) => {
     return handleMountNumberCurrency(text, ".", ",", 3, 2)
 }
 

@@ -81,15 +81,14 @@ export default function SelectImmobileTOForm(props: SelectImmobileTOFormProps) {
             )}
         >
             <SelectImmobileForm
-                listTitle="Imóveis"
                 onSet={props.onSetTarget}
                 value={props.valueTarget}
                 placeholder="Pesquise o imóvel..."
                 isDisabledExclude={props.isDisabled}
                 excludeList={[...props.valueTarget, ...props.valueOrigin]}
                 id={"immobile-target-service-" + props.index + "-" + props.id}
-                title={(isUnion ? "Imóveis unificados" : "")
-                    + (isDismemberment ? "Imóvel desmembrado" : "")}
+                title={(isUnion ? "Unificados" : "")
+                    + (isDismemberment ? "Desmembrado" : "")}
                 subtitle={(isUnion ? "Selecione mais de um imóvel" : "")
                     + (isDismemberment ? "Selecione apenas um imóvel" : "")}
                 isDisabled={
@@ -99,15 +98,14 @@ export default function SelectImmobileTOForm(props: SelectImmobileTOFormProps) {
             />
             {(isUnion || isDismemberment) && (
                 <SelectImmobileForm
-                    listTitle="Imóveis"
                     onSet={props.onSetOrigin}
                     value={props.valueOrigin}
                     placeholder="Pesquise o imóvel..."
                     isDisabledExclude={props.isDisabled}
                     excludeList={[...props.valueTarget, ...props.valueOrigin]}
                     id={"immobile-origin-service-" + props.index + "-" + props.id}
-                    title={(isUnion ? "Imóvel final" : "")
-                        + (isDismemberment ? "Imóveis finais" : "")}
+                    title={(isUnion ? "Final" : "")
+                        + (isDismemberment ? "Finais" : "")}
                     subtitle={(isUnion ? "Selecione apenas um imóvel" : "")
                         + (isDismemberment ? "Selecione mais de um imóvel" : "")}
                     isDisabled={

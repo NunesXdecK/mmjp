@@ -23,22 +23,22 @@ interface PaymentActionBarFormProps {
 export const handlePaymentValidationForDB = (payment: Payment, isForValidService?) => {
     let validation: ValidationReturn = { validation: false, messages: [] }
     let valueCheck = handleValidationNotNull(payment.value)
-    let descriptionCheck = handleValidationNotNull(payment.description)
+    let titleCheck = handleValidationNotNull(payment.title)
     let projectCheck = true
     if (!valueCheck) {
-        validation = { ...validation, messages: [...validation.messages, "O pagamento " + (payment.description) + " está com o valor em branco."] }
+        validation = { ...validation, messages: [...validation.messages, "O pagamento " + (payment.title) + " está com o valor em branco."] }
     }
-    if (!descriptionCheck) {
+    if (!titleCheck) {
         validation
-            = { ...validation, messages: [...validation.messages, "O pagamento " + (payment.description) + " está com a descrição em branco."] }
+            = { ...validation, messages: [...validation.messages, "O pagamento " + (payment.title) + " está com a descrição em branco."] }
     }
     if (isForValidService) {
         projectCheck = payment?.project?.id?.length > 0 ?? false
         if (!projectCheck) {
-            validation = { ...validation, messages: [...validation.messages, "O pagamento " + (payment.description) + " precisa de um serviço referente."] }
+            validation = { ...validation, messages: [...validation.messages, "O pagamento " + (payment.title) + " precisa de um serviço referente."] }
         }
     }
-    validation = { ...validation, validation: descriptionCheck && valueCheck && projectCheck }
+    validation = { ...validation, validation: titleCheck && valueCheck && projectCheck }
     return validation
 }
 

@@ -5,15 +5,16 @@ import ListTable from "../list/listTable"
 import { useEffect, useState } from "react"
 import WindowModal from "../modal/windowModal"
 import FormRowColumn from "../form/formRowColumn"
+import { PlusIcon } from "@heroicons/react/solid"
 import ServiceDataForm from "../form/serviceDataForm"
 import { handleUTCToDateShow } from "../../util/dateUtils"
-import { PlusIcon, RefreshIcon } from "@heroicons/react/solid"
 import { handleMountNumberCurrency } from "../../util/maskUtil"
 import ServiceStatusButton from "../button/serviceStatusButton"
 import { FeedbackMessage } from "../modal/feedbackMessageModal"
 import ProjectNumberListItem from "../list/projectNumberListItem"
 import { Service, defaultService } from "../../interfaces/objectInterfaces"
 import ServiceActionBarForm, { handleSaveServiceInner } from "../bar/serviceActionBar"
+import NavBar, { NavBarPath } from "../bar/navBar"
 
 interface ServicePageProps {
     id?: string,
@@ -21,9 +22,12 @@ interface ServicePageProps {
     canSave?: boolean,
     getInfo?: boolean,
     canUpdate?: boolean,
+    isLoading?: boolean,
     isDisabled?: boolean,
     isStatusDisabled?: boolean,
+    prevPath?: NavBarPath[],
     onSetPage?: (any) => void,
+    onSetIsLoading?: (any) => void,
     onShowMessage?: (FeedbackMessage) => void,
 }
 
@@ -32,7 +36,6 @@ export default function ServicePage(props: ServicePageProps) {
     const [services, setServices] = useState<Service[]>([])
     const [index, setIndex] = useState(-1)
     const [isFirst, setIsFirst] = useState(props.getInfo || props.projectId === undefined)
-    const [isLoading, setIsLoading] = useState(props.getInfo || props.projectId === undefined)
     const [isForShow, setIsForShow] = useState(false)
     const [isRegister, setIsRegister] = useState(false)
 
@@ -46,10 +49,16 @@ export default function ServicePage(props: ServicePageProps) {
         setIsRegister(false)
     }
 
+    const handleSetIsLoading = (value) => {
+        if (props.onSetIsLoading) {
+            props.onSetIsLoading(value)
+        }
+    }
+
     const handleDeleteClick = async (service, index) => {
-        setIsLoading(true)
+        handleSetIsLoading(true)
         let feedbackMessage: FeedbackMessage = { messages: ["Algo deu errado"], messageType: "ERROR" }
-        const res = await fetch("api/serviceNew", {
+        const res = await fetch("api/service", {
             method: "DELETE",
             body: JSON.stringify({ token: "tokenbemseguro", id: service.id }),
         }).then((res) => res.json())
@@ -63,8 +72,26 @@ export default function ServicePage(props: ServicePageProps) {
             ...services.slice(index, services.length),
         ]
         setServices(list)
-        setIsLoading(false)
+        handleSetIsLoading(false)
         handleShowMessage(feedbackMessage)
+    }
+
+    const handleStatusClick = async (element, value) => {
+        const service = {
+            ...element,
+            status: value,
+            dateString: handleUTCToDateShow(element.dateDue)
+        }
+        let feedbackMessage: FeedbackMessage = { messages: ["Algo deu errado!"], messageType: "ERROR" }
+        handleSetIsLoading(true)
+        const res = await handleSaveServiceInner(service, true)
+        handleSetIsLoading(false)
+        if (res.status === "ERROR") {
+            handleShowMessage(feedbackMessage)
+            return
+        }
+        feedbackMessage = { messages: ["Sucesso!"], messageType: "SUCCESS" }
+        handleAfterSave(feedbackMessage, service, true)
     }
 
     const handleNewClick = async () => {
@@ -83,14 +110,14 @@ export default function ServicePage(props: ServicePageProps) {
     }
 
     const handleShowClick = (project) => {
-        setIsLoading(true)
+        handleSetIsLoading(true)
         setService({ ...defaultService, ...project })
         setIsForShow(true)
-        setIsLoading(false)
+        handleSetIsLoading(false)
     }
 
     const handleEditClick = async (service, index?) => {
-        setIsLoading(true)
+        handleSetIsLoading(true)
         setIsForShow(false)
         let localService: Service = await fetch("api/service/" + service?.id).then((res) => res.json()).then((res) => res.data)
         localService = {
@@ -100,7 +127,7 @@ export default function ServicePage(props: ServicePageProps) {
             value: handleMountNumberCurrency(localService?.value?.toString(), ".", ",", 3, 2),
             total: handleMountNumberCurrency(localService?.total?.toString(), ".", ",", 3, 2),
         }
-        setIsLoading(false)
+        handleSetIsLoading(false)
         setIsRegister(true)
         setService(localService)
     }
@@ -133,24 +160,25 @@ export default function ServicePage(props: ServicePageProps) {
         }
     }
 
-    const handleStatusClick = async (element, value) => {
-        const service = { ...element, status: value }
-        let feedbackMessage: FeedbackMessage = { messages: ["Algo deu errado!"], messageType: "ERROR" }
-        setIsLoading(true)
-        const res = await handleSaveServiceInner(service, true)
-        setIsLoading(false)
-        if (res.status === "ERROR") {
-            handleShowMessage(feedbackMessage)
-            return
-        }
-        feedbackMessage = { messages: ["Sucesso!"], messageType: "SUCCESS" }
-        handleAfterSave(feedbackMessage, service, true)
-    }
-
     const handleShowMessage = (feedbackMessage: FeedbackMessage) => {
         if (props.onShowMessage) {
             props.onShowMessage(feedbackMessage)
         }
+    }
+
+    const handlePutModalTitle = (short: boolean) => {
+        let path = { s: "Service-" + service.title + "/", onClick: null }
+        if (short) {
+            path = { ...path, s: "S-" + service.title + "/", onClick: null }
+        }
+        const paths = [
+            ...props.prevPath.slice(0, props.prevPath?.length - 2),
+            { ...props.prevPath[props.prevPath?.length - 1], onClick: handleBackClick },
+            path
+        ]
+        return (
+            <NavBar pathList={paths} />
+        )
     }
 
     const handlePutHeaders = () => {
@@ -194,13 +222,13 @@ export default function ServicePage(props: ServicePageProps) {
                 fetch("api/services/" + props.projectId).then((res) => res.json()).then((res) => {
                     setServices(res.list ?? [])
                     setIsFirst(old => false)
-                    setIsLoading(false)
+                    handleSetIsLoading(false)
                 })
             } else if (props.projectId === undefined) {
                 fetch("api/services").then((res) => res.json()).then((res) => {
                     setServices(res.list ?? [])
                     setIsFirst(old => false)
-                    setIsLoading(false)
+                    handleSetIsLoading(false)
                 })
             }
         }
@@ -210,20 +238,7 @@ export default function ServicePage(props: ServicePageProps) {
         <>
             <ActionBar className="flex flex-row justify-end">
                 <Button
-                    isLoading={isLoading}
-                    isHidden={!props.canUpdate}
-                    isDisabled={props.isDisabled}
-                    onClick={() => {
-                        setIndex(-1)
-                        setIsFirst(true)
-                        setIsLoading(true)
-                        handleBackClick()
-                    }}
-                >
-                    <RefreshIcon className="block h-4 w-4" aria-hidden="true" />
-                </Button>
-                <Button
-                    isLoading={isLoading}
+                    isLoading={props.isLoading}
                     onClick={handleNewClick}
                     isHidden={!props.canSave}
                     isDisabled={props.isDisabled}
@@ -235,7 +250,7 @@ export default function ServicePage(props: ServicePageProps) {
                 list={services}
                 isActive={index}
                 title="Serviços"
-                isLoading={isLoading}
+                isLoading={props.isLoading}
                 onSetIsActive={setIndex}
                 onTableRow={handlePutRows}
                 onShowClick={handleShowClick}
@@ -246,21 +261,21 @@ export default function ServicePage(props: ServicePageProps) {
             />
             <WindowModal
                 max
-                title="Serviço"
                 id="service-register-modal"
                 setIsOpen={handleCloseModal}
                 isOpen={isRegister || isForShow}
+                title={(handlePutModalTitle(false))}
                 headerBottom={(
                     <div className="p-4 pb-0">
                         {isRegister && (
                             <ServiceActionBarForm
                                 service={service}
                                 onSet={setService}
-                                isLoading={isLoading}
+                                isLoading={props.isLoading}
                                 projectId={props.projectId}
-                                onSetIsLoading={setIsLoading}
                                 onAfterSave={handleAfterSave}
                                 onShowMessage={handleShowMessage}
+                                onSetIsLoading={props.onSetIsLoading}
                             />
                         )}
                         {isForShow && (
@@ -268,7 +283,7 @@ export default function ServicePage(props: ServicePageProps) {
                                 className="bg-slate-50 dark:bg-slate-800 dark:border dark:border-gray-700"
                             >
                                 <Button
-                                    isLoading={isLoading}
+                                    isLoading={props.isLoading}
                                     onClick={() => {
                                         handleEditClick(service)
                                     }}
@@ -285,8 +300,10 @@ export default function ServicePage(props: ServicePageProps) {
                         <ServiceDataForm
                             service={service}
                             onSet={setService}
-                            isLoading={isLoading}
+                            isLoading={props.isLoading}
+                            onSetIsLoading={props.onSetIsLoading}
                             isDisabled={service.status === "FINALIZADO"}
+                            prevPathLinkName={(handlePutModalTitle(true))}
                         />
                     )}
                     {isForShow && (

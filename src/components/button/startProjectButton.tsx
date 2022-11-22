@@ -55,7 +55,7 @@ export default function StartProjectButton(props: StartProjectButtonProps) {
             //save project
             let projectSaveRes = { status: "", id: "" }
             try {
-                projectSaveRes = await fetch("api/projectByBudget", {
+                projectSaveRes = await fetch("api/project", {
                     method: "POST",
                     body: JSON.stringify({ token: "tokenbemseguro", data: project, history: history }),
                 }).then((res) => res.json())

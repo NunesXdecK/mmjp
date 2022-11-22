@@ -4,12 +4,12 @@ import ActionBar from "../bar/actionBar"
 import ListTable from "../list/listTable"
 import { useEffect, useState } from "react"
 import WindowModal from "../modal/windowModal"
+import { PlusIcon } from "@heroicons/react/solid"
 import FormRowColumn from "../form/formRowColumn"
 import UserNameListItem from "../list/userNameListItem"
 import SwiftInfoButton from "../button/switchInfoButton"
 import { handleUTCToDateShow } from "../../util/dateUtils"
 import ServiceNameListItem from "../list/serviceNameListItem"
-import { PlusIcon, RefreshIcon } from "@heroicons/react/solid"
 import { FeedbackMessage } from "../modal/feedbackMessageModal"
 import ServiceStageDataForm from "../form/serviceStageDataForm"
 import { ServiceStage, defaultServiceStage } from "../../interfaces/objectInterfaces"
@@ -21,10 +21,58 @@ interface ServiceStagePageProps {
     canSave?: boolean,
     getInfo?: boolean,
     canUpdate?: boolean,
+    isLoading?: boolean,
     isDisabled?: boolean,
     isStatusDisabled?: boolean,
+    prevPathLinkName?: any,
     onSetPage?: (any) => void,
+    onSetIsLoading?: (any) => void,
     onShowMessage?: (FeedbackMessage) => void,
+}
+
+const handleSortByPriority = (list) => {
+    return list?.sort((elementOne, elementTwo) => {
+        let priorityOne = 0
+        let priorityTwo = 0
+        if ("priority" in elementOne) {
+            priorityOne = elementOne.index
+        }
+        if ("priority" in elementTwo) {
+            priorityTwo = elementTwo.index
+        }
+        return priorityOne - priorityTwo
+    })
+}
+
+const handleFilterListLocal = (list, value) => {
+    return list.filter((element, index) => {
+        let name = ""
+        let title = ""
+        let date = ""
+        let status = ""
+        if (element) {
+            if (typeof element === "string") {
+                name = element
+            } else if (typeof element === "object") {
+                if ("name" in element) {
+                    name = element.name.toString()
+                }
+                if ("title" in element) {
+                    title = element.title.toString()
+                }
+                if ("status" in element) {
+                    status = element.status.toString()
+                }
+                if ("date" in element) {
+                    date = handleUTCToDateShow(element.date)
+                }
+            }
+        }
+        return name.toLowerCase().includes(value.toLowerCase())
+            || date.toLowerCase().includes(value.toLowerCase())
+            || title.toLowerCase().includes(value.toLowerCase())
+            || status.toLowerCase().includes(value.toLowerCase())
+    })
 }
 
 export default function ServiceStagePage(props: ServiceStagePageProps) {
@@ -32,7 +80,6 @@ export default function ServiceStagePage(props: ServiceStagePageProps) {
     const [serviceStages, setServiceStages] = useState<ServiceStage[]>([])
     const [index, setIndex] = useState(-1)
     const [isFirst, setIsFirst] = useState(props.getInfo || props.serviceId === undefined)
-    const [isLoading, setIsLoading] = useState(props.getInfo || props.serviceId === undefined)
     const [isForShow, setIsForShow] = useState(false)
     const [isRegister, setIsRegister] = useState(false)
 
@@ -46,8 +93,14 @@ export default function ServiceStagePage(props: ServiceStagePageProps) {
         setIsRegister(false)
     }
 
+    const handleSetIsLoading = (value) => {
+        if (props.onSetIsLoading) {
+            props.onSetIsLoading(value)
+        }
+    }
+
     const handleDeleteClick = async (serviceStage, index) => {
-        setIsLoading(true)
+        handleSetIsLoading(true)
         let feedbackMessage: FeedbackMessage = { messages: ["Algo deu errado"], messageType: "ERROR" }
         const res = await fetch("api/serviceStage", {
             method: "DELETE",
@@ -63,8 +116,26 @@ export default function ServiceStagePage(props: ServiceStagePageProps) {
             ...serviceStages.slice(index, serviceStages.length),
         ]
         setServiceStages(list)
-        setIsLoading(false)
+        handleSetIsLoading(false)
         handleShowMessage(feedbackMessage)
+    }
+
+    const handleStatusClick = async (element, value) => {
+        const serviceStage = {
+            ...element,
+            status: value,
+            dateString: handleUTCToDateShow(element.dateDue),
+        }
+        let feedbackMessage: FeedbackMessage = { messages: ["Algo deu errado!"], messageType: "ERROR" }
+        handleSetIsLoading(true)
+        const res = await handleSaveServiceStageInner(serviceStage, true)
+        handleSetIsLoading(false)
+        if (res.status === "ERROR") {
+            handleShowMessage(feedbackMessage)
+            return
+        }
+        feedbackMessage = { messages: ["Sucesso!"], messageType: "SUCCESS" }
+        handleAfterSave(feedbackMessage, serviceStage, true)
     }
 
     const handleNewClick = async () => {
@@ -84,21 +155,46 @@ export default function ServiceStagePage(props: ServiceStagePageProps) {
     }
 
     const handleShowClick = (project) => {
-        setIsLoading(true)
+        handleSetIsLoading(true)
         setServiceStage({ ...defaultServiceStage, ...project })
         setIsForShow(true)
-        setIsLoading(false)
+        handleSetIsLoading(false)
+    }
+
+    const handleFilterList = (value) => {
+        let listNormal = []
+        let listPendency = []
+        let listFinished = []
+        let sortedList = handleSortByPriority(serviceStages)
+        let priority = 0
+        sortedList?.map((element, index) => {
+            if (element.status === "PENDENTE") {
+                listPendency = [...listPendency, element]
+            }
+            if (element.status === "FINALIZADO") {
+                listFinished = [...listFinished, element]
+            }
+            if (element.status === "EM ANDAMENTO" || element.status === "PARADO") {
+                priority = priority + 1
+                listNormal = [...listNormal, { ...element, priorityView: priority }]
+            }
+        })
+        return [
+            ...handleFilterListLocal(listPendency, value),
+            ...handleFilterListLocal(listNormal, value),
+            ...handleFilterListLocal(listFinished, value),
+        ]
     }
 
     const handleEditClick = async (serviceStage, index?) => {
-        setIsLoading(true)
+        handleSetIsLoading(true)
         setIsForShow(false)
         let localServiceStage: ServiceStage = await fetch("api/serviceStage/" + serviceStage?.id).then((res) => res.json()).then((res) => res.data)
         localServiceStage = {
             ...localServiceStage,
             dateString: handleUTCToDateShow(localServiceStage?.dateDue?.toString()),
         }
-        setIsLoading(false)
+        handleSetIsLoading(false)
         setIsRegister(true)
         setServiceStage(localServiceStage)
     }
@@ -137,11 +233,25 @@ export default function ServiceStagePage(props: ServiceStagePageProps) {
         }
     }
 
+    const handlePutModalTitle = (short: boolean) => {
+        return (
+            <>
+                {props.prevPathLinkName}
+                {short ? "E" : "Etapa"}
+                {serviceStage.id?.length > 0 ? "-" : ""}
+                {serviceStage.title}
+            </>
+        )
+    }
+
     const handlePutHeaders = () => {
         return (
             <FormRow>
-                <FormRowColumn unit="1">Titulo</FormRowColumn>
-                <FormRowColumn unit="2">Serviço</FormRowColumn>
+                {/*
+                <FormRowColumn unit="1"></FormRowColumn>
+                */}
+                <FormRowColumn unit="2">Titulo</FormRowColumn>
+                <FormRowColumn unit="1">Serviço</FormRowColumn>
                 <FormRowColumn unit="1">Responsável</FormRowColumn>
                 <FormRowColumn unit="1">Status</FormRowColumn>
                 <FormRowColumn className="hidden sm:block" unit="1">Prazo</FormRowColumn>
@@ -152,8 +262,20 @@ export default function ServiceStagePage(props: ServiceStagePageProps) {
     const handlePutRows = (element: ServiceStage) => {
         return (
             <FormRow>
-                <FormRowColumn unit="1">{element.title}</FormRowColumn>
-                <FormRowColumn unit="2"><ServiceNameListItem id={element.service.id} /></FormRowColumn>
+                {/*
+                <FormRowColumn unit="1">{(element.status === "PARADO" || element.status === "EM ANDAMENTO") ?
+                    (
+                        <PriorityButton
+                            list={serviceStages}
+                            priority={element.priority}
+                            title={element.priorityView.toString()}
+                        />
+                    )
+                    : ""}
+                </FormRowColumn>
+                    */}
+                <FormRowColumn unit="2">{element.title}</FormRowColumn>
+                <FormRowColumn unit="1"><ServiceNameListItem id={element.service.id} /></FormRowColumn>
                 <FormRowColumn unit="1"><UserNameListItem id={element.responsible.id} /></FormRowColumn>
                 <FormRowColumn unit="1">
                     <SwiftInfoButton
@@ -167,17 +289,7 @@ export default function ServiceStagePage(props: ServiceStagePageProps) {
                             "PENDENTE",
                         ]}
                         onClick={async (value) => {
-                            const serviceStage = { ...element, status: value }
-                            let feedbackMessage: FeedbackMessage = { messages: ["Algo deu errado!"], messageType: "ERROR" }
-                            setIsLoading(true)
-                            const res = await handleSaveServiceStageInner(serviceStage, true)
-                            setIsLoading(false)
-                            if (res.status === "ERROR") {
-                                handleShowMessage(feedbackMessage)
-                                return
-                            }
-                            feedbackMessage = { messages: ["Sucesso!"], messageType: "SUCCESS" }
-                            handleAfterSave(feedbackMessage, serviceStage, true)
+                            handleStatusClick(element, value)
                         }}
                     />
                 </FormRowColumn>
@@ -192,13 +304,13 @@ export default function ServiceStagePage(props: ServiceStagePageProps) {
                 fetch("api/serviceStages/" + props.serviceId).then((res) => res.json()).then((res) => {
                     setServiceStages(res.list ?? [])
                     setIsFirst(old => false)
-                    setIsLoading(false)
+                    handleSetIsLoading(false)
                 })
             } else if (props.serviceId === undefined) {
                 fetch("api/serviceStages").then((res) => res.json()).then((res) => {
                     setServiceStages(res.list ?? [])
                     setIsFirst(old => false)
-                    setIsLoading(false)
+                    handleSetIsLoading(false)
                 })
             }
         }
@@ -208,20 +320,7 @@ export default function ServiceStagePage(props: ServiceStagePageProps) {
         <>
             <ActionBar className="flex flex-row justify-end">
                 <Button
-                    isLoading={isLoading}
-                    isHidden={!props.canUpdate}
-                    isDisabled={props.isDisabled}
-                    onClick={() => {
-                        setIndex(-1)
-                        setIsFirst(true)
-                        setIsLoading(true)
-                        handleBackClick()
-                    }}
-                >
-                    <RefreshIcon className="block h-4 w-4" aria-hidden="true" />
-                </Button>
-                <Button
-                    isLoading={isLoading}
+                    isLoading={props.isLoading}
                     onClick={handleNewClick}
                     isHidden={!props.canSave}
                     isDisabled={props.isDisabled}
@@ -233,9 +332,10 @@ export default function ServiceStagePage(props: ServiceStagePageProps) {
                 title="Etapas"
                 isActive={index}
                 list={serviceStages}
-                isLoading={isLoading}
+                isLoading={props.isLoading}
                 onSetIsActive={setIndex}
                 onTableRow={handlePutRows}
+                onFilter={handleFilterList}
                 onShowClick={handleShowClick}
                 onEditClick={handleEditClick}
                 isDisabled={props.isDisabled}
@@ -244,21 +344,21 @@ export default function ServiceStagePage(props: ServiceStagePageProps) {
             />
             <WindowModal
                 max
-                title="Etapa"
-                id="service-stage-register-modal"
                 setIsOpen={handleCloseModal}
                 isOpen={isRegister || isForShow}
+                id="service-stage-register-modal"
+                title={(handlePutModalTitle(false))}
                 headerBottom={(
                     <div className="p-4 pb-0">
                         {isRegister && (
                             <ServiceStageActionBarForm
-                                isLoading={isLoading}
                                 onSet={setServiceStage}
+                                isLoading={props.isLoading}
                                 serviceId={props.serviceId}
                                 serviceStage={serviceStage}
-                                onSetIsLoading={setIsLoading}
                                 onAfterSave={handleAfterSave}
                                 onShowMessage={handleShowMessage}
+                                onSetIsLoading={props.onSetIsLoading}
                             />
                         )}
                         {isForShow && (
@@ -266,7 +366,7 @@ export default function ServiceStagePage(props: ServiceStagePageProps) {
                                 className="bg-slate-50 dark:bg-slate-800 dark:border dark:border-gray-700"
                             >
                                 <Button
-                                    isLoading={isLoading}
+                                    isLoading={props.isLoading}
                                     onClick={() => {
                                         handleEditClick(serviceStage)
                                     }}
@@ -281,9 +381,10 @@ export default function ServiceStagePage(props: ServiceStagePageProps) {
                 <>
                     {isRegister && (
                         <ServiceStageDataForm
-                            isLoading={isLoading}
                             onSet={setServiceStage}
+                            isLoading={props.isLoading}
                             serviceStage={serviceStage}
+                            onSetIsLoading={props.onSetIsLoading}
                             isDisabled={serviceStage.status === "FINALIZADO"}
                         />
                     )}

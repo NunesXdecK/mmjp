@@ -3,6 +3,7 @@ import { LayoutMenuItem } from "./layout"
 import DropDownButton from "../button/dropDownButton"
 
 interface LayoutMenuProps {
+    isDisabled?: boolean,
     menus?: LayoutMenuItem[],
     onSetPage?: (any) => void,
 }
@@ -24,6 +25,7 @@ export default function LayoutMenu(props: LayoutMenuProps) {
                                 id={element.name}
                                 title={element.name}
                                 className={aClassName}
+                                isDisabled={props.isDisabled}
                             >
                                 <div
                                     className={"p-2 w-max left-0 absolute bg-gray-800 rounded-md focus:outline-none"}>
@@ -32,7 +34,7 @@ export default function LayoutMenu(props: LayoutMenuProps) {
                                             ignoreClass
                                             className={aClassName}
                                             key={index + elementItem.name}
-                                            isDisabled={elementItem.disabled}
+                                            isDisabled={props.isDisabled || elementItem.disabled}
                                             id={element.name + "-" + elementItem.name + "-" + index}
                                             onClick={() => handleSetPage(elementItem.value)}
                                         >
@@ -46,6 +48,7 @@ export default function LayoutMenu(props: LayoutMenuProps) {
                                 ignoreClass
                                 id={element.name}
                                 className={aClassName}
+                                isDisabled={props.isDisabled}
                                 onClick={() => handleSetPage(element.value)}
                             >
                                 {element.name}

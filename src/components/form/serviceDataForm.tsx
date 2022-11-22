@@ -6,7 +6,6 @@ import InputText from "../inputText/inputText";
 import InputTextArea from "../inputText/inputTextArea";
 import ServiceStagePage from "../page/ServiceStagePage";
 import { Service } from "../../interfaces/objectInterfaces";
-import SelectImmobileForm from "../select/selectImmobileForm";
 import InputTextCurrency from "../inputText/inputTextCurrency";
 import SelectImmobileTOForm from "../select/selectImmobileTOForm";
 import InputTextAutoComplete from "../inputText/inputTextAutocomplete";
@@ -21,11 +20,13 @@ interface ServiceDataFormProps {
     index?: number,
     isLoading?: boolean,
     isDisabled?: boolean,
+    prevPathLinkName?: any,
     service?: Service,
     onBlur?: (any) => void,
     onDelete?: (number) => void,
     onFinishAdd?: (any?) => void,
     onSet?: (any, number?) => void,
+    onSetIsLoading?: (any) => void,
     onShowMessage?: (FeedbackMessage) => void,
 }
 
@@ -218,6 +219,7 @@ export default function ServiceDataForm(props: ServiceDataFormProps) {
                             onSetPage={handleSetServiceStage}
                             onShowMessage={props.onShowMessage}
                             getInfo={props.service?.id?.length > 0}
+                            prevPathLinkName={props.prevPathLinkName}
                         />
                     </Form>
                 </>

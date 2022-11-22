@@ -17,9 +17,11 @@ interface CompanyPageProps {
     canSave?: boolean,
     getInfo?: boolean,
     canUpdate?: boolean,
+    isLoading?: boolean,
     isDisabled?: boolean,
     isStatusDisabled?: boolean,
     onSetPage?: (any) => void,
+    onSetIsLoading?: (any) => void,
     onShowMessage?: (FeedbackMessage) => void,
 }
 
@@ -28,7 +30,6 @@ export default function CompanyPage(props: CompanyPageProps) {
     const [companys, setCompanys] = useState<Company[]>([])
     const [index, setIndex] = useState(-1)
     const [isFirst, setIsFirst] = useState(props.getInfo)
-    const [isLoading, setIsLoading] = useState(props.getInfo)
     const [isForShow, setIsForShow] = useState(false)
     const [isRegister, setIsRegister] = useState(false)
 
@@ -42,8 +43,14 @@ export default function CompanyPage(props: CompanyPageProps) {
         setIsRegister(false)
     }
 
+    const handleSetIsLoading = (value) => {
+        if (props.onSetIsLoading) {
+            props.onSetIsLoading(value)
+        }
+    }
+
     const handleDeleteClick = async (company, index) => {
-        setIsLoading(true)
+        handleSetIsLoading(true)
         let feedbackMessage: FeedbackMessage = { messages: ["Algo deu errado"], messageType: "ERROR" }
         const res = await fetch("api/company", {
             method: "DELETE",
@@ -59,7 +66,7 @@ export default function CompanyPage(props: CompanyPageProps) {
             ...companys.slice(index, companys.length),
         ]
         setCompanys(list)
-        setIsLoading(false)
+        handleSetIsLoading(false)
         handleShowMessage(feedbackMessage)
     }
 
@@ -77,20 +84,20 @@ export default function CompanyPage(props: CompanyPageProps) {
     }
 
     const handleShowClick = (project) => {
-        setIsLoading(true)
+        handleSetIsLoading(true)
         setCompany({ ...defaultCompany, ...project })
         setIsForShow(true)
-        setIsLoading(false)
+        handleSetIsLoading(false)
     }
 
     const handleEditClick = async (company, index?) => {
-        setIsLoading(true)
+        handleSetIsLoading(true)
         setIsForShow(false)
         let localCompany: Company = await fetch("api/company/" + company?.id).then((res) => res.json()).then((res) => res.data)
         localCompany = {
             ...localCompany,
         }
-        setIsLoading(false)
+        handleSetIsLoading(false)
         setIsRegister(true)
         setCompany(localCompany)
     }
@@ -154,7 +161,7 @@ export default function CompanyPage(props: CompanyPageProps) {
             fetch("api/companies/").then((res) => res.json()).then((res) => {
                 setCompanys(res.list ?? [])
                 setIsFirst(old => false)
-                setIsLoading(false)
+                handleSetIsLoading(false)
             })
         }
     })
@@ -163,20 +170,7 @@ export default function CompanyPage(props: CompanyPageProps) {
         <>
             <ActionBar className="flex flex-row justify-end">
                 <Button
-                    isLoading={isLoading}
-                    isHidden={!props.canUpdate}
-                    isDisabled={props.isDisabled}
-                    onClick={() => {
-                        setIndex(-1)
-                        setIsFirst(true)
-                        setIsLoading(true)
-                        handleBackClick()
-                    }}
-                >
-                    <RefreshIcon className="block h-4 w-4" aria-hidden="true" />
-                </Button>
-                <Button
-                    isLoading={isLoading}
+                    isLoading={props.isLoading}
                     onClick={handleNewClick}
                     isHidden={!props.canSave}
                     isDisabled={props.isDisabled}
@@ -188,7 +182,7 @@ export default function CompanyPage(props: CompanyPageProps) {
                 title="Empresas"
                 isActive={index}
                 list={companys}
-                isLoading={isLoading}
+                isLoading={props.isLoading}
                 onSetIsActive={setIndex}
                 onTableRow={handlePutRows}
                 onShowClick={handleShowClick}
@@ -209,8 +203,8 @@ export default function CompanyPage(props: CompanyPageProps) {
                             <CompanyActionBarForm
                                 company={company}
                                 onSet={setCompany}
-                                isLoading={isLoading}
-                                onSetIsLoading={setIsLoading}
+                                isLoading={props.isLoading}
+                                onSetIsLoading={handleSetIsLoading}
                                 onAfterSave={handleAfterSave}
                                 onShowMessage={handleShowMessage}
                             />
@@ -220,7 +214,7 @@ export default function CompanyPage(props: CompanyPageProps) {
                                 className="bg-slate-50 dark:bg-slate-800 dark:border dark:border-gray-700"
                             >
                                 <Button
-                                    isLoading={isLoading}
+                                    isLoading={props.isLoading}
                                     onClick={() => {
                                         handleEditClick(company)
                                     }}
@@ -237,7 +231,7 @@ export default function CompanyPage(props: CompanyPageProps) {
                         <CompanyDataForm
                             company={company}
                             onSet={setCompany}
-                            isLoading={isLoading}
+                            isLoading={props.isLoading}
                         />
                     )}
                     {isForShow && (

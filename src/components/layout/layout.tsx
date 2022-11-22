@@ -11,7 +11,9 @@ import { MenuIcon, MoonIcon, SunIcon, UserCircleIcon, XIcon } from "@heroicons/r
 interface LayoutMenuProps {
     title?: string,
     children?: any[],
+    isLoading?: boolean,
     onSetPage?: (any) => void,
+    onSetIsLoading?: (any) => void,
 }
 
 export interface LayoutMenuItem {
@@ -20,6 +22,7 @@ export interface LayoutMenuItem {
     value?: string,
     current?: boolean,
     disabled?: boolean,
+    isLoading?: boolean,
     subMenus?: LayoutMenuItem[],
 }
 
@@ -38,7 +41,13 @@ const menus: LayoutMenuItem[] = [
             ]
     },
     {
-        name: "Orçamentos", href: "/budget", value: "BUDGET", current: false, disabled: false,
+        name: "Financeiro", current: false, disabled: false,
+        subMenus:
+            [
+                { name: "Orçamentos", href: "/budget", value: "BUDGET", current: false, disabled: false },
+                { name: "Pagamentos", href: "/servicePayment", value: "PAYMENT", current: false, disabled: false },
+
+            ]
     },
     {
         name: "Projetos", current: false, disabled: false,
@@ -47,7 +56,6 @@ const menus: LayoutMenuItem[] = [
                 { name: "Projetos", href: "/project", value: "PROJECT", current: false, disabled: false },
                 { name: "Serviços", href: "/service", value: "SERVICE", current: false, disabled: false },
                 { name: "Etapas", href: "/serviceStage", value: "SERVICESTAGE", current: false, disabled: false },
-                { name: "Pagamentos", href: "/servicePayment", value: "PAYMENT", current: false, disabled: false },
 
             ]
     },
@@ -91,12 +99,13 @@ export default function Layout(props: LayoutMenuProps) {
                 <div className="hidden sm:block">
                     <div className="flex flex-row items-center justify-between px-2 py-4">
                         <div className="flex flex-row gap-2">
-                            <LayoutMenu menus={menus} onSetPage={handleSetPage} />
+                            <LayoutMenu isDisabled={props.isLoading} menus={menus} onSetPage={handleSetPage} />
                         </div>
                         <div className="flex flex-row gap-2 items-center">
                             <SwitchTextButton
                                 className=""
                                 isSwitched={isDark}
+                                isDisabled={props.isLoading}
                                 buttonClassName="p-2 hover:bg-gray-600 rounded-full"
                                 onChildren={(
                                     <SunIcon className="text-gray-200 block h-5 w-5" aria-hidden="true" />
@@ -112,19 +121,23 @@ export default function Layout(props: LayoutMenuProps) {
                             <DropDownButton
                                 isLeft
                                 id="user-drop-down"
+                                isDisabled={props.isLoading}
                                 className="p-2 bg-transparent hover:bg-gray-600 rounded-full"
                                 title={(
                                     <UserCircleIcon className="text-gray-200 block h-8 w-8" aria-hidden="true" />
                                 )}
                             >
-                                <Button
-                                    ignoreClass
-                                    id="user-drop-down-logoff"
-                                    onClick={handleDeleteClick}
-                                    className="px-4 py-2 text-sm text-left rounded bg-transparent hover:bg-gray-400 hover:opacity-70"
-                                >
-                                    Logoff
-                                </Button>
+                                <div className="bg-slate-50 rounded">
+                                    <Button
+                                        ignoreClass
+                                        id="user-drop-down-logoff"
+                                        onClick={handleDeleteClick}
+                                        isDisabled={props.isLoading}
+                                        className="px-4 py-2 text-sm text-left rounded bg-transparent hover:bg-gray-400 hover:opacity-70"
+                                    >
+                                        Logoff
+                                    </Button>
+                                </div>
                             </DropDownButton>
                         </div>
                     </div>
@@ -138,6 +151,7 @@ export default function Layout(props: LayoutMenuProps) {
                             <SwitchTextButton
                                 className=""
                                 isSwitched={isDark}
+                                isDisabled={props.isLoading}
                                 buttonClassName="p-2 hover:bg-gray-600 rounded-full"
                                 onChildren={(
                                     <SunIcon className="text-gray-200 block h-5 w-5" aria-hidden="true" />
@@ -152,6 +166,7 @@ export default function Layout(props: LayoutMenuProps) {
                             />
                             <Button
                                 ignoreClass
+                                isDisabled={props.isLoading}
                                 onClick={() => setIsOpen(!isOpen)}
                                 className="bg-gray-800 inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-white hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-800 focus:ring-white"
                             >
@@ -166,7 +181,7 @@ export default function Layout(props: LayoutMenuProps) {
                     </div>
                     {isOpen && (
                         <div className="px-2">
-                            <LayoutMenuMobile menus={menus} onSetPage={handleSetPage} onSetIsOpen={setIsOpen} />
+                            <LayoutMenuMobile isDisabled={props.isLoading} menus={menus} onSetPage={handleSetPage} onSetIsOpen={setIsOpen} />
                             <div className="pt-4 pb-3 border-t border-gray-700">
                                 <div className="flex items-center px-5">
                                     <UserCircleIcon className="block text-gray-300 h-10 w-10" aria-hidden="true" />
@@ -175,6 +190,7 @@ export default function Layout(props: LayoutMenuProps) {
                                 <Button
                                     isLight
                                     onClick={handleDeleteClick}
+                                    isDisabled={props.isLoading}
                                     className="bg-transparent hover:bg-transparent hover:opacity-70"
                                 >
                                     <span className="float-left text-sm text-gray-300">Logoff</span>

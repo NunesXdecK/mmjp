@@ -5,22 +5,23 @@ import ListTable from "../list/listTable"
 import { useEffect, useState } from "react"
 import WindowModal from "../modal/windowModal"
 import FormRowColumn from "../form/formRowColumn"
-import { handleMaskCNPJ } from "../../util/maskUtil"
+import PersonNameListItem from "../list/personNameListItem"
 import { PlusIcon, RefreshIcon } from "@heroicons/react/solid"
 import ProfessionalDataForm from "../form/professionalDataForm"
 import { FeedbackMessage } from "../modal/feedbackMessageModal"
 import ProfessionalActionBarForm from "../bar/professionalActionBar"
 import { Professional, defaultProfessional } from "../../interfaces/objectInterfaces"
-import PersonNameListItem from "../list/personNameListItem"
 
 interface ProfessionalPageProps {
     id?: string,
     canSave?: boolean,
     getInfo?: boolean,
     canUpdate?: boolean,
+    isLoading?: boolean,
     isDisabled?: boolean,
     isStatusDisabled?: boolean,
     onSetPage?: (any) => void,
+    onSetIsLoading?: (any) => void,
     onShowMessage?: (FeedbackMessage) => void,
 }
 
@@ -29,7 +30,6 @@ export default function ProfessionalPage(props: ProfessionalPageProps) {
     const [professionals, setProfessionals] = useState<Professional[]>([])
     const [index, setIndex] = useState(-1)
     const [isFirst, setIsFirst] = useState(props.getInfo)
-    const [isLoading, setIsLoading] = useState(props.getInfo)
     const [isForShow, setIsForShow] = useState(false)
     const [isRegister, setIsRegister] = useState(false)
 
@@ -43,8 +43,14 @@ export default function ProfessionalPage(props: ProfessionalPageProps) {
         setIsRegister(false)
     }
 
+    const handleSetIsLoading = (value) => {
+        if (props.onSetIsLoading) {
+            props.onSetIsLoading(value)
+        }
+    }
+
     const handleDeleteClick = async (professional, index) => {
-        setIsLoading(true)
+        handleSetIsLoading(true)
         let feedbackMessage: FeedbackMessage = { messages: ["Algo deu errado"], messageType: "ERROR" }
         const res = await fetch("api/professional", {
             method: "DELETE",
@@ -60,7 +66,7 @@ export default function ProfessionalPage(props: ProfessionalPageProps) {
             ...professionals.slice(index, professionals.length),
         ]
         setProfessionals(list)
-        setIsLoading(false)
+        handleSetIsLoading(false)
         handleShowMessage(feedbackMessage)
     }
 
@@ -78,20 +84,20 @@ export default function ProfessionalPage(props: ProfessionalPageProps) {
     }
 
     const handleShowClick = (project) => {
-        setIsLoading(true)
+        handleSetIsLoading(true)
         setProfessional({ ...defaultProfessional, ...project })
         setIsForShow(true)
-        setIsLoading(false)
+        handleSetIsLoading(false)
     }
 
     const handleEditClick = async (professional, index?) => {
-        setIsLoading(true)
+        handleSetIsLoading(true)
         setIsForShow(false)
         let localProfessional: Professional = await fetch("api/professional/" + professional?.id).then((res) => res.json()).then((res) => res.data)
         localProfessional = {
             ...localProfessional,
         }
-        setIsLoading(false)
+        handleSetIsLoading(false)
         setIsRegister(true)
         setProfessional(localProfessional)
     }
@@ -155,7 +161,7 @@ export default function ProfessionalPage(props: ProfessionalPageProps) {
             fetch("api/professionals/").then((res) => res.json()).then((res) => {
                 setProfessionals(res.list ?? [])
                 setIsFirst(old => false)
-                setIsLoading(false)
+                handleSetIsLoading(false)
             })
         }
     })
@@ -164,20 +170,7 @@ export default function ProfessionalPage(props: ProfessionalPageProps) {
         <>
             <ActionBar className="flex flex-row justify-end">
                 <Button
-                    isLoading={isLoading}
-                    isHidden={!props.canUpdate}
-                    isDisabled={props.isDisabled}
-                    onClick={() => {
-                        setIndex(-1)
-                        setIsFirst(true)
-                        setIsLoading(true)
-                        handleBackClick()
-                    }}
-                >
-                    <RefreshIcon className="block h-4 w-4" aria-hidden="true" />
-                </Button>
-                <Button
-                    isLoading={isLoading}
+                    isLoading={props.isLoading}
                     onClick={handleNewClick}
                     isHidden={!props.canSave}
                     isDisabled={props.isDisabled}
@@ -189,7 +182,7 @@ export default function ProfessionalPage(props: ProfessionalPageProps) {
                 title="Profissionais"
                 isActive={index}
                 list={professionals}
-                isLoading={isLoading}
+                isLoading={props.isLoading}
                 onSetIsActive={setIndex}
                 onTableRow={handlePutRows}
                 onShowClick={handleShowClick}
@@ -210,8 +203,8 @@ export default function ProfessionalPage(props: ProfessionalPageProps) {
                             <ProfessionalActionBarForm
                                 professional={professional}
                                 onSet={setProfessional}
-                                isLoading={isLoading}
-                                onSetIsLoading={setIsLoading}
+                                isLoading={props.isLoading}
+                                onSetIsLoading={handleSetIsLoading}
                                 onAfterSave={handleAfterSave}
                                 onShowMessage={handleShowMessage}
                             />
@@ -221,7 +214,7 @@ export default function ProfessionalPage(props: ProfessionalPageProps) {
                                 className="bg-slate-50 dark:bg-slate-800 dark:border dark:border-gray-700"
                             >
                                 <Button
-                                    isLoading={isLoading}
+                                    isLoading={props.isLoading}
                                     onClick={() => {
                                         handleEditClick(professional)
                                     }}
@@ -236,7 +229,7 @@ export default function ProfessionalPage(props: ProfessionalPageProps) {
                 <>
                     {isRegister && (
                         <ProfessionalDataForm
-                            isLoading={isLoading}
+                            isLoading={props.isLoading}
                             onSet={setProfessional}
                             professional={professional}
                         />

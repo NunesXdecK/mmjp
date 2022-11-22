@@ -6,7 +6,7 @@ import { useEffect, useState } from "react"
 import WindowModal from "../modal/windowModal"
 import FormRowColumn from "../form/formRowColumn"
 import ProjectDataForm from "../form/projectDataForm"
-import ProjectActionBarForm from "../bar/projectActionBar"
+import ProjectActionBarForm, { handleSaveProjectInner } from "../bar/projectActionBar"
 import { handleUTCToDateShow } from "../../util/dateUtils"
 import { PlusIcon, RefreshIcon } from "@heroicons/react/solid"
 import { FeedbackMessage } from "../modal/feedbackMessageModal"
@@ -18,8 +18,10 @@ interface ProjectPageProps {
     getInfo?: boolean,
     canSave?: boolean,
     canUpdate?: boolean,
+    isLoading?: boolean,
     isDisabled?: boolean,
     onSetPage?: (any) => void,
+    onSetIsLoading?: (any) => void,
     onShowMessage?: (FeedbackMessage) => void,
 }
 
@@ -28,7 +30,6 @@ export default function ProjectPage(props: ProjectPageProps) {
     const [projects, setProjects] = useState<Project[]>([])
     const [index, setIndex] = useState(-1)
     const [isFirst, setIsFirst] = useState(props.getInfo)
-    const [isLoading, setIsLoading] = useState(props.getInfo)
     const [isForShow, setIsForShow] = useState(false)
     const [isRegister, setIsRegister] = useState(false)
 
@@ -42,10 +43,16 @@ export default function ProjectPage(props: ProjectPageProps) {
         setIsRegister(false)
     }
 
+    const handleSetIsLoading = (value) => {
+        if (props.onSetIsLoading) {
+            props.onSetIsLoading(value)
+        }
+    }
+
     const handleDeleteClick = async (project, index) => {
-        setIsLoading(true)
+        handleSetIsLoading(true)
         let feedbackMessage: FeedbackMessage = { messages: ["Algo deu errado"], messageType: "ERROR" }
-        const res = await fetch("api/projectNew", {
+        const res = await fetch("api/project", {
             method: "DELETE",
             body: JSON.stringify({ token: "tokenbemseguro", id: project.id }),
         }).then((res) => res.json())
@@ -59,8 +66,26 @@ export default function ProjectPage(props: ProjectPageProps) {
             ...projects.slice(index, projects.length),
         ]
         setProjects(list)
-        setIsLoading(false)
+        handleSetIsLoading(false)
         handleShowMessage(feedbackMessage)
+    }
+
+    const handleStatusClick = async (element, value) => {
+        const project: Project = {
+            ...element,
+            status: value,
+            dateString: handleUTCToDateShow(element.dateDue)
+        }
+        let feedbackMessage: FeedbackMessage = { messages: ["Algo deu errado!"], messageType: "ERROR" }
+        handleSetIsLoading(true)
+        const res = await handleSaveProjectInner(project, true)
+        handleSetIsLoading(false)
+        if (res.status === "ERROR") {
+            handleShowMessage(feedbackMessage)
+            return
+        }
+        feedbackMessage = { messages: ["Sucesso!"], messageType: "SUCCESS" }
+        handleAfterSave(feedbackMessage, project, true)
     }
 
     const handleNewClick = async () => {
@@ -78,14 +103,14 @@ export default function ProjectPage(props: ProjectPageProps) {
     }
 
     const handleShowClick = (project) => {
-        setIsLoading(true)
+        handleSetIsLoading(true)
         setProject({ ...defaultProject, ...project })
         setIsForShow(true)
-        setIsLoading(false)
+        handleSetIsLoading(false)
     }
 
     const handleEditClick = async (project, index?) => {
-        setIsLoading(true)
+        handleSetIsLoading(true)
         setIsForShow(false)
         let localProject: Project = await fetch("api/project/" + project?.id).then((res) => res.json()).then((res) => res.data)
         let localClients = []
@@ -111,7 +136,7 @@ export default function ProjectPage(props: ProjectPageProps) {
             clients: localClients,
             dateString: handleUTCToDateShow(localProject?.dateDue?.toString()),
         }
-        setIsLoading(false)
+        handleSetIsLoading(false)
         setIsRegister(true)
         setProject(localProject)
     }
@@ -172,6 +197,10 @@ export default function ProjectPage(props: ProjectPageProps) {
                         project={element}
                         value={element.status}
                         onAfter={handleAfterSave}
+                        isDisabled={props.isDisabled}
+                        onClick={async (value) => {
+                            handleStatusClick(element, value)
+                        }}
                     />
                 </FormRowColumn>
                 <FormRowColumn className="hidden sm:block" unit="1">{handleUTCToDateShow(element.dateDue?.toString())}</FormRowColumn>
@@ -184,7 +213,7 @@ export default function ProjectPage(props: ProjectPageProps) {
             fetch("api/projects").then((res) => res.json()).then((res) => {
                 setProjects(res.list ?? [])
                 setIsFirst(old => false)
-                setIsLoading(false)
+                handleSetIsLoading(false)
             })
         }
     })
@@ -193,20 +222,7 @@ export default function ProjectPage(props: ProjectPageProps) {
         <>
             <ActionBar className="flex flex-row justify-end">
                 <Button
-                    isLoading={isLoading}
-                    isHidden={!props.canUpdate}
-                    isDisabled={props.isDisabled}
-                    onClick={() => {
-                        setIndex(-1)
-                        setIsFirst(true)
-                        setIsLoading(true)
-                        handleBackClick()
-                    }}
-                >
-                    <RefreshIcon className="block h-4 w-4" aria-hidden="true" />
-                </Button>
-                <Button
-                    isLoading={isLoading}
+                    isLoading={props.isLoading}
                     onClick={handleNewClick}
                     isHidden={!props.canSave}
                     isDisabled={props.isDisabled}
@@ -218,7 +234,7 @@ export default function ProjectPage(props: ProjectPageProps) {
                 list={projects}
                 isActive={index}
                 title="Projetos"
-                isLoading={isLoading}
+                isLoading={props.isLoading}
                 onSetIsActive={setIndex}
                 onTableRow={handlePutRows}
                 onShowClick={handleShowClick}
@@ -229,20 +245,20 @@ export default function ProjectPage(props: ProjectPageProps) {
             />
             <WindowModal
                 max
-                title="Projeto"
                 id="project-register-modal"
                 setIsOpen={handleCloseModal}
                 isOpen={isRegister || isForShow}
+                title={"Projeto-" + project.number}
                 headerBottom={(
                     <div className="p-4 pb-0">
                         {isRegister && (
                             <ProjectActionBarForm
                                 project={project}
                                 onSet={setProject}
-                                isLoading={isLoading}
-                                onSetIsLoading={setIsLoading}
+                                isLoading={props.isLoading}
                                 onAfterSave={handleAfterSave}
                                 onShowMessage={handleShowMessage}
+                                onSetIsLoading={props.onSetIsLoading}
                             />
                         )}
                         {isForShow && (
@@ -250,7 +266,7 @@ export default function ProjectPage(props: ProjectPageProps) {
                                 className="bg-slate-50 dark:bg-slate-800 dark:border dark:border-gray-700"
                             >
                                 <Button
-                                    isLoading={isLoading}
+                                    isLoading={props.isLoading}
                                     onClick={() => {
                                         handleEditClick(project)
                                     }}
@@ -266,9 +282,11 @@ export default function ProjectPage(props: ProjectPageProps) {
                     <ProjectDataForm
                         project={project}
                         onSet={setProject}
-                        isLoading={isLoading}
+                        isLoading={props.isLoading}
                         onShowMessage={handleShowMessage}
+                        onSetIsLoading={props.onSetIsLoading}
                         isDisabled={project.status === "FINALIZADO"}
+                        prevPath={[{ path: "P-" + project.number + "/", onClick: null }]}
                     />
                 )}
                 {isForShow && (

@@ -4,6 +4,8 @@ import { FeedbackMessage } from "../modal/feedbackMessageModal";
 import { handleGetDateFormatedToUTC } from "../../util/dateUtils";
 import { handleValidationNotNull, ValidationReturn } from "../../util/validationUtil";
 import { Project, defaultProject, ProjectStatus } from "../../interfaces/objectInterfaces";
+import DropDownButton from "../button/dropDownButton";
+import MenuButton from "../button/menuButton";
 
 interface ProjectActionBarFormProps {
     className?: string,
@@ -97,7 +99,6 @@ export default function ProjectActionBarForm(props: ProjectActionBarFormProps) {
         }
     }
 
-
     const handleSave = async (status: ProjectStatus, isForCloseModal) => {
         const isProjectValid = handleProjectValidationForDB(props.project)
         if (!isProjectValid.validation) {
@@ -144,6 +145,64 @@ export default function ProjectActionBarForm(props: ProjectActionBarFormProps) {
                 >
                     Salvar
                 </Button>
+                <DropDownButton
+                    isLeft
+                    title="..."
+                    isLoading={props.isLoading}
+                >
+                    <div className="w-full flex flex-col">
+                        <MenuButton
+                            isLoading={props.isLoading}
+                            isHidden={props.project.status === "ARQUIVADO"}
+                            isDisabled={props.project.status === "ARQUIVADO"}
+                            onClick={() => {
+                                handleSave("ARQUIVADO", true)
+                            }}
+                        >
+                            Arquivar projeto
+                        </MenuButton>
+                        <MenuButton
+                            isLoading={props.isLoading}
+                            isHidden={props.project.status === "FINALIZADO"}
+                            isDisabled={props.project.status === "FINALIZADO"}
+                            onClick={() => {
+                                handleSave("FINALIZADO", true)
+                            }}
+                        >
+                            Finalizar projeto
+                        </MenuButton>
+                        <MenuButton
+                            isLoading={props.isLoading}
+                            isHidden={props.project.status === "PENDENTE"}
+                            isDisabled={props.project.status === "PENDENTE"}
+                            onClick={() => {
+                                handleSave("PENDENTE", true)
+                            }}
+                        >
+                            Colocar em pendencia
+                        </MenuButton>
+                        <MenuButton
+                            isLoading={props.isLoading}
+                            isHidden={props.project.status === "EM ANDAMENTO"}
+                            isDisabled={props.project.status === "EM ANDAMENTO"}
+                            onClick={() => {
+                                handleSave("EM ANDAMENTO", true)
+                            }}
+                        >
+                            Colocar em andamento
+                        </MenuButton>
+                        <MenuButton
+                            isLoading={props.isLoading}
+                            isHidden={props.project.status === "PARADO"}
+                            isDisabled={props.project.status === "PARADO"}
+                            onClick={() => {
+                                handleSave("PARADO", true)
+                            }}
+                        >
+                            Parar projeto
+                        </MenuButton>
+                    </div>
+                </DropDownButton>
             </div>
         </ActionBar>
     )

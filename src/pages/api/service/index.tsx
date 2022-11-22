@@ -48,7 +48,7 @@ export default async function handler(req, res) {
                     console.error(err)
                     resPOST = { ...resPOST, status: "ERROR", error: err }
                 }
-                if (service.project?.id?.length > 0) {
+                if (service.project?.id?.length > 0 && service.status === "PENDENTE") {
                     try {
                         const projectDocRef = doc(projectCollection, service.project.id)
                         let project: Project = (await getDoc(projectDocRef)).data()

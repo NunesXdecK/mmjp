@@ -3,11 +3,11 @@ import HeaderModal from "./headerModal"
 
 interface WindowModalProps {
     id?: string,
-    title?: string,
     max?: boolean,
     isOpen?: boolean,
     children?: any,
     headerBottom?: any,
+    title?: any,
     onClose?: () => void,
     setIsOpen?: (boolean) => void,
 }

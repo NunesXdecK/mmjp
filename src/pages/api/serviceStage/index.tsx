@@ -26,7 +26,7 @@ export default async function handler(req, res) {
                         delete serviceStage.dateString
                     }
                     if (serviceStage?.priorityView) {
-                        delete serviceStage.priority
+                        delete serviceStage.priorityView
                     }
                     if (isSave) {
                         serviceStage = { ...serviceStage, dateInsertUTC: handleNewDateToUTC() }

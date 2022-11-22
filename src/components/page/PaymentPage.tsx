@@ -2,12 +2,13 @@ import FormRow from "../form/formRow"
 import Button from "../button/button"
 import ActionBar from "../bar/actionBar"
 import ListTable from "../list/listTable"
+import { NavBarPath } from "../bar/navBar"
 import { useEffect, useState } from "react"
 import WindowModal from "../modal/windowModal"
+import { PlusIcon } from "@heroicons/react/solid"
 import FormRowColumn from "../form/formRowColumn"
 import PaymentDataForm from "../form/paymentDataForm"
 import { handleUTCToDateShow } from "../../util/dateUtils"
-import { PlusIcon, RefreshIcon } from "@heroicons/react/solid"
 import { FeedbackMessage } from "../modal/feedbackMessageModal"
 import { handleMountNumberCurrency } from "../../util/maskUtil"
 import PaymentStatusButton from "../button/paymentStatusButton"
@@ -21,9 +22,12 @@ interface PaymentPageProps {
     canSave?: boolean,
     getInfo?: boolean,
     canUpdate?: boolean,
+    isLoading?: boolean,
     isDisabled?: boolean,
     isStatusDisabled?: boolean,
+    prevPath?: NavBarPath[],
     onSetPage?: (any) => void,
+    onSetIsLoading?: (any) => void,
     onShowMessage?: (FeedbackMessage) => void,
 }
 
@@ -32,7 +36,6 @@ export default function PaymentPage(props: PaymentPageProps) {
     const [payments, setPayments] = useState<Payment[]>([])
     const [index, setIndex] = useState(-1)
     const [isFirst, setIsFirst] = useState(props.getInfo || props.projectId === undefined)
-    const [isLoading, setIsLoading] = useState(props.getInfo || props.projectId === undefined)
     const [isForShow, setIsForShow] = useState(false)
     const [isRegister, setIsRegister] = useState(false)
 
@@ -46,8 +49,14 @@ export default function PaymentPage(props: PaymentPageProps) {
         setIsRegister(false)
     }
 
+    const handleSetIsLoading = (value) => {
+        if (props.onSetIsLoading) {
+            props.onSetIsLoading(value)
+        }
+    }
+
     const handleDeleteClick = async (payment, index) => {
-        setIsLoading(true)
+        handleSetIsLoading(true)
         let feedbackMessage: FeedbackMessage = { messages: ["Algo deu errado"], messageType: "ERROR" }
         const res = await fetch("api/payment", {
             method: "DELETE",
@@ -63,8 +72,26 @@ export default function PaymentPage(props: PaymentPageProps) {
             ...payments.slice(index, payments.length),
         ]
         setPayments(list)
-        setIsLoading(false)
+        handleSetIsLoading(false)
         handleShowMessage(feedbackMessage)
+    }
+
+    const handleStatusClick = async (element, value) => {
+        const payment = {
+            ...element,
+            status: value,
+            dateString: handleUTCToDateShow(element.dateDue)
+        }
+        let feedbackMessage: FeedbackMessage = { messages: ["Algo deu errado!"], messageType: "ERROR" }
+        handleSetIsLoading(true)
+        const res = await handleSavePaymentInner(payment, true)
+        handleSetIsLoading(false)
+        if (res.status === "ERROR") {
+            handleShowMessage(feedbackMessage)
+            return
+        }
+        feedbackMessage = { messages: ["Sucesso!"], messageType: "SUCCESS" }
+        handleAfterSave(feedbackMessage, payment, true)
     }
 
     const handleNewClick = async () => {
@@ -83,14 +110,14 @@ export default function PaymentPage(props: PaymentPageProps) {
     }
 
     const handleShowClick = (project) => {
-        setIsLoading(true)
+        handleSetIsLoading(true)
         setPayment({ ...defaultPayment, ...project })
         setIsForShow(true)
-        setIsLoading(false)
+        handleSetIsLoading(false)
     }
 
     const handleEditClick = async (payment, index?) => {
-        setIsLoading(true)
+        handleSetIsLoading(true)
         setIsForShow(false)
         let localPayment: Payment = await fetch("api/payment/" + payment?.id).then((res) => res.json()).then((res) => res.data)
         localPayment = {
@@ -99,7 +126,7 @@ export default function PaymentPage(props: PaymentPageProps) {
             dateString: handleUTCToDateShow(localPayment?.dateDue?.toString()),
             value: handleMountNumberCurrency(localPayment?.value?.toString(), ".", ",", 3, 2),
         }
-        setIsLoading(false)
+        handleSetIsLoading(false)
         setIsRegister(true)
         setPayment(localPayment)
     }
@@ -132,24 +159,26 @@ export default function PaymentPage(props: PaymentPageProps) {
         }
     }
 
-    const handleStatusClick = async (element, value) => {
-        const payment = { ...element, status: value }
-        let feedbackMessage: FeedbackMessage = { messages: ["Algo deu errado!"], messageType: "ERROR" }
-        setIsLoading(true)
-        const res = await handleSavePaymentInner(payment, true)
-        setIsLoading(false)
-        if (res.status === "ERROR") {
-            handleShowMessage(feedbackMessage)
-            return
-        }
-        feedbackMessage = { messages: ["Sucesso!"], messageType: "SUCCESS" }
-        handleAfterSave(feedbackMessage, payment, true)
-    }
-
     const handleShowMessage = (feedbackMessage: FeedbackMessage) => {
         if (props.onShowMessage) {
             props.onShowMessage(feedbackMessage)
         }
+    }
+
+    const handlePutModalTitle = (short: boolean) => {
+        return (
+            <>
+                <Button
+                    ignoreClass
+                    onClick={() => handleCloseModal(false)}
+                    className="hover:text-blue-200"
+                >
+                </Button>
+                {short ? "P" : "Pagamento"}
+                {payment.id?.length > 0 ? "-" : ""}
+                {payment.title}
+            </>
+        )
     }
 
     const handlePutHeaders = () => {
@@ -193,13 +222,13 @@ export default function PaymentPage(props: PaymentPageProps) {
                 fetch("api/payments/" + props.projectId).then((res) => res.json()).then((res) => {
                     setPayments(res.list ?? [])
                     setIsFirst(old => false)
-                    setIsLoading(false)
+                    handleSetIsLoading(false)
                 })
             } else if (props.projectId === undefined) {
                 fetch("api/payments").then((res) => res.json()).then((res) => {
                     setPayments(res.list ?? [])
                     setIsFirst(old => false)
-                    setIsLoading(false)
+                    handleSetIsLoading(false)
                 })
             }
         }
@@ -209,20 +238,7 @@ export default function PaymentPage(props: PaymentPageProps) {
         <>
             <ActionBar className="flex flex-row justify-end">
                 <Button
-                    isLoading={isLoading}
-                    isHidden={!props.canUpdate}
-                    isDisabled={props.isDisabled}
-                    onClick={() => {
-                        setIndex(-1)
-                        setIsFirst(true)
-                        setIsLoading(true)
-                        handleBackClick()
-                    }}
-                >
-                    <RefreshIcon className="block h-4 w-4" aria-hidden="true" />
-                </Button>
-                <Button
-                    isLoading={isLoading}
+                    isLoading={props.isLoading}
                     onClick={handleNewClick}
                     isHidden={!props.canSave}
                     isDisabled={props.isDisabled}
@@ -234,7 +250,7 @@ export default function PaymentPage(props: PaymentPageProps) {
                 list={payments}
                 isActive={index}
                 title="Pagamentos"
-                isLoading={isLoading}
+                isLoading={props.isLoading}
                 onSetIsActive={setIndex}
                 onTableRow={handlePutRows}
                 onShowClick={handleShowClick}
@@ -246,19 +262,19 @@ export default function PaymentPage(props: PaymentPageProps) {
 
             <WindowModal
                 max
-                title="Pagamento"
                 id="payment-register-modal"
                 setIsOpen={handleCloseModal}
                 isOpen={isRegister || isForShow}
+                title={(handlePutModalTitle(false))}
                 headerBottom={(
                     <div className="p-4 pb-0">
                         {isRegister && (
                             <PaymentActionBarForm
                                 payment={payment}
                                 onSet={setPayment}
-                                isLoading={isLoading}
+                                isLoading={props.isLoading}
                                 projectId={props.projectId}
-                                onSetIsLoading={setIsLoading}
+                                onSetIsLoading={handleSetIsLoading}
                                 onAfterSave={handleAfterSave}
                                 onShowMessage={handleShowMessage}
                             />
@@ -268,7 +284,7 @@ export default function PaymentPage(props: PaymentPageProps) {
                                 className="bg-slate-50 dark:bg-slate-800 dark:border dark:border-gray-700"
                             >
                                 <Button
-                                    isLoading={isLoading}
+                                    isLoading={props.isLoading}
                                     onClick={() => {
                                         handleEditClick(payment)
                                     }}
@@ -285,7 +301,7 @@ export default function PaymentPage(props: PaymentPageProps) {
                         <PaymentDataForm
                             payment={payment}
                             onSet={setPayment}
-                            isLoading={isLoading}
+                            isLoading={props.isLoading}
                             isDisabled={payment.status === "PAGO"}
                         />
                     )}

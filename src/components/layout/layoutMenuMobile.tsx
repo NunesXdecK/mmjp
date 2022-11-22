@@ -3,6 +3,7 @@ import { LayoutMenuItem } from "./layout"
 import DropDownButton from "../button/dropDownButton"
 
 interface LayoutMenuMobileProps {
+    isDisabled?: boolean,
     menus?: LayoutMenuItem[],
     onSetPage?: (any) => void,
     onSetIsOpen?: (any) => void,
@@ -31,6 +32,7 @@ export default function LayoutMenuMobile(props: LayoutMenuMobileProps) {
                                     title={element.name}
                                     className={aClassName}
                                     key={index + element.name}
+                                    isDisabled={props.isDisabled}
                                 >
                                     <div
                                         className={"mt-2 w-full origin-top-left bg-gray-800 focus:outline-none"}>
@@ -38,6 +40,7 @@ export default function LayoutMenuMobile(props: LayoutMenuMobileProps) {
                                             <Button
                                                 ignoreClass
                                                 className={aClassName}
+                                                isDisabled={props.isDisabled}
                                                 key={index + elementItem.name}
                                                 id={element.name + "-" + elementItem.name + "-" + index}
                                                 onClick={() => handleSetPage(elementItem.value)}
@@ -55,6 +58,7 @@ export default function LayoutMenuMobile(props: LayoutMenuMobileProps) {
                                     id={element.name}
                                     className={aClassName}
                                     key={index + element.name}
+                                    isDisabled={props.isDisabled}
                                     onClick={() => handleSetPage(element.value)}
                                 >
                                     {element.name}
