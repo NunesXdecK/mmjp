@@ -19,7 +19,11 @@ export default function SwiftInfoButton(props: SwiftInfoButtonProps) {
         const classNameError = " text-red-600 bg-red-300 hover:opacity-90"
         const classNameNeutral = " text-slate-600 bg-slate-300 hover:opacity-90"
         const classNameSuccess = " text-green-600 bg-green-300 hover:opacity-90"
+        const classNameSuccessTwo = " text-emerald-600 bg-emerald-300 hover:opacity-90"
         switch (value) {
+            case "ATIVO":
+                className = className + classNameSuccess
+                break
             case "APROVADO":
                 className = className + classNameSuccess
                 break
@@ -27,6 +31,9 @@ export default function SwiftInfoButton(props: SwiftInfoButtonProps) {
                 className = className + classNameSuccess
                 break
             case "ATRASADO":
+                className = className + classNameError
+                break
+            case "BLOQUEADO":
                 className = className + classNameError
                 break
             case "EM ANDAMENTO":
@@ -44,6 +51,9 @@ export default function SwiftInfoButton(props: SwiftInfoButtonProps) {
             case "PAGO":
                 className = className + classNameSuccess
                 break
+            case "NORMAL":
+                className = className + classNameNeutral
+                break
             case "PARADO":
                 className = className + classNameNeutral
                 break
@@ -52,6 +62,12 @@ export default function SwiftInfoButton(props: SwiftInfoButtonProps) {
                 break
             case "FINALIZADO":
                 className = className + classNameSuccess
+                break
+            case "UNIFICADO":
+                className = className + classNameSuccessTwo
+                break
+            case "DESMEMBRADO":
+                className = className + classNameError
                 break
             case "REJEITADO":
                 className = className + classNameError

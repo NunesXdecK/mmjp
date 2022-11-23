@@ -1,17 +1,16 @@
 import InfoView from "./infoView"
-import Button from "../button/button"
-import ServiceView from "./serviceView"
+import ProjectView from "./projectView"
 import { useEffect, useState } from "react"
 import InfoHolderView from "./infoHolderView"
+import SwitchTextButton from "../button/switchTextButton"
 import { handleUTCToDateShow } from "../../util/dateUtils"
 import PlaceholderItemList from "../list/placeholderItemList"
 import { handleMountNumberCurrency } from "../../util/maskUtil"
 import ScrollDownTransition from "../animation/scrollDownTransition"
-import { ChevronDownIcon, ChevronRightIcon } from "@heroicons/react/outline"
-import { defaultServicePayment, ServicePayment } from "../../interfaces/objectInterfaces"
-import SwitchTextButton from "../button/switchTextButton"
+import { defaultPayment, Payment } from "../../interfaces/objectInterfaces"
+import PaymentStatusButton from "../button/paymentStatusButton"
 
-interface ServicePaymentViewProps {
+interface PaymentViewProps {
     id?: string,
     title?: string,
     elementId?: string,
@@ -22,41 +21,41 @@ interface ServicePaymentViewProps {
     hideData?: boolean,
     dataInside?: boolean,
     hideBorder?: boolean,
-    hideService?: boolean,
+    hideProject?: boolean,
     showMoreInfo?: boolean,
     canShowHideData?: boolean,
     hidePaddingMargin?: boolean,
-    servicePayment?: ServicePayment,
+    payment?: Payment,
 }
 
-export default function ServicePaymentView(props: ServicePaymentViewProps) {
+export default function PaymentView(props: PaymentViewProps) {
     const [isFirst, setIsFirst] = useState(true)
     const [isShowInfo, setIsShowInfo] = useState(props.hideData ? false : true)
-    const [servicePayment, setServicePayment] = useState<ServicePayment>(props.servicePayment ?? defaultServicePayment)
+    const [payment, setPayment] = useState<Payment>(props.payment ?? defaultPayment)
 
     const hasHideData =
-        servicePayment.service?.id > 0
+        payment.project?.id > 0
 
     const hasData =
         hasHideData ||
-        servicePayment?.dateDue > 0 ||
-        servicePayment?.description?.length
+        payment?.dateDue > 0 ||
+        payment?.title?.length
 
-    const handlePutService = () => {
+    const handlePutProject = () => {
         return (
             <>
-                {servicePayment?.service?.id?.length && (
-                    <ServiceView
+                {payment?.project?.id?.length && (
+                    <ProjectView
                         hideData
                         dataInside
                         classNameHolder="min-w-full"
                         hideBorder={props.showMoreInfo}
                         classNameContentHolder="min-w-full"
-                        elementId={servicePayment.service.id}
+                        elementId={payment.project.id}
                         canShowHideData={!props.showMoreInfo}
                         hidePaddingMargin={props.showMoreInfo}
-                        title={props.showMoreInfo ? "" : "Serviço"}
-                        id={servicePayment.id + "-" + servicePayment.service.id}
+                        title={props.showMoreInfo ? "" : "Projeto"}
+                        id={payment.id + "-" + payment.project.id}
                     />
                 )}
             </>
@@ -66,17 +65,17 @@ export default function ServicePaymentView(props: ServicePaymentViewProps) {
     const handlePutData = () => {
         return (
             <div className="w-full">
-                {!props.hideService && handlePutService()}
+                {!props.hideProject && handlePutProject()}
             </div>
         )
     }
 
     useEffect(() => {
         if (isFirst) {
-            if (props.elementId && props.elementId.length !== 0 && servicePayment.id?.length === 0) {
-                fetch("api/servicePayment/" + props.elementId).then((res) => res.json()).then((res) => {
+            if (props.elementId && props.elementId.length !== 0 && payment.id?.length === 0) {
+                fetch("api/payment/" + props.elementId).then((res) => res.json()).then((res) => {
                     setIsFirst(old => false)
-                    setServicePayment(res.data)
+                    setPayment(res.data)
                 })
             }
         }
@@ -84,7 +83,7 @@ export default function ServicePaymentView(props: ServicePaymentViewProps) {
 
     return (
         <>
-            {servicePayment.id?.length === 0 ? (
+            {payment.id?.length === 0 ? (
                 <div className="mt-6 w-full">
                     <PlaceholderItemList />
                 </div>
@@ -100,26 +99,35 @@ export default function ServicePaymentView(props: ServicePaymentViewProps) {
                                 title={props.title ?? "Dados básicos"}
                                 classNameContentHolder={props.classNameContentHolder}
                             >
-                                <InfoView title="Pagamento">{servicePayment.description}</InfoView>
-                                <InfoView title="Valor">{handleMountNumberCurrency(servicePayment.value.toString(), ".", ",", 3, 2)}</InfoView>
-                                <InfoView title="Data">{handleUTCToDateShow(servicePayment.dateDue?.toString())}</InfoView>
-                                {servicePayment.status === "FINALIZADO" && (
-                                    <InfoView classNameHolder="w-full" classNameInfo="rounded-sm px-2 py-1 text-green-100 bg-green-600 text-[0.8rem] font-bold" title="">{servicePayment.status}</InfoView>
+                                <InfoView title="Pagamento">{payment.title}</InfoView>
+                                <InfoView title="Valor">{handleMountNumberCurrency(payment.value.toString(), ".", ",", 3, 2)}</InfoView>
+                                <InfoView title="Data">{handleUTCToDateShow(payment.dateDue?.toString())}</InfoView>
+                                <InfoView title="Status">
+                                    <PaymentStatusButton
+                                        isDisabled={true}
+                                        value={payment.status}
+                                    />
+                                </InfoView>
+                                {/*
+                                {payment.status === "FINALIZADO" && (
+                                    <InfoView classNameHolder="w-full" classNameInfo="rounded-sm px-2 py-1 text-green-100 bg-green-600 text-[0.8rem] font-bold" title="">{payment.status}</InfoView>
                                 )}
-                                {servicePayment.status === "ARQUIVADO" && (
-                                    <InfoView classNameHolder="w-full" classNameInfo="rounded-sm px-2 py-1 text-orange-100 bg-orange-600 text-[0.8rem] font-bold" title="">{servicePayment.status}</InfoView>
+                                {payment.status === "ARQUIVADO" && (
+                                    <InfoView classNameHolder="w-full" classNameInfo="rounded-sm px-2 py-1 text-orange-100 bg-orange-600 text-[0.8rem] font-bold" title="">{payment.status}</InfoView>
                                 )}
-                                {servicePayment.status === "PENDENTE" && (
-                                    <InfoView classNameHolder="w-full" classNameInfo="rounded-sm px-2 py-1 text-red-100 bg-red-600 text-[0.8rem] font-bold" title="">{servicePayment.status}</InfoView>
+                                {payment.status === "PENDENTE" && (
+                                    <InfoView classNameHolder="w-full" classNameInfo="rounded-sm px-2 py-1 text-red-100 bg-red-600 text-[0.8rem] font-bold" title="">{payment.status}</InfoView>
                                 )}
+                                        <InfoView title="Data criação">{handleUTCToDateShow(payment.dateInsertUTC.toString())}</InfoView>
+                                        {payment.dateLastUpdateUTC > 0 && <InfoView title="Data atualização">{handleUTCToDateShow(payment.dateLastUpdateUTC.toString())}</InfoView>}
+                                    */}
                                 {props.showMoreInfo && (
                                     <>
-                                        {handlePutService()}
+                                        {handlePutProject()}
                                     </>
                                 )}
                                 <ScrollDownTransition isOpen={isShowInfo}>
-                                    <InfoView title="Data criação">{handleUTCToDateShow(servicePayment.dateInsertUTC.toString())}</InfoView>
-                                    {servicePayment.dateLastUpdateUTC > 0 && <InfoView title="Data atualização">{handleUTCToDateShow(servicePayment.dateLastUpdateUTC.toString())}</InfoView>}
+                                    <InfoView title="Descrição">{payment.description}</InfoView>
                                     {props.dataInside && handlePutData()}
                                 </ScrollDownTransition>
                                 {props.canShowHideData && props.hideData && hasHideData && (

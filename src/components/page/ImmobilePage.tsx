@@ -6,10 +6,12 @@ import { useEffect, useState } from "react"
 import WindowModal from "../modal/windowModal"
 import FormRowColumn from "../form/formRowColumn"
 import ImmobileDataForm from "../form/immobileDataForm"
-import ImmobileActionBarForm from "../bar/immobileActionBar"
+import ImmobileActionBarForm, { handleSaveImmobileInner } from "../bar/immobileActionBar"
 import { PlusIcon, RefreshIcon } from "@heroicons/react/solid"
 import { FeedbackMessage } from "../modal/feedbackMessageModal"
 import { Immobile, defaultImmobile } from "../../interfaces/objectInterfaces"
+import ImmobileView from "../view/immobileView"
+import ImmobileStatusButton from "../button/immobileStatusButton"
 
 interface ImmobilePageProps {
     id?: string,
@@ -67,6 +69,23 @@ export default function ImmobilePage(props: ImmobilePageProps) {
         setImmobiles(list)
         handleSetIsLoading(false)
         handleShowMessage(feedbackMessage)
+    }
+
+    const handleStatusClick = async (element, value) => {
+        const immobile: Immobile = {
+            ...element,
+            status: value,
+        }
+        let feedbackMessage: FeedbackMessage = { messages: ["Algo deu errado!"], messageType: "ERROR" }
+        handleSetIsLoading(true)
+        const res = await handleSaveImmobileInner(immobile, true)
+        handleSetIsLoading(false)
+        if (res.status === "ERROR") {
+            handleShowMessage(feedbackMessage)
+            return
+        }
+        feedbackMessage = { messages: ["Sucesso!"], messageType: "SUCCESS" }
+        handleAfterSave(feedbackMessage, immobile, true)
     }
 
     const handleNewClick = async () => {
@@ -138,7 +157,10 @@ export default function ImmobilePage(props: ImmobilePageProps) {
     const handlePutHeaders = () => {
         return (
             <FormRow>
-                <FormRowColumn unit="6">Nome</FormRowColumn>
+                <FormRowColumn unit="2">Nome</FormRowColumn>
+                <FormRowColumn unit="1">Status</FormRowColumn>
+                <FormRowColumn unit="1">Municipio/UF</FormRowColumn>
+                <FormRowColumn unit="2">Gleba</FormRowColumn>
             </FormRow>
         )
     }
@@ -146,7 +168,21 @@ export default function ImmobilePage(props: ImmobilePageProps) {
     const handlePutRows = (element: Immobile) => {
         return (
             <FormRow>
-                <FormRowColumn unit="6">{element.name}</FormRowColumn>
+                <FormRowColumn unit="2">{element.name}</FormRowColumn>
+                <FormRowColumn unit="1">
+                    <ImmobileStatusButton
+                        id={element.id}
+                        immobile={element}
+                        value={element.status}
+                        onAfter={handleAfterSave}
+                        isDisabled={props.isDisabled}
+                        onClick={async (value) => {
+                            handleStatusClick(element, value)
+                        }}
+                    />
+                </FormRowColumn>
+                <FormRowColumn unit="1">{element.county}</FormRowColumn>
+                <FormRowColumn unit="2">{element.land}</FormRowColumn>
             </FormRow>
         )
     }
@@ -233,7 +269,7 @@ export default function ImmobilePage(props: ImmobilePageProps) {
                         />
                     )}
                     {isForShow && (
-                        <></>
+                        <ImmobileView elementId={immobile.id} />
                     )}
                 </>
             </WindowModal>

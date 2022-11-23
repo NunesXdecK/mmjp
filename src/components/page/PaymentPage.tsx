@@ -15,6 +15,7 @@ import PaymentStatusButton from "../button/paymentStatusButton"
 import ProjectNumberListItem from "../list/projectNumberListItem"
 import { Payment, defaultPayment } from "../../interfaces/objectInterfaces"
 import PaymentActionBarForm, { handleSavePaymentInner } from "../bar/paymentActionBar"
+import PaymentView from "../view/paymentView"
 
 interface PaymentPageProps {
     id?: string,
@@ -168,23 +169,25 @@ export default function PaymentPage(props: PaymentPageProps) {
     const handlePutModalTitle = (short: boolean) => {
         let paths = []
         try {
-            let prevPath: NavBarPath = {
-                ...props.prevPath[props.prevPath?.length - 1],
-                onClick: handleBackClick,
-                path: props.prevPath[props.prevPath?.length - 1]?.path + "/",
+            if (props.prevPath?.length > 0) {
+                let prevPath: NavBarPath = {
+                    ...props.prevPath[props.prevPath?.length - 1],
+                    onClick: handleBackClick,
+                    path: props.prevPath[props.prevPath?.length - 1]?.path + "/",
+                }
+                let path: NavBarPath = { path: "Pagamento", onClick: null }
+                if (short) {
+                    //path = { ...path, path: "S" }
+                }
+                if (payment.id?.length > 0) {
+                    path = { ...path, path: path.path + "-" + payment.title, onClick: null }
+                }
+                paths = [
+                    ...props.prevPath.slice(0, props.prevPath?.length - 2),
+                    prevPath,
+                    path
+                ]
             }
-            let path: NavBarPath = { path: "Pagamento", onClick: null }
-            if (short) {
-                //path = { ...path, path: "S" }
-            }
-            if (payment.id?.length > 0) {
-                path = { ...path, path: path.path + "-" + payment.title, onClick: null }
-            }
-            paths = [
-                ...props.prevPath.slice(0, props.prevPath?.length - 2),
-                prevPath,
-                path
-            ]
         } catch (err) {
             console.error(err)
         }
@@ -327,7 +330,7 @@ export default function PaymentPage(props: PaymentPageProps) {
                         />
                     )}
                     {isForShow && (
-                        <></>
+                        <PaymentView elementId={payment.id} />
                     )}
                 </>
             </WindowModal>

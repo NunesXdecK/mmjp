@@ -10,6 +10,7 @@ import ScrollDownTransition from "../animation/scrollDownTransition"
 import { ChevronDownIcon, ChevronRightIcon } from "@heroicons/react/outline"
 import { defaultServiceStage, ServiceStage } from "../../interfaces/objectInterfaces"
 import SwitchTextButton from "../button/switchTextButton"
+import SwiftInfoButton from "../button/switchInfoButton"
 
 interface ServiceStageViewProps {
     id?: string,
@@ -110,11 +111,19 @@ export default function ServiceStageView(props: ServiceStageViewProps) {
                                 title={props.title ?? "Dados básicos"}
                                 classNameContentHolder={props.classNameContentHolder}
                             >
-                                {serviceStage.priorityView > 0 && (
-                                    <InfoView classNameHolder="w-full" title="Lista de espera">{serviceStage.priorityView + ""}</InfoView>
-                                )}
                                 <InfoView title="Etapa">{serviceStage.title}</InfoView>
                                 <InfoView title="Data">{handleUTCToDateShow(serviceStage.dateDue?.toString())}</InfoView>
+                                <InfoView title="Status">
+                                    <SwiftInfoButton
+                                        isDisabled={true}
+                                        value={serviceStage.status}
+                                        values={["EM ANDAMENTO", "FINALIZADO", "PARADO", "PENDENTE"]}
+                                    />
+                                </InfoView>
+                                {/*
+                                        {serviceStage.priorityView > 0 && (
+                                            <InfoView classNameHolder="w-full" title="Lista de espera">{serviceStage.priorityView + ""}</InfoView>
+                                        )}
                                 {serviceStage.status === "FINALIZADO" && (
                                     <InfoView classNameHolder="w-full" classNameInfo="rounded-sm px-2 py-1 text-green-100 bg-green-600 text-[0.8rem] font-bold" title="">{serviceStage.status}</InfoView>
                                 )}
@@ -123,11 +132,12 @@ export default function ServiceStageView(props: ServiceStageViewProps) {
                                 )}
                                 {props.showMoreInfo && (
                                     handlePutService()
-                                )}
-                                <ScrollDownTransition isOpen={isShowInfo}>
-                                    <InfoView title="Descrição">{serviceStage.description}</InfoView>
+                                    )}
                                     <InfoView title="Data criação">{handleUTCToDateShow(serviceStage.dateInsertUTC.toString())}</InfoView>
                                     {serviceStage.dateLastUpdateUTC > 0 && <InfoView title="Data atualização">{handleUTCToDateShow(serviceStage.dateLastUpdateUTC.toString())}</InfoView>}
+                                */}
+                                <ScrollDownTransition isOpen={isShowInfo}>
+                                    <InfoView title="Descrição">{serviceStage.description}</InfoView>
                                     {props.dataInside && handlePutData()}
                                 </ScrollDownTransition>
                                 {props.canShowHideData && props.hideData && hasHideData && (

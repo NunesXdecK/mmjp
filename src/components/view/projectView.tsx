@@ -7,10 +7,12 @@ import InfoHolderView from "./infoHolderView"
 import PlaceholderItemList from "../list/placeholderItemList"
 import ScrollDownTransition from "../animation/scrollDownTransition"
 import { ChevronDownIcon, ChevronRightIcon } from "@heroicons/react/outline"
-import { defaultProject, Project, Service } from "../../interfaces/objectInterfaces"
+import { defaultProject, Payment, Project, Service } from "../../interfaces/objectInterfaces"
 import { handleUTCToDateShow } from "../../util/dateUtils"
 import ServiceView from "./serviceView"
 import SwitchTextButton from "../button/switchTextButton"
+import ProjectStatusButton from "../button/projectStatusButton"
+import PaymentView from "./paymentView"
 
 interface ProjectViewProps {
     id?: string,
@@ -34,6 +36,7 @@ export default function ProjectView(props: ProjectViewProps) {
     const [isShowInfo, setIsShowInfo] = useState(props.hideData ? false : true)
     const [project, setProject] = useState<Project>(props.project ?? defaultProject)
     const [services, setServices] = useState<Service[]>([])
+    const [payments, setPayments] = useState<Payment[]>([])
 
     const hasHideData =
         project.clients?.length > 0
@@ -98,9 +101,9 @@ export default function ProjectView(props: ProjectViewProps) {
         }) ?? []
         return (
             <div className="w-full">
+                {/*
                 {listClients?.map((owner, index) => (
                     <div key={index + owner}>
-                        {/*
                         {owner?.length && owner.includes(PERSON_COLLECTION_NAME) && (
                             <PersonView
                                 hideData
@@ -121,12 +124,11 @@ export default function ProjectView(props: ProjectViewProps) {
                                 id={owner.split("/")[1] ?? ""}
                             />
                         )}
-                        */}
                         {handlePutOwner(owner)}
                     </div>
                 ))}
 
-
+            */}
                 {listServices?.map((service, index) => (
                     <ServiceView
                         hideData
@@ -136,6 +138,18 @@ export default function ProjectView(props: ProjectViewProps) {
                         elementId={service.id}
                         key={index + service.id}
                         title={"Serviço " + (index + 1)}
+                    />
+                ))}
+                
+                {payments?.map((payment, index) => (
+                    <PaymentView
+                        hideData
+                        dataInside
+                        hideProject
+                        canShowHideData
+                        elementId={payment.id}
+                        key={index + payment.id}
+                        title={"Pagamento " + (index + 1)}
                     />
                 ))}
             </div>
@@ -150,6 +164,9 @@ export default function ProjectView(props: ProjectViewProps) {
                     setProject(res.data)
                     fetch("api/services/" + res.data.id).then((res) => res.json()).then((res) => {
                         setServices(res.list)
+                    })
+                    fetch("api/payments/" + res.data.id).then((res) => res.json()).then((res) => {
+                        setPayments(res.list)
                     })
                 })
             }
@@ -174,13 +191,19 @@ export default function ProjectView(props: ProjectViewProps) {
                                 title={props.title ?? "Dados básicos"}
                                 classNameContentHolder={props.classNameContentHolder}
                             >
-                                
-                                {project.priorityView > 0 && (
-                                    <InfoView classNameHolder="w-full" title="Lista de espera">{project.priorityView + ""}</InfoView>
-                                )}
                                 <InfoView title="Projeto">{project.title}</InfoView>
                                 <InfoView title="Número">{project.number}</InfoView>
                                 <InfoView title="Data">{handleUTCToDateShow(project.dateDue?.toString())}</InfoView>
+                                <InfoView title="Status">
+                                    <ProjectStatusButton
+                                        isDisabled={true}
+                                        value={project.status}
+                                    />
+                                </InfoView>
+                                {/*
+                                        {project.priorityView > 0 && (
+                                            <InfoView classNameHolder="w-full" title="Lista de espera">{project.priorityView + ""}</InfoView>
+                                        )}
                                 {project.status === "FINALIZADO" && (
                                     <InfoView classNameHolder="w-full" classNameInfo="rounded-sm px-2 py-1 text-green-100 bg-green-600 text-[0.8rem] font-bold" title="">{project.status}</InfoView>
                                 )}
@@ -190,9 +213,10 @@ export default function ProjectView(props: ProjectViewProps) {
                                 {props.showMoreInfo && (
                                     handlePutOwner(project.clients[0])
                                 )}
-                                <ScrollDownTransition isOpen={isShowInfo}>
                                     <InfoView title="Data criação">{handleUTCToDateShow(project.dateInsertUTC.toString())}</InfoView>
                                     {project.dateLastUpdateUTC > 0 && <InfoView title="Data atualização">{handleUTCToDateShow(project.dateLastUpdateUTC.toString())}</InfoView>}
+                                        */}
+                                <ScrollDownTransition isOpen={isShowInfo}>
                                     {props.dataInside && handlePutData()}
                                 </ScrollDownTransition>
                                 {props.canShowHideData && props.hideData && hasHideData && (

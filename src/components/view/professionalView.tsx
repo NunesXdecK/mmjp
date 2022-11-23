@@ -81,8 +81,10 @@ export default function ProfessionalView(props: ProfessionalViewProps) {
                                 <ScrollDownTransition isOpen={isShowInfo}>
                                     <InfoView title="CREA">{professional.creaNumber}</InfoView>
                                     <InfoView title="Código credencial">{professional.credentialCode}</InfoView>
+                                    {/*
                                     <InfoView title="Data criação">{handleUTCToDateShow(professional.dateInsertUTC.toString())}</InfoView>
                                     {professional.dateLastUpdateUTC > 0 && <InfoView title="Data atualização">{handleUTCToDateShow(professional.dateLastUpdateUTC.toString())}</InfoView>}
+                                    */}
                                     {props.dataInside && handlePutData()}
                                 </ScrollDownTransition>
                                 {props.canShowHideData && props.hideData && hasHideData && (

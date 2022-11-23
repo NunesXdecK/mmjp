@@ -6,11 +6,13 @@ import { useEffect, useState } from "react"
 import WindowModal from "../modal/windowModal"
 import UserDataForm from "../form/userDataForm"
 import FormRowColumn from "../form/formRowColumn"
-import UserActionBarForm from "../bar/userActionBar"
+import UserActionBarForm, { handleSaveUserInner } from "../bar/userActionBar"
 import PersonNameListItem from "../list/personNameListItem"
 import { PlusIcon, RefreshIcon } from "@heroicons/react/solid"
 import { FeedbackMessage } from "../modal/feedbackMessageModal"
 import { User, defaultUser } from "../../interfaces/objectInterfaces"
+import UserView from "../view/userView"
+import UserStatusButton from "../button/userStatusButton"
 
 interface UserPageProps {
     id?: string,
@@ -68,6 +70,23 @@ export default function UserPage(props: UserPageProps) {
         setUsers(list)
         handleSetIsLoading(false)
         handleShowMessage(feedbackMessage)
+    }
+
+    const handleStatusClick = async (element, value) => {
+        const user: User = {
+            ...element,
+            isBlocked: value,
+        }
+        let feedbackMessage: FeedbackMessage = { messages: ["Algo deu errado!"], messageType: "ERROR" }
+        handleSetIsLoading(true)
+        const res = await handleSaveUserInner(user, true)
+        handleSetIsLoading(false)
+        if (res.status === "ERROR") {
+            handleShowMessage(feedbackMessage)
+            return
+        }
+        feedbackMessage = { messages: ["Sucesso!"], messageType: "SUCCESS" }
+        handleAfterSave(feedbackMessage, user, true)
     }
 
     const handleNewClick = async () => {
@@ -142,7 +161,8 @@ export default function UserPage(props: UserPageProps) {
             <FormRow>
                 <FormRowColumn unit="2">Nome</FormRowColumn>
                 <FormRowColumn unit="2">Username</FormRowColumn>
-                <FormRowColumn unit="2">E-mail</FormRowColumn>
+                <FormRowColumn unit="1">E-mail</FormRowColumn>
+                <FormRowColumn unit="1"></FormRowColumn>
             </FormRow>
         )
     }
@@ -152,7 +172,19 @@ export default function UserPage(props: UserPageProps) {
             <FormRow>
                 <FormRowColumn unit="2"><PersonNameListItem id={element.person?.id} /></FormRowColumn>
                 <FormRowColumn unit="2">{element.username}</FormRowColumn>
-                <FormRowColumn unit="2">{element.email}</FormRowColumn>
+                <FormRowColumn unit="1">{element.email}</FormRowColumn>
+                <FormRowColumn unit="1">
+                    <UserStatusButton
+                        user={element}
+                        id={element.id}
+                        onAfter={handleAfterSave}
+                        isDisabled={props.isDisabled}
+                        value={element.isBlocked ? "BLOQUEADO" : "ATIVO"}
+                        onClick={async (value) => {
+                            handleStatusClick(element, (value === "ATIVO" ? false : true))
+                        }}
+                    />
+                </FormRowColumn>
             </FormRow>
         )
     }
@@ -183,9 +215,9 @@ export default function UserPage(props: UserPageProps) {
                 </Button>
             </ActionBar>
             <ListTable
-                title="Profissionais"
-                isActive={index}
                 list={users}
+                title="Usuarios"
+                isActive={index}
                 isLoading={props.isLoading}
                 onSetIsActive={setIndex}
                 onTableRow={handlePutRows}
@@ -197,7 +229,7 @@ export default function UserPage(props: UserPageProps) {
             />
             <WindowModal
                 max
-                title="Profissional"
+                title="Usuario"
                 id="service-stage-register-modal"
                 setIsOpen={handleCloseModal}
                 isOpen={isRegister || isForShow}
@@ -239,7 +271,7 @@ export default function UserPage(props: UserPageProps) {
                         />
                     )}
                     {isForShow && (
-                        <></>
+                        <UserView elementId={user.id} />
                     )}
                 </>
             </WindowModal>

@@ -96,15 +96,16 @@ export default function PersonView(props: PersonViewProps) {
                                     <InfoView title="Estado civil">{person.maritalStatus}</InfoView>
                                     <InfoView title="Profissão">{person.profession}</InfoView>
                                     {person.telephones?.length > 0 && (
-                                        <>
-                                            <InfoView title="Telefones"></InfoView>
+                                        <InfoView title="Telefones">
                                             {person.telephones?.map((element, index) => (
-                                                <InfoView key={index + element} title="">{handleMaskTelephone(element)}</InfoView>
+                                                <span key={index + element}>{handleMaskTelephone(element) + (index === person.telephones.length - 1 ? "" : ", ")}</span>
                                             ))}
-                                        </>
+                                        </InfoView>
                                     )}
+                                    {/*
                                     <InfoView title="Data criação">{handleUTCToDateShow(person.dateInsertUTC.toString())}</InfoView>
                                     {person.dateLastUpdateUTC > 0 && <InfoView title="Data atualização">{handleUTCToDateShow(person.dateLastUpdateUTC.toString())}</InfoView>}
+                                    */}
                                     {props.dataInside && handlePutData()}
                                 </ScrollDownTransition>
                                 {props.canShowHideData && props.hideData && hasHideData && (

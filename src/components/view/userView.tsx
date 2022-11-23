@@ -9,6 +9,7 @@ import ScrollDownTransition from "../animation/scrollDownTransition"
 import { defaultUser, User } from "../../interfaces/objectInterfaces"
 import { ChevronDownIcon, ChevronRightIcon } from "@heroicons/react/outline"
 import SwitchTextButton from "../button/switchTextButton"
+import UserStatusButton from "../button/userStatusButton"
 
 interface UserViewProps {
     id?: string,
@@ -77,11 +78,19 @@ export default function UserView(props: UserViewProps) {
                                 title={props.title ?? "Dados do usuário"}
                                 classNameContentHolder={props.classNameContentHolder}
                             >
+                                {/*
                                 {user.isBlocked && (
                                     <InfoView classNameHolder="w-full" classNameInfo="rounded-md px-3 py-1 bg-red-600 text-white">BLOQUEADO</InfoView>
                                 )}
+                                */}
                                 <InfoView title="Username">{user.username}</InfoView>
                                 <InfoView title="E-mail">{user.email}</InfoView>
+                                <InfoView title="Status">
+                                    <UserStatusButton
+                                        isDisabled={true}
+                                        value={user.isBlocked ? "BLOQUEADO" : "ATIVO"}
+                                    />
+                                </InfoView>
                                 <ScrollDownTransition isOpen={isShowInfo}>
                                     <InfoView title="Cargo">{user.office}</InfoView>
                                     {user.dateInsertUTC > 0 && <InfoView title="Data inserção">{handleUTCToDateShow(user.dateInsertUTC.toString())}</InfoView>}

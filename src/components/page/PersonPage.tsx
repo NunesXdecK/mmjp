@@ -11,6 +11,7 @@ import PersonActionBarForm from "../bar/personActionBar"
 import { PlusIcon, RefreshIcon } from "@heroicons/react/solid"
 import { FeedbackMessage } from "../modal/feedbackMessageModal"
 import { Person, defaultPerson } from "../../interfaces/objectInterfaces"
+import PersonView from "../view/personView"
 
 interface PersonPageProps {
     id?: string,
@@ -238,7 +239,7 @@ export default function PersonPage(props: PersonPageProps) {
                         />
                     )}
                     {isForShow && (
-                        <></>
+                        <PersonView elementId={person.id} />
                     )}
                 </>
             </WindowModal>

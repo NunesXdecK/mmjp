@@ -49,7 +49,7 @@ export default function CompanyView(props: CompanyViewProps) {
                         person={owner}
                         canShowHideData
                         key={index + owner.id}
-                        title={"Dados representante " + (index + 1)}
+                        title={"Representante"}
                         addressTitle={"Endereço"}
                     />
                 ))}
@@ -95,15 +95,16 @@ export default function CompanyView(props: CompanyViewProps) {
                                 <InfoView title="CNPJ">{handleMaskCNPJ(company.cnpj)}</InfoView>
                                 <ScrollDownTransition isOpen={isShowInfo}>
                                     {company.telephones?.length > 0 && (
-                                        <>
-                                            <InfoView title="Telefones"></InfoView>
+                                        <InfoView title="Telefones">
                                             {company.telephones?.map((element, index) => (
-                                                <InfoView key={index + element} title="">{handleMaskTelephone(element)}</InfoView>
+                                                <span key={index + element}>{handleMaskTelephone(element) + (index === company.telephones.length - 1 ? "" : ", ")}</span>
                                             ))}
-                                        </>
+                                        </InfoView>
                                     )}
+                                    {/*
                                     <InfoView title="Data criação">{handleUTCToDateShow(company.dateInsertUTC.toString())}</InfoView>
                                     {company.dateLastUpdateUTC > 0 && <InfoView title="Data atualização">{handleUTCToDateShow(company.dateLastUpdateUTC.toString())}</InfoView>}
+                                    */}
                                     {props.dataInside && handlePutData()}
                                 </ScrollDownTransition>
                                 {props.canShowHideData && props.hideData && hasHideData && (

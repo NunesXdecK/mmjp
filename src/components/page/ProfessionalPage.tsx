@@ -11,6 +11,7 @@ import ProfessionalDataForm from "../form/professionalDataForm"
 import { FeedbackMessage } from "../modal/feedbackMessageModal"
 import ProfessionalActionBarForm from "../bar/professionalActionBar"
 import { Professional, defaultProfessional } from "../../interfaces/objectInterfaces"
+import ProfessionalView from "../view/professionalView"
 
 interface ProfessionalPageProps {
     id?: string,
@@ -238,7 +239,7 @@ export default function ProfessionalPage(props: ProfessionalPageProps) {
                         />
                     )}
                     {isForShow && (
-                        <></>
+                        <ProfessionalView elementId={professional.id} />
                     )}
                 </>
             </WindowModal>

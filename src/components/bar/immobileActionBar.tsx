@@ -2,8 +2,10 @@ import ActionBar from "./actionBar";
 import Button from "../button/button";
 import { handleRemoveCEPMask } from "../../util/maskUtil";
 import { FeedbackMessage } from "../modal/feedbackMessageModal";
-import { Immobile, defaultImmobile } from "../../interfaces/objectInterfaces";
+import { Immobile, defaultImmobile, ImmobileStatus } from "../../interfaces/objectInterfaces";
 import { handleValidationNotNull, ValidationReturn } from "../../util/validationUtil";
+import DropDownButton from "../button/dropDownButton";
+import MenuButton from "../button/menuButton";
 
 interface ImmobileActionBarFormProps {
     className?: string,
@@ -37,7 +39,7 @@ export const handleImmobileValidationForDB = (immobile: Immobile) => {
             validation = { ...validation, messages: [...validation.messages, "O proprietário não está cadastrado na base."] }
         }
     })
-    validation = { ...validation, validation: nameCheck && ownersCheck && ownersOnBaseCheck }
+    validation = { ...validation, validation: nameCheck && ownersOnBaseCheck }
     return validation
 }
 
@@ -93,9 +95,12 @@ export default function ImmobileActionBarForm(props: ImmobileActionBarFormProps)
         }
     }
 
-    const handleSave = async (isForCloseModal) => {
+    const handleSave = async (status: ImmobileStatus, isForCloseModal) => {
         handleSetIsLoading(true)
         let immobile = props.immobile
+        if (status?.length > 0) {
+            immobile = { ...immobile, status: status }
+        }
         const isValid = handleImmobileValidationForDB(immobile)
         if (!isValid.validation) {
             handleSetIsLoading(false)
@@ -129,10 +134,48 @@ export default function ImmobileActionBarForm(props: ImmobileActionBarFormProps)
             <div className="w-full flex flex-row justify-between">
                 <Button
                     isLoading={props.isLoading}
-                    onClick={() => handleSave(false)}
+                    onClick={() => handleSave(props.immobile.status, false)}
                 >
                     Salvar
                 </Button>
+                <DropDownButton
+                    isLeft
+                    title="..."
+                    isLoading={props.isLoading}
+                >
+                    <div className="w-full flex flex-col">
+                        <MenuButton
+                            isLoading={props.isLoading}
+                            isHidden={props.immobile.status === "NORMAL"}
+                            isDisabled={props.immobile.status === "NORMAL"}
+                            onClick={() => {
+                                handleSave("NORMAL", true)
+                            }}
+                        >
+                            Normalizar imóvel
+                        </MenuButton>
+                        <MenuButton
+                            isLoading={props.isLoading}
+                            isHidden={props.immobile.status === "UNIFICADO"}
+                            isDisabled={props.immobile.status === "UNIFICADO"}
+                            onClick={() => {
+                                handleSave("UNIFICADO", true)
+                            }}
+                        >
+                            Unificar imóvel
+                        </MenuButton>
+                        <MenuButton
+                            isLoading={props.isLoading}
+                            isHidden={props.immobile.status === "DESMEMBRADO"}
+                            isDisabled={props.immobile.status === "DESMEMBRADO"}
+                            onClick={() => {
+                                handleSave("DESMEMBRADO", true)
+                            }}
+                        >
+                            Desmembrar imóvel
+                        </MenuButton>
+                    </div>
+                </DropDownButton>
             </div>
         </ActionBar>
     )

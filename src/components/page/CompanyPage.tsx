@@ -11,6 +11,7 @@ import CompanyActionBarForm from "../bar/companyActionBar"
 import { PlusIcon, RefreshIcon } from "@heroicons/react/solid"
 import { FeedbackMessage } from "../modal/feedbackMessageModal"
 import { Company, defaultCompany } from "../../interfaces/objectInterfaces"
+import CompanyView from "../view/companyView"
 
 interface CompanyPageProps {
     id?: string,
@@ -238,7 +239,7 @@ export default function CompanyPage(props: CompanyPageProps) {
                         />
                     )}
                     {isForShow && (
-                        <></>
+                        <CompanyView elementId={company.id} />
                     )}
                 </>
             </WindowModal>

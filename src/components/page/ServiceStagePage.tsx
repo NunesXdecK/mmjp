@@ -15,6 +15,7 @@ import ServiceStageDataForm from "../form/serviceStageDataForm"
 import { ServiceStage, defaultServiceStage } from "../../interfaces/objectInterfaces"
 import ServiceStageActionBarForm, { handleSaveServiceStageInner } from "../bar/serviceStageActionBar"
 import NavBar, { NavBarPath } from "../bar/navBar"
+import ServiceStageView from "../view/serviceStageView"
 
 interface ServiceStagePageProps {
     id?: string,
@@ -238,23 +239,25 @@ export default function ServiceStagePage(props: ServiceStagePageProps) {
     const handlePutModalTitle = (short: boolean) => {
         let paths = []
         try {
-            let prevPath: NavBarPath = {
-                ...props.prevPath[props.prevPath?.length - 1],
-                onClick: handleBackClick,
-                path: props.prevPath[props.prevPath?.length - 1]?.path + "/",
+            if (props.prevPath?.length > 0) {
+                let prevPath: NavBarPath = {
+                    ...props.prevPath[props.prevPath?.length - 1],
+                    onClick: handleBackClick,
+                    path: props.prevPath[props.prevPath?.length - 1]?.path + "/",
+                }
+                let path: NavBarPath = { path: "Etapa", onClick: null }
+                if (short) {
+                    //path = { ...path, path: "E" }
+                }
+                if (serviceStage.id?.length > 0) {
+                    path = { ...path, path: path.path + "-" + serviceStage.title, onClick: null }
+                }
+                paths = [
+                    ...props.prevPath.slice(0, props.prevPath?.length - 1),
+                    prevPath,
+                    path
+                ]
             }
-            let path: NavBarPath = { path: "Etapa", onClick: null }
-            if (short) {
-                //path = { ...path, path: "E" }
-            }
-            if (serviceStage.id?.length > 0) {
-                path = { ...path, path: path.path + "-" + serviceStage.title, onClick: null }
-            }
-            paths = [
-                ...props.prevPath.slice(0, props.prevPath?.length - 1),
-                prevPath,
-                path
-            ]
         } catch (err) {
             console.error(err)
         }
@@ -301,7 +304,7 @@ export default function ServiceStagePage(props: ServiceStagePageProps) {
                     */}
                 <FormRowColumn unit="2">{element.title}</FormRowColumn>
                 <FormRowColumn unit="1"><ServiceNameListItem id={element.service.id} /></FormRowColumn>
-                <FormRowColumn unit="1"><UserNameListItem id={element.responsible.id} /></FormRowColumn>
+                <FormRowColumn unit="1"><UserNameListItem id={element.responsible?.id} /></FormRowColumn>
                 <FormRowColumn unit="1">
                     <SwiftInfoButton
                         id={element.id + "-"}
@@ -417,7 +420,7 @@ export default function ServiceStagePage(props: ServiceStagePageProps) {
                         />
                     )}
                     {isForShow && (
-                        <></>
+                        <ServiceStageView elementId={serviceStage.id} />
                     )}
                 </>
             </WindowModal>

@@ -15,6 +15,7 @@ import ProjectNumberListItem from "../list/projectNumberListItem"
 import { Service, defaultService } from "../../interfaces/objectInterfaces"
 import ServiceActionBarForm, { handleSaveServiceInner } from "../bar/serviceActionBar"
 import NavBar, { NavBarPath } from "../bar/navBar"
+import ServiceView from "../view/serviceView"
 
 interface ServicePageProps {
     id?: string,
@@ -169,23 +170,25 @@ export default function ServicePage(props: ServicePageProps) {
     const handlePutModalTitle = (short: boolean) => {
         let paths = []
         try {
-            let prevPath: NavBarPath = {
-                ...props.prevPath[props.prevPath?.length - 1],
-                onClick: handleBackClick,
-                path: props.prevPath[props.prevPath?.length - 1]?.path + "/",
+            if (props.prevPath?.length > 0) {
+                let prevPath: NavBarPath = {
+                    ...props.prevPath[props.prevPath?.length - 1],
+                    onClick: handleBackClick,
+                    path: props.prevPath[props.prevPath?.length - 1]?.path + "/",
+                }
+                let path: NavBarPath = { path: "Service", onClick: null }
+                if (short) {
+                    //path = { ...path, path: "S" }
+                }
+                if (service.id?.length > 0) {
+                    path = { ...path, path: path.path + "-" + service.title, onClick: null }
+                }
+                paths = [
+                    ...props.prevPath.slice(0, props.prevPath?.length - 2),
+                    prevPath,
+                    path
+                ]
             }
-            let path: NavBarPath = { path: "Service", onClick: null }
-            if (short) {
-                //path = { ...path, path: "S" }
-            }
-            if (service.id?.length > 0) {
-                path = { ...path, path: path.path + "-" + service.title, onClick: null }
-            }
-            paths = [
-                ...props.prevPath.slice(0, props.prevPath?.length - 2),
-                prevPath,
-                path
-            ]
         } catch (err) {
             console.error(err)
         }
@@ -330,7 +333,7 @@ export default function ServicePage(props: ServicePageProps) {
                         />
                     )}
                     {isForShow && (
-                        <></>
+                        <ServiceView elementId={service.id} />
                     )}
                 </>
             </WindowModal>

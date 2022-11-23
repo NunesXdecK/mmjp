@@ -6,7 +6,6 @@ import { useEffect, useState } from "react"
 import InfoHolderView from "./infoHolderView"
 import ProfessionalView from "./professionalView"
 import ServiceStageView from "./serviceStageView"
-import ServicePaymentView from "./servicePaymentView"
 import { handleUTCToDateShow } from "../../util/dateUtils"
 import PlaceholderItemList from "../list/placeholderItemList"
 import { handleMountNumberCurrency } from "../../util/maskUtil"
@@ -14,6 +13,7 @@ import ScrollDownTransition from "../animation/scrollDownTransition"
 import { defaultService, Service } from "../../interfaces/objectInterfaces"
 import { ChevronDownIcon, ChevronRightIcon } from "@heroicons/react/outline"
 import SwitchTextButton from "../button/switchTextButton"
+import ServiceStatusButton from "../button/serviceStatusButton"
 
 interface ServiceViewProps {
     id?: string,
@@ -127,7 +127,7 @@ export default function ServiceView(props: ServiceViewProps) {
                         title={"Etapa " + (index + 1)}
                     />
                 ))}
-
+                {/*
                 {listServicePayment?.map((servicePayment, index) => (
                     <ServicePaymentView
                         hideData
@@ -139,6 +139,7 @@ export default function ServiceView(props: ServiceViewProps) {
                         title={"Pagamento " + (index + 1)}
                     />
                 ))}
+            */}
 
                 {listTarget?.map((immobile, index) => (
                     <ImmobileView
@@ -194,14 +195,21 @@ export default function ServiceView(props: ServiceViewProps) {
                                 title={props.title ?? "Dados básicos"}
                                 classNameContentHolder={props.classNameContentHolder}
                             >
-                                {service.priorityView > 0 && (
-                                    <InfoView classNameHolder="w-full" title="Lista de espera">{service.priorityView + ""}</InfoView>
-                                )}
                                 <InfoView title="Serviço">{service.title}</InfoView>
                                 <InfoView title="Valor">{handleMountNumberCurrency(service.value.toString(), ".", ",", 3, 2)}</InfoView>
                                 <InfoView title="Quantidade">{service.quantity}</InfoView>
                                 <InfoView title="Total">{handleMountNumberCurrency(service.total.toString(), ".", ",", 3, 2)}</InfoView>
                                 <InfoView title="Data">{handleUTCToDateShow(service.dateDue?.toString())}</InfoView>
+                                <InfoView title="Status">
+                                    <ServiceStatusButton
+                                        isDisabled={true}
+                                        value={service.status}
+                                    />
+                                </InfoView>
+                                {/*
+                                        {service.priorityView > 0 && (
+                                            <InfoView classNameHolder="w-full" title="Lista de espera">{service.priorityView + ""}</InfoView>
+                                        )}
                                 {service.status === "FINALIZADO" && (
                                     <InfoView classNameHolder="w-full" classNameInfo="rounded-sm px-2 py-1 text-green-100 bg-green-600 text-[0.8rem] font-bold" title="">{service.status}</InfoView>
                                 )}
@@ -210,10 +218,11 @@ export default function ServiceView(props: ServiceViewProps) {
                                 )}
                                 {props.showMoreInfo && (
                                     handlePutProject()
-                                )}
-                                <ScrollDownTransition isOpen={isShowInfo}>
+                                    )}
                                     <InfoView title="Data criação">{handleUTCToDateShow(service.dateInsertUTC.toString())}</InfoView>
                                     {service.dateLastUpdateUTC > 0 && <InfoView title="Data atualização">{handleUTCToDateShow(service.dateLastUpdateUTC.toString())}</InfoView>}
+                                */}
+                                <ScrollDownTransition isOpen={isShowInfo}>
                                     {props.dataInside && handlePutData()}
                                 </ScrollDownTransition>
                                 {props.canShowHideData && props.hideData && hasHideData && (

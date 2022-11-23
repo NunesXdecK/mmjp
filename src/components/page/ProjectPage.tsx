@@ -12,6 +12,7 @@ import { PlusIcon, RefreshIcon } from "@heroicons/react/solid"
 import { FeedbackMessage } from "../modal/feedbackMessageModal"
 import ProjectStatusButton from "../button/projectStatusButton"
 import { Project, Company, defaultProject, Person } from "../../interfaces/objectInterfaces"
+import ProjectView from "../view/projectView"
 
 interface ProjectPageProps {
     id?: string,
@@ -289,11 +290,11 @@ export default function ProjectPage(props: ProjectPageProps) {
                         onShowMessage={handleShowMessage}
                         onSetIsLoading={props.onSetIsLoading}
                         isDisabled={project.status === "FINALIZADO"}
-                        prevPath={[{ path: "P-" + project.number, onClick: null }]}
+                        prevPath={[{ path: "Projeto-" + project.number, onClick: null }]}
                     />
                 )}
                 {isForShow && (
-                    <></>
+                    <ProjectView elementId={project.id} />
                 )}
             </WindowModal>
         </>

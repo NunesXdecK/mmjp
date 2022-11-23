@@ -12,6 +12,7 @@ import { ChevronDownIcon, ChevronRightIcon } from "@heroicons/react/outline"
 import { defaultImmobile, Immobile } from "../../interfaces/objectInterfaces"
 import { handleUTCToDateShow } from "../../util/dateUtils"
 import SwitchTextButton from "../button/switchTextButton"
+import ImmobileStatusButton from "../button/immobileStatusButton"
 
 interface ImmobileViewProps {
     id?: string,
@@ -61,7 +62,7 @@ export default function ImmobileView(props: ImmobileViewProps) {
                                 canShowHideData
                                 person={owner}
                                 addressTitle={"Endereço"}
-                                title={"Dados do proprietário " + (index + 1)}
+                                title={"Proprietário " + (index + 1)}
                             />
                         )}
                         {owner && "cnpj" in owner && (
@@ -71,7 +72,7 @@ export default function ImmobileView(props: ImmobileViewProps) {
                                 canShowHideData
                                 elementId={owner.id}
                                 addressTitle={"Endereço"}
-                                title={"Dados do proprietário " + (index + 1)}
+                                title={"Proprietário " + (index + 1)}
                             />
                         )}
                     </div>
@@ -127,11 +128,17 @@ export default function ImmobileView(props: ImmobileViewProps) {
                                             <ChevronRightIcon className="text-gray-600 block h-5 w-5" aria-hidden="true" />
                                         )}
                                     </Button>
+                                    {(immobile.status === "DESMEMBRADO" || immobile.status === "UNIFICADO") && (
+                                        <InfoView classNameHolder="w-full" classNameInfo="rounded-sm px-2 py-1 text-green-100 bg-green-600 text-[0.8rem] font-bold" title="">{immobile.status}</InfoView>
+                                    )}
                                         )*/}
                                 <InfoView title="Nome do imóvel">{immobile.name}</InfoView>
-                                {(immobile.status === "DESMEMBRADO" || immobile.status === "UNIFICADO") && (
-                                    <InfoView classNameHolder="w-full" classNameInfo="rounded-sm px-2 py-1 text-green-100 bg-green-600 text-[0.8rem] font-bold" title="">{immobile.status}</InfoView>
-                                )}
+                                <InfoView title="Status">
+                                    <ImmobileStatusButton
+                                        isDisabled={true}
+                                        value={immobile.status}
+                                    />
+                                </InfoView>
                                 <ScrollDownTransition isOpen={isShowInfo}>
                                     <InfoView title="Gleba">{immobile.land}</InfoView>
                                     <InfoView title="Município/UF">{immobile.county}</InfoView>
@@ -142,8 +149,10 @@ export default function ImmobileView(props: ImmobileViewProps) {
                                     <InfoView title="Comarca">{immobile.comarca}</InfoView>
                                     <InfoView title="Codigo da comarca">{immobile.comarcaCode}</InfoView>
                                     <InfoView title="Matricula">{immobile.registration}</InfoView>
+                                    {/*
                                     <InfoView title="Data criação">{handleUTCToDateShow(immobile.dateInsertUTC.toString())}</InfoView>
                                     {immobile.dateLastUpdateUTC > 0 && <InfoView title="Data atualização">{handleUTCToDateShow(immobile.dateLastUpdateUTC.toString())}</InfoView>}
+                                    */}
                                     {props.dataInside && handlePutData()}
                                 </ScrollDownTransition>
                                 {props.canShowHideData && props.hideData && hasHideData && (

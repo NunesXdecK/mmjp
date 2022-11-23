@@ -1,3 +1,5 @@
+import { Children } from "react"
+
 interface InfoViewProps {
     id?: string,
     title?: string,
@@ -22,6 +24,10 @@ export default function InfoView(props: InfoViewProps) {
 
     if (props.classNameInfo) {
         classNameInfo = classNameInfo + " " + props.classNameInfo
+    }
+
+    if (props.children?.length === 0) {
+        classNameHolder = "hidden"
     }
     return (
         <div className={classNameHolder}>
