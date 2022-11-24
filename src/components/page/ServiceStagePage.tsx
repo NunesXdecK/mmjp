@@ -26,9 +26,9 @@ interface ServiceStagePageProps {
     isLoading?: boolean,
     isDisabled?: boolean,
     isStatusDisabled?: boolean,
-    prevPathLinkName?: any,
     prevPath?: NavBarPath[],
     onSetPage?: (any) => void,
+    onSetCheck?: (any) => void,
     onSetIsLoading?: (any) => void,
     onShowMessage?: (FeedbackMessage) => void,
 }
@@ -99,6 +99,12 @@ export default function ServiceStagePage(props: ServiceStagePageProps) {
     const handleSetIsLoading = (value) => {
         if (props.onSetIsLoading) {
             props.onSetIsLoading(value)
+        }
+    }
+
+    const handleSetCheck = (value) => {
+        if (props.onSetCheck) {
+            props.onSetCheck(value)
         }
     }
 
@@ -228,6 +234,7 @@ export default function ServiceStagePage(props: ServiceStagePageProps) {
         } else {
             setIndex((old) => 1)
         }
+        handleSetCheck(true)
     }
 
     const handleShowMessage = (feedbackMessage: FeedbackMessage) => {
@@ -238,6 +245,13 @@ export default function ServiceStagePage(props: ServiceStagePageProps) {
 
     const handlePutModalTitle = (short: boolean) => {
         let paths = []
+        let path: NavBarPath = { path: "Nova etapa", onClick: null }
+        if (short) {
+            //path = { ...path, path: "E" }
+        }
+        if (serviceStage.id?.length > 0) {
+            path = { ...path, path: "Etapa-" + serviceStage.title, onClick: null }
+        }
         try {
             if (props.prevPath?.length > 0) {
                 let prevPath: NavBarPath = {
@@ -245,19 +259,9 @@ export default function ServiceStagePage(props: ServiceStagePageProps) {
                     onClick: handleBackClick,
                     path: props.prevPath[props.prevPath?.length - 1]?.path + "/",
                 }
-                let path: NavBarPath = { path: "Etapa", onClick: null }
-                if (short) {
-                    //path = { ...path, path: "E" }
-                }
-                if (serviceStage.id?.length > 0) {
-                    path = { ...path, path: path.path + "-" + serviceStage.title, onClick: null }
-                }
-                paths = [
-                    ...props.prevPath.slice(0, props.prevPath?.length - 1),
-                    prevPath,
-                    path
-                ]
+                paths = [...props.prevPath.slice(0, props.prevPath?.length - 1), prevPath,]
             }
+            paths = [...paths, path]
         } catch (err) {
             console.error(err)
         }
@@ -266,7 +270,7 @@ export default function ServiceStagePage(props: ServiceStagePageProps) {
         } else {
             return (
                 <>
-                    {paths?.length > 0 ? (<NavBar pathList={paths} />) : "Etapa"}
+                    {paths?.length > 0 ? (<NavBar pathList={paths} />) : path.path}
                 </>
             )
         }
@@ -415,6 +419,7 @@ export default function ServiceStagePage(props: ServiceStagePageProps) {
                             onSet={setServiceStage}
                             isLoading={props.isLoading}
                             serviceStage={serviceStage}
+                            prevPath={(handlePutModalTitle(true))}
                             onSetIsLoading={props.onSetIsLoading}
                             isDisabled={serviceStage.status === "FINALIZADO"}
                         />

@@ -9,6 +9,7 @@ import InputClientCode from "../inputText/inputClientCode";
 import { Company } from "../../interfaces/objectInterfaces";
 import InputSelectPerson from "../inputText/inputSelectPerson";
 import { CNPJ_MARK, NOT_NULL_MARK, TELEPHONE_MARK } from "../../util/patternValidationUtil";
+import { NavBarPath } from "../bar/navBar";
 
 interface CompanyDataFormProps {
     title?: string,
@@ -18,6 +19,7 @@ interface CompanyDataFormProps {
     isLoading?: boolean,
     isDisabled?: boolean,
     company?: Company,
+    prevPath?: NavBarPath[] | any,
     onBlur?: (any) => void,
     onShowMessage?: (any) => void,
     onSet?: (any, number?) => void,
@@ -102,6 +104,7 @@ export default function CompanyDataForm(props: CompanyDataFormProps) {
                             title="Responsável"
                             onBlur={props.onBlur}
                             onSet={handleSetOwners}
+                            prevPath={props.prevPath}
                             isLoading={props.isLoading}
                             isDisabled={props.isDisabled}
                             value={props.company?.owners[0]?.name}

@@ -8,6 +8,7 @@ import ProfessionalDataForm from "../form/professionalDataForm";
 import { FeedbackMessage } from "../modal/feedbackMessageModal";
 import ProfessionalActionBarForm from "../bar/professionalActionBar";
 import { defaultProfessional, Professional } from "../../interfaces/objectInterfaces";
+import NavBar, { NavBarPath } from "../bar/navBar";
 
 interface InputSelectProfessionalProps {
     id?: string,
@@ -27,6 +28,7 @@ interface InputSelectProfessionalProps {
     isDisabled?: boolean,
     validationButton?: boolean,
     isMultipleSelect?: boolean,
+    prevPath?: NavBarPath[] | any,
     professionals?: Professional[],
     onSet?: (any) => void,
     onBlur?: (any?) => void,
@@ -98,6 +100,39 @@ export default function InputSelectProfessional(props: InputSelectProfessionalPr
             if (props.onShowMessage) {
                 props.onShowMessage(feedbackMessage)
             }
+        }
+    }
+
+    const handlePutModalTitle = (short: boolean) => {
+        let paths = []
+        let path: NavBarPath = { path: "Novo profissional", onClick: null }
+        if (short) {
+            //path = { ...path, path: "S" }
+        }
+        if (professional.id?.length > 0) {
+            path = { ...path, path: "Profissional-" + professional.title, onClick: null }
+        }
+        try {
+            if (props.prevPath?.length > 0) {
+                let prevPath: NavBarPath = {
+                    ...props.prevPath[props.prevPath?.length - 1],
+                    onClick: handleBackClick,
+                    path: props.prevPath[props.prevPath?.length - 1]?.path + "/",
+                }
+                paths = [...props.prevPath.slice(0, props.prevPath?.length - 1), prevPath,]
+            }
+            paths = [...paths, path]
+        } catch (err) {
+            console.error(err)
+        }
+        if (short) {
+            return paths
+        } else {
+            return (
+                <>
+                    {paths?.length > 0 ? (<NavBar pathList={paths} />) : path.path}
+                </>
+            )
         }
     }
 
@@ -175,6 +210,7 @@ export default function InputSelectProfessional(props: InputSelectProfessionalPr
                 max
                 isOpen={isOpen}
                 setIsOpen={setIsOpen}
+                title={(handlePutModalTitle(false))}
                 id={props.id + "-window-modal-register-professional"}
                 onClose={() => {
                     setIsRegister(false)
@@ -199,6 +235,7 @@ export default function InputSelectProfessional(props: InputSelectProfessionalPr
                             professional={professional}
                             title="Informações pessoais"
                             onShowMessage={props.onShowMessage}
+                            prevPath={(handlePutModalTitle(true))}
                             subtitle="Dados importantes sobre o usuário" />
                     )}
                 </>

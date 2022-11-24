@@ -9,11 +9,12 @@ import FormRowColumn from "../form/formRowColumn"
 import BudgetDataForm from "../form/budgetDataForm"
 import ContractPrintView from "../view/contractPrintView"
 import SwiftInfoButton from "../button/switchInfoButton"
-import { PlusIcon, RefreshIcon } from "@heroicons/react/solid"
+import { PlusIcon } from "@heroicons/react/solid"
 import { FeedbackMessage } from "../modal/feedbackMessageModal"
 import { handleUTCToDateShow, handleNewDateToUTC } from "../../util/dateUtils"
 import BudgetActionBarForm, { handleSaveBudgetInner } from "../bar/budgetActionBar"
 import { Budget, BudgetPayment, Company, defaultBudget, Person } from "../../interfaces/objectInterfaces"
+import NavBar, { NavBarPath } from "../bar/navBar"
 
 interface BudgetPageProps {
     id?: string,
@@ -23,6 +24,7 @@ interface BudgetPageProps {
     isLoading?: boolean,
     isDisabled?: boolean,
     isStatusDisabled?: boolean,
+    prevPath?: NavBarPath[],
     onSetPage?: (any) => void,
     onSetIsLoading?: (any) => void,
     onShowMessage?: (FeedbackMessage) => void,
@@ -185,6 +187,39 @@ export default function BudgetPage(props: BudgetPageProps) {
         }
     }
 
+    const handlePutModalTitle = (short: boolean) => {
+        let paths = []
+        let path: NavBarPath = { path: "Novo orçamento", onClick: null }
+        if (short) {
+            //path = { ...path, path: "S" }
+        }
+        if (budget.id?.length > 0) {
+            path = { ...path, path: "Orçamento-" + budget.title, onClick: null }
+        }
+        try {
+            if (props.prevPath?.length > 0) {
+                let prevPath: NavBarPath = {
+                    ...props.prevPath[props.prevPath?.length - 1],
+                    onClick: handleBackClick,
+                    path: props.prevPath[props.prevPath?.length - 1]?.path + "/",
+                }
+                paths = [...props.prevPath.slice(0, props.prevPath?.length - 1), prevPath,]
+            }
+            paths = [...paths, path]
+        } catch (err) {
+            console.error(err)
+        }
+        if (short) {
+            return paths
+        } else {
+            return (
+                <>
+                    {paths?.length > 0 ? (<NavBar pathList={paths} />) : path.path}
+                </>
+            )
+        }
+    }
+
     const handlePutHeaders = () => {
         return (
             <FormRow>
@@ -312,10 +347,10 @@ export default function BudgetPage(props: BudgetPageProps) {
 
             <WindowModal
                 max
-                title="Orçamento"
                 id="budget-register-modal"
                 setIsOpen={handleCloseModal}
                 isOpen={isRegister || isForShow}
+                title={(handlePutModalTitle(false))}
                 headerBottom={(
                     <div className="p-4 pb-0">
                         {isRegister && (
@@ -353,6 +388,7 @@ export default function BudgetPage(props: BudgetPageProps) {
                         onSet={setBudget}
                         isLoading={props.isLoading}
                         onShowMessage={handleShowMessage}
+                        prevPath={(handlePutModalTitle(true))}
                         isDisabled={
                             budget.status === "VENCIDO" ||
                             budget.status === "APROVADO" ||

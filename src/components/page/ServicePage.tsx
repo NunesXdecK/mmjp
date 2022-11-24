@@ -28,6 +28,7 @@ interface ServicePageProps {
     isStatusDisabled?: boolean,
     prevPath?: NavBarPath[],
     onSetPage?: (any) => void,
+    onSetCheck?: (any) => void,
     onSetIsLoading?: (any) => void,
     onShowMessage?: (FeedbackMessage) => void,
 }
@@ -53,6 +54,12 @@ export default function ServicePage(props: ServicePageProps) {
     const handleSetIsLoading = (value) => {
         if (props.onSetIsLoading) {
             props.onSetIsLoading(value)
+        }
+    }
+
+    const handleSetCheck = (value) => {
+        if (props.onSetCheck) {
+            props.onSetCheck(value)
         }
     }
 
@@ -159,6 +166,7 @@ export default function ServicePage(props: ServicePageProps) {
         } else {
             setIndex((old) => 1)
         }
+        handleSetCheck(true)
     }
 
     const handleShowMessage = (feedbackMessage: FeedbackMessage) => {
@@ -169,6 +177,13 @@ export default function ServicePage(props: ServicePageProps) {
 
     const handlePutModalTitle = (short: boolean) => {
         let paths = []
+        let path: NavBarPath = { path: "Novo serviço", onClick: null }
+        if (short) {
+            //path = { ...path, path: "S" }
+        }
+        if (service.id?.length > 0) {
+            path = { ...path, path: "Serviço-" + service.title, onClick: null }
+        }
         try {
             if (props.prevPath?.length > 0) {
                 let prevPath: NavBarPath = {
@@ -176,19 +191,9 @@ export default function ServicePage(props: ServicePageProps) {
                     onClick: handleBackClick,
                     path: props.prevPath[props.prevPath?.length - 1]?.path + "/",
                 }
-                let path: NavBarPath = { path: "Service", onClick: null }
-                if (short) {
-                    //path = { ...path, path: "S" }
-                }
-                if (service.id?.length > 0) {
-                    path = { ...path, path: path.path + "-" + service.title, onClick: null }
-                }
-                paths = [
-                    ...props.prevPath.slice(0, props.prevPath?.length - 2),
-                    prevPath,
-                    path
-                ]
+                paths = [...props.prevPath.slice(0, props.prevPath?.length - 1), prevPath,]
             }
+            paths = [...paths, path]
         } catch (err) {
             console.error(err)
         }
@@ -197,7 +202,7 @@ export default function ServicePage(props: ServicePageProps) {
         } else {
             return (
                 <>
-                    {paths?.length > 0 ? (<NavBar pathList={paths} />) : "Serviço"}
+                    {paths?.length > 0 ? (<NavBar pathList={paths} />) : path.path}
                 </>
             )
         }

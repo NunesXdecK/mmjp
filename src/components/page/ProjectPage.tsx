@@ -13,6 +13,7 @@ import { FeedbackMessage } from "../modal/feedbackMessageModal"
 import ProjectStatusButton from "../button/projectStatusButton"
 import { Project, Company, defaultProject, Person } from "../../interfaces/objectInterfaces"
 import ProjectView from "../view/projectView"
+import NavBar, { NavBarPath } from "../bar/navBar"
 
 interface ProjectPageProps {
     id?: string,
@@ -21,7 +22,9 @@ interface ProjectPageProps {
     canUpdate?: boolean,
     isLoading?: boolean,
     isDisabled?: boolean,
+    prevPath?: NavBarPath[],
     onSetPage?: (any) => void,
+    onSetCheck?: (any) => void,
     onSetIsLoading?: (any) => void,
     onShowMessage?: (FeedbackMessage) => void,
 }
@@ -47,6 +50,12 @@ export default function ProjectPage(props: ProjectPageProps) {
     const handleSetIsLoading = (value) => {
         if (props.onSetIsLoading) {
             props.onSetIsLoading(value)
+        }
+    }
+
+    const handleSetCheck = (value) => {
+        if (props.onSetCheck) {
+            props.onSetCheck(value)
         }
     }
 
@@ -168,11 +177,45 @@ export default function ProjectPage(props: ProjectPageProps) {
         } else {
             setIndex((old) => 1)
         }
+        handleSetCheck(true)
     }
 
     const handleShowMessage = (feedbackMessage: FeedbackMessage) => {
         if (props.onShowMessage) {
             props.onShowMessage(feedbackMessage)
+        }
+    }
+
+    const handlePutModalTitle = (short: boolean) => {
+        let paths = []
+        let path: NavBarPath = { path: "Novo projeto", onClick: null }
+        if (short) {
+            //path = { ...path, path: "S" }
+        }
+        if (project.id?.length > 0) {
+            path = { ...path, path: "Projeto-" + project.title, onClick: null }
+        }
+        try {
+            if (props.prevPath?.length > 0) {
+                let prevPath: NavBarPath = {
+                    ...props.prevPath[props.prevPath?.length - 1],
+                    onClick: handleBackClick,
+                    path: props.prevPath[props.prevPath?.length - 1]?.path + "/",
+                }
+                paths = [...props.prevPath.slice(0, props.prevPath?.length - 1), prevPath,]
+            }
+            paths = [...paths, path]
+        } catch (err) {
+            console.error(err)
+        }
+        if (short) {
+            return paths
+        } else {
+            return (
+                <>
+                    {paths?.length > 0 ? (<NavBar pathList={paths} />) : path.path}
+                </>
+            )
         }
     }
 
@@ -252,7 +295,7 @@ export default function ProjectPage(props: ProjectPageProps) {
                 id="project-register-modal"
                 setIsOpen={handleCloseModal}
                 isOpen={isRegister || isForShow}
-                title={"Projeto-" + project.number}
+                title={(handlePutModalTitle(false))}
                 headerBottom={(
                     <div className="p-4 pb-0">
                         {isRegister && (
@@ -289,8 +332,8 @@ export default function ProjectPage(props: ProjectPageProps) {
                         isLoading={props.isLoading}
                         onShowMessage={handleShowMessage}
                         onSetIsLoading={props.onSetIsLoading}
+                        prevPath={(handlePutModalTitle(true))}
                         isDisabled={project.status === "FINALIZADO"}
-                        prevPath={[{ path: "Projeto-" + project.number, onClick: null }]}
                     />
                 )}
                 {isForShow && (

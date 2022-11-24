@@ -8,6 +8,7 @@ import FormRowColumn from "../form/formRowColumn"
 import { TrashIcon } from "@heroicons/react/solid"
 import InputSelectPersonCompany from "../inputText/inputSelectPersonCompany"
 import { Company, defaultPerson, Person } from "../../interfaces/objectInterfaces"
+import { NavBarPath } from "../bar/navBar"
 
 interface SelectPersonCompanyFormProps {
     id?: string,
@@ -23,6 +24,7 @@ interface SelectPersonCompanyFormProps {
     isDisabledExclude?: boolean,
     isSingle?: boolean,
     value?: (Person | Company)[],
+    prevPath?: NavBarPath[] | any,
     excludeList?: (Person | Company)[],
     onSet?: (any?) => void,
     onBlur?: (any?) => void,
@@ -124,6 +126,7 @@ export default function SelectPersonCompanyForm(props: SelectPersonCompanyFormPr
                             isFull={props.isFull}
                             onBlur={props.onBlur}
                             title={props.inputTitle}
+                            prevPath={props.prevPath}
                             isLoading={props.isLoading}
                             onFilter={handleFilterList}
                             isDisabled={props.isDisabled}

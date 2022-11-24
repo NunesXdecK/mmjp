@@ -12,6 +12,7 @@ import { PlusIcon, RefreshIcon } from "@heroicons/react/solid"
 import { FeedbackMessage } from "../modal/feedbackMessageModal"
 import { Person, defaultPerson } from "../../interfaces/objectInterfaces"
 import PersonView from "../view/personView"
+import NavBar, { NavBarPath } from "../bar/navBar"
 
 interface PersonPageProps {
     id?: string,
@@ -21,6 +22,7 @@ interface PersonPageProps {
     isLoading?: boolean,
     isDisabled?: boolean,
     isStatusDisabled?: boolean,
+    prevPath?: NavBarPath[],
     onSetPage?: (any) => void,
     onSetIsLoading?: (any) => void,
     onShowMessage?: (FeedbackMessage) => void,
@@ -137,6 +139,39 @@ export default function PersonPage(props: PersonPageProps) {
         }
     }
 
+    const handlePutModalTitle = (short: boolean) => {
+        let paths = []
+        let path: NavBarPath = { path: "Nova pessoa", onClick: null }
+        if (short) {
+            //path = { ...path, path: "S" }
+        }
+        if (person.id?.length > 0) {
+            path = { ...path, path: "Pessoa-" + person.name, onClick: null }
+        }
+        try {
+            if (props.prevPath?.length > 0) {
+                let prevPath: NavBarPath = {
+                    ...props.prevPath[props.prevPath?.length - 1],
+                    onClick: handleBackClick,
+                    path: props.prevPath[props.prevPath?.length - 1]?.path + "/",
+                }
+                paths = [...props.prevPath.slice(0, props.prevPath?.length - 1), prevPath,]
+            }
+            paths = [...paths, path]
+        } catch (err) {
+            console.error(err)
+        }
+        if (short) {
+            return paths
+        } else {
+            return (
+                <>
+                    {paths?.length > 0 ? (<NavBar pathList={paths} />) : path.path}
+                </>
+            )
+        }
+    }
+
     const handlePutHeaders = () => {
         return (
             <FormRow>
@@ -197,10 +232,10 @@ export default function PersonPage(props: PersonPageProps) {
             />
             <WindowModal
                 max
-                title="Pessoa"
                 setIsOpen={handleCloseModal}
                 isOpen={isRegister || isForShow}
                 id="service-stage-register-modal"
+                title={(handlePutModalTitle(false))}
                 headerBottom={(
                     <div className="p-4 pb-0">
                         {isRegister && (
@@ -236,6 +271,7 @@ export default function PersonPage(props: PersonPageProps) {
                             person={person}
                             onSet={setPerson}
                             isLoading={props.isLoading}
+                            prevPath={(handlePutModalTitle(true))}
                         />
                     )}
                     {isForShow && (

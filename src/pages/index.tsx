@@ -6,16 +6,17 @@ import PaymentPage from "../components/page/PaymentPage"
 import ServicePage from "../components/page/ServicePage"
 import ProjectPage from "../components/page/ProjectPage"
 import ServiceStagePage from "../components/page/ServiceStagePage"
-import FeedbackPendency from "../components/modal/feedbackPendencyModal"
-import FeedbackMessageModal, { defaultFeedbackMessage, FeedbackMessage } from "../components/modal/feedbackMessageModal"
 import PersonPage from "../components/page/PersonPage"
 import CompanyPage from "../components/page/CompanyPage"
 import ProfessionalPage from "../components/page/ProfessionalPage"
 import ImmobilePage from "../components/page/ImmobilePage"
 import UserPage from "../components/page/UserPage"
+import ProfilePage from "../components/page/ProfilePage"
+import FeedbackMessageModal, { defaultFeedbackMessage, FeedbackMessage } from "../components/modal/feedbackMessageModal"
 
 export type PageOps =
     "DASHBOARD"
+    | "PROFILE"
     | "PERSON" | "COMPANY" | "PROFESSIONAL" | "IMMOBILE" | "USER"
     | "BUDGET"
     | "PROJECT" | "SERVICE" | "SERVICESTAGE" | "PAYMENT"
@@ -28,6 +29,7 @@ export default function Index(props: IndexProps) {
     const [page, setPage] = useState<PageOps>(props.page ?? "DASHBOARD")
     const [isLoading, setIsLoading] = useState(false)
     const [isFeedbackOpen, setIsFeedbackOpen] = useState(false)
+    const [checkPendencies, setCheckPendencies] = useState(true)
     const [feedbackMessage, setFeedbackMessage] = useState<FeedbackMessage>(defaultFeedbackMessage)
 
     const handleShowMessage = (feedbackMessage: FeedbackMessage) => {
@@ -47,6 +49,10 @@ export default function Index(props: IndexProps) {
         case "DASHBOARD":
             title = "Dashboard"
             window.history.pushState({}, "", "/dashboard");
+            break
+        case "PROFILE":
+            title = "Perfil"
+            window.history.pushState({}, "", "/profile");
             break
         case "PERSON":
             title = "Pessoas"
@@ -117,20 +123,30 @@ const [subjectMessage, setSubjectMessage] = useState<SubjectMessage>({
             title={title}
             onSetPage={setPage}
             isLoading={isLoading}
+            check={checkPendencies}
             onSetIsLoading={setIsLoading}
-            >
+            onSetCheck={setCheckPendencies}
+        >
             <Head>
                 <title>{title}</title>
                 <link rel="icon" href="/favicon.ico" />
                 <meta name="description" content={title} />
             </Head>
-            {
-                page === "DASHBOARD" &&
-                (
-                    <div className="dark:text-gray-200 py-48 flex flex-row items-center justify-center">
-                        {title}
-                    </div>
-                )}
+            {page === "DASHBOARD" && (
+                <div className="dark:text-gray-200 py-48 flex flex-row items-center justify-center">
+                    {title}
+                </div>
+            )}
+            {page === "PROFILE" && (
+                <ProfilePage
+                    getInfo
+                    canSave
+                    onSetPage={setPage}
+                    isLoading={isLoading}
+                    onSetIsLoading={setIsLoading}
+                    onShowMessage={handleShowMessage}
+                />
+            )}
             {page === "PERSON" && (
                 <PersonPage
                     getInfo
@@ -204,6 +220,7 @@ const [subjectMessage, setSubjectMessage] = useState<SubjectMessage>({
                     onSetPage={setPage}
                     isLoading={isLoading}
                     onSetIsLoading={setIsLoading}
+                    onSetCheck={setCheckPendencies}
                     onShowMessage={handleShowMessage}
                 />
             )}
@@ -214,6 +231,7 @@ const [subjectMessage, setSubjectMessage] = useState<SubjectMessage>({
                     onSetPage={setPage}
                     isLoading={isLoading}
                     onSetIsLoading={setIsLoading}
+                    onSetCheck={setCheckPendencies}
                     onShowMessage={handleShowMessage}
                 />
             )}
@@ -224,6 +242,7 @@ const [subjectMessage, setSubjectMessage] = useState<SubjectMessage>({
                     onSetPage={setPage}
                     isLoading={isLoading}
                     onSetIsLoading={setIsLoading}
+                    onSetCheck={setCheckPendencies}
                     onShowMessage={handleShowMessage}
                 />
             )}
@@ -234,6 +253,7 @@ const [subjectMessage, setSubjectMessage] = useState<SubjectMessage>({
                     onSetPage={setPage}
                     isLoading={isLoading}
                     onSetIsLoading={setIsLoading}
+                    onSetCheck={setCheckPendencies}
                     onShowMessage={handleShowMessage}
                 />
             )}
@@ -257,7 +277,7 @@ const [subjectMessage, setSubjectMessage] = useState<SubjectMessage>({
                 setIsOpen={setIsLoading}
                 subjectMessage={subjectMessage}
             />
-                <FeedbackPendency />
+        <FeedbackPendency />
         */}
             <FeedbackMessageModal
                 isOpen={isFeedbackOpen}

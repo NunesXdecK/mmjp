@@ -28,6 +28,7 @@ interface PaymentPageProps {
     isStatusDisabled?: boolean,
     prevPath?: NavBarPath[],
     onSetPage?: (any) => void,
+    onSetCheck?: (any) => void,
     onSetIsLoading?: (any) => void,
     onShowMessage?: (FeedbackMessage) => void,
 }
@@ -48,6 +49,12 @@ export default function PaymentPage(props: PaymentPageProps) {
         setIndex(-1)
         setIsForShow(false)
         setIsRegister(false)
+    }
+
+    const handleSetCheck = (value) => {
+        if (props.onSetCheck) {
+            props.onSetCheck(value)
+        }
     }
 
     const handleSetIsLoading = (value) => {
@@ -158,6 +165,7 @@ export default function PaymentPage(props: PaymentPageProps) {
         } else {
             setIndex((old) => 1)
         }
+        handleSetCheck(true)
     }
 
     const handleShowMessage = (feedbackMessage: FeedbackMessage) => {
@@ -168,6 +176,13 @@ export default function PaymentPage(props: PaymentPageProps) {
 
     const handlePutModalTitle = (short: boolean) => {
         let paths = []
+        let path: NavBarPath = { path: "Novo pagamento", onClick: null }
+        if (short) {
+            //path = { ...path, path: "S" }
+        }
+        if (payment.id?.length > 0) {
+            path = { ...path, path: "Pagamento-" + payment.title, onClick: null }
+        }
         try {
             if (props.prevPath?.length > 0) {
                 let prevPath: NavBarPath = {
@@ -175,19 +190,9 @@ export default function PaymentPage(props: PaymentPageProps) {
                     onClick: handleBackClick,
                     path: props.prevPath[props.prevPath?.length - 1]?.path + "/",
                 }
-                let path: NavBarPath = { path: "Pagamento", onClick: null }
-                if (short) {
-                    //path = { ...path, path: "S" }
-                }
-                if (payment.id?.length > 0) {
-                    path = { ...path, path: path.path + "-" + payment.title, onClick: null }
-                }
-                paths = [
-                    ...props.prevPath.slice(0, props.prevPath?.length - 2),
-                    prevPath,
-                    path
-                ]
+                paths = [...props.prevPath.slice(0, props.prevPath?.length - 1), prevPath,]
             }
+            paths = [...paths, path]
         } catch (err) {
             console.error(err)
         }
@@ -196,7 +201,7 @@ export default function PaymentPage(props: PaymentPageProps) {
         } else {
             return (
                 <>
-                    {paths?.length > 0 ? (<NavBar pathList={paths} />) : "Pagamento"}
+                    {paths?.length > 0 ? (<NavBar pathList={paths} />) : path.path}
                 </>
             )
         }
@@ -326,6 +331,7 @@ export default function PaymentPage(props: PaymentPageProps) {
                             payment={payment}
                             onSet={setPayment}
                             isLoading={props.isLoading}
+                            prevPath={(handlePutModalTitle(true))}
                             isDisabled={payment.status === "PAGO"}
                         />
                     )}

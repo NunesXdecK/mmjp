@@ -12,6 +12,7 @@ import InputTextAutoComplete from "../inputText/inputTextAutocomplete";
 import InputSelectProfessional from "../inputText/inputSelectProfessional";
 import { NOT_NULL_MARK, NUMBER_MARK } from "../../util/patternValidationUtil";
 import { handleMountNumberCurrency, handleValueStringToFloat } from "../../util/maskUtil";
+import { NavBarPath } from "../bar/navBar";
 
 interface ServiceDataFormProps {
     id?: string,
@@ -20,8 +21,8 @@ interface ServiceDataFormProps {
     index?: number,
     isLoading?: boolean,
     isDisabled?: boolean,
-    prevPath?: any,
     service?: Service,
+    prevPath?: NavBarPath[] | any,
     onBlur?: (any) => void,
     onDelete?: (number) => void,
     onFinishAdd?: (any?) => void,
@@ -173,6 +174,7 @@ export default function ServiceDataForm(props: ServiceDataFormProps) {
                         <InputSelectProfessional
                             title="Profissional"
                             onBlur={props.onBlur}
+                            prevPath={props.prevPath}
                             isLoading={props.isLoading}
                             onSet={handleSetProfessional}
                             isDisabled={props.isDisabled}
@@ -199,6 +201,7 @@ export default function ServiceDataForm(props: ServiceDataFormProps) {
                 <>
                     <SelectImmobileTOForm
                         title="Imóveis"
+                        prevPath={props.prevPath}
                         isDisabled={props.isDisabled}
                         subtitle="Selecione os imóveis"
                         onSetTarget={handleSetImmobileTarget}

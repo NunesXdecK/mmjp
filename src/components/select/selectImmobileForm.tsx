@@ -9,6 +9,7 @@ import { TrashIcon } from "@heroicons/react/solid"
 import InputSelectImmobile from "../inputText/inputSelectImmobile"
 import { defaultImmobile, Immobile } from "../../interfaces/objectInterfaces"
 import { handleMaskCurrency, handleMaskPerimeter } from "../inputText/inputText"
+import { NavBarPath } from "../bar/navBar"
 
 interface SelectImmobileFormProps {
     id?: string,
@@ -24,6 +25,7 @@ interface SelectImmobileFormProps {
     isSingle?: boolean,
     value?: Immobile[],
     excludeList?: Immobile[],
+    prevPath?: NavBarPath[] | any,
     onSet?: (any?) => void,
     onBlur?: (any?) => void,
     onShowMessage?: (FeedbackMessage) => void,
@@ -130,6 +132,7 @@ export default function SelectImmobileForm(props: SelectImmobileFormProps) {
                             onSet={handleAdd}
                             onBlur={props.onBlur}
                             title={props.inputTitle}
+                            prevPath={props.prevPath}
                             isLoading={props.isLoading}
                             onFilter={handleFilterList}
                             isDisabled={props.isDisabled}

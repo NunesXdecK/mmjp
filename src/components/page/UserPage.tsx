@@ -8,11 +8,12 @@ import UserDataForm from "../form/userDataForm"
 import FormRowColumn from "../form/formRowColumn"
 import UserActionBarForm, { handleSaveUserInner } from "../bar/userActionBar"
 import PersonNameListItem from "../list/personNameListItem"
-import { PlusIcon, RefreshIcon } from "@heroicons/react/solid"
+import { PlusIcon } from "@heroicons/react/solid"
 import { FeedbackMessage } from "../modal/feedbackMessageModal"
 import { User, defaultUser } from "../../interfaces/objectInterfaces"
 import UserView from "../view/userView"
 import UserStatusButton from "../button/userStatusButton"
+import NavBar, { NavBarPath } from "../bar/navBar"
 
 interface UserPageProps {
     id?: string,
@@ -22,6 +23,7 @@ interface UserPageProps {
     isLoading?: boolean,
     isDisabled?: boolean,
     isStatusDisabled?: boolean,
+    prevPath?: NavBarPath[],
     onSetPage?: (any) => void,
     onSetIsLoading?: (any) => void,
     onShowMessage?: (FeedbackMessage) => void,
@@ -156,6 +158,39 @@ export default function UserPage(props: UserPageProps) {
         }
     }
 
+    const handlePutModalTitle = (short: boolean) => {
+        let paths = []
+        let path: NavBarPath = { path: "Novo usuário", onClick: null }
+        if (short) {
+            //path = { ...path, path: "S" }
+        }
+        if (user.id?.length > 0) {
+            path = { ...path, path: "Usuário-" + user.username, onClick: null }
+        }
+        try {
+            if (props.prevPath?.length > 0) {
+                let prevPath: NavBarPath = {
+                    ...props.prevPath[props.prevPath?.length - 1],
+                    onClick: handleBackClick,
+                    path: props.prevPath[props.prevPath?.length - 1]?.path + "/",
+                }
+                paths = [...props.prevPath.slice(0, props.prevPath?.length - 1), prevPath,]
+            }
+            paths = [...paths, path]
+        } catch (err) {
+            console.error(err)
+        }
+        if (short) {
+            return paths
+        } else {
+            return (
+                <>
+                    {paths?.length > 0 ? (<NavBar pathList={paths} />) : path.path}
+                </>
+            )
+        }
+    }
+
     const handlePutHeaders = () => {
         return (
             <FormRow>
@@ -229,10 +264,10 @@ export default function UserPage(props: UserPageProps) {
             />
             <WindowModal
                 max
-                title="Usuario"
-                id="service-stage-register-modal"
                 setIsOpen={handleCloseModal}
                 isOpen={isRegister || isForShow}
+                id="service-stage-register-modal"
+                title={(handlePutModalTitle(false))}
                 headerBottom={(
                     <div className="p-4 pb-0">
                         {isRegister && (
@@ -265,9 +300,10 @@ export default function UserPage(props: UserPageProps) {
                 <>
                     {isRegister && (
                         <UserDataForm
-                            isLoading={props.isLoading}
-                            onSet={setUser}
                             user={user}
+                            onSet={setUser}
+                            isLoading={props.isLoading}
+                            prevPath={(handlePutModalTitle(true))}
                         />
                     )}
                     {isForShow && (

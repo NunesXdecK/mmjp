@@ -1,14 +1,12 @@
 import Form from "./form";
 import FormRow from "./formRow";
 import { useState } from "react";
-import AddressForm from "./addressForm";
-import ArrayTextForm from "./arrayTextForm";
 import FormRowColumn from "./formRowColumn";
 import InputText from "../inputText/inputText";
-import InputClientCode from "../inputText/inputClientCode";
 import { Professional } from "../../interfaces/objectInterfaces";
 import InputSelectPerson from "../inputText/inputSelectPerson";
-import { CNPJ_MARK, NOT_NULL_MARK, TELEPHONE_MARK, TEXT_NOT_NULL_MARK } from "../../util/patternValidationUtil";
+import { NOT_NULL_MARK } from "../../util/patternValidationUtil";
+import { NavBarPath } from "../bar/navBar";
 
 interface ProfessionalDataFormProps {
     title?: string,
@@ -18,6 +16,7 @@ interface ProfessionalDataFormProps {
     isLoading?: boolean,
     isDisabled?: boolean,
     professional?: Professional,
+    prevPath?: NavBarPath[] | any,
     onBlur?: (any) => void,
     onShowMessage?: (any) => void,
     onSet?: (any, number?) => void,
@@ -98,6 +97,7 @@ export default function ProfessionalDataForm(props: ProfessionalDataFormProps) {
                         title="Pessoa"
                         onBlur={props.onBlur}
                         onSet={handleSetPerson}
+                        prevPath={props.prevPath}
                         isLoading={props.isLoading}
                         isDisabled={props.isDisabled}
                         value={props.professional?.person?.name}

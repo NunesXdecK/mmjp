@@ -10,6 +10,7 @@ import CompanyActionBarForm from "../bar/companyActionBar";
 import InputTextAutoComplete from "./inputTextAutocomplete";
 import { FeedbackMessage } from "../modal/feedbackMessageModal";
 import { Company, defaultCompany, defaultPerson, Person } from "../../interfaces/objectInterfaces";
+import NavBar, { NavBarPath } from "../bar/navBar";
 
 interface InputSelectPersonCompanyProps {
     id?: string,
@@ -31,6 +32,7 @@ interface InputSelectPersonCompanyProps {
     validationButton?: boolean,
     isMultipleSelect?: boolean,
     personsAndCompanies?: Person[],
+    prevPath?: NavBarPath[] | any,
     onSet?: (any) => void,
     onBlur?: (any?) => void,
     onFinishAdd?: (any?) => void,
@@ -48,8 +50,7 @@ export default function InputSelectPersonCompany(props: InputSelectPersonCompany
     const [isRegisterCompany, setIsRegisterCompany] = useState(false)
 
     const [text, setText] = useState<string>(props.value ?? "")
-    const [person, setPerson] = useState<Person>(defaultPerson)
-    const [company, setCompany] = useState<Company>(defaultCompany)
+    const [element, setElement] = useState<Company | Person>(defaultPerson)
 
     const [personsAndCompanies, setPersonsAndCompanies] = useState<(Person | Company)[]>([])
 
@@ -57,14 +58,14 @@ export default function InputSelectPersonCompany(props: InputSelectPersonCompany
         setIsOpen(true)
         setIsRegisterCompany(false)
         setIsRegisterPerson(true)
-        setPerson(defaultPerson)
+        setElement(defaultPerson)
     }
 
     const handleNewClickCompany = () => {
         setIsOpen(true)
         setIsRegisterCompany(true)
         setIsRegisterPerson(false)
-        setCompany(defaultCompany)
+        setElement(defaultCompany)
     }
 
     const handleBackClick = (event?) => {
@@ -72,8 +73,7 @@ export default function InputSelectPersonCompany(props: InputSelectPersonCompany
             event.preventDefault()
         }
         setPersonsAndCompanies([])
-        setPerson(defaultPerson)
-        setCompany(defaultCompany)
+        setElement(defaultPerson)
         setIsOpen(false)
         setIsFirst(true)
         setIsRegisterPerson(false)
@@ -113,6 +113,41 @@ export default function InputSelectPersonCompany(props: InputSelectPersonCompany
             if (props.onShowMessage) {
                 props.onShowMessage(feedbackMessage)
             }
+        }
+    }
+
+    const handlePutModalTitle = (short: boolean) => {
+        let paths = []
+        let path: NavBarPath = { path: "", onClick: null }
+        if (short) {
+            //path = { ...path, path: "S" }
+        }
+        if ("cpf" in element) {
+            path = { ...path, path: "Nova pessoa" + element.name, onClick: null }
+        } else if ("cnpj" in element) {
+            path = { ...path, path: "Nova empresa" + element.name, onClick: null }
+        }
+        try {
+            if (props.prevPath?.length > 0) {
+                let prevPath: NavBarPath = {
+                    ...props.prevPath[props.prevPath?.length - 1],
+                    onClick: handleBackClick,
+                    path: props.prevPath[props.prevPath?.length - 1]?.path + "/",
+                }
+                paths = [...props.prevPath.slice(0, props.prevPath?.length - 1), prevPath,]
+            }
+            paths = [...paths, path]
+        } catch (err) {
+            console.error(err)
+        }
+        if (short) {
+            return paths
+        } else {
+            return (
+                <>
+                    {paths?.length > 0 ? (<NavBar pathList={paths} />) : path.path}
+                </>
+            )
         }
     }
 
@@ -214,6 +249,7 @@ export default function InputSelectPersonCompany(props: InputSelectPersonCompany
                 max
                 isOpen={isOpen}
                 setIsOpen={setIsOpen}
+                title={(handlePutModalTitle(false))}
                 id={props.id + "-window-modal-register-person-company"}
                 onClose={() => {
                     setIsRegisterPerson(false)
@@ -226,8 +262,8 @@ export default function InputSelectPersonCompany(props: InputSelectPersonCompany
                                 {isRegisterPerson && (
                                     <div className="p-4 pb-0">
                                         <PersonActionBarForm
-                                            person={person}
-                                            onSet={setPerson}
+                                            person={element}
+                                            onSet={setElement}
                                             isLoading={props.isLoading}
                                             onAfterSave={handleAfterSave}
                                             onSetIsLoading={props.onSetLoading}
@@ -238,8 +274,8 @@ export default function InputSelectPersonCompany(props: InputSelectPersonCompany
                                 {isRegisterCompany && (
                                     <div className="p-4 pb-0">
                                         <CompanyActionBarForm
-                                            company={company}
-                                            onSet={setCompany}
+                                            company={element}
+                                            onSet={setElement}
                                             isLoading={props.isLoading}
                                             onAfterSave={handleAfterSave}
                                             onSetIsLoading={props.onSetLoading}
@@ -257,18 +293,20 @@ export default function InputSelectPersonCompany(props: InputSelectPersonCompany
                         <>
                             {isRegisterPerson && (
                                 <PersonDataForm
-                                    person={person}
-                                    onSet={setPerson}
+                                    person={element}
+                                    onSet={setElement}
                                     title="Informações pessoais"
                                     onShowMessage={props.onShowMessage}
+                                    prevPath={(handlePutModalTitle(true))}
                                     subtitle="Dados importantes sobre o usuário" />
                             )}
                             {isRegisterCompany && (
                                 <CompanyDataForm
-                                    company={company}
-                                    onSet={setCompany}
+                                    company={element}
+                                    onSet={setElement}
                                     title="Informações empresariais"
                                     onShowMessage={props.onShowMessage}
+                                    prevPath={(handlePutModalTitle(true))}
                                     subtitle="Dados importantes sobre a empresa" />
                             )}
                         </>

@@ -8,6 +8,7 @@ import PersonActionBarForm from "../bar/personActionBar";
 import InputTextAutoComplete from "./inputTextAutocomplete";
 import { FeedbackMessage } from "../modal/feedbackMessageModal";
 import { defaultPerson, Person } from "../../interfaces/objectInterfaces";
+import NavBar, { NavBarPath } from "../bar/navBar";
 
 interface InputSelectPersonProps {
     id?: string,
@@ -22,12 +23,14 @@ interface InputSelectPersonProps {
     validationMessage?: string,
     validationMessageButton?: string,
     notSet?: boolean,
+    isHidden?: boolean,
     isLocked?: boolean,
     isLoading?: boolean,
     isDisabled?: boolean,
     validationButton?: boolean,
     isMultipleSelect?: boolean,
     persons?: Person[],
+    prevPath?: NavBarPath[] | any,
     onSet?: (any) => void,
     onBlur?: (any?) => void,
     onFinishAdd?: (any?) => void,
@@ -42,7 +45,6 @@ export default function InputSelectPerson(props: InputSelectPersonProps) {
     const [isFirst, setIsFirst] = useState(true)
     const [isSelected, setIsSelected] = useState(props.value?.length > 0)
     const [isRegister, setIsRegister] = useState(false)
-
     const [text, setText] = useState<string>(props.value ?? "")
     const [person, setPerson] = useState<Person>(defaultPerson)
 
@@ -101,6 +103,39 @@ export default function InputSelectPerson(props: InputSelectPersonProps) {
         }
     }
 
+    const handlePutModalTitle = (short: boolean) => {
+        let paths = []
+        let path: NavBarPath = { path: "Nova pessoa", onClick: null }
+        if (short) {
+            //path = { ...path, path: "S" }
+        }
+        if (person.id?.length > 0) {
+            path = { ...path, path: "Pessoa-" + person.name, onClick: null }
+        }
+        try {
+            if (props.prevPath?.length > 0) {
+                let prevPath: NavBarPath = {
+                    ...props.prevPath[props.prevPath?.length - 1],
+                    onClick: handleBackClick,
+                    path: props.prevPath[props.prevPath?.length - 1]?.path + "/",
+                }
+                paths = [...props.prevPath.slice(0, props.prevPath?.length - 1), prevPath,]
+            }
+            paths = [...paths, path]
+        } catch (err) {
+            console.error(err)
+        }
+        if (short) {
+            return paths
+        } else {
+            return (
+                <>
+                    {paths?.length > 0 ? (<NavBar pathList={paths} />) : path.path}
+                </>
+            )
+        }
+    }
+
     const handlePutActions = (cleanFunction?) => {
         return (
             <Button
@@ -146,8 +181,8 @@ export default function InputSelectPerson(props: InputSelectPersonProps) {
                     id={props.id}
                     title={props.title}
                     onSetText={setText}
-                    onBlur={props.onBlur}
                     sugestions={persons}
+                    onBlur={props.onBlur}
                     onClickItem={handleAdd}
                     onFilter={props.onFilter}
                     isLoading={props.isLoading}
@@ -175,6 +210,7 @@ export default function InputSelectPerson(props: InputSelectPersonProps) {
                 max
                 isOpen={isOpen}
                 setIsOpen={setIsOpen}
+                title={(handlePutModalTitle(false))}
                 id={props.id + "-window-modal-register-person"}
                 onClose={() => {
                     setIsRegister(false)
@@ -199,7 +235,9 @@ export default function InputSelectPerson(props: InputSelectPersonProps) {
                             onSet={setPerson}
                             title="Informações pessoais"
                             onShowMessage={props.onShowMessage}
-                            subtitle="Dados importantes sobre o usuário" />
+                            prevPath={(handlePutModalTitle(true))}
+                            subtitle="Dados importantes sobre o usuário"
+                        />
                     )}
                 </>
             </WindowModal>

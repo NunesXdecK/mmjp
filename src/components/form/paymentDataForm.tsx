@@ -8,6 +8,7 @@ import InputTextCurrency from "../inputText/inputTextCurrency";
 import { NOT_NULL_MARK } from "../../util/patternValidationUtil";
 import InputTextAutoComplete from "../inputText/inputTextAutocomplete";
 import InputTextArea from "../inputText/inputTextArea";
+import { NavBarPath } from "../bar/navBar";
 
 interface PaymentDataFormProps {
     id?: string,
@@ -17,6 +18,7 @@ interface PaymentDataFormProps {
     isLoading?: boolean,
     isDisabled?: boolean,
     payment: Payment,
+    prevPath?: NavBarPath[] | any,
     onBlur?: (any) => void,
     onSet?: (any, number?) => void,
     onUpdateServiceValue?: (any, number) => void,

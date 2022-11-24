@@ -8,6 +8,7 @@ import { PlusCircleIcon } from "@heroicons/react/solid";
 import InputTextAutoComplete from "./inputTextAutocomplete";
 import { FeedbackMessage } from "../modal/feedbackMessageModal";
 import { defaultUser, User } from "../../interfaces/objectInterfaces";
+import NavBar, { NavBarPath } from "../bar/navBar";
 
 interface InputSelectUserProps {
     id?: string,
@@ -28,6 +29,7 @@ interface InputSelectUserProps {
     validationButton?: boolean,
     isMultipleSelect?: boolean,
     users?: User[],
+    prevPath?: NavBarPath[] | any,
     onSet?: (any) => void,
     onBlur?: (any?) => void,
     onFinishAdd?: (any?) => void,
@@ -101,6 +103,39 @@ export default function InputSelectUser(props: InputSelectUserProps) {
         }
     }
 
+    const handlePutModalTitle = (short: boolean) => {
+        let paths = []
+        let path: NavBarPath = { path: "Novo usuário", onClick: null }
+        if (short) {
+            //path = { ...path, path: "S" }
+        }
+        if (user.id?.length > 0) {
+            path = { ...path, path: "Usuário-" + user.username, onClick: null }
+        }
+        try {
+            if (props.prevPath?.length > 0) {
+                let prevPath: NavBarPath = {
+                    ...props.prevPath[props.prevPath?.length - 1],
+                    onClick: handleBackClick,
+                    path: props.prevPath[props.prevPath?.length - 1]?.path + "/",
+                }
+                paths = [...props.prevPath.slice(0, props.prevPath?.length - 1), prevPath,]
+            }
+            paths = [...paths, path]
+        } catch (err) {
+            console.error(err)
+        }
+        if (short) {
+            return paths
+        } else {
+            return (
+                <>
+                    {paths?.length > 0 ? (<NavBar pathList={paths} />) : path.path}
+                </>
+            )
+        }
+    }
+
     const handlePutActions = (cleanFunction?) => {
         return (
             <Button
@@ -126,7 +161,7 @@ export default function InputSelectUser(props: InputSelectUserProps) {
 
     useEffect(() => {
         if (isFirst) {
-            fetch("api/users").then((res) => res.json()).then((res) => {
+            fetch("api/usersForSelect").then((res) => res.json()).then((res) => {
                 setIsFirst(old => false)
                 if (res.list.length) {
                     setUsers(res.list)
@@ -175,6 +210,7 @@ export default function InputSelectUser(props: InputSelectUserProps) {
                 max
                 isOpen={isOpen}
                 setIsOpen={setIsOpen}
+                title={(handlePutModalTitle(false))}
                 id={props.id + "-window-modal-register-user"}
                 onClose={() => {
                     setIsRegister(false)
@@ -199,6 +235,7 @@ export default function InputSelectUser(props: InputSelectUserProps) {
                             onSet={setUser}
                             title="Informações pessoais"
                             onShowMessage={props.onShowMessage}
+                            prevPath={(handlePutModalTitle(true))}
                             subtitle="Dados importantes sobre o usuário" />
                     )}
                 </>

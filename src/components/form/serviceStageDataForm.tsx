@@ -8,6 +8,7 @@ import InputSelectUser from "../inputText/inputSelectUser";
 import { ServiceStage } from "../../interfaces/objectInterfaces";
 import { NOT_NULL_MARK } from "../../util/patternValidationUtil";
 import InputTextAutoComplete from "../inputText/inputTextAutocomplete";
+import { NavBarPath } from "../bar/navBar";
 
 interface ServiceStageDataFormProps {
     id?: string,
@@ -18,6 +19,7 @@ interface ServiceStageDataFormProps {
     isLoading?: boolean,
     isDisabled?: boolean,
     serviceStage?: ServiceStage,
+    prevPath?: NavBarPath[] | any,
     onBlur?: (any) => void,
     onShowMessage?: (any) => void,
     onSet?: (any, number?) => void,
@@ -98,6 +100,7 @@ export default function ServiceStageDataForm(props: ServiceStageDataFormProps) {
                     <InputSelectUser
                         title="Responsável"
                         onBlur={props.onBlur}
+                        prevPath={props.prevPath}
                         isLoading={props.isLoading}
                         onSet={handleSetResponsible}
                         isDisabled={props.isDisabled}

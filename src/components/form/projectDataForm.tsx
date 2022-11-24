@@ -21,7 +21,7 @@ interface ProjectDataFormProps {
     isDisabled?: boolean,
     pathLink?: any,
     project?: Project,
-    prevPath?: NavBarPath[],
+    prevPath?: NavBarPath[] | any,
     onBlur?: (any) => void,
     onShowMessage?: (any) => void,
     onSetIsLoading?: (any) => void,
@@ -131,6 +131,7 @@ export default function ProjectDataForm(props: ProjectDataFormProps) {
                             title="Cliente"
                             onBlur={props.onBlur}
                             onSet={handleSetClient}
+                            prevPath={props.prevPath}
                             isLoading={props.isLoading}
                             value={props.project.clients[0]?.name}
                             id={"project-client" + (props.index ? "-" + props.index : "")}

@@ -12,6 +12,7 @@ import { FeedbackMessage } from "../modal/feedbackMessageModal"
 import { Immobile, defaultImmobile } from "../../interfaces/objectInterfaces"
 import ImmobileView from "../view/immobileView"
 import ImmobileStatusButton from "../button/immobileStatusButton"
+import NavBar, { NavBarPath } from "../bar/navBar"
 
 interface ImmobilePageProps {
     id?: string,
@@ -21,6 +22,7 @@ interface ImmobilePageProps {
     isLoading?: boolean,
     isDisabled?: boolean,
     isStatusDisabled?: boolean,
+    prevPath?: NavBarPath[],
     onSetPage?: (any) => void,
     onSetIsLoading?: (any) => void,
     onShowMessage?: (FeedbackMessage) => void,
@@ -154,6 +156,39 @@ export default function ImmobilePage(props: ImmobilePageProps) {
         }
     }
 
+    const handlePutModalTitle = (short: boolean) => {
+        let paths = []
+        let path: NavBarPath = { path: "Novo imóvel", onClick: null }
+        if (short) {
+            //path = { ...path, path: "S" }
+        }
+        if (immobile.id?.length > 0) {
+            path = { ...path, path: "Imóvel-" + immobile.name, onClick: null }
+        }
+        try {
+            if (props.prevPath?.length > 0) {
+                let prevPath: NavBarPath = {
+                    ...props.prevPath[props.prevPath?.length - 1],
+                    onClick: handleBackClick,
+                    path: props.prevPath[props.prevPath?.length - 1]?.path + "/",
+                }
+                paths = [...props.prevPath.slice(0, props.prevPath?.length - 1), prevPath,]
+            }
+            paths = [...paths, path]
+        } catch (err) {
+            console.error(err)
+        }
+        if (short) {
+            return paths
+        } else {
+            return (
+                <>
+                    {paths?.length > 0 ? (<NavBar pathList={paths} />) : path.path}
+                </>
+            )
+        }
+    }
+
     const handlePutHeaders = () => {
         return (
             <FormRow>
@@ -227,10 +262,10 @@ export default function ImmobilePage(props: ImmobilePageProps) {
             />
             <WindowModal
                 max
-                title="Imovél"
-                id="service-stage-register-modal"
                 setIsOpen={handleCloseModal}
                 isOpen={isRegister || isForShow}
+                id="service-stage-register-modal"
+                title={(handlePutModalTitle(false))}
                 headerBottom={(
                     <div className="p-4 pb-0">
                         {isRegister && (
@@ -263,9 +298,10 @@ export default function ImmobilePage(props: ImmobilePageProps) {
                 <>
                     {isRegister && (
                         <ImmobileDataForm
-                            isLoading={props.isLoading}
                             onSet={setImmobile}
                             immobile={immobile}
+                            isLoading={props.isLoading}
+                            prevPath={(handlePutModalTitle(true))}
                         />
                     )}
                     {isForShow && (

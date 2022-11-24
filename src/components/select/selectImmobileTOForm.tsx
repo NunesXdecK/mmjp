@@ -3,6 +3,7 @@ import { useState } from "react"
 import Button from "../button/button"
 import SelectImmobileForm from "./selectImmobileForm"
 import { Immobile } from "../../interfaces/objectInterfaces"
+import { NavBarPath } from "../bar/navBar"
 
 interface SelectImmobileTOFormProps {
     id?: string,
@@ -16,6 +17,7 @@ interface SelectImmobileTOFormProps {
     isSingle?: boolean,
     valueTarget?: Immobile[],
     valueOrigin?: Immobile[],
+    prevPath?: NavBarPath[] | any,
     onBlur?: (any?) => void,
     onSetTarget?: (any?) => void,
     onSetOrigin?: (any?) => void,
@@ -83,6 +85,7 @@ export default function SelectImmobileTOForm(props: SelectImmobileTOFormProps) {
             <SelectImmobileForm
                 onSet={props.onSetTarget}
                 value={props.valueTarget}
+                prevPath={props.prevPath}
                 placeholder="Pesquise o imóvel..."
                 isDisabledExclude={props.isDisabled}
                 excludeList={[...props.valueTarget, ...props.valueOrigin]}
@@ -100,6 +103,7 @@ export default function SelectImmobileTOForm(props: SelectImmobileTOFormProps) {
                 <SelectImmobileForm
                     onSet={props.onSetOrigin}
                     value={props.valueOrigin}
+                    prevPath={props.prevPath}
                     placeholder="Pesquise o imóvel..."
                     isDisabledExclude={props.isDisabled}
                     excludeList={[...props.valueTarget, ...props.valueOrigin]}

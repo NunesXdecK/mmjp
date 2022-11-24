@@ -9,6 +9,7 @@ import { Immobile } from "../../interfaces/objectInterfaces";
 import InputImmobilePoints from "../inputText/inputImmobilePoints";
 import SelectPersonCompanyForm from "../select/selectPersonCompanyForm";
 import { CCIR_MARK, NOT_NULL_MARK, NUMBER_MARK } from "../../util/patternValidationUtil";
+import { NavBarPath } from "../bar/navBar";
 
 interface ImmobileDataFormProps {
     title?: string,
@@ -18,6 +19,7 @@ interface ImmobileDataFormProps {
     isLoading?: boolean,
     isDisabled?: boolean,
     immobile?: Immobile,
+    prevPath?: NavBarPath[] | any,
     onBlur?: (any) => void,
     onShowMessage?: (any) => void,
     onSet?: (any, number?) => void,
@@ -215,6 +217,7 @@ export default function ImmobileDataForm(props: ImmobileDataFormProps) {
                 id="immobile-owners"
                 title="Proprietários"
                 onSet={handleSetOwners}
+                prevPath={props.prevPath}
                 value={props.immobile.owners}
                 isDisabled={props.isDisabled}
                 excludeList={props.immobile.owners}

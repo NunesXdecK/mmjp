@@ -5,14 +5,17 @@ import Button from "../../components/button/button";
 import { AuthContext } from "../../contexts/authContext";
 import SwitchTextButton from "../button/switchTextButton";
 import DropDownButton from "../../components/button/dropDownButton";
+import FeedbackPendencyButton from "../button/feedbackPendencyButton";
 import LayoutMenuMobile from "../../components/layout/layoutMenuMobile";
 import { MenuIcon, MoonIcon, SunIcon, UserCircleIcon, XIcon } from "@heroicons/react/solid";
 
 interface LayoutMenuProps {
     title?: string,
     children?: any[],
+    check?: boolean,
     isLoading?: boolean,
     onSetPage?: (any) => void,
+    onSetCheck?: (any) => void,
     onSetIsLoading?: (any) => void,
 }
 
@@ -67,6 +70,12 @@ export default function Layout(props: LayoutMenuProps) {
     const [isOpen, setIsOpen] = useState(false)
     const { user } = useContext(AuthContext)
 
+    const handleSetCheck = (value) => {
+        if (props.onSetCheck) {
+            props.onSetCheck(value)
+        }
+    }
+
     const handleDeleteClick = async () => {
         const { "mmjp.token": token } = parseCookies()
         const res = await fetch("api/loginToken", {
@@ -87,7 +96,7 @@ export default function Layout(props: LayoutMenuProps) {
     }
 
     let holderClassName = "min-h-screen"
-    if (!isDark) {
+    if (isDark) {
         holderClassName = holderClassName + " bg-gray-800 dark"
     } else {
         holderClassName = holderClassName + " bg-transparent"
@@ -102,9 +111,10 @@ export default function Layout(props: LayoutMenuProps) {
                             <LayoutMenu isDisabled={props.isLoading} menus={menus} onSetPage={handleSetPage} />
                         </div>
                         <div className="flex flex-row gap-2 items-center">
+                            <FeedbackPendencyButton check={props.check} onSetCheck={handleSetCheck} isLoading={props.isLoading} />
                             <SwitchTextButton
                                 className=""
-                                isSwitched={isDark}
+                                isSwitched={!isDark}
                                 isDisabled={props.isLoading}
                                 buttonClassName="p-2 hover:bg-gray-600 rounded-full"
                                 onChildren={(
@@ -127,13 +137,22 @@ export default function Layout(props: LayoutMenuProps) {
                                     <UserCircleIcon className="text-gray-200 block h-8 w-8" aria-hidden="true" />
                                 )}
                             >
-                                <div className="bg-slate-50 rounded">
+                                <div className="flex flex-col gap-2 bg-gray-800 text-gray-300 disabled:opacity-75 rounded">
+                                    <Button
+                                        ignoreClass
+                                        id="user-drop-down-profile"
+                                        isDisabled={props.isLoading}
+                                        onClick={() => handleSetPage("PROFILE")}
+                                        className="px-4 py-2 text-sm text-left rounded bg-transparent hover:bg-gray-700 hover:text-white "
+                                    >
+                                        Perfil
+                                    </Button>
                                     <Button
                                         ignoreClass
                                         id="user-drop-down-logoff"
                                         onClick={handleDeleteClick}
                                         isDisabled={props.isLoading}
-                                        className="px-4 py-2 text-sm text-left rounded bg-transparent hover:bg-gray-400 hover:opacity-70"
+                                        className="px-4 py-2 text-sm text-left rounded bg-transparent hover:bg-gray-700 hover:text-white "
                                     >
                                         Logoff
                                     </Button>

@@ -1,25 +1,25 @@
 import Form from "./form";
 import FormRow from "./formRow";
 import { useState } from "react";
-import AddressForm from "./addressForm";
-import ArrayTextForm from "./arrayTextForm";
 import FormRowColumn from "./formRowColumn";
 import InputText from "../inputText/inputText";
-import InputClientCode from "../inputText/inputClientCode";
 import { defaultUser, User } from "../../interfaces/objectInterfaces";
 import InputSelectPerson from "../inputText/inputSelectPerson";
-import { CNPJ_MARK, EMAIL_MARK, NOT_NULL_MARK, TELEPHONE_MARK, TEXT_NOT_NULL_MARK } from "../../util/patternValidationUtil";
+import { EMAIL_MARK, NOT_NULL_MARK } from "../../util/patternValidationUtil";
 import InputCheckbox from "../inputText/inputCheckbox";
 import InputSelect from "../inputText/inputSelect";
+import { NavBarPath } from "../bar/navBar";
 
 interface UserDataFormProps {
     title?: string,
     subtitle?: string,
     index?: number,
     isPrint?: boolean,
+    isProfile?: boolean,
     isLoading?: boolean,
     isDisabled?: boolean,
     user?: User,
+    prevPath?: NavBarPath[] | any,
     onBlur?: (any) => void,
     onShowMessage?: (any) => void,
     onSet?: (any, number?) => void,
@@ -46,7 +46,6 @@ export const handleCheckUserEmail = async (email, id) => {
 }
 
 export default function UserDataForm(props: UserDataFormProps) {
-    const [userOriginal, setUserOriginal] = useState(props.user ?? defaultUser)
     const [isEmailInvalid, setIsEmailInvalid] = useState(false)
     const [isCheckingEmail, setIsCheckingEmail] = useState(false)
     const [isUserNameInvalid, setIsUserNameInvalid] = useState(false)
@@ -126,18 +125,20 @@ export default function UserDataForm(props: UserDataFormProps) {
             title={props.title ?? "Dados básicos"}
             subtitle={props.subtitle ?? "Informe os dados básicos"}
         >
-            <FormRow>
-                <FormRowColumn unit="6">
-                    <InputCheckbox
-                        title="bloqueado?"
-                        id="user-is-blocked"
-                        isLoading={props.isLoading}
-                        value={props.user.isBlocked}
-                        isDisabled={props.isDisabled}
-                        onSetText={handleSetIsBlocked}
-                    />
-                </FormRowColumn>
-            </FormRow>
+            {!props.isProfile && (
+                <FormRow>
+                    <FormRowColumn unit="6">
+                        <InputCheckbox
+                            title="bloqueado?"
+                            id="user-is-blocked"
+                            isLoading={props.isLoading}
+                            value={props.user.isBlocked}
+                            isDisabled={props.isDisabled}
+                            onSetText={handleSetIsBlocked}
+                        />
+                    </FormRowColumn>
+                </FormRow>
+            )}
             <FormRow>
                 <FormRowColumn unit="6">
                     <InputText
@@ -229,6 +230,7 @@ export default function UserDataForm(props: UserDataFormProps) {
                         title="Pessoa"
                         onBlur={props.onBlur}
                         onSet={handleSetPerson}
+                        prevPath={props.prevPath}
                         isLoading={props.isLoading}
                         isDisabled={props.isDisabled}
                         value={props.user?.person?.name}
