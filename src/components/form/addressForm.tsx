@@ -115,7 +115,7 @@ export default function AddressForm(props: AddressFormProps) {
                             title="CEP"
                             validation="cep"
                             onBlur={props.onBlur}
-                            value={props.address.cep}
+                            value={props.address?.cep}
                             onSetText={handleOnChangeCep}
                             isLoading={isSearching || props.isLoading}
                             isDisabled={isSearching || props.isLoading}
@@ -127,7 +127,7 @@ export default function AddressForm(props: AddressFormProps) {
                             id="public-place"
                             title="Logradouro"
                             onBlur={props.onBlur}
-                            value={props.address.publicPlace}
+                            value={props.address?.publicPlace}
                             onSetText={handleOnChangePublicPlace}
                             isLoading={isSearching || props.isLoading}
                             isDisabled={isSearching || props.isLoading}
@@ -142,7 +142,7 @@ export default function AddressForm(props: AddressFormProps) {
                             title="Número"
                             onBlur={props.onBlur}
                             isLoading={props.isLoading}
-                            value={props.address.number}
+                            value={props.address?.number}
                             isDisabled={props.isLoading}
                             onSetText={handleOnChangeNumber}
                         />
@@ -155,7 +155,7 @@ export default function AddressForm(props: AddressFormProps) {
                             onBlur={props.onBlur}
                             isLoading={isSearching || props.isLoading}
                             isDisabled={isSearching || props.isLoading}
-                            value={props.address.district}
+                            value={props.address?.district}
                             onSetText={handleOnChangeDistrict}
                         />
                     </FormRowColumn>
@@ -165,7 +165,7 @@ export default function AddressForm(props: AddressFormProps) {
                             id="county"
                             title="Cidade"
                             onBlur={props.onBlur}
-                            value={props.address.county}
+                            value={props.address?.county}
                             onSetText={handleOnChangeCounty}
                             isLoading={isSearching || props.isLoading}
                             isDisabled={isSearching || props.isLoading}
@@ -179,7 +179,7 @@ export default function AddressForm(props: AddressFormProps) {
                             id="complement"
                             title="Complemento"
                             onBlur={props.onBlur}
-                            value={props.address.complement}
+                            value={props.address?.complement}
                             onSetText={handleOnChangeComplement}
                             isLoading={isSearching || props.isLoading}
                             isDisabled={isSearching || props.isLoading}

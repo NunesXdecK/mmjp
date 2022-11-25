@@ -102,7 +102,7 @@ export default function ArrayTextForm(props: ArrayTextFormProps) {
                     </FormRow>
                 </form>
 
-                {props.texts.map((element, index) => (
+                {props.texts?.map((element, index) => (
                     <InputTextWithButton
                         index={index}
                         isDisabled={true}

@@ -20,11 +20,10 @@ export default async function handler(req, res) {
                     let payment: Payment = (await getDoc(docRef)).data()
                     let status = payment.status
                     const dateNow = handleNewDateToUTC()
-                    if (payment.status !== "PAGO" && payment.dateDue > 0) {
-                        status = payment.dateDue < dateNow ? "ATRASADO" : "EM ABERTO"
+                    if (status === "EM ABERTO" && payment.dateDue > 0 && dateNow > payment.dateDue) {
+                        status = "ATRASADO"
                     }
                     if (payment.id?.length > 0 && status !== payment.status) {
-                        status = payment.status
                         payment = { ...payment, status: status, dateLastUpdateUTC: handleNewDateToUTC() }
                         const docRef = doc(paymentCollection, payment.id)
                         await updateDoc(docRef, PaymentConversor.toFirestore(payment))

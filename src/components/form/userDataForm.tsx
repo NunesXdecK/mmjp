@@ -224,20 +224,22 @@ export default function UserDataForm(props: UserDataFormProps) {
                     />
                 </FormRowColumn>
             </FormRow>
-            <FormRow>
-                <FormRowColumn unit="6" className="">
-                    <InputSelectPerson
-                        title="Pessoa"
-                        onBlur={props.onBlur}
-                        onSet={handleSetPerson}
-                        prevPath={props.prevPath}
-                        isLoading={props.isLoading}
-                        isDisabled={props.isDisabled}
-                        value={props.user?.person?.name}
-                        id={"user-person" + (props.index ? "-" + props.index : "")}
-                    />
-                </FormRowColumn>
-            </FormRow>
+            {!props.isProfile && (
+                <FormRow>
+                    <FormRowColumn unit="6" className="">
+                        <InputSelectPerson
+                            title="Pessoa"
+                            onBlur={props.onBlur}
+                            onSet={handleSetPerson}
+                            prevPath={props.prevPath}
+                            isLoading={props.isLoading}
+                            isDisabled={props.isDisabled}
+                            value={props.user?.person?.name}
+                            id={"user-person" + (props.index ? "-" + props.index : "")}
+                        />
+                    </FormRowColumn>
+                </FormRow>
+            )}
         </Form>
     )
 }

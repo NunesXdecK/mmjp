@@ -12,16 +12,22 @@ interface UserActionBarFormProps {
     isDisabled?: boolean,
     user?: User,
     onSet?: (any) => void,
+    onBeforeSave?: () => void,
     onSetIsLoading?: (boolean) => void,
-    onAfterSave?: (object, any?, boolean?) => void,
     onShowMessage?: (FeedbackMessage) => void,
+    onAfterSave?: (object, any?, boolean?) => void,
 }
 
 export const handleUserForDB = (user: User) => {
+    if (user.person?.id?.length > 0) {
+        user = { ...user, person: { id: user.person.id } }
+    } else {
+        user = { ...user, person: {} }
+    }
     user = {
         ...user,
-        username: user.username.trim(),
-        password: user.password.trim(),
+        username: user.username?.trim(),
+        password: user.password?.trim(),
     }
     return user
 }
@@ -80,6 +86,29 @@ export const handleUserValidationForDB = (user: User) => {
     return validation
 }
 
+export const handleUserValidationForDBInner = (user: User, isUsernameValid, isUserEmailValid) => {
+    let isValid = handleUserValidationForDB(user)
+    if (user.username.length > 0) {
+        if (isUsernameValid) {
+            isValid = {
+                ...isValid,
+                validation: false,
+                messages: [...isValid.messages, "O username já está em uso."]
+            }
+        }
+    }
+    if (user.email.length > 0) {
+        if (isUserEmailValid) {
+            isValid = {
+                ...isValid,
+                validation: false,
+                messages: [...isValid.messages, "O email já está em uso."]
+            }
+        }
+    }
+    return isValid
+}
+
 export default function UserActionBarForm(props: UserActionBarFormProps) {
     const handleSetIsLoading = (value: boolean) => {
         if (props.onSetIsLoading) {
@@ -91,29 +120,6 @@ export default function UserActionBarForm(props: UserActionBarFormProps) {
         if (props.onShowMessage) {
             props.onShowMessage(feedbackMessage)
         }
-    }
-
-    const handleUserValidationForDBInner = (user: User, isUsernameValid, isUserEmailValid) => {
-        let isValid = handleUserValidationForDB(user)
-        if (user.username.length > 0) {
-            if (isUsernameValid) {
-                isValid = {
-                    ...isValid,
-                    validation: false,
-                    messages: [...isValid.messages, "O username já está em uso."]
-                }
-            }
-        }
-        if (user.email.length > 0) {
-            if (isUserEmailValid) {
-                isValid = {
-                    ...isValid,
-                    validation: false,
-                    messages: [...isValid.messages, "O email já está em uso."]
-                }
-            }
-        }
-        return isValid
     }
 
     const handleSave = async (isForCloseModal) => {

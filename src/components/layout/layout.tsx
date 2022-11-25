@@ -95,10 +95,21 @@ export default function Layout(props: LayoutMenuProps) {
         }
     }
 
-    let holderClassName = "min-h-screen"
+    let holderClassName = "min-h-screen dark:border-gray-700 dark:shadow-none bg-slate-50 dark:bg-slate-800"
+    let html: HTMLElement = null
+    let htmlList = document.getElementsByTagName("html")
+    if (htmlList?.length > 0) {
+        html = htmlList[0]
+    }
     if (isDark) {
+        if (html) {
+            html.classList.add("dark")
+        }
         holderClassName = holderClassName + " bg-gray-800 dark"
     } else {
+        if (html) {
+            html.classList.remove("dark")
+        }
         holderClassName = holderClassName + " bg-transparent"
     }
 

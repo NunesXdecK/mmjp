@@ -13,6 +13,7 @@ interface ListTableProps {
     className?: string,
     deleteWindowTitle?: string,
     isActive?: number,
+    canDelete?: boolean,
     isLoading?: boolean,
     isDisabled?: boolean,
     hideSearch?: boolean,
@@ -144,36 +145,29 @@ export default function ListTable(props: ListTableProps) {
                         */}
                     </div>
                     <div className="">
-                        {pagesArray[handleGetPage(pagesArray)]?.length === 0 ? (
-                            <>
-                                <PlaceholderItemList />
-                            </>
-                        ) : (
-                            <>
-                                {pagesArray[handleGetPage(pagesArray)]?.map((element, index) => (
-                                    <ListTableItem
-                                        element={element}
-                                        onTableRow={props.onTableRow}
-                                        onShowClick={props.onShowClick}
-                                        onEditClick={props.onEditClick}
-                                        index={(page * perPage) + (index + 1)}
-                                        isLast={pagesArray[handleGetPage(pagesArray)]?.length === index + 1}
-                                        isDisabled={props.isLoading || props.isDisabled}
-                                        isActive={!props.isDisabled && (props.isActive - 1 === (page * perPage) + index)}
-                                        key={index + "-" + (element && "id" in element ? element.id : element)}
-                                        onRowClick={() => {
-                                            if (!props.isDisabled) {
-                                                handleSetIsActive((old) => (page * perPage) + (index + 1))
-                                            }
-                                        }}
-                                        onDeleteClick={() => {
-                                            setElement(element)
-                                            setIsOpenDelete(true)
-                                        }}
-                                    />
-                                ))}
-                            </>
-                        )}
+                        {pagesArray[handleGetPage(pagesArray)]?.map((element, index) => (
+                            <ListTableItem
+                                element={element}
+                                canDelete={props.canDelete}
+                                onTableRow={props.onTableRow}
+                                onShowClick={props.onShowClick}
+                                onEditClick={props.onEditClick}
+                                index={(page * perPage) + (index + 1)}
+                                isLast={pagesArray[handleGetPage(pagesArray)]?.length === index + 1}
+                                isDisabled={props.isLoading || props.isDisabled}
+                                isActive={!props.isDisabled && (props.isActive - 1 === (page * perPage) + index)}
+                                key={index + "-" + (element && "id" in element ? element.id : element)}
+                                onRowClick={() => {
+                                    if (!props.isDisabled) {
+                                        handleSetIsActive((old) => (page * perPage) + (index + 1))
+                                    }
+                                }}
+                                onDeleteClick={() => {
+                                    setElement(element)
+                                    setIsOpenDelete(true)
+                                }}
+                            />
+                        ))}
                     </div>
                     <div className="rounded-b">
                         {pages > 1 && (

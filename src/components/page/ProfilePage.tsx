@@ -1,17 +1,20 @@
 import { NavBarPath } from "../bar/navBar"
 import UserDataForm from "../form/userDataForm"
-import UserActionBarForm from "../bar/userActionBar"
+import PersonDataForm from "../form/personDataForm"
+import PlaceholderForm from "../form/placeholderForm"
 import { useContext, useEffect, useState } from "react"
 import { AuthContext } from "../../contexts/authContext"
+import ProfileActionBarForm from "../bar/profileActionBar"
 import { FeedbackMessage } from "../modal/feedbackMessageModal"
-import { User, defaultUser } from "../../interfaces/objectInterfaces"
-import PlaceholderForm from "../form/placeholderForm"
+import { User, defaultUser, defaultPerson } from "../../interfaces/objectInterfaces"
+import { handleMaskCPF } from "../../util/maskUtil"
 
 interface ProfilePageProps {
     id?: string,
     userId?: string,
     getInfo?: boolean,
     canSave?: boolean,
+    canDelete?: boolean,
     canUpdate?: boolean,
     isLoading?: boolean,
     isDisabled?: boolean,
@@ -26,6 +29,7 @@ export default function ProfilePage(props: ProfilePageProps) {
     const { user } = useContext(AuthContext)
     const [isFirst, setIsFirst] = useState(user.id?.length > 0)
     const [userProfile, setUserProfile] = useState<User>(defaultUser)
+    const [person, setPerson] = useState<User>(defaultPerson)
 
     const handleShowMessage = (feedbackMessage: FeedbackMessage) => {
         if (props.onShowMessage) {
@@ -54,6 +58,11 @@ export default function ProfilePage(props: ProfilePageProps) {
                     passwordConfirm: res?.data?.password,
                 }
                 setUserProfile(localUser)
+                if (localUser.person?.name?.length > 0) {
+                    setPerson({
+                        ...localUser.person, cpf: handleMaskCPF(localUser.person?.cpf)
+                    })
+                }
                 handleSetIsLoading(false)
             })
         }
@@ -63,9 +72,11 @@ export default function ProfilePage(props: ProfilePageProps) {
         <>
             {userProfile.id?.length > 0 ? (
                 <>
-                    <UserActionBarForm
+                    <ProfileActionBarForm
+                        person={person}
                         user={userProfile}
-                        onSet={setUserProfile}
+                        onSetPerson={setPerson}
+                        onSetUser={setUserProfile}
                         isLoading={props.isLoading}
                         onShowMessage={handleShowMessage}
                         onSetIsLoading={handleSetIsLoading}
@@ -77,7 +88,17 @@ export default function ProfilePage(props: ProfilePageProps) {
                         isProfile
                         user={userProfile}
                         onSet={setUserProfile}
+                        title="Dados do usuário"
                         isLoading={props.isLoading}
+                        subtitle="Informe os dados do usuário"
+                    />
+                    <PersonDataForm
+                        isProfile
+                        person={person}
+                        onSet={setPerson}
+                        title="Dados pessoais"
+                        isLoading={props.isLoading}
+                        subtitle="Informe os dados pessoais"
                     />
                 </>
             ) : (

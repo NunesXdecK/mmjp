@@ -38,6 +38,20 @@ export const handlePersonValidationForDB = (person: Person) => {
     return validation
 }
 
+export const handlePersonValidationForDBInner = (person, isSearching) => {
+    let isValid = handlePersonValidationForDB(person)
+    if (person.clientCode.length > 0) {
+        if (isSearching) {
+            isValid = {
+                ...isValid,
+                validation: false,
+                messages: [...isValid.messages, "O codigo do cliente já está em uso."]
+            }
+        }
+    }
+    return isValid
+}
+
 export const handlePersonForDB = (person: Person) => {
     if (person.address && person.address?.cep) {
         person = { ...person, address: { ...person.address, cep: handleRemoveCEPMask(person.address.cep) } }
@@ -50,7 +64,7 @@ export const handlePersonForDB = (person: Person) => {
     }
     person = {
         ...person,
-        name: person.name.trim(),
+        name: person.name?.trim(),
         telephones: telephonesWithNoMask,
         cpf: handleRemoveCPFMask(person.cpf),
     }
@@ -83,20 +97,6 @@ export default function PersonActionBarForm(props: PersonActionBarFormProps) {
         if (props.onShowMessage) {
             props.onShowMessage(feedbackMessage)
         }
-    }
-
-    const handlePersonValidationForDBInner = (person, isSearching) => {
-        let isValid = handlePersonValidationForDB(person)
-        if (person.clientCode.length > 0) {
-            if (isSearching) {
-                isValid = {
-                    ...isValid,
-                    validation: false,
-                    messages: [...isValid.messages, "O codigo do cliente já está em uso."]
-                }
-            }
-        }
-        return isValid
     }
 
     const handleSave = async (isForCloseModal) => {

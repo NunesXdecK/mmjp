@@ -5,14 +5,18 @@ interface ServiceNameListItemProps {
 }
 
 export default function ServiceNameListItem(props: ServiceNameListItemProps) {
+    const [lastId, setLastId] = useState(props.id)
     const [serviceName, serServiceName] = useState("")
     const [isFirst, setIsFirst] = useState(props?.id?.length > 0)
 
     useEffect(() => {
-        if (isFirst && props?.id?.length > 0) {
+        if (isFirst || props?.id !== lastId) {
             fetch("api/serviceNameForShow/" + props.id).then((res) => res.json()).then((res) => {
                 setIsFirst(false)
-                serServiceName(res.data)
+                if (res?.data?.length > 0) {
+                    setLastId(props.id)
+                    serServiceName(res.data)
+                }
             })
         }
     })

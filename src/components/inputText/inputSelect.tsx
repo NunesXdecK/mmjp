@@ -39,7 +39,7 @@ export default function InputSelect(props: InputSelectProps) {
                 id={props.id}
                 name={props.id}
                 className={classNameInput}
-                value={props.value.toLowerCase()}
+                value={props.value?.toLowerCase()}
                 disabled={props.isDisabled || props.isLoading}
                 onBlur={(event) => {
                     if (props.onBlur) {
@@ -51,7 +51,7 @@ export default function InputSelect(props: InputSelectProps) {
                 }}
             >
                 <option value="">Selecione uma opção</option>
-                {props.options.map((element, index) => {
+                {props.options?.map((element, index) => {
                     return (
                         <option
                             key={index + element}

@@ -13,6 +13,7 @@ import ImmobilePage from "../components/page/ImmobilePage"
 import UserPage from "../components/page/UserPage"
 import ProfilePage from "../components/page/ProfilePage"
 import FeedbackMessageModal, { defaultFeedbackMessage, FeedbackMessage } from "../components/modal/feedbackMessageModal"
+import DashboardPage from "../components/page/DashboardPage"
 
 export type PageOps =
     "DASHBOARD"
@@ -133,14 +134,18 @@ const [subjectMessage, setSubjectMessage] = useState<SubjectMessage>({
                 <meta name="description" content={title} />
             </Head>
             {page === "DASHBOARD" && (
-                <div className="dark:text-gray-200 py-48 flex flex-row items-center justify-center">
-                    {title}
-                </div>
+                <DashboardPage
+                    onSetPage={setPage}
+                    isLoading={isLoading}
+                    onSetIsLoading={setIsLoading}
+                    onShowMessage={handleShowMessage}
+                />
             )}
             {page === "PROFILE" && (
                 <ProfilePage
                     getInfo
                     canSave
+                    canDelete
                     onSetPage={setPage}
                     isLoading={isLoading}
                     onSetIsLoading={setIsLoading}
@@ -152,6 +157,7 @@ const [subjectMessage, setSubjectMessage] = useState<SubjectMessage>({
                     getInfo
                     canSave
                     canUpdate
+                    canDelete
                     onSetPage={setPage}
                     isLoading={isLoading}
                     onSetIsLoading={setIsLoading}
@@ -163,6 +169,7 @@ const [subjectMessage, setSubjectMessage] = useState<SubjectMessage>({
                     getInfo
                     canSave
                     canUpdate
+                    canDelete
                     onSetPage={setPage}
                     isLoading={isLoading}
                     onSetIsLoading={setIsLoading}
@@ -174,6 +181,7 @@ const [subjectMessage, setSubjectMessage] = useState<SubjectMessage>({
                     getInfo
                     canSave
                     canUpdate
+                    canDelete
                     onSetPage={setPage}
                     isLoading={isLoading}
                     onSetIsLoading={setIsLoading}
@@ -185,6 +193,7 @@ const [subjectMessage, setSubjectMessage] = useState<SubjectMessage>({
                     getInfo
                     canSave
                     canUpdate
+                    canDelete
                     onSetPage={setPage}
                     isLoading={isLoading}
                     onSetIsLoading={setIsLoading}
@@ -196,6 +205,7 @@ const [subjectMessage, setSubjectMessage] = useState<SubjectMessage>({
                     getInfo
                     canSave
                     canUpdate
+                    canDelete
                     onSetPage={setPage}
                     isLoading={isLoading}
                     onSetIsLoading={setIsLoading}
@@ -207,6 +217,7 @@ const [subjectMessage, setSubjectMessage] = useState<SubjectMessage>({
                     getInfo
                     canSave
                     canUpdate
+                    canDelete
                     onSetPage={setPage}
                     isLoading={isLoading}
                     onSetIsLoading={setIsLoading}
@@ -217,6 +228,7 @@ const [subjectMessage, setSubjectMessage] = useState<SubjectMessage>({
                 <ProjectPage
                     getInfo
                     canUpdate
+                    canDelete
                     onSetPage={setPage}
                     isLoading={isLoading}
                     onSetIsLoading={setIsLoading}
@@ -228,6 +240,7 @@ const [subjectMessage, setSubjectMessage] = useState<SubjectMessage>({
                 <ServicePage
                     getInfo
                     canUpdate
+                    canDelete
                     onSetPage={setPage}
                     isLoading={isLoading}
                     onSetIsLoading={setIsLoading}
@@ -239,6 +252,7 @@ const [subjectMessage, setSubjectMessage] = useState<SubjectMessage>({
                 <ServiceStagePage
                     getInfo
                     canUpdate
+                    canDelete
                     onSetPage={setPage}
                     isLoading={isLoading}
                     onSetIsLoading={setIsLoading}
@@ -250,6 +264,7 @@ const [subjectMessage, setSubjectMessage] = useState<SubjectMessage>({
                 <PaymentPage
                     getInfo
                     canUpdate
+                    canDelete
                     onSetPage={setPage}
                     isLoading={isLoading}
                     onSetIsLoading={setIsLoading}

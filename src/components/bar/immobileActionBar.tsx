@@ -59,9 +59,9 @@ export const handleImmobileForDB = (immobile: Immobile) => {
     immobile = {
         ...immobile,
         owners: owners,
-        name: immobile.name.trim(),
-        land: immobile.land.trim(),
-        county: immobile.county.trim(),
+        name: immobile.name?.trim(),
+        land: immobile.land?.trim(),
+        county: immobile.county?.trim(),
         address: { ...immobile.address, cep: handleRemoveCEPMask(immobile.address?.cep) }
     }
     return immobile

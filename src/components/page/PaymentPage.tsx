@@ -22,6 +22,7 @@ interface PaymentPageProps {
     projectId?: string,
     canSave?: boolean,
     getInfo?: boolean,
+    canDelete?: boolean,
     canUpdate?: boolean,
     isLoading?: boolean,
     isDisabled?: boolean,
@@ -279,9 +280,10 @@ export default function PaymentPage(props: PaymentPageProps) {
                 list={payments}
                 isActive={index}
                 title="Pagamentos"
-                isLoading={props.isLoading}
                 onSetIsActive={setIndex}
                 onTableRow={handlePutRows}
+                isLoading={props.isLoading}
+                canDelete={props.canDelete}
                 onShowClick={handleShowClick}
                 onEditClick={handleEditClick}
                 isDisabled={props.isDisabled}

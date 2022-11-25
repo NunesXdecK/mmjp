@@ -48,7 +48,7 @@ export const handleCompanyForDB = (company: Company) => {
     }
     company = {
         ...company,
-        name: company.name.trim(),
+        name: company.name?.trim(),
         telephones: telephonesWithNoMask,
         cnpj: handleRemoveCNPJMask(company.cnpj),
     }

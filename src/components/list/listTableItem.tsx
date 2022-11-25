@@ -8,6 +8,7 @@ interface ListTableItemProps {
     element?: boolean,
     isLast?: boolean,
     isActive?: boolean,
+    canDelete?: boolean,
     isDisabled?: boolean,
     onRowClick?: () => void,
     onEditClick?: (any, number?) => void,
@@ -32,14 +33,16 @@ export default function ListTableItem(props: ListTableItemProps) {
             {props.onTableRow(props.element, props.index - 1)}
             <ScrollDownTransition isOpen={props.isActive}>
                 <div className="flex justify-end gap-2">
-                    <Button
-                        color="red"
-                        className="max-w-min"
-                        isDisabled={props.isDisabled}
-                        onClick={() => { props.onDeleteClick(props.element) }}
-                    >
-                        <TrashIcon className="text-white block h-5 w-5" aria-hidden="true" />
-                    </Button>
+                    {props.canDelete && (
+                        <Button
+                            color="red"
+                            className="max-w-min"
+                            isDisabled={props.isDisabled}
+                            onClick={() => { props.onDeleteClick(props.element) }}
+                        >
+                            <TrashIcon className="text-white block h-5 w-5" aria-hidden="true" />
+                        </Button>
+                    )}
                     <Button
                         className="max-w-min"
                         isDisabled={props.isDisabled}

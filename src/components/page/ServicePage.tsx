@@ -19,9 +19,11 @@ import ServiceView from "../view/serviceView"
 
 interface ServicePageProps {
     id?: string,
+    userId?: string,
     projectId?: string,
     canSave?: boolean,
     getInfo?: boolean,
+    canDelete?: boolean,
     canUpdate?: boolean,
     isLoading?: boolean,
     isDisabled?: boolean,
@@ -211,11 +213,15 @@ export default function ServicePage(props: ServicePageProps) {
     const handlePutHeaders = () => {
         return (
             <FormRow>
-                <FormRowColumn unit="2">Titulo</FormRowColumn>
-                <FormRowColumn unit="1">Projeto</FormRowColumn>
-                <FormRowColumn unit="1">Valor</FormRowColumn>
-                <FormRowColumn unit="1">Status</FormRowColumn>
-                <FormRowColumn className="hidden sm:block" unit="1">Prazo</FormRowColumn>
+                <FormRowColumn unit={!props.userId ? "2" : "2"}>Titulo</FormRowColumn>
+                <FormRowColumn unit={!props.userId ? "1" : "2"}>Projeto</FormRowColumn>
+                <FormRowColumn unit={!props.userId ? "1" : "2"}>Status</FormRowColumn>
+                {!props.userId && (
+                    <>
+                        <FormRowColumn unit="1">Valor</FormRowColumn>
+                        <FormRowColumn className="hidden sm:block" unit="1">Prazo</FormRowColumn>
+                    </>
+                )}
             </FormRow>
         )
     }
@@ -223,10 +229,9 @@ export default function ServicePage(props: ServicePageProps) {
     const handlePutRows = (element: Service) => {
         return (
             <FormRow>
-                <FormRowColumn unit="2">{element.title}</FormRowColumn>
-                <FormRowColumn unit="1"><ProjectNumberListItem id={element.project.id} /></FormRowColumn>
-                <FormRowColumn unit="1">{handleMountNumberCurrency(element.total.toString(), ".", ",", 3, 2)}</FormRowColumn>
-                <FormRowColumn unit="1">
+                <FormRowColumn unit={!props.userId ? "2" : "2"}>{element.title}</FormRowColumn>
+                <FormRowColumn unit={!props.userId ? "1" : "2"}><ProjectNumberListItem id={element.project.id} /></FormRowColumn>
+                <FormRowColumn unit={!props.userId ? "1" : "2"}>
                     <ServiceStatusButton
                         id={element.id}
                         service={element}
@@ -238,7 +243,12 @@ export default function ServicePage(props: ServicePageProps) {
                         }}
                     />
                 </FormRowColumn>
-                <FormRowColumn className="hidden sm:block" unit="1">{handleUTCToDateShow(element.dateDue?.toString())}</FormRowColumn>
+                {!props.userId && (
+                    <>
+                        <FormRowColumn unit="1">{handleMountNumberCurrency(element.total.toString(), ".", ",", 3, 2)}</FormRowColumn>
+                        <FormRowColumn className="hidden sm:block" unit="1">{handleUTCToDateShow(element.dateDue?.toString())}</FormRowColumn>
+                    </>
+                )}
             </FormRow>
         )
     }
@@ -280,9 +290,10 @@ export default function ServicePage(props: ServicePageProps) {
                 list={services}
                 isActive={index}
                 title="Serviços"
-                isLoading={props.isLoading}
                 onSetIsActive={setIndex}
                 onTableRow={handlePutRows}
+                canDelete={props.canDelete}
+                isLoading={props.isLoading}
                 onShowClick={handleShowClick}
                 onEditClick={handleEditClick}
                 isDisabled={props.isDisabled}

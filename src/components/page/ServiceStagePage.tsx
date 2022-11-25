@@ -19,9 +19,11 @@ import ServiceStageView from "../view/serviceStageView"
 
 interface ServiceStagePageProps {
     id?: string,
+    userId?: string,
     serviceId?: string,
     canSave?: boolean,
     getInfo?: boolean,
+    canDelete?: boolean,
     canUpdate?: boolean,
     isLoading?: boolean,
     isDisabled?: boolean,
@@ -282,11 +284,15 @@ export default function ServiceStagePage(props: ServiceStagePageProps) {
                 {/*
                 <FormRowColumn unit="1"></FormRowColumn>
                 */}
-                <FormRowColumn unit="2">Titulo</FormRowColumn>
-                <FormRowColumn unit="1">Serviço</FormRowColumn>
-                <FormRowColumn unit="1">Responsável</FormRowColumn>
-                <FormRowColumn unit="1">Status</FormRowColumn>
-                <FormRowColumn className="hidden sm:block" unit="1">Prazo</FormRowColumn>
+                <FormRowColumn unit={!props.userId ? "2" : "2"}>Titulo</FormRowColumn>
+                <FormRowColumn unit={!props.userId ? "1" : "2"}>Serviço</FormRowColumn>
+                {!props.userId && (
+                    <FormRowColumn unit="1">Responsável</FormRowColumn>
+                )}
+                <FormRowColumn unit={!props.userId ? "1" : "2"}>Status</FormRowColumn>
+                {!props.userId && (
+                    <FormRowColumn className="hidden sm:block" unit="1">Prazo</FormRowColumn>
+                )}
             </FormRow>
         )
     }
@@ -306,10 +312,12 @@ export default function ServiceStagePage(props: ServiceStagePageProps) {
                     : ""}
                 </FormRowColumn>
                     */}
-                <FormRowColumn unit="2">{element.title}</FormRowColumn>
-                <FormRowColumn unit="1"><ServiceNameListItem id={element.service.id} /></FormRowColumn>
-                <FormRowColumn unit="1"><UserNameListItem id={element.responsible?.id} /></FormRowColumn>
-                <FormRowColumn unit="1">
+                <FormRowColumn unit={!props.userId ? "2" : "2"}>{element.title}</FormRowColumn>
+                <FormRowColumn unit={!props.userId ? "1" : "2"}><ServiceNameListItem id={element.service.id} /></FormRowColumn>
+                {!props.userId && (
+                    <FormRowColumn unit="1"><UserNameListItem id={element.responsible?.id} /></FormRowColumn>
+                )}
+                <FormRowColumn unit={!props.userId ? "1" : "2"}>
                     <SwiftInfoButton
                         id={element.id + "-"}
                         value={element.status}
@@ -325,14 +333,22 @@ export default function ServiceStagePage(props: ServiceStagePageProps) {
                         }}
                     />
                 </FormRowColumn>
-                <FormRowColumn className="hidden sm:block" unit="1">{handleUTCToDateShow(element.dateDue?.toString())}</FormRowColumn>
+                {!props.userId && (
+                    <FormRowColumn className="hidden sm:block" unit="1">{handleUTCToDateShow(element.dateDue?.toString())}</FormRowColumn>
+                )}
             </FormRow>
         )
     }
 
     useEffect(() => {
         if (isFirst) {
-            if (props.serviceId?.length > 0) {
+            if (props.userId?.length > 0) {
+                fetch("api/serviceStagesByUser/" + props.userId).then((res) => res.json()).then((res) => {
+                    setServiceStages(res.list ?? [])
+                    setIsFirst(old => false)
+                    handleSetIsLoading(false)
+                })
+            } else if (props.serviceId?.length > 0) {
                 fetch("api/serviceStages/" + props.serviceId).then((res) => res.json()).then((res) => {
                     setServiceStages(res.list ?? [])
                     setIsFirst(old => false)
@@ -367,9 +383,10 @@ export default function ServiceStagePage(props: ServiceStagePageProps) {
                 title="Etapas"
                 isActive={index}
                 list={serviceStages}
-                isLoading={props.isLoading}
                 onSetIsActive={setIndex}
                 onTableRow={handlePutRows}
+                isLoading={props.isLoading}
+                canDelete={props.canDelete}
                 onFilter={handleFilterList}
                 onShowClick={handleShowClick}
                 onEditClick={handleEditClick}

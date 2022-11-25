@@ -20,6 +20,7 @@ interface BudgetPageProps {
     id?: string,
     getInfo?: boolean,
     canSave?: boolean,
+    canDelete?: boolean,
     canUpdate?: boolean,
     isLoading?: boolean,
     isDisabled?: boolean,
@@ -310,9 +311,10 @@ export default function BudgetPage(props: BudgetPageProps) {
                         list={budgets}
                         isActive={index}
                         title="Orçamentos"
-                        isLoading={props.isLoading}
                         onSetIsActive={setIndex}
                         onTableRow={handlePutRows}
+                        canDelete={props.canDelete}
+                        isLoading={props.isLoading}
                         onShowClick={handleShowClick}
                         onEditClick={handleEditClick}
                         isDisabled={props.isDisabled}
@@ -358,10 +360,10 @@ export default function BudgetPage(props: BudgetPageProps) {
                                 budget={budget}
                                 onSet={setBudget}
                                 isLoading={props.isLoading}
-                                onSetIsLoading={handleSetIsLoading}
                                 onAfterSave={handleAfterSave}
                                 onShowMessage={handleShowMessage}
                                 onPrintBudget={handlePrintBudget}
+                                onSetIsLoading={handleSetIsLoading}
                                 onPrintContract={handlePrintContract}
                             />
                         )}

@@ -1,24 +1,25 @@
 import FormRow from "../form/formRow"
 import Button from "../button/button"
+import UserView from "../view/userView"
 import ActionBar from "../bar/actionBar"
 import ListTable from "../list/listTable"
 import { useEffect, useState } from "react"
 import WindowModal from "../modal/windowModal"
 import UserDataForm from "../form/userDataForm"
 import FormRowColumn from "../form/formRowColumn"
-import UserActionBarForm, { handleSaveUserInner } from "../bar/userActionBar"
-import PersonNameListItem from "../list/personNameListItem"
 import { PlusIcon } from "@heroicons/react/solid"
+import NavBar, { NavBarPath } from "../bar/navBar"
+import UserStatusButton from "../button/userStatusButton"
+import PersonNameListItem from "../list/personNameListItem"
 import { FeedbackMessage } from "../modal/feedbackMessageModal"
 import { User, defaultUser } from "../../interfaces/objectInterfaces"
-import UserView from "../view/userView"
-import UserStatusButton from "../button/userStatusButton"
-import NavBar, { NavBarPath } from "../bar/navBar"
+import UserActionBarForm, { handleSaveUserInner } from "../bar/userActionBar"
 
 interface UserPageProps {
     id?: string,
     canSave?: boolean,
     getInfo?: boolean,
+    canDelete?: boolean,
     canUpdate?: boolean,
     isLoading?: boolean,
     isDisabled?: boolean,
@@ -117,7 +118,7 @@ export default function UserPage(props: UserPageProps) {
         let localUser: User = await fetch("api/user/" + user?.id).then((res) => res.json()).then((res) => res.data)
         localUser = {
             ...localUser,
-            passwordConfirm: localUser.password,
+            passwordConfirm: localUser?.password,
         }
         handleSetIsLoading(false)
         setIsRegister(true)
@@ -195,8 +196,8 @@ export default function UserPage(props: UserPageProps) {
         return (
             <FormRow>
                 <FormRowColumn unit="2">Nome</FormRowColumn>
-                <FormRowColumn unit="2">Username</FormRowColumn>
-                <FormRowColumn unit="1">E-mail</FormRowColumn>
+                <FormRowColumn unit="1">Username</FormRowColumn>
+                <FormRowColumn unit="2">E-mail</FormRowColumn>
                 <FormRowColumn unit="1"></FormRowColumn>
             </FormRow>
         )
@@ -206,8 +207,8 @@ export default function UserPage(props: UserPageProps) {
         return (
             <FormRow>
                 <FormRowColumn unit="2"><PersonNameListItem id={element.person?.id} /></FormRowColumn>
-                <FormRowColumn unit="2">{element.username}</FormRowColumn>
-                <FormRowColumn unit="1">{element.email}</FormRowColumn>
+                <FormRowColumn unit="1">{element.username}</FormRowColumn>
+                <FormRowColumn unit="2">{element.email}</FormRowColumn>
                 <FormRowColumn unit="1">
                     <UserStatusButton
                         user={element}
@@ -253,9 +254,10 @@ export default function UserPage(props: UserPageProps) {
                 list={users}
                 title="Usuarios"
                 isActive={index}
-                isLoading={props.isLoading}
                 onSetIsActive={setIndex}
                 onTableRow={handlePutRows}
+                isLoading={props.isLoading}
+                canDelete={props.canDelete}
                 onShowClick={handleShowClick}
                 onEditClick={handleEditClick}
                 isDisabled={props.isDisabled}

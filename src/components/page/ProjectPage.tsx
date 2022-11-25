@@ -19,6 +19,7 @@ interface ProjectPageProps {
     id?: string,
     getInfo?: boolean,
     canSave?: boolean,
+    canDelete?: boolean,
     canUpdate?: boolean,
     isLoading?: boolean,
     isDisabled?: boolean,
@@ -281,9 +282,10 @@ export default function ProjectPage(props: ProjectPageProps) {
                 list={projects}
                 isActive={index}
                 title="Projetos"
-                isLoading={props.isLoading}
                 onSetIsActive={setIndex}
                 onTableRow={handlePutRows}
+                canDelete={props.canDelete}
+                isLoading={props.isLoading}
                 onShowClick={handleShowClick}
                 onEditClick={handleEditClick}
                 isDisabled={props.isDisabled}

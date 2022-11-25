@@ -18,6 +18,7 @@ interface PersonPageProps {
     id?: string,
     canSave?: boolean,
     getInfo?: boolean,
+    canDelete?: boolean,
     canUpdate?: boolean,
     isLoading?: boolean,
     isDisabled?: boolean,
@@ -99,6 +100,7 @@ export default function PersonPage(props: PersonPageProps) {
         let localPerson: Person = await fetch("api/person/" + person?.id).then((res) => res.json()).then((res) => res.data)
         localPerson = {
             ...localPerson,
+            cpf: handleMaskCPF(localPerson?.cpf)
         }
         handleSetIsLoading(false)
         setIsRegister(true)
@@ -221,9 +223,10 @@ export default function PersonPage(props: PersonPageProps) {
                 title="Pessoas"
                 isActive={index}
                 list={persons}
-                isLoading={props.isLoading}
                 onSetIsActive={setIndex}
                 onTableRow={handlePutRows}
+                canDelete={props.canDelete}
+                isLoading={props.isLoading}
                 onShowClick={handleShowClick}
                 onEditClick={handleEditClick}
                 isDisabled={props.isDisabled}

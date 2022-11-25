@@ -5,14 +5,16 @@ interface PersonNameListItemProps {
 }
 
 export default function PersonNameListItem(props: PersonNameListItemProps) {
+    const [lastId, setLastId] = useState(props.id)
     const [personName, setPersonName] = useState("")
     const [isFirst, setIsFirst] = useState(props?.id?.length > 0)
 
     useEffect(() => {
-        if (isFirst && props?.id?.length > 0) {
+        if (isFirst || props?.id !== lastId) {
             fetch("api/personNameForShow/" + props.id).then((res) => res.json()).then((res) => {
                 setIsFirst(false)
                 if (res?.data?.length > 0) {
+                    setLastId(props.id)
                     setPersonName(res.data)
                 }
             })

@@ -18,6 +18,7 @@ interface CompanyPageProps {
     id?: string,
     canSave?: boolean,
     getInfo?: boolean,
+    canDelete?: boolean,
     canUpdate?: boolean,
     isLoading?: boolean,
     isDisabled?: boolean,
@@ -221,9 +222,10 @@ export default function CompanyPage(props: CompanyPageProps) {
                 title="Empresas"
                 isActive={index}
                 list={companys}
-                isLoading={props.isLoading}
                 onSetIsActive={setIndex}
                 onTableRow={handlePutRows}
+                isLoading={props.isLoading}
+                canDelete={props.canDelete}
                 onShowClick={handleShowClick}
                 onEditClick={handleEditClick}
                 isDisabled={props.isDisabled}

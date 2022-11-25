@@ -16,6 +16,7 @@ interface PersonDataFormProps {
     subtitle?: string,
     index?: number,
     isPrint?: boolean,
+    isProfile?: boolean,
     isLoading?: boolean,
     isDisabled?: boolean,
     person?: Person,
@@ -74,17 +75,19 @@ export default function PersonDataForm(props: PersonDataFormProps) {
                             validationMessage="O nome não pode ficar em branco."
                         />
                     </FormRowColumn>
-                    <FormRowColumn unit="2">
-                        <InputClientCode
-                            id="person-client-code"
-                            title="Codigo de cliente"
-                            elementId={props.person.id}
-                            isLoading={props.isLoading}
-                            onSet={handleSetClientCode}
-                            isDisabled={props.isDisabled}
-                            value={props.person.clientCode}
-                        />
-                    </FormRowColumn>
+                    {!props.isProfile && (
+                        <FormRowColumn unit="2">
+                            <InputClientCode
+                                id="person-client-code"
+                                title="Codigo de cliente"
+                                elementId={props.person.id}
+                                isLoading={props.isLoading}
+                                onSet={handleSetClientCode}
+                                isDisabled={props.isDisabled}
+                                value={props.person.clientCode}
+                            />
+                        </FormRowColumn>
+                    )}
                 </FormRow>
                 <FormRow>
                     <FormRowColumn unit="3">

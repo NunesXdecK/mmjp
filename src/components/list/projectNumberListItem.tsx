@@ -5,14 +5,16 @@ interface ProjectNumberListItemProps {
 }
 
 export default function ProjectNumberListItem(props: ProjectNumberListItemProps) {
+    const [lastId, setLastId] = useState(props.id)
     const [projectNumber, setProjectNumber] = useState("")
     const [isFirst, setIsFirst] = useState(props?.id?.length > 0)
 
     useEffect(() => {
-        if (isFirst && props?.id?.length > 0) {
+        if (isFirst || props?.id !== lastId) {
             fetch("api/projectNumberForShow/" + props.id).then((res) => res.json()).then((res) => {
                 setIsFirst(false)
                 if (res?.data?.length > 0) {
+                    setLastId(props.id)
                     setProjectNumber(res.data)
                 }
             })

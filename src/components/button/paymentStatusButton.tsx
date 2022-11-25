@@ -16,18 +16,18 @@ interface PaymentStatusButtonProps {
 }
 
 export default function PaymentStatusButton(props: PaymentStatusButtonProps) {
-    const [isFirst, setIsFirst] = useState(props.payment?.project?.id?.length > 0)
-    const [value, setValue] = useState(props.value)
+    const [lastValue, setLastValue] = useState(props.value)
+    const [isFirst, setIsFirst] = useState(props.value === "EM ABERTO")
 
     useEffect(() => {
-        if (isFirst) {
+        if (isFirst || props?.value !== lastValue) {
             fetch("api/checkPaymentStatus", {
                 method: "POST",
                 body: JSON.stringify({ token: "tokenbemseguro", id: props.payment.id }),
             }).then((res) => res.json()).then((res) => {
                 setIsFirst(false)
                 if (res.status === "SUCCESS" && res.data?.length > 0) {
-                    setValue(res.data)
+                    setLastValue(res.data)
                     /*
                     const payment = { ...props.payment, status: res.data }
                     if (props.onAfter) {
@@ -38,6 +38,10 @@ export default function PaymentStatusButton(props: PaymentStatusButtonProps) {
             })
         }
     })
+    let values = ["EM ABERTO", "PAGO", "ATRASADO"]
+    if (props.value === "ATRASADO") {
+        values = ["PAGO", "ATRASADO"]
+    }
 
     return (
         <>
@@ -45,11 +49,11 @@ export default function PaymentStatusButton(props: PaymentStatusButtonProps) {
                 <div className="animate-pulse p-2 w-full bg-gray-300 dark:bg-gray-700"></div>
             ) : (
                 <SwiftInfoButton
+                    values={values}
                     value={props.value}
                     id={props.id + "-"}
                     onClick={props.onClick}
                     isDisabled={props.isDisabled}
-                    values={["EM ABERTO", "PAGO", "VENCIDO"]}
                 />
             )}
         </>
