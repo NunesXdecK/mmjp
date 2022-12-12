@@ -1,10 +1,10 @@
+import Head from "next/head";
 import { useState } from "react";
+import Button from "../button/button";
 import InputText from "../inputText/inputText";
 import { LockClosedIcon } from "@heroicons/react/solid";
 import { NOT_NULL_MARK } from "../../util/patternValidationUtil";
 import FeedbackMessageModal, { defaultFeedbackMessage, FeedbackMessage } from "../modal/feedbackMessageModal";
-import Button from "../button/button";
-import Head from "next/head";
 
 interface ImmobileFormProps {
     isCheckingLogin?: boolean,
@@ -140,6 +140,28 @@ export default function LoginForm(props: ImmobileFormProps) {
                                 </Button>
                             </div>
                         </form>
+                        <div>
+
+                            <Button
+                                isLoading={isLoading}
+                                isDisabled={isLoading}
+                                onClick={async () => {
+                                    if (props.onSignIn) {
+                                        setIsLoading(true)
+                                        let res = await props.onSignIn("visitante", "visitante")
+                                        setIsLoading(false)
+                                        let message = "Houve algum problema com o seu login"
+                                        handleShowMessage({ ...feedbackMessage, messages: [message], messageType: "ERROR" })
+                                    }
+                                }}
+                                className="group relative flex w-full justify-center rounded-md border border-transparent bg-indigo-600 py-2 px-4 text-sm font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+                            >
+                                <span className="absolute inset-y-0 left-0 flex items-center pl-3">
+                                    <LockClosedIcon className="h-5 w-5 text-indigo-500 group-hover:text-indigo-400" aria-hidden="true" />
+                                </span>
+                                Entrar como visitante
+                            </Button>
+                        </div>
                     </div>
                 </div>
             )}

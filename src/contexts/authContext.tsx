@@ -73,10 +73,12 @@ window.onunload = (e) => {
                     {props.children}
                 </>
             ) : (
-                <LoginForm
-                    onSignIn={handleSignIn}
-                    isCheckingLogin={isFirst}
-                />
+                <>
+                    <LoginForm
+                        onSignIn={handleSignIn}
+                        isCheckingLogin={isFirst}
+                    />
+                </>
             )}
         </AuthContext.Provider>
     )
