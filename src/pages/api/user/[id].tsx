@@ -17,10 +17,10 @@ export default async function handler(req, res) {
                 if (id) {
                     const docRef = doc(userCollection, id)
                     let user: User = (await getDoc(docRef)).data()
-                    if (user.person?.id?.length > 0) {
+                    if (user.person?.id > 0) {
                         const personDocRef = doc(personCollection, user.person?.id)
                         let person: Person = (await getDoc(personDocRef)).data()
-                        if (person?.id?.length > 0) {
+                        if (person?.id > 0) {
                             user = { ...user, person: person }
                         }
                     }

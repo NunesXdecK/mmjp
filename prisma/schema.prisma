@@ -1,0 +1,348 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Person {
+  id            Int             @id @default(autoincrement())
+  dateInsert    Int             @default(0) @map("date_insert")
+  dateUpdate    Int?            @map("date_update")
+  description   String?         @db.VarChar(255)
+  cpf           String          @unique @db.VarChar(255)
+  rg            String?         @db.VarChar(255)
+  name          String          @db.VarChar(255)
+  rgIssuer      String?         @map("rg_issuer") @db.VarChar(255)
+  profession    String?         @db.VarChar(255)
+  nationality   String?         @db.VarChar(255)
+  naturalness   String?         @db.VarChar(255)
+  maritalStatus String?         @map("marital_status") @db.VarChar(255)
+  clientCode    Int?            @map("client_code")
+  user          User[]
+  address       Address[]
+  company       Company[]
+  telephone     Telephone[]
+  immobileOwner ImmobileOwner[]
+  professional  Professional[]
+  budget        Budget[]
+  project       Project[]
+
+  @@map("person")
+}
+
+model Company {
+  id            Int             @id @default(autoincrement())
+  dateInsert    Int             @default(0) @map("date_insert")
+  dateUpdate    Int?            @map("date_update")
+  description   String?         @db.VarChar(255)
+  cnpj          String          @unique @db.VarChar(255)
+  name          String          @db.VarChar(255)
+  clientCode    Int?            @map("client_code")
+  person        Person          @relation(fields: [personId], references: [id])
+  personId      Int             @map("person_id")
+  address       Address[]
+  telephone     Telephone[]
+  immobileOwner ImmobileOwner[]
+  budget        Budget[]
+  project       Project[]
+
+  @@map("company")
+}
+
+model Professional {
+  id             Int       @id @default(autoincrement())
+  dateInsert     Int       @default(0) @map("date_insert")
+  dateUpdate     Int?      @map("date_update")
+  description    String?   @db.VarChar(255)
+  title          String    @db.VarChar(255)
+  creaNumber     String?   @map("crea_number") @db.VarChar(255)
+  credentialCode String?   @map("credential_code") @db.VarChar(255)
+  person         Person    @relation(fields: [personId], references: [id])
+  personId       Int       @map("person_id")
+  service        Service[]
+
+  @@map("professional")
+}
+
+model Telephone {
+  id         Int     @id @default(autoincrement())
+  dateInsert Int     @default(0) @map("date_insert")
+  dateUpdate Int?    @map("date_update")
+  type       String  @db.VarChar(255)
+  number     Int
+  person     Person  @relation(fields: [personId], references: [id])
+  personId   Int     @map("person_id")
+  company    Company @relation(fields: [companyId], references: [id])
+  companyId  Int     @map("company_id")
+
+  @@map("telephone")
+}
+
+model Address {
+  id          Int      @id @default(autoincrement())
+  dateInsert  Int      @default(0) @map("date_insert")
+  dateUpdate  Int?     @map("date_update")
+  cep         String?  @db.VarChar(255)
+  number      String?  @db.VarChar(255)
+  county      String?  @db.VarChar(255)
+  district    String?  @db.VarChar(255)
+  complement  String?  @db.VarChar(255)
+  publicPlace String?  @map("public_place") @db.VarChar(255)
+  person      Person   @relation(fields: [personId], references: [id])
+  personId    Int      @map("person_id")
+  company     Company  @relation(fields: [companyId], references: [id])
+  companyId   Int      @map("company_id")
+  immobile    Immobile @relation(fields: [immobileId], references: [id])
+  immobileId  Int      @map("immobile_id")
+
+  @@map("address")
+}
+
+model Immobile {
+  id              Int               @id @default(autoincrement())
+  dateInsert      Int               @default(0) @map("date_insert")
+  dateUpdate      Int?              @map("date_update")
+  description     String?           @db.VarChar(255)
+  name            String            @db.VarChar(255)
+  land            String?           @db.VarChar(255)
+  county          String?           @db.VarChar(255)
+  process         String?           @db.VarChar(255)
+  comarca         String?           @db.VarChar(255)
+  registration    String?           @db.VarChar(255)
+  status          String?           @default("NORMAL") @db.VarChar(255)
+  ccirNumber      String?           @map("ccir_number") @db.VarChar(255)
+  comarcaCode     String?           @map("comarca_code") @db.VarChar(255)
+  area            Int?
+  perimeter       Int?
+  address         Address[]
+  immobileOwner   ImmobileOwner[]
+  serviceimmobile ServiceImmobile[]
+  ImmobilePoint   ImmobilePoint[]
+
+  @@map("immobile")
+}
+
+model ImmobileOwner {
+  id         Int      @id @default(autoincrement())
+  dateInsert Int      @default(0) @map("date_insert")
+  dateUpdate Int?     @map("date_update")
+  person     Person   @relation(fields: [personId], references: [id])
+  personId   Int      @map("person_id")
+  company    Company  @relation(fields: [companyId], references: [id])
+  companyId  Int      @map("company_id")
+  immobile   Immobile @relation(fields: [immobileId], references: [id])
+  immobileId Int      @map("immobile_id")
+
+  @@map("immobile_owner")
+}
+
+model Point {
+  id            Int             @id @default(autoincrement())
+  dateInsert    Int             @default(0) @map("date_insert")
+  dateUpdate    Int?            @map("date_update")
+  description   String?         @db.VarChar(255)
+  ImmobilePoint ImmobilePoint[]
+
+  @@map("point")
+}
+
+model ImmobilePoint {
+  id         Int      @id @default(autoincrement())
+  dateInsert Int      @default(0) @map("date_insert")
+  dateUpdate Int?     @map("date_update")
+  immobile   Immobile @relation(fields: [immobileId], references: [id])
+  immobileId Int      @map("immobile_id")
+  point      Point    @relation(fields: [pointId], references: [id])
+  pointId    Int      @map("point_id")
+
+  @@map("immobile_point")
+}
+
+model Budget {
+  id            Int             @id @default(autoincrement())
+  dateInsert    Int             @default(0) @map("date_insert")
+  dateUpdate    Int?            @map("date_update")
+  description   String?         @db.VarChar(255)
+  title         String          @db.VarChar(255)
+  status        String          @db.VarChar(255)
+  dateDue       Int?            @map("date_due")
+  person        Person          @relation(fields: [personId], references: [id])
+  personId      Int             @map("person_id")
+  company       Company         @relation(fields: [companyId], references: [id])
+  companyId     Int             @map("company_id")
+  budgetPayment BudgetPayment[]
+  budgetService BudgetService[]
+  project       Project[]
+
+  @@map("budget")
+}
+
+model BudgetService {
+  id         Int    @id @default(autoincrement())
+  dateInsert Int    @default(0) @map("date_insert")
+  dateUpdate Int?   @map("date_update")
+  title      String @db.VarChar(255)
+  value      Int
+  index      Int
+  quantity   Int
+  budget     Budget @relation(fields: [budgetId], references: [id])
+  budgetId   Int    @map("budget_id")
+
+  @@map("budget_service")
+}
+
+model BudgetPayment {
+  id         Int    @id @default(autoincrement())
+  dateInsert Int    @default(0) @map("date_insert")
+  dateUpdate Int?   @map("date_update")
+  title      String @db.VarChar(255)
+  value      Int
+  index      Int
+  dateDue    Int?   @map("date_due")
+  budget     Budget @relation(fields: [budgetId], references: [id])
+  budgetId   Int    @map("budget_id")
+
+  @@map("budget_payment")
+}
+
+model Project {
+  id          Int       @id @default(autoincrement())
+  dateInsert  Int       @default(0) @map("date_insert")
+  dateUpdate  Int?      @map("date_update")
+  description String?   @db.VarChar(255)
+  title       String    @db.VarChar(255)
+  status      String    @db.VarChar(255)
+  number      String    @db.VarChar(255)
+  dateDue     Int?      @map("date_due")
+  total       Int?
+  priority    Int       @default(0)
+  budget      Budget    @relation(fields: [budgetId], references: [id])
+  budgetId    Int       @map("budget_id")
+  person      Person    @relation(fields: [personId], references: [id])
+  personId    Int       @map("person_id")
+  company     Company   @relation(fields: [companyId], references: [id])
+  companyId   Int       @map("company_id")
+  service     Service[]
+  payment     Payment[]
+
+  @@map("project")
+}
+
+model Service {
+  id              Int               @id @default(autoincrement())
+  dateInsert      Int               @default(0) @map("date_insert")
+  dateUpdate      Int?              @map("date_update")
+  description     String?           @db.VarChar(255)
+  title           String            @db.VarChar(255)
+  status          String            @db.VarChar(255)
+  dateDue         Int?              @map("date_due")
+  value           Int
+  priority        Int               @default(0)
+  index           Int
+  total           Int
+  quantity        Int
+  project         Project           @relation(fields: [projectId], references: [id])
+  projectId       Int               @map("project_id")
+  professional    Professional      @relation(fields: [professionalId], references: [id])
+  professionalId  Int               @map("professional_id")
+  serviceimmobile ServiceImmobile[]
+  servicestage    ServiceStage[]
+
+  @@map("service")
+}
+
+model ServiceImmobile {
+  id         Int      @id @default(autoincrement())
+  dateInsert Int      @default(0) @map("date_insert")
+  dateUpdate Int?     @map("date_update")
+  type       String   @db.VarChar(255)
+  service    Service  @relation(fields: [serviceId], references: [id])
+  serviceId  Int      @map("service_id")
+  immobile   Immobile @relation(fields: [immobileId], references: [id])
+  immobileId Int      @map("immobile_id")
+
+  @@map("service_immobile")
+}
+
+model ServiceStage {
+  id          Int     @id @default(autoincrement())
+  dateInsert  Int     @default(0) @map("date_insert")
+  dateUpdate  Int?    @map("date_update")
+  description String? @db.VarChar(255)
+  title       String  @db.VarChar(255)
+  status      String  @db.VarChar(255)
+  value       Int
+  index       Int
+  dateDue     Int     @map("date_due")
+  priority    Int     @default(0)
+  service     Service @relation(fields: [serviceId], references: [id])
+  serviceId   Int     @map("service_id")
+  user        User    @relation(fields: [userId], references: [id])
+  userId      Int     @map("user_id")
+
+  @@map("service_stage")
+}
+
+model Payment {
+  id          Int     @id @default(autoincrement())
+  dateInsert  Int     @default(0) @map("date_insert")
+  dateUpdate  Int?    @map("date_update")
+  description String? @db.VarChar(255)
+  title       String  @db.VarChar(255)
+  status      String  @db.VarChar(255)
+  value       Int
+  index       Int
+  dateDue     Int     @map("date_due")
+  priority    Int     @default(0)
+  project     Project @relation(fields: [projectId], references: [id])
+  projectId   Int     @map("project_id")
+
+  @@map("payment")
+}
+
+model User {
+  id             Int              @id @default(autoincrement())
+  dateInsert     Int              @default(0) @map("date_insert")
+  dateUpdate     Int?             @map("date_update")
+  username       String           @unique @db.VarChar(255)
+  email          String           @unique @db.VarChar(255)
+  password       String           @db.VarChar(255)
+  office         String           @default("VISITANTE") @db.VarChar(255)
+  isblocked      Boolean          @default(false)
+  person         Person           @relation(fields: [personId], references: [id])
+  personId       Int              @map("person_id")
+  logintoken     LoginToken[]
+  servicestage   ServiceStage[]
+  subjectmessage SubjectMessage[]
+
+  @@map("user")
+}
+
+model SubjectMessage {
+  id            Int     @id @default(autoincrement())
+  dateInsert    Int     @default(0) @map("date_insert")
+  dateUpdate    Int?    @map("date_update")
+  text          String  @db.VarChar(255)
+  referenceid   Int?
+  referencebase String? @db.VarChar(255)
+  user          User    @relation(fields: [userId], references: [id])
+  userId        Int     @map("user_id")
+
+  @@map("subject_message")
+}
+
+model LoginToken {
+  id            Int     @id @default(autoincrement())
+  dateInsert    Int     @default(0) @map("date_insert")
+  dateUpdate    Int?    @map("date_update")
+  token         String  @db.VarChar(255)
+  isblocked     Boolean @default(false)
+  validationDue Int     @map("validation_due")
+  user          User    @relation(fields: [userId], references: [id])
+  userId        Int     @map("user_id")
+
+  @@map("login_token")
+}

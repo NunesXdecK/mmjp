@@ -1,15 +1,15 @@
 import Form from "./form";
 import FormRow from "./formRow";
 import { useState } from "react";
-import FormRowColumn from "./formRowColumn";
-import InputText from "../inputText/inputText";
-import { Person } from "../../interfaces/objectInterfaces";
-import { CPF_MARK, NOT_NULL_MARK, TELEPHONE_MARK, TEXT_NOT_NULL_MARK } from "../../util/patternValidationUtil";
-import InputClientCode from "../inputText/inputClientCode";
-import ArrayTextForm from "./arrayTextForm";
 import AddressForm from "./addressForm";
-import InputSelect from "../inputText/inputSelect";
 import { NavBarPath } from "../bar/navBar";
+import FormRowColumn from "./formRowColumn";
+import ArrayTextForm from "./arrayTextForm";
+import InputText from "../inputText/inputText";
+import InputSelect from "../inputText/inputSelect";
+import { Person } from "../../interfaces/objectInterfaces";
+import InputClientCode from "../inputText/inputClientCode";
+import { CPF_MARK, TELEPHONE_MARK, TEXT_NOT_NULL_MARK } from "../../util/patternValidationUtil";
 
 interface PersonDataFormProps {
     title?: string,
@@ -36,10 +36,16 @@ export default function PersonDataForm(props: PersonDataFormProps) {
     const handleSetRgIssuer = (value) => { handleSet({ ...props.person, rgIssuer: value }) }
     const handleSetTelephones = (value) => { handleSet({ ...props.person, telephones: value }) }
     const handleSetProfession = (value) => { handleSet({ ...props.person, profession: value }) }
-    const handleSetClientCode = (value) => { handleSet({ ...props.person, clientCode: value }) }
     const handleSetNaturalness = (value) => { handleSet({ ...props.person, naturalness: value }) }
     const handleSetNationality = (value) => { handleSet({ ...props.person, nationality: value }) }
     const handleSetMaritalStatus = (value) => { handleSet({ ...props.person, maritalStatus: value }) }
+    const handleSetClientCode = (value) => {
+        let val = 0
+        if (parseInt(value)) {
+            val = parseInt(value)
+        }
+        handleSet({ ...props.person, clientCode: val })
+    }
 
     const handleSet = (value: Person) => {
         if (props.onSet) {
@@ -84,7 +90,7 @@ export default function PersonDataForm(props: PersonDataFormProps) {
                                 isLoading={props.isLoading}
                                 onSet={handleSetClientCode}
                                 isDisabled={props.isDisabled}
-                                value={props.person.clientCode}
+                                value={props.person.clientCode.toString()}
                             />
                         </FormRowColumn>
                     )}

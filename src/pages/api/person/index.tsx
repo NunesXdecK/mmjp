@@ -1,66 +1,85 @@
-import { PersonConversor } from "../../../db/converters"
-import { addDoc, collection, deleteDoc, doc, updateDoc } from "firebase/firestore"
-import { db, HISTORY_COLLECTION_NAME, PERSON_COLLECTION_NAME } from "../../../db/firebaseDB"
 import { Person } from "../../../interfaces/objectInterfaces"
-import { handleNewDateToUTC } from "../../../util/dateUtils"
+import prisma from "../../../prisma/prisma"
+
+const handleAdd = async (person: Person) => {
+    if (!person) {
+        return 0
+    }
+    const data: any = {
+        rg: person.rg,
+        cpf: person.cpf,
+        name: person.name,
+        rgIssuer: person.rgIssuer,
+        profession: person.profession,
+        clientCode: person.clientCode,
+        naturalness: person.naturalness,
+        description: person.description,
+        nationality: person.nationality,
+        dateInsert: person.dateInsertUTC,
+        maritalStatus: person.maritalStatus,
+        dateUpdate: person.dateLastUpdateUTC,
+    }
+    let id = person?.id ?? 0
+    try {
+        if (person?.id === 0) {
+            id = await prisma.person.create({
+                data: data,
+            }).then(res => res.id)
+        } else if (person?.id > 0) {
+            id = await prisma.person.update({
+                where: { id: person.id },
+                data: data,
+            }).then(res => res.id)
+        }
+    } catch (error) {
+        console.error(error)
+    }
+    return id
+}
+
+const handleDelete = async (id: number) => {
+    try {
+        await prisma.person.delete({
+            where: { id: id },
+        })
+        return true
+    } catch (error) {
+        console.error(error)
+        return false
+    }
+}
 
 export default async function handler(req, res) {
     const { method, body } = req
-
-    const historyCollection = collection(db, HISTORY_COLLECTION_NAME)
-    const personCollection = collection(db, PERSON_COLLECTION_NAME).withConverter(PersonConversor)
-
+    const { token, data, id } = JSON.parse(body)
+    let resFinal = { status: "ERROR", error: {}, id: 0, message: "" }
     switch (method) {
         case "POST":
-            let resPOST = { status: "ERROR", error: {}, id: "", message: "" }
-            let { token, data, history } = JSON.parse(body)
+            let person: Person = data
             if (token === "tokenbemseguro") {
-                let nowID = data?.id ?? ""
-                const isSave = nowID === ""
-                let person: Person = data
-                try {
-                    if (person.oldData) {
-                        delete person.oldData
-                    }
-                    if (isSave) {
-                        person = { ...person, dateInsertUTC: handleNewDateToUTC() }
-                        const docRef = await addDoc(personCollection, PersonConversor.toFirestore(person))
-                        nowID = docRef.id
-                    } else {
-                        person = { ...person, dateLastUpdateUTC: handleNewDateToUTC() }
-                        const docRef = doc(personCollection, nowID)
-                        await updateDoc(docRef, PersonConversor.toFirestore(person))
-                    }
-                    if (history) {
-                        const dataForHistory = { ...PersonConversor.toFirestore(person), databaseid: nowID, databasename: PERSON_COLLECTION_NAME }
-                        await addDoc(historyCollection, dataForHistory)
-                    }
-                    resPOST = { ...resPOST, status: "SUCCESS", id: nowID }
-                } catch (err) {
-                    console.error(err)
-                    resPOST = { ...resPOST, status: "ERROR", error: err }
+                const resAdd = await handleAdd(person).then(res => res)
+                if (resAdd === 0) {
+                    resFinal = { ...resFinal, status: "ERROR" }
+                } else {
+                    resFinal = { ...resFinal, status: "SUCCESS", id: resAdd }
                 }
             } else {
-                resPOST = { ...resPOST, status: "ERROR", message: "Token invalido!" }
+                resFinal = { ...resFinal, status: "ERROR", message: "Token invalido!" }
             }
-            res.status(200).json(resPOST)
+            res.status(200).json(resFinal)
             break
         case "DELETE":
-            let resDELETE = { status: "ERROR", error: {}, message: "" }
-            try {
-                const { token, id } = JSON.parse(body)
-                if (token === "tokenbemseguro") {
-                    const docRef = doc(personCollection, id)
-                    await deleteDoc(docRef)
-                    resDELETE = { ...resDELETE, status: "SUCCESS" }
+            if (token === "tokenbemseguro") {
+                const resDelete = await handleDelete(id).then(res => res)
+                if (resDelete) {
+                    resFinal = { ...resFinal, status: "SUCCESS" }
                 } else {
-                    resDELETE = { ...resDELETE, status: "ERROR", message: "Token invalido!" }
+                    resFinal = { ...resFinal, status: "ERROR" }
                 }
-            } catch (err) {
-                console.error(err)
-                resDELETE = { ...resDELETE, status: "ERROR", error: err }
+            } else {
+                resFinal = { ...resFinal, status: "ERROR", message: "Token invalido!" }
             }
-            res.status(200).json(resDELETE)
+            res.status(200).json(resFinal)
             break
         default:
             res.setHeader("Allow", ["PUT", "UPDATE", "DELETE"])

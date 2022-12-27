@@ -1,12 +1,13 @@
 import { useState } from "react"
 import InputText from "./inputText"
+import { NUMBER_MARK } from "../../util/patternValidationUtil"
 
 interface InputClientCodeProps {
     id?: string,
     title?: string,
     value?: string,
-    elementId?: string,
     holderClassName?: string,
+    elementId?: number,
     isLoading?: boolean,
     isDisabled?: boolean,
     onBlur?: (any?) => void,
@@ -52,6 +53,7 @@ export default function InputClientCode(props: InputClientCodeProps) {
             value={props.value}
             title={props.title}
             onSetText={props.onSet}
+            validation={NUMBER_MARK}
             isLoading={props.isLoading}
             id={props.id + "-input-code"}
             isDisabled={props.isDisabled}

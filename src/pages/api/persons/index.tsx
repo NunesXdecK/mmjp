@@ -1,39 +1,21 @@
-import { PersonConversor } from "../../../db/converters"
-import { collection, getDocs } from "firebase/firestore"
-import { Person } from "../../../interfaces/objectInterfaces"
-import { db, PERSON_COLLECTION_NAME } from "../../../db/firebaseDB"
+import prisma from "../../../prisma/prisma"
 
 export default async function handler(req, res) {
     const { method } = req
-
+    const main = async () => {
+        try {
+            return await prisma.person.findMany()
+        } catch (error) {
+            console.error(error)
+            return []
+        }
+    }
     switch (method) {
-        case 'GET':
+        case "GET":
             let resGET = { status: "ERROR", error: {}, message: "", list: [] }
-            const personCollection = collection(db, PERSON_COLLECTION_NAME).withConverter(PersonConversor)
-            let list = []
-            try {
-                const querySnapshot = await getDocs(personCollection)
-                querySnapshot.forEach((doc) => {
-                    list = [...list, doc.data()]
-                })
-                list = list.sort((elementOne: Person, elementTwo: Person) => {
-                    let dateOne = elementOne.dateInsertUTC
-                    let dateTwo = elementTwo.dateInsertUTC
-                    if (elementOne.dateLastUpdateUTC > 0 && elementOne.dateLastUpdateUTC > dateOne) {
-                        dateOne = elementOne.dateLastUpdateUTC
-                    }
-                    if (elementTwo.dateLastUpdateUTC > 0 && elementTwo.dateLastUpdateUTC > dateTwo) {
-                        dateTwo = elementTwo.dateLastUpdateUTC
-                    }
-                    return dateTwo - dateOne
-                })
-
-                resGET = { ...resGET, status: "SUCCESS", list: list }
-            } catch (err) {
-                console.error(err)
-                resGET = { ...resGET, status: "ERROR", error: err }
-            }
-            res.status(200).json(resGET)
+            const persons = await main().then(res => res)
+            await prisma.$disconnect()
+            res.status(200).json({ ...resGET, list: persons })
             break
         default:
             res.setHeader("Allow", ["GET"])

@@ -17,16 +17,17 @@ export interface Address {
 }
 
 export interface Person {
-    id?: string,
+    id?: number,
     rg?: string,
     cpf?: string,
     name?: string,
     rgIssuer?: string,
-    clientCode?: string,
     profession?: string,
     nationality?: string,
     naturalness?: string,
+    description?: string,
     maritalStatus?: string,
+    clientCode?: number,
     dateInsertUTC?: number,
     dateLastUpdateUTC?: number,
     oldData?: any,
@@ -247,16 +248,17 @@ export const defaultAddress: Address = {
 }
 
 export const defaultPerson: Person = {
-    id: "",
     rg: "",
     cpf: "",
     name: "",
     rgIssuer: "",
-    clientCode: "",
     profession: "",
+    description: "",
     nationality: "",
     naturalness: "",
     maritalStatus: "",
+    id: 0,
+    clientCode: 0,
     dateInsertUTC: 0,
     dateLastUpdateUTC: 0,
     oldData: {},

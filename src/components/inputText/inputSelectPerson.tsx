@@ -109,7 +109,7 @@ export default function InputSelectPerson(props: InputSelectPersonProps) {
         if (short) {
             //path = { ...path, path: "S" }
         }
-        if (person.id?.length > 0) {
+        if (person?.id > 0) {
             path = { ...path, path: "Pessoa-" + person.name, onClick: null }
         }
         try {

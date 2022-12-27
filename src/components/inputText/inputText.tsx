@@ -168,6 +168,9 @@ export default function InputText(props: InputTextProps) {
                 text = text?.trim()
                 text = text?.replace(new RegExp(ONLY_SPECIAL_FOR_NUMBER_PATTERN), "")
                 text = text?.replace(new RegExp(ONLY_CHARACTERS_PATTERN), "")
+                if (!text) {
+                    text = "0"
+                }
                 break
             case TELEPHONE_MARK:
                 text = text?.trim()

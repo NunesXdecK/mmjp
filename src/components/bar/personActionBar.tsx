@@ -72,7 +72,7 @@ export const handlePersonForDB = (person: Person) => {
 }
 
 export const handleSavePersonInner = async (person, history) => {
-    let res = { status: "ERROR", id: "", person: person }
+    let res = { status: "ERROR", id: 0, person: person }
     person = handlePersonForDB(person)
     try {
         const saveRes = await fetch("api/person", {

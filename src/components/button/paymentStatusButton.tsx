@@ -21,21 +21,21 @@ export default function PaymentStatusButton(props: PaymentStatusButtonProps) {
 
     useEffect(() => {
         if (isFirst || props?.value !== lastValue) {
-            fetch("api/checkPaymentStatus", {
-                method: "POST",
-                body: JSON.stringify({ token: "tokenbemseguro", id: props.payment.id }),
-            }).then((res) => res.json()).then((res) => {
-                setIsFirst(false)
-                if (res.status === "SUCCESS" && res.data?.length > 0) {
-                    setLastValue(res.data)
-                    /*
-                    const payment = { ...props.payment, status: res.data }
-                    if (props.onAfter) {
-                        props.onAfter(null, payment, false)
+                fetch("api/checkPaymentStatus", {
+                    method: "POST",
+                    body: JSON.stringify({ token: "tokenbemseguro", id: props?.payment?.id }),
+                }).then((res) => res.json()).then((res) => {
+                    setIsFirst(false)
+                    if (res.status === "SUCCESS" && res.data?.length > 0) {
+                        setLastValue(res.data)
+                        /*
+                        const payment = { ...props.payment, status: res.data }
+                        if (props.onAfter) {
+                            props.onAfter(null, payment, false)
+                        }
+                        */
                     }
-                    */
-                }
-            })
+                })
         }
     })
     let values = ["EM ABERTO", "PAGO", "ATRASADO"]

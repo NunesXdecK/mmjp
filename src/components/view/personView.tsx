@@ -14,11 +14,11 @@ import SwitchTextButton from "../button/switchTextButton"
 interface PersonViewProps {
     id?: string,
     title?: string,
-    elementId?: string,
     addressTitle?: string,
     classNameTitle?: string,
     classNameHolder?: string,
     classNameContentHolder?: string,
+    elementId?: number,
     hideData?: boolean,
     dataInside?: boolean,
     hideBorder?: boolean,
@@ -58,7 +58,7 @@ export default function PersonView(props: PersonViewProps) {
 
     useEffect(() => {
         if (isFirst) {
-            if (props.elementId && props.elementId.length !== 0 && person.id?.length === 0) {
+            if (props.elementId && props.elementId > 0) {
                 fetch("api/person/" + props.elementId).then((res) => res.json()).then((res) => {
                     setIsFirst(old => false)
                     setPerson(res.data)
@@ -68,7 +68,7 @@ export default function PersonView(props: PersonViewProps) {
     })
     return (
         <>
-            {person.id?.length === 0 ? (
+            {person?.id === 0 ? (
                 <div className="mt-6 w-full">
                     <PlaceholderItemList />
                 </div>

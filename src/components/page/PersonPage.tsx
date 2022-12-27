@@ -2,17 +2,17 @@ import FormRow from "../form/formRow"
 import Button from "../button/button"
 import ActionBar from "../bar/actionBar"
 import ListTable from "../list/listTable"
+import PersonView from "../view/personView"
 import { useEffect, useState } from "react"
 import WindowModal from "../modal/windowModal"
+import { PlusIcon } from "@heroicons/react/solid"
 import FormRowColumn from "../form/formRowColumn"
+import NavBar, { NavBarPath } from "../bar/navBar"
 import { handleMaskCPF } from "../../util/maskUtil"
 import PersonDataForm from "../form/personDataForm"
 import PersonActionBarForm from "../bar/personActionBar"
-import { PlusIcon, RefreshIcon } from "@heroicons/react/solid"
 import { FeedbackMessage } from "../modal/feedbackMessageModal"
 import { Person, defaultPerson } from "../../interfaces/objectInterfaces"
-import PersonView from "../view/personView"
-import NavBar, { NavBarPath } from "../bar/navBar"
 
 interface PersonPageProps {
     id?: string,
@@ -147,7 +147,7 @@ export default function PersonPage(props: PersonPageProps) {
         if (short) {
             //path = { ...path, path: "S" }
         }
-        if (person.id?.length > 0) {
+        if (person?.id > 0) {
             path = { ...path, path: "Pessoa-" + person.name, onClick: null }
         }
         try {
@@ -187,7 +187,7 @@ export default function PersonPage(props: PersonPageProps) {
     const handlePutRows = (element: Person) => {
         return (
             <FormRow>
-                <FormRowColumn unit="1">{element.clientCode?.length > 0 ? element.clientCode : "n/a"}</FormRowColumn>
+                <FormRowColumn unit="1">{element.clientCode > -1 ? element.clientCode : "n/a"}</FormRowColumn>
                 <FormRowColumn unit="3">{element.name}</FormRowColumn>
                 <FormRowColumn unit="2">{handleMaskCPF(element.cpf)}</FormRowColumn>
             </FormRow>
