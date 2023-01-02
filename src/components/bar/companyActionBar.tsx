@@ -5,6 +5,7 @@ import { handleCheckClientCode } from "../inputText/inputClientCode";
 import { Company, defaultCompany } from "../../interfaces/objectInterfaces";
 import { handleRemoveCEPMask, handleRemoveCNPJMask, handleRemoveTelephoneMask } from "../../util/maskUtil";
 import { handleValidationCPF, handleValidationNotNull, ValidationReturn } from "../../util/validationUtil";
+import { handleCheckCNPJ } from "../inputText/inputCNPJ";
 
 interface CompanyActionBarFormProps {
     className?: string,
@@ -83,14 +84,23 @@ export default function CompanyActionBarForm(props: CompanyActionBarFormProps) {
         }
     }
 
-    const handleCompanyValidationForDBInner = (company, isSearching) => {
+    const handleCompanyValidationForDBInner = (company: Company, isSearching, isCNPJ) => {
         let isValid = handleCompanyValidationForDB(company)
-        if (company.clientCode.length > 0) {
+        if (company.clientCode?.toString().length > 0) {
             if (isSearching) {
                 isValid = {
                     ...isValid,
                     validation: false,
                     messages: [...isValid.messages, "O codigo do cliente já está em uso."]
+                }
+            }
+        }
+        if (company.cnpj.length > 0) {
+            if (isCNPJ) {
+                isValid = {
+                    ...isValid,
+                    validation: false,
+                    messages: [...isValid.messages, "O CNPJ já está em uso."]
                 }
             }
         }
@@ -100,8 +110,9 @@ export default function CompanyActionBarForm(props: CompanyActionBarFormProps) {
     const handleSave = async (isForCloseModal) => {
         handleSetIsLoading(true)
         let company = props.company
+        let resCNPJ = await handleCheckCNPJ(company.cnpj, company.id)
         let resCC = await handleCheckClientCode(company.clientCode, company.id)
-        const isValid = handleCompanyValidationForDBInner(company, resCC.data)
+        const isValid = handleCompanyValidationForDBInner(company, resCC.data, resCNPJ.data)
         if (!isValid.validation) {
             handleSetIsLoading(false)
             const feedbackMessage: FeedbackMessage = { messages: isValid.messages, messageType: "ERROR" }

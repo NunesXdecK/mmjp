@@ -18,6 +18,8 @@ interface TelephoneFormProps {
     inputTitle?: string,
     validation?: string,
     validationMessage?: string,
+    personId?: number,
+    companyId?: number,
     maxLength?: number,
     isLoading?: boolean,
     isDisabled?: boolean,
@@ -35,6 +37,20 @@ export default function TelephoneForm(props: TelephoneFormProps) {
     const handleAddText = (event) => {
         event.preventDefault()
         if (isFormValid && telephone.value.trim() !== "") {
+            console.log((props.personId && props.personId > 0) || (props.companyId && props.companyId > 0))
+            console.log((props.personId && props.personId > 0))
+            console.log((props.companyId && props.companyId > 0))
+            if ((props.personId && props.personId > 0) || (props.companyId && props.companyId > 0)) {
+                console.log("entrou")
+                fetch("api/telephone", {
+                    method: "POST",
+                    body: JSON.stringify({
+                        token: "tokenbemseguro",
+                        personId: props.personId ?? 0,
+                        companyId: props.companyId ?? 0,
+                    }),
+                })
+            }
             let localTexts: Telephone[] = [...props.texts]
             if (localTexts.indexOf(telephone) === -1) {
                 localTexts = [...localTexts, { ...telephone }]
@@ -76,63 +92,60 @@ export default function TelephoneForm(props: TelephoneFormProps) {
         }
     }
     return (
-        <>
-            <Form
-                title={props.title}
-                subtitle={props.subtitle}>
-                <form
-                    onSubmit={handleAddText}>
-                    <FormRow>
-                        <FormRowColumn unit="2">
-                            <InputSelect
-                                title="Tipo"
-                                value={telephone.type}
-                                onSetText={handleSetType}
-                                isLoading={props.isLoading}
-                                isDisabled={props.isDisabled}
-                                id={props.id + "-type-select"}
-                                options={["comercial", "pessoal", "outro", "whatsapp"]}
-                            />
-                        </FormRowColumn>
-                        <FormRowColumn unit="4" className="flex flex-row gap-2 items-end">
-                            <InputText
-                                maxLength={15}
-                                title="Telefone"
-                                mask="telephone"
-                                value={telephone.value}
-                                onSetText={handleSetValue}
-                                isLoading={props.isLoading}
-                                validation={TELEPHONE_MARK}
-                                isDisabled={props.isDisabled}
-                                id={props.id + "-telephone-input"}
-                                onValidate={handleChangeFormValidation}
-                                validationMessage={props.validationMessage}
-                            />
-                            <Button
-                                type="submit"
-                                isDisabled={props.isDisabled || handleIsValid()}
-                                isLoading={props.isLoading}
-                            >
-                                Adicionar
-                            </Button>
-                        </FormRowColumn>
-                    </FormRow>
-                </form>
-
-                {props.texts?.map((element: Telephone, index) => (
-                    <InputTextWithButton
-                        index={index}
-                        isDisabled={true}
-                        onClick={(event) => handleRemoveText(event, element)}
-                        isLoading={props.isLoading}
-                        id={index + element.type + "-" + element.value}
-                        key={index + element.type + "-" + element.value}
-                        value={element.type + ", " + handleMaskInner(element.value)}
-                    >
-                        <TrashIcon className="text-red-600 block h-6 w-6" aria-hidden="true" />
-                    </InputTextWithButton>
-                ))}
-            </Form>
-        </>
+        <Form
+            title={props.title}
+            subtitle={props.subtitle}>
+            <form
+                onSubmit={handleAddText}>
+                <FormRow>
+                    <FormRowColumn unit="2">
+                        <InputSelect
+                            title="Tipo"
+                            value={telephone.type}
+                            onSetText={handleSetType}
+                            isLoading={props.isLoading}
+                            isDisabled={props.isDisabled}
+                            id={props.id + "-type-select"}
+                            options={["comercial", "pessoal", "outro", "whatsapp"]}
+                        />
+                    </FormRowColumn>
+                    <FormRowColumn unit="4" className="flex flex-row gap-2 items-end">
+                        <InputText
+                            maxLength={15}
+                            title="Telefone"
+                            mask="telephone"
+                            value={telephone.value}
+                            onSetText={handleSetValue}
+                            isLoading={props.isLoading}
+                            validation={TELEPHONE_MARK}
+                            isDisabled={props.isDisabled}
+                            id={props.id + "-telephone-input"}
+                            onValidate={handleChangeFormValidation}
+                            validationMessage={props.validationMessage}
+                        />
+                        <Button
+                            type="submit"
+                            isDisabled={props.isDisabled || handleIsValid()}
+                            isLoading={props.isLoading}
+                        >
+                            Adicionar
+                        </Button>
+                    </FormRowColumn>
+                </FormRow>
+            </form>
+            {props.texts?.map((element: Telephone, index) => (
+                <InputTextWithButton
+                    index={index}
+                    isDisabled={true}
+                    onClick={(event) => handleRemoveText(event, element)}
+                    isLoading={props.isLoading}
+                    id={index + element.type + "-" + element.value}
+                    key={index + element.type + "-" + element.value}
+                    value={(element.type.substring(0, 1).toUpperCase() + element.type.substring(1, element.type.length)) + ", " + handleMaskInner(element.value)}
+                >
+                    <TrashIcon className="text-red-600 block h-6 w-6" aria-hidden="true" />
+                </InputTextWithButton>
+            ))}
+        </Form>
     )
 }

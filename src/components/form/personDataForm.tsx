@@ -11,6 +11,7 @@ import InputTextArea from "../inputText/inputTextArea";
 import { Person } from "../../interfaces/objectInterfaces";
 import InputClientCode from "../inputText/inputClientCode";
 import { CPF_MARK, TEXT_NOT_NULL_MARK } from "../../util/patternValidationUtil";
+import InputCPF from "../inputText/inputCPF";
 
 interface PersonDataFormProps {
     title?: string,
@@ -96,18 +97,13 @@ export default function PersonDataForm(props: PersonDataFormProps) {
                 </FormRow>
                 <FormRow>
                     <FormRowColumn unit="3">
-                        <InputText
-                            mask="cpf"
-                            title="CPF"
-                            maxLength={14}
+                        <InputCPF
                             id="person-cpf"
-                            validation={CPF_MARK}
-                            onSetText={handleSetCPF}
+                            onSet={handleSetCPF}
                             value={props.person.cpf}
+                            elementId={props.person.id}
                             isLoading={props.isLoading}
                             isDisabled={props.isDisabled}
-                            validationMessage="O CPF está invalido"
-                            onValidate={handleChangeFormValidation}
                         />
                     </FormRowColumn>
                 </FormRow>

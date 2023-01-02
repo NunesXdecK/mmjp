@@ -6,7 +6,7 @@ import InfoHolderView from "./infoHolderView"
 import PlaceholderItemList from "../list/placeholderItemList"
 import ScrollDownTransition from "../animation/scrollDownTransition"
 import { handleMaskCPF, handleMaskTelephone } from "../../util/maskUtil"
-import { defaultPerson, Person } from "../../interfaces/objectInterfaces"
+import { defaultPerson, Person, Telephone } from "../../interfaces/objectInterfaces"
 import { ChevronDownIcon, ChevronRightIcon } from "@heroicons/react/outline"
 import { handleUTCToDateShow } from "../../util/dateUtils"
 import SwitchTextButton from "../button/switchTextButton"
@@ -35,9 +35,9 @@ export default function PersonView(props: PersonViewProps) {
     const hasHideData =
         person.rg?.length ||
         person.rgIssuer?.length ||
-        person.naturalness?.length ||
         person.profession?.length ||
         person.nationality?.length ||
+        person.naturalness?.length ||
         person.maritalStatus?.length ||
         person.telephones?.length > 0
 
@@ -45,7 +45,7 @@ export default function PersonView(props: PersonViewProps) {
         hasHideData ||
         person.cpf?.length ||
         person.name?.length ||
-        person.clientCode?.length
+        person.clientCode?.toString().length
 
     const handlePutData = () => {
         return (
@@ -97,8 +97,8 @@ export default function PersonView(props: PersonViewProps) {
                                     <InfoView title="Profissão">{person.profession}</InfoView>
                                     {person.telephones?.length > 0 && (
                                         <InfoView title="Telefones">
-                                            {person.telephones?.map((element, index) => (
-                                                <span key={index + element}>{handleMaskTelephone(element) + (index === person.telephones.length - 1 ? "" : ", ")}</span>
+                                            {person.telephones?.map((element: Telephone, index) => (
+                                                <span key={index + element.type + element.value}>{(element.type.substring(0, 1).toUpperCase() + element.type.substring(1, element.type.length)) + ", " + handleMaskTelephone(element.value) + (index === person.telephones.length - 1 ? "" : ", ")}</span>
                                             ))}
                                         </InfoView>
                                     )}

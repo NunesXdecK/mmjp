@@ -5,6 +5,7 @@ import { handleCheckClientCode } from "../inputText/inputClientCode";
 import { Person, defaultPerson } from "../../interfaces/objectInterfaces";
 import { handleRemoveCEPMask, handleRemoveCPFMask, handleRemoveTelephoneMask } from "../../util/maskUtil";
 import { handleValidationCPF, handleValidationOnlyTextNotNull, ValidationReturn } from "../../util/validationUtil";
+import { handleCheckCPF } from "../inputText/inputCPF";
 
 interface PersonActionBarFormProps {
     className?: string,
@@ -38,14 +39,23 @@ export const handlePersonValidationForDB = (person: Person) => {
     return validation
 }
 
-export const handlePersonValidationForDBInner = (person, isSearching) => {
+export const handlePersonValidationForDBInner = (person: Person, isSearching, isCPF) => {
     let isValid = handlePersonValidationForDB(person)
-    if (person.clientCode.length > 0) {
+    if (person.clientCode?.toString().length > 0) {
         if (isSearching) {
             isValid = {
                 ...isValid,
                 validation: false,
                 messages: [...isValid.messages, "O codigo do cliente já está em uso."]
+            }
+        }
+    }
+    if (person.cpf.length > 0) {
+        if (isCPF) {
+            isValid = {
+                ...isValid,
+                validation: false,
+                messages: [...isValid.messages, "O CPF já está em uso."]
             }
         }
     }
@@ -104,8 +114,9 @@ export default function PersonActionBarForm(props: PersonActionBarFormProps) {
     const handleSave = async (isForCloseModal) => {
         handleSetIsLoading(true)
         let person = props.person
+        let resCPF = await handleCheckCPF(person.cpf, person.id)
         let resCC = await handleCheckClientCode(person.clientCode, person.id)
-        const isValid = handlePersonValidationForDBInner(person, resCC.data)
+        const isValid = handlePersonValidationForDBInner(person, resCC.data, resCPF.data)
         if (!isValid.validation) {
             handleSetIsLoading(false)
             const feedbackMessage: FeedbackMessage = { messages: isValid.messages, messageType: "ERROR" }

@@ -8,27 +8,13 @@ export default async function handler(req, res) {
             const { id } = req.query
             try {
                 const code = id
-                if (code?.length > 1) {
-                    const clienteCode = parseInt(code[0])
-                    const id = parseInt(code[1])
-                    const persons = await prisma.person.findMany({
-                        where: {
-                            id: {
-                                not: id,
-                            },
-                            clientCode: clienteCode,
-                        }
-                    })
+                if (code?.length > 0 && parseInt(code)) {
                     const companies = await prisma.company.findMany({
                         where: {
-                            id: {
-                                not: id,
-                            },
-                            clientCode: clienteCode,
+                            cnpj: code,
                         }
                     })
-                    const list = [...persons, ...companies]
-                    let notHave = list.length > 0
+                    let notHave = companies.length > 0
                     resGET = { ...resGET, status: "SUCCESS", data: notHave }
                 } else {
                     resGET = { ...resGET, status: "ERROR", message: "Token invalido!" }
