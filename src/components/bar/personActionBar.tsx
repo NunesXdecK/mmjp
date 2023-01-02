@@ -59,7 +59,7 @@ export const handlePersonForDB = (person: Person) => {
     let telephonesWithNoMask = []
     if (person.telephones && person.telephones.length) {
         person.telephones?.map((element, index) => {
-            telephonesWithNoMask = [...telephonesWithNoMask, handleRemoveTelephoneMask(element)]
+            telephonesWithNoMask = [...telephonesWithNoMask, { ...element, value: handleRemoveTelephoneMask(element.value) }]
         })
     }
     person = {
@@ -79,7 +79,9 @@ export const handleSavePersonInner = async (person, history) => {
             method: "POST",
             body: JSON.stringify({ token: "tokenbemseguro", data: person, history: history }),
         }).then((res) => res.json())
-        res = { ...res, status: "SUCCESS", id: saveRes.id, person: { ...person, id: saveRes.id } }
+        if (saveRes.status === "SUCCESS") {
+            res = { ...res, status: "SUCCESS", id: saveRes.id, person: { ...person, id: saveRes.id } }
+        }
     } catch (e) {
         console.error("Error adding document: ", e)
     }
@@ -134,12 +136,20 @@ export default function PersonActionBarForm(props: PersonActionBarFormProps) {
     return (
         <ActionBar className={props.className + " bg-slate-50 dark:bg-slate-800 dark:border dark:border-gray-700"}>
             <div className="w-full flex flex-row justify-between">
-                <Button
-                    isLoading={props.isLoading}
-                    onClick={() => handleSave(false)}
-                >
-                    Salvar
-                </Button>
+                <div className="flex flex-row gap-2">
+                    <Button
+                        isLoading={props.isLoading}
+                        onClick={() => handleSave(true)}
+                    >
+                        Salvar
+                    </Button>
+                    <Button
+                        isLoading={props.isLoading}
+                        onClick={() => handleSave(false)}
+                    >
+                        Salvar e sair
+                    </Button>
+                </div>
             </div>
         </ActionBar>
     )

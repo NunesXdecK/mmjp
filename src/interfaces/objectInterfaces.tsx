@@ -5,9 +5,18 @@ export type ServiceStatus = "PARADO" | "EM ANDAMENTO" | "PENDENTE" | "FINALIZADO
 export type ServiceStageStatus = "PARADO" | "EM ANDAMENTO" | "PENDENTE" | "FINALIZADO"
 export type PaymentStatus = "EM ABERTO" | "ATRASADO" | "PAGO"
 export type UserOffice = "visitante" | "secretaria" | "projetista" | "gerente" | "administrador"
+export type TelephoneType = "comercial" | "pessoal" | "whatsapp" | "outro"
+
+export interface Telephone {
+    id?: number,
+    personId?: number,
+    companyId?: number,
+    value?: string,
+    type?: TelephoneType,
+}
 
 export interface Address {
-    id?: string,
+    id?: number,
     cep?: string,
     number?: string,
     county?: string,
@@ -18,6 +27,9 @@ export interface Address {
 
 export interface Person {
     id?: number,
+    clientCode?: number,
+    dateInsertUTC?: number,
+    dateLastUpdateUTC?: number,
     rg?: string,
     cpf?: string,
     name?: string,
@@ -27,12 +39,9 @@ export interface Person {
     naturalness?: string,
     description?: string,
     maritalStatus?: string,
-    clientCode?: number,
-    dateInsertUTC?: number,
-    dateLastUpdateUTC?: number,
     oldData?: any,
     address?: Address,
-    telephones?: string[],
+    telephones?: Telephone[],
 }
 
 export interface Company {
@@ -238,7 +247,16 @@ export interface SubjectMessage {
     user?: any,
 }
 
+export const defaultTelephone: Telephone = {
+    id: 0,
+    personId: 0,
+    companyId: 0,
+    value: "",
+    type: "outro",
+}
+
 export const defaultAddress: Address = {
+    id: 0,
     cep: "",
     number: "",
     county: "",

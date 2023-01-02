@@ -14,7 +14,6 @@ export default async function handler(req, res) {
         case "GET":
             let resGET = { status: "ERROR", error: {}, message: "", list: [] }
             const persons = await main().then(res => res)
-            await prisma.$disconnect()
             res.status(200).json({ ...resGET, list: persons })
             break
         default:

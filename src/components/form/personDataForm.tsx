@@ -4,12 +4,13 @@ import { useState } from "react";
 import AddressForm from "./addressForm";
 import { NavBarPath } from "../bar/navBar";
 import FormRowColumn from "./formRowColumn";
-import ArrayTextForm from "./arrayTextForm";
+import TelephoneForm from "./telephoneForm";
 import InputText from "../inputText/inputText";
 import InputSelect from "../inputText/inputSelect";
+import InputTextArea from "../inputText/inputTextArea";
 import { Person } from "../../interfaces/objectInterfaces";
 import InputClientCode from "../inputText/inputClientCode";
-import { CPF_MARK, TELEPHONE_MARK, TEXT_NOT_NULL_MARK } from "../../util/patternValidationUtil";
+import { CPF_MARK, TEXT_NOT_NULL_MARK } from "../../util/patternValidationUtil";
 
 interface PersonDataFormProps {
     title?: string,
@@ -28,7 +29,6 @@ interface PersonDataFormProps {
 
 export default function PersonDataForm(props: PersonDataFormProps) {
     const [isFormValid, setIsFormValid] = useState(true)
-
     const handleSetRG = (value) => { handleSet({ ...props.person, rg: value }) }
     const handleSetCPF = (value) => { handleSet({ ...props.person, cpf: value }) }
     const handleSetName = (value) => { handleSet({ ...props.person, name: value }) }
@@ -38,6 +38,7 @@ export default function PersonDataForm(props: PersonDataFormProps) {
     const handleSetProfession = (value) => { handleSet({ ...props.person, profession: value }) }
     const handleSetNaturalness = (value) => { handleSet({ ...props.person, naturalness: value }) }
     const handleSetNationality = (value) => { handleSet({ ...props.person, nationality: value }) }
+    const handleSetDescription = (value) => { handleSet({ ...props.person, description: value }) }
     const handleSetMaritalStatus = (value) => { handleSet({ ...props.person, maritalStatus: value }) }
     const handleSetClientCode = (value) => {
         let val = 0
@@ -56,11 +57,9 @@ export default function PersonDataForm(props: PersonDataFormProps) {
             }
         }
     }
-
     const handleChangeFormValidation = (isValid) => {
         setIsFormValid(isValid)
     }
-
     return (
         <>
             <Form
@@ -90,7 +89,7 @@ export default function PersonDataForm(props: PersonDataFormProps) {
                                 isLoading={props.isLoading}
                                 onSet={handleSetClientCode}
                                 isDisabled={props.isDisabled}
-                                value={props.person.clientCode.toString()}
+                                value={props.person.clientCode?.toString()}
                             />
                         </FormRowColumn>
                     )}
@@ -124,7 +123,6 @@ export default function PersonDataForm(props: PersonDataFormProps) {
                             isDisabled={props.isDisabled}
                         />
                     </FormRowColumn>
-
                     <FormRowColumn unit="3">
                         <InputText
                             title="Emissor RG"
@@ -136,7 +134,6 @@ export default function PersonDataForm(props: PersonDataFormProps) {
                         />
                     </FormRowColumn>
                 </FormRow>
-
                 <FormRow>
                     <FormRowColumn unit="3">
                         <InputText
@@ -148,7 +145,6 @@ export default function PersonDataForm(props: PersonDataFormProps) {
                             onSetText={handleSetNaturalness}
                         />
                     </FormRowColumn>
-
                     <FormRowColumn unit="3">
                         <InputText
                             title="Nacionalidade"
@@ -172,7 +168,6 @@ export default function PersonDataForm(props: PersonDataFormProps) {
                             options={["casado", "divorciado", "separado", "solteiro", "viuvo"]}
                         />
                     </FormRowColumn>
-
                     <FormRowColumn unit="3">
                         <InputText
                             title="Profissão"
@@ -184,15 +179,25 @@ export default function PersonDataForm(props: PersonDataFormProps) {
                         />
                     </FormRowColumn>
                 </FormRow>
+                <FormRow>
+                    <FormRowColumn unit="6" className="">
+                        <InputTextArea
+                            title="Descrição"
+                            onBlur={props.onBlur}
+                            id="person-description"
+                            isLoading={props.isLoading}
+                            isDisabled={props.isDisabled}
+                            onSetText={handleSetDescription}
+                            value={props.person.description}
+                        />
+                    </FormRowColumn>
+                </FormRow>
             </Form>
-            <ArrayTextForm
-                maxLength={15}
-                mask="telephone"
-                title="Telefones"
+            <TelephoneForm
+                title="Contatos"
                 id="person-telephone"
-                inputTitle="Telephone"
                 isLoading={props.isLoading}
-                validation={TELEPHONE_MARK}
+                isDisabled={props.isDisabled}
                 texts={props.person.telephones}
                 onSetTexts={handleSetTelephones}
                 subtitle="Informações sobre os contatos"

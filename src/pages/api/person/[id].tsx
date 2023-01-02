@@ -1,22 +1,34 @@
-import { PersonConversor } from "../../../db/converters"
+import prisma from "../../../prisma/prisma"
 import { Person } from "../../../interfaces/objectInterfaces"
-import { collection, doc, getDoc } from "firebase/firestore"
-import { db, PERSON_COLLECTION_NAME } from "../../../db/firebaseDB"
 
 export default async function handler(req, res) {
     const { query, method } = req
-
-    const personCollection = collection(db, PERSON_COLLECTION_NAME).withConverter(PersonConversor)
-
     switch (method) {
         case "GET":
             let resGET = { status: "ERROR", error: {}, message: "", data: {} }
             try {
                 const { id } = query
-                if (id) {
-                    const docRef = doc(personCollection, id)
-                    let data: Person = (await getDoc(docRef)).data()
-                    resGET = { ...resGET, status: "SUCCESS", data: data }
+                if (id && parseInt(id)) {
+                    const data: Person = await prisma.person.findFirst({
+                        where: {
+                            id: parseInt(id),
+                        }
+                    })
+                    const addressData = await prisma.address.findFirst({
+                        where: {
+                            personId: parseInt(id),
+                        }
+                    })
+                    const telephoneData = await prisma.telephone.findMany({
+                        where: {
+                            personId: parseInt(id),
+                        }
+                    })
+                    if (data?.id > 0) {
+                        resGET = { ...resGET, status: "SUCCESS", data: { ...data, address: addressData, telephones: telephoneData } }
+                    } else {
+                        resGET = { ...resGET, status: "ERROR", message: "Não encontrado" }
+                    }
                 } else {
                     resGET = { ...resGET, status: "ERROR", message: "Token invalido!" }
                 }
