@@ -1,15 +1,16 @@
 import prisma from "../../../prisma/prisma"
 
+const main = async () => {
+    try {
+        return await prisma.person.findMany()
+    } catch (error) {
+        console.error(error)
+        return []
+    }
+}
+
 export default async function handler(req, res) {
     const { method } = req
-    const main = async () => {
-        try {
-            return await prisma.person.findMany()
-        } catch (error) {
-            console.error(error)
-            return []
-        }
-    }
     switch (method) {
         case "GET":
             let resGET = { status: "ERROR", error: {}, message: "", list: [] }

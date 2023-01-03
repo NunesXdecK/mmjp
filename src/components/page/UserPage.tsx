@@ -165,7 +165,7 @@ export default function UserPage(props: UserPageProps) {
         if (short) {
             //path = { ...path, path: "S" }
         }
-        if (user.id?.length > 0) {
+        if (user.id > 0) {
             path = { ...path, path: "Usuário-" + user.username, onClick: null }
         }
         try {
@@ -206,7 +206,7 @@ export default function UserPage(props: UserPageProps) {
     const handlePutRows = (element: User) => {
         return (
             <FormRow>
-                <FormRowColumn unit="2"><PersonNameListItem id={element.person?.id} /></FormRowColumn>
+                <FormRowColumn unit="2"><PersonNameListItem id={element?.personId} /></FormRowColumn>
                 <FormRowColumn unit="1">{element.username}</FormRowColumn>
                 <FormRowColumn unit="2">{element.email}</FormRowColumn>
                 <FormRowColumn unit="1">

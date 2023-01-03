@@ -219,6 +219,14 @@ export default function Layout(props: LayoutMenuProps) {
                                 </div>
                                 <Button
                                     isLight
+                                    isDisabled={props.isLoading}
+                                    onClick={() => handleSetPage("PROFILE")}
+                                    className="bg-transparent hover:bg-transparent hover:opacity-70"
+                                >
+                                    <span className="float-left text-sm text-gray-300">Perfil</span>
+                                </Button>
+                                <Button
+                                    isLight
                                     onClick={handleDeleteClick}
                                     isDisabled={props.isLoading}
                                     className="bg-transparent hover:bg-transparent hover:opacity-70"

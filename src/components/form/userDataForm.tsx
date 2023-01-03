@@ -1,14 +1,14 @@
-import Form from "./form";
-import FormRow from "./formRow";
-import { useState } from "react";
-import FormRowColumn from "./formRowColumn";
-import InputText from "../inputText/inputText";
-import { defaultUser, User } from "../../interfaces/objectInterfaces";
-import InputSelectPerson from "../inputText/inputSelectPerson";
-import { EMAIL_MARK, NOT_NULL_MARK } from "../../util/patternValidationUtil";
-import InputCheckbox from "../inputText/inputCheckbox";
-import InputSelect from "../inputText/inputSelect";
-import { NavBarPath } from "../bar/navBar";
+import Form from "./form"
+import FormRow from "./formRow"
+import { useState } from "react"
+import { NavBarPath } from "../bar/navBar"
+import FormRowColumn from "./formRowColumn"
+import InputText from "../inputText/inputText"
+import InputSelect from "../inputText/inputSelect"
+import InputCheckbox from "../inputText/inputCheckbox"
+import { User } from "../../interfaces/objectInterfaces"
+import InputSelectPerson from "../inputText/inputSelectPerson"
+import { EMAIL_MARK, NOT_NULL_MARK } from "../../util/patternValidationUtil"
 
 interface UserDataFormProps {
     title?: string,
@@ -54,7 +54,7 @@ export default function UserDataForm(props: UserDataFormProps) {
 
     const handleSetEmail = (value) => { handleSet({ ...props.user, email: value }) }
     const handleSetOffice = (value) => { handleSet({ ...props.user, office: value }) }
-    const handleSetPerson = (value) => { handleSet({ ...props.user, person: value }) }
+    const handleSetPerson = (value) => { handleSet({ ...props.user, personId: value?.id }) }
     const handleSetPassword = (value) => { handleSet({ ...props.user, password: value }) }
     const handleSetUsername = (value) => { handleSet({ ...props.user, username: value }) }
     const handleSetIsBlocked = (value) => { handleSet({ ...props.user, isBlocked: value }) }

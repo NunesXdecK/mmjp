@@ -192,6 +192,7 @@ export default function PersonDataForm(props: PersonDataFormProps) {
             <TelephoneForm
                 title="Contatos"
                 id="person-telephone"
+                personId={props.person.id}
                 isLoading={props.isLoading}
                 isDisabled={props.isDisabled}
                 texts={props.person.telephones}

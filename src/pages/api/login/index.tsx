@@ -6,23 +6,16 @@ import { User, defaultUser, LoginToken, defaultLoginToken } from "../../../inter
 const delay = (amount = 750) => new Promise(resolve => setTimeout(resolve, amount))
 
 export const handlePrepareLoginTokenForDB = (loginToken: LoginToken) => {
-    if (loginToken.dateInsertUTC === 0) {
-        loginToken = { ...loginToken, dateInsertUTC: handleNewDateToUTC() }
-    }
-    if (loginToken && "id" in loginToken && loginToken.id.length) {
-        loginToken = { ...loginToken, dateLastUpdateUTC: handleNewDateToUTC() }
-    }
-    if (loginToken.user?.id?.length) {
-        loginToken = { ...loginToken, user: { id: loginToken.user.id } }
+    if (loginToken.user?.id > 0) {
+        loginToken = { ...loginToken, user: loginToken.user.id }
     } else {
-        loginToken = { ...loginToken, user: {} }
+        loginToken = { ...loginToken, user: null }
     }
     return loginToken
 }
 
 export default async function handler(req, res) {
     const { method, body } = req
-
     switch (method) {
         case 'POST':
             let resPOST = { status: "ERROR", error: {}, message: "", isAuth: false, data: {}, token: "" }
@@ -32,31 +25,34 @@ export default async function handler(req, res) {
                 let user: User = defaultUser
                 user = await prisma.user.findFirst({
                     where: {
+                        isBlocked: false,
                         username: username,
                         password: password,
                     }
                 })
-                console.log(user)
-                if (user?.id > 0) {
-                    const data: any = handlePrepareLoginTokenForDB({
-                        ...defaultLoginToken,
-                        token: uuid(),
-                        user: user.id,
-                        validationDue: (handleNewDateToUTC() + (3600000 * 12)).toString(), //12 horas
-                    })
-                    const res = await prisma.loginToken.create({
-                        data: data,
-                    })
-                    console.log(res)
-                    if (res?.id > 0) {
-                        resPOST = {
-                            ...resPOST,
-                            isAuth: true,
-                            token: data.token,
-                            status: "SUCCESS",
-                            data: { ...user, password: "" },
-                        }
-                    }
+                if (user?.id === 0) {
+                    resPOST = { ...resPOST, status: "ERROR", message: "Usuário não encontrado." }
+                    res.status(200).json(resPOST)
+                }
+                const data: any = {
+                    token: uuid(),
+                    userId: user.id,
+                    validationDue: (handleNewDateToUTC() + (3600000 * 12)).toString(), //12 horas
+                    isBlocked: false,
+                }
+                const resLoginToken = await prisma.loginToken.create({
+                    data: data,
+                })
+                if (res?.id === 0) {
+                    resPOST = { ...resPOST, status: "ERROR", message: "Problema ao criar o token." }
+                    res.status(200).json(resPOST)
+                }
+                resPOST = {
+                    ...resPOST,
+                    isAuth: true,
+                    token: data.token,
+                    status: "SUCCESS",
+                    data: { ...user, password: "" },
                 }
             } catch (err) {
                 console.error(err)

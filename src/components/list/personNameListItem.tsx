@@ -1,13 +1,13 @@
 import { useEffect, useState } from "react"
 
 interface PersonNameListItemProps {
-    id?: string,
+    id?: number,
 }
 
 export default function PersonNameListItem(props: PersonNameListItemProps) {
     const [lastId, setLastId] = useState(props.id)
     const [personName, setPersonName] = useState("")
-    const [isFirst, setIsFirst] = useState(props?.id?.length > 0)
+    const [isFirst, setIsFirst] = useState(props?.id > 0)
 
     useEffect(() => {
         if (isFirst || props?.id !== lastId) {

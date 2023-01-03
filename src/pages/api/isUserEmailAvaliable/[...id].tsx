@@ -1,32 +1,25 @@
-import { UserConversor } from "../../../db/converters"
-import { db, USER_COLLECTION_NAME } from "../../../db/firebaseDB"
-import { collection, getDocs, query, where } from "firebase/firestore"
+import prisma from "../../../prisma/prisma"
 
 export default async function handler(req, res) {
     const { method } = req
-
-    const userCollection = collection(db, USER_COLLECTION_NAME).withConverter(UserConversor)
-
     switch (method) {
         case "GET":
             let resGET = { status: "ERROR", error: {}, message: "", data: false }
             const { id } = req.query
             try {
-                const code = id[0] ?? ""
-                const elementId = id[1] ?? ""
-                if (code?.length > 0) {
-                    let list = []
-                    const queryPerson = query(userCollection, where("email", "==", id))
-                    const querySnapshotPerson = await getDocs(queryPerson)
-                    querySnapshotPerson.forEach((doc) => {
-                        list = [...list, doc.data()]
-                    })
-                    let notHave = list.length > 0
-                    list.map((element, index) => {
-                        if (element && "id" in element && element.id === elementId) {
-                            notHave = false
+                const code = id
+                if (code?.length > 1) {
+                    const email = code[0]
+                    const id = parseInt(code[1])
+                    const persons = await prisma.user.findMany({
+                        where: {
+                            id: {
+                                not: id,
+                            },
+                            email: email,
                         }
                     })
+                    let notHave = persons.length > 0
                     resGET = { ...resGET, status: "SUCCESS", data: notHave }
                 } else {
                     resGET = { ...resGET, status: "ERROR", message: "Token invalido!" }

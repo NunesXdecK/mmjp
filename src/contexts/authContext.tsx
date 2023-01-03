@@ -39,6 +39,7 @@ export default function AuthProvider(props: AuthProviderProps) {
     useEffect(() => {
         if (isFirst) {
             if (!isAuthenticaded) {
+                fetch("api/checkBasic")
                 const { "mmjp.token": token } = parseCookies()
                 fetch("api/checkLoginToken", {
                     method: "POST",

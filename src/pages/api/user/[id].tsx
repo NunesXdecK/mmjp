@@ -1,30 +1,23 @@
-import { collection, doc, getDoc } from "firebase/firestore"
-import { User, Person } from "../../../interfaces/objectInterfaces"
-import { UserConversor, PersonConversor } from "../../../db/converters"
-import { db, USER_COLLECTION_NAME, PERSON_COLLECTION_NAME } from "../../../db/firebaseDB"
+import prisma from "../../../prisma/prisma"
+import { handleGetPerson } from "../person/[id]"
+import { User, defaultUser } from "../../../interfaces/objectInterfaces"
 
 export default async function handler(req, res) {
     const { query, method } = req
-
-    const userCollection = collection(db, USER_COLLECTION_NAME).withConverter(UserConversor)
-    const personCollection = collection(db, PERSON_COLLECTION_NAME).withConverter(PersonConversor)
-
     switch (method) {
         case "GET":
             let resGET = { status: "ERROR", error: {}, message: "", data: {} }
+            const { id } = query
             try {
-                const { id } = query
-                if (id) {
-                    const docRef = doc(userCollection, id)
-                    let user: User = (await getDoc(docRef)).data()
-                    if (user.person?.id > 0) {
-                        const personDocRef = doc(personCollection, user.person?.id)
-                        let person: Person = (await getDoc(personDocRef)).data()
-                        if (person?.id > 0) {
-                            user = { ...user, person: person }
+                if (id && parseInt(id)) {
+                    let user: User = defaultUser
+                    user = await prisma.user.findFirst({
+                        where: {
+                            id: parseInt(id)
                         }
-                    }
-                    resGET = { ...resGET, status: "SUCCESS", data: user }
+                    })
+                    const person = await handleGetPerson(user.personId)
+                    resGET = { ...resGET, status: "SUCCESS", data: { ...user, person: person } }
                 } else {
                     resGET = { ...resGET, status: "ERROR", message: "ID invalido!" }
                 }

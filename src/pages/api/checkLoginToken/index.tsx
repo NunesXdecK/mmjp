@@ -1,16 +1,11 @@
-import { handlePrepareLoginTokenForDB } from "../login"
+import prisma from "../../../prisma/prisma"
 import { handleNewDateToUTC } from "../../../util/dateUtils"
-import { LoginTokenConversor, UserConversor } from "../../../db/converters"
-import { User, LoginToken, defaultLoginToken } from "../../../interfaces/objectInterfaces"
-import { collection, doc, getDoc, getDocs, query, updateDoc, where } from "firebase/firestore"
-import { db, LOGIN_TOKEN_COLLECTION_NAME, USER_COLLECTION_NAME } from "../../../db/firebaseDB"
+import { LoginToken, User, defaultLoginToken } from "../../../interfaces/objectInterfaces"
 
 const delay = (amount = 750) => new Promise(resolve => setTimeout(resolve, amount))
 
 export default async function handler(req, res) {
     const { method, body } = req
-    const userCollection = collection(db, USER_COLLECTION_NAME).withConverter(UserConversor)
-    const loginTokenCollection = collection(db, LOGIN_TOKEN_COLLECTION_NAME).withConverter(LoginTokenConversor)
 
     switch (method) {
         case 'POST':
@@ -20,28 +15,43 @@ export default async function handler(req, res) {
             try {
                 //await delay()
                 if (token) {
+                    let notExpired = false
                     const nowTime = handleNewDateToUTC()
-                    const queryLoginToken = query(loginTokenCollection,
-                        where("token", "==", token),
-                        where("validationDue", ">", nowTime),
-                        where("isBlocked", "==", false)
-                    )
-                    const querySnapshot = await getDocs(queryLoginToken)
-                    querySnapshot.forEach((doc) => {
-                        loginToken = doc.data()
-                    })
-                    if (loginToken?.id?.length > 0 && loginToken?.user?.id?.length > 0) {
-                        const userDocRef = doc(userCollection, loginToken.user.id)
-                        const loginTokenDoc = doc(loginTokenCollection, loginToken.id)
-                        let user: User = (await getDoc(userDocRef)).data()
-                        loginToken = handlePrepareLoginTokenForDB(loginToken)
-                        await updateDoc(loginTokenDoc, LoginTokenConversor.toFirestore(loginToken))
-                        resPOST = {
-                            ...resPOST,
-                            isAuth: true,
-                            status: "SUCCESS",
-                            data: { ...user, password: "" },
+                    loginToken = await prisma.loginToken.findFirst({
+                        where: {
+                            token: token,
+                            isBlocked: false,
                         }
+                    })
+                    if (loginToken?.id === 0) {
+                        resPOST = { ...resPOST, status: "ERROR", message: "Token não encontrado." }
+                        res.status(200).json(resPOST)
+                        return
+                    }
+                    if (parseInt(loginToken.validationDue)) {
+                        notExpired = nowTime < parseInt(loginToken.validationDue)
+                    }
+                    if (!notExpired) {
+                        resPOST = { ...resPOST, status: "ERROR", message: "Token expirado." }
+                        res.status(200).json(resPOST)
+                        return
+                    }
+                    let user: User = await prisma.user.findFirst({
+                        where: {
+                            isBlocked: false,
+                            id: loginToken.userId,
+                        }
+                    })
+                    if (user.id === 0) {
+                        resPOST = { ...resPOST, status: "ERROR", message: "Usuário não encontrado." }
+                        res.status(200).json(resPOST)
+                        return
+                    }
+                    resPOST = {
+                        ...resPOST,
+                        isAuth: true,
+                        status: "SUCCESS",
+                        data: { ...user, password: "" },
                     }
                 }
             } catch (err) {

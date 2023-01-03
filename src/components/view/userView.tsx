@@ -1,23 +1,21 @@
 import InfoView from "./infoView"
-import Button from "../button/button"
 import PersonView from "./personView"
 import { useEffect, useState } from "react"
 import InfoHolderView from "./infoHolderView"
+import SwitchTextButton from "../button/switchTextButton"
+import UserStatusButton from "../button/userStatusButton"
 import { handleUTCToDateShow } from "../../util/dateUtils"
 import PlaceholderItemList from "../list/placeholderItemList"
 import ScrollDownTransition from "../animation/scrollDownTransition"
 import { defaultUser, User } from "../../interfaces/objectInterfaces"
-import { ChevronDownIcon, ChevronRightIcon } from "@heroicons/react/outline"
-import SwitchTextButton from "../button/switchTextButton"
-import UserStatusButton from "../button/userStatusButton"
 
 interface UserViewProps {
     id?: string,
     title?: string,
-    elementId?: string,
     classNameTitle?: string,
     classNameHolder?: string,
     classNameContentHolder?: string,
+    elementId?: number,
     hideData?: boolean,
     dataInside?: boolean,
     hideBorder?: boolean,
@@ -51,7 +49,7 @@ export default function UserView(props: UserViewProps) {
 
     useEffect(() => {
         if (isFirst) {
-            if (props.elementId && props.elementId.length !== 0 && user.id?.length === 0) {
+            if (props.elementId && props.elementId > 0 && user?.id === 0) {
                 fetch("api/user/" + props.elementId).then((res) => res.json()).then((res) => {
                     setIsFirst(old => false)
                     setUser(res.data)
@@ -62,7 +60,7 @@ export default function UserView(props: UserViewProps) {
 
     return (
         <>
-            {user.id?.length === 0 ? (
+            {user?.id === 0 ? (
                 <div className="mt-6">
                     <PlaceholderItemList />
                 </div>

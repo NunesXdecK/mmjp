@@ -1,13 +1,13 @@
 import { NavBarPath } from "../bar/navBar"
 import UserDataForm from "../form/userDataForm"
 import PersonDataForm from "../form/personDataForm"
+import { handleMaskCPF } from "../../util/maskUtil"
 import PlaceholderForm from "../form/placeholderForm"
 import { useContext, useEffect, useState } from "react"
 import { AuthContext } from "../../contexts/authContext"
 import ProfileActionBarForm from "../bar/profileActionBar"
 import { FeedbackMessage } from "../modal/feedbackMessageModal"
 import { User, defaultUser, defaultPerson } from "../../interfaces/objectInterfaces"
-import { handleMaskCPF } from "../../util/maskUtil"
 
 interface ProfilePageProps {
     id?: string,
@@ -27,7 +27,7 @@ interface ProfilePageProps {
 
 export default function ProfilePage(props: ProfilePageProps) {
     const { user } = useContext(AuthContext)
-    const [isFirst, setIsFirst] = useState(user.id?.length > 0)
+    const [isFirst, setIsFirst] = useState(user.id > 0)
     const [userProfile, setUserProfile] = useState<User>(defaultUser)
     const [person, setPerson] = useState<User>(defaultPerson)
 
@@ -50,7 +50,7 @@ export default function ProfilePage(props: ProfilePageProps) {
     }
 
     useEffect(() => {
-        if (isFirst && user?.id?.length > 0) {
+        if (isFirst && user?.id > 0) {
             fetch("api/user/" + user.id).then((res) => res.json()).then((res) => {
                 setIsFirst(false)
                 const localUser: User = {
@@ -70,7 +70,7 @@ export default function ProfilePage(props: ProfilePageProps) {
 
     return (
         <>
-            {userProfile.id?.length > 0 ? (
+            {userProfile.id > 0 ? (
                 <>
                     <ProfileActionBarForm
                         person={person}

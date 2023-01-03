@@ -33,7 +33,7 @@ export const handleUserForDB = (user: User) => {
 }
 
 export const handleSaveUserInner = async (user, history) => {
-    let res = { status: "ERROR", id: "", user: user }
+    let res = { status: "ERROR", id: 0, user: user }
     user = handleUserForDB(user)
     try {
         const saveRes = await fetch("api/user", {
@@ -54,7 +54,7 @@ export const handleUserValidationForDB = (user: User) => {
     let passwordCheck = handleValidationNotNull(user.password)
     let passwordConfirmCheck = handleValidationNotNull(user.passwordConfirm)
     let passwordsEqual = user.password === user.passwordConfirm
-    let personCheck = user?.person?.id?.length > 0 ?? false
+    let personCheck = user?.personId > 0 ?? false
     if (!userNameCheck) {
         validation = { ...validation, messages: [...validation.messages, "O campo Username está em branco."] }
     }

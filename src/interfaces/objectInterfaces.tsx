@@ -64,6 +64,7 @@ export interface User {
     password?: string,
     passwordConfirm?: string,
     office?: UserOffice | string,
+    personId?: number,
     dateInsertUTC?: number,
     dateLastUpdateUTC?: number,
     isBlocked?: boolean,
@@ -71,9 +72,10 @@ export interface User {
 }
 
 export interface LoginToken {
-    id?: string,
     token?: string,
-    validationDue?: string | number,
+    validationDue?: string,
+    id?: number,
+    userId?: number,
     dateInsertUTC?: number,
     dateLastUpdateUTC?: number,
     isBlocked?: boolean,
@@ -312,9 +314,10 @@ export const defaultUser: User = {
 }
 
 export const defaultLoginToken: LoginToken = {
-    id: "",
     token: "",
-    validationDue: 0,
+    validationDue: "0",
+    id: 0,
+    userId: 0,
     dateInsertUTC: 0,
     dateLastUpdateUTC: 0,
     isBlocked: false,

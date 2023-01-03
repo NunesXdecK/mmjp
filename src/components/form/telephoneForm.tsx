@@ -37,17 +37,14 @@ export default function TelephoneForm(props: TelephoneFormProps) {
     const handleAddText = (event) => {
         event.preventDefault()
         if (isFormValid && telephone.value.trim() !== "") {
-            console.log((props.personId && props.personId > 0) || (props.companyId && props.companyId > 0))
-            console.log((props.personId && props.personId > 0))
-            console.log((props.companyId && props.companyId > 0))
             if ((props.personId && props.personId > 0) || (props.companyId && props.companyId > 0)) {
-                console.log("entrou")
                 fetch("api/telephone", {
                     method: "POST",
                     body: JSON.stringify({
                         token: "tokenbemseguro",
-                        personId: props.personId ?? 0,
-                        companyId: props.companyId ?? 0,
+                        data: telephone,
+                        personId: props.personId,
+                        companyId: props.companyId,
                     }),
                 })
             }

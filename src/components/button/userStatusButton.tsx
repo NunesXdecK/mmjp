@@ -3,13 +3,13 @@ import SwiftInfoButton from "./switchInfoButton"
 import { User } from "../../interfaces/objectInterfaces"
 
 interface UserStatusButtonProps {
-    id?: string,
     value?: string,
-    children?: any,
+    id?: number,
     isHidden?: boolean,
     isLoading?: boolean,
     isNotFloat?: boolean,
     isDisabled?: boolean,
+    children?: any,
     user?: User,
     onClick?: (string) => void,
     onAfter?: (feedbackMessage, user, isForCloseModal) => void,

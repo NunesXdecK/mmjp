@@ -1,44 +1,61 @@
-import { UserConversor } from "../../../db/converters"
-import { addDoc, collection, deleteDoc, doc, updateDoc } from "firebase/firestore"
-import { db, USER_COLLECTION_NAME, HISTORY_COLLECTION_NAME } from "../../../db/firebaseDB"
+import prisma from "../../../prisma/prisma"
 import { User } from "../../../interfaces/objectInterfaces"
-import { handleNewDateToUTC } from "../../../util/dateUtils"
+
+const handleAddUser = async (user: User) => {
+    if (!user) {
+        return 0
+    }
+    let data: any = {
+        email: user.email,
+        office: user.office,
+        username: user.username,
+        password: user.password,
+        personId: user.personId,
+        isBlocked: user.isBlocked,
+    }
+    let id = user?.id ?? 0
+    try {
+        if (user?.id === 0) {
+            id = await prisma.user.create({
+                data: data,
+            }).then(res => res.id)
+        } else if (user?.id > 0) {
+            id = await prisma.user.update({
+                where: { id: user.id },
+                data: data,
+            }).then(res => res.id)
+        }
+    } catch (error) {
+        console.error(error)
+    }
+    return id
+}
+
+const handleDelete = async (id: number) => {
+    try {
+        await prisma.user.delete({
+            where: { id: id },
+        })
+        return true
+    } catch (error) {
+        console.error(error)
+        return false
+    }
+}
 
 export default async function handler(req, res) {
     const { method, body } = req
-
-    const historyCollection = collection(db, HISTORY_COLLECTION_NAME)
-    const userCollection = collection(db, USER_COLLECTION_NAME).withConverter(UserConversor)
-
     switch (method) {
         case "POST":
-            let resPOST = { status: "ERROR", error: {}, id: "", message: "" }
+            let resPOST = { status: "ERROR", error: {}, id: 0, message: "" }
             let { token, data, history } = JSON.parse(body)
             if (token === "tokenbemseguro") {
-                let nowID = data?.id ?? ""
-                const isSave = nowID === ""
                 let user: User = data
-                try {
-                    if (user.passwordConfirm) {
-                        delete user.passwordConfirm
-                    }
-                    if (isSave) {
-                        user = { ...user, dateInsertUTC: handleNewDateToUTC() }
-                        const docRef = await addDoc(userCollection, UserConversor.toFirestore(user))
-                        nowID = docRef.id
-                    } else {
-                        user = { ...user, dateLastUpdateUTC: handleNewDateToUTC() }
-                        const docRef = doc(userCollection, nowID)
-                        await updateDoc(docRef, UserConversor.toFirestore(user))
-                    }
-                    if (history) {
-                        const dataForHistory = { ...UserConversor.toFirestore(user), databaseid: nowID, databasename: USER_COLLECTION_NAME }
-                        await addDoc(historyCollection, dataForHistory)
-                    }
-                    resPOST = { ...resPOST, status: "SUCCESS", id: nowID }
-                } catch (err) {
-                    console.error(err)
-                    resPOST = { ...resPOST, status: "ERROR", error: err }
+                const resAdd = await handleAddUser(user).then(res => res)
+                if (resAdd === 0) {
+                    resPOST = { ...resPOST, status: "ERROR" }
+                } else {
+                    resPOST = { ...resPOST, status: "SUCCESS", id: resAdd }
                 }
             } else {
                 resPOST = { ...resPOST, status: "ERROR", message: "Token invalido!" }
@@ -50,9 +67,12 @@ export default async function handler(req, res) {
             try {
                 const { token, id } = JSON.parse(body)
                 if (token === "tokenbemseguro") {
-                    const docRef = doc(userCollection, id)
-                    await deleteDoc(docRef)
-                    resDELETE = { ...resDELETE, status: "SUCCESS" }
+                    const resDelete = await handleDelete(id).then(res => res)
+                    if (resDelete) {
+                        resDELETE = { ...resDELETE, status: "SUCCESS" }
+                    } else {
+                        resDELETE = { ...resDELETE, status: "ERROR" }
+                    }
                 } else {
                     resDELETE = { ...resDELETE, status: "ERROR", message: "Token invalido!" }
                 }
