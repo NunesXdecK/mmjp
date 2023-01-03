@@ -1,11 +1,11 @@
 import ActionBar from "./actionBar";
 import Button from "../button/button";
+import { handleCheckCNPJ } from "../inputText/inputCNPJ";
 import { FeedbackMessage } from "../modal/feedbackMessageModal";
 import { handleCheckClientCode } from "../inputText/inputClientCode";
 import { Company, defaultCompany } from "../../interfaces/objectInterfaces";
 import { handleRemoveCEPMask, handleRemoveCNPJMask, handleRemoveTelephoneMask } from "../../util/maskUtil";
 import { handleValidationCPF, handleValidationNotNull, ValidationReturn } from "../../util/validationUtil";
-import { handleCheckCNPJ } from "../inputText/inputCNPJ";
 
 interface CompanyActionBarFormProps {
     className?: string,
@@ -44,7 +44,7 @@ export const handleCompanyForDB = (company: Company) => {
     let telephonesWithNoMask = []
     if (company.telephones && company.telephones.length) {
         company.telephones?.map((element, index) => {
-            telephonesWithNoMask = [...telephonesWithNoMask, handleRemoveTelephoneMask(element)]
+            telephonesWithNoMask = [...telephonesWithNoMask, { ...element, value: handleRemoveTelephoneMask(element.value) }]
         })
     }
     company = {
@@ -57,7 +57,7 @@ export const handleCompanyForDB = (company: Company) => {
 }
 
 export const handleSaveCompanyInner = async (company, history) => {
-    let res = { status: "ERROR", id: "", company: company }
+    let res = { status: "ERROR", id: 0, company: company }
     company = handleCompanyForDB(company)
     try {
         const saveRes = await fetch("api/company", {

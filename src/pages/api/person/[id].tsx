@@ -1,9 +1,9 @@
 import prisma from "../../../prisma/prisma"
-import { Person } from "../../../interfaces/objectInterfaces"
+import { handleMaskCEP } from "../../../util/maskUtil"
 
 export const handleGetPerson = async (id: number) => {
     try {
-        const person: Person = await prisma.person.findFirst({
+        const person = await prisma.person.findFirst({
             where: {
                 id: id,
             }
@@ -18,7 +18,11 @@ export const handleGetPerson = async (id: number) => {
                 personId: id,
             }
         })
-        return { ...person, address: addressData, telephones: telephoneData }
+        return {
+            ...person,
+            telephones: telephoneData,
+            address: { ...addressData, cep: handleMaskCEP(addressData?.cep) },
+        }
     } catch (err) {
         console.error(err)
     }

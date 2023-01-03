@@ -2,14 +2,16 @@ import Form from "./form";
 import FormRow from "./formRow";
 import { useState } from "react";
 import AddressForm from "./addressForm";
-import ArrayTextForm from "./arrayTextForm";
+import { NavBarPath } from "../bar/navBar";
+import TelephoneForm from "./telephoneForm";
 import FormRowColumn from "./formRowColumn";
+import InputCNPJ from "../inputText/inputCNPJ";
 import InputText from "../inputText/inputText";
+import InputTextArea from "../inputText/inputTextArea";
 import InputClientCode from "../inputText/inputClientCode";
 import { Company } from "../../interfaces/objectInterfaces";
 import InputSelectPerson from "../inputText/inputSelectPerson";
-import { CNPJ_MARK, NOT_NULL_MARK, TELEPHONE_MARK } from "../../util/patternValidationUtil";
-import { NavBarPath } from "../bar/navBar";
+import { NOT_NULL_MARK } from "../../util/patternValidationUtil";
 
 interface CompanyDataFormProps {
     title?: string,
@@ -30,10 +32,17 @@ export default function CompanyDataForm(props: CompanyDataFormProps) {
 
     const handleSetName = (value) => { handleSet({ ...props.company, name: value }) }
     const handleSetCnpj = (value) => { handleSet({ ...props.company, cnpj: value }) }
-    const handleSetOwners = (value) => { handleSet({ ...props.company, owners: [value] }) }
     const handleSetAddress = (value) => { handleSet({ ...props.company, address: value }) }
+    const handleSetOwners = (value) => { handleSet({ ...props.company, personId: value?.id }) }
     const handleSetTelephones = (value) => { handleSet({ ...props.company, telephones: value }) }
-    const handleSetClientCode = (value) => { handleSet({ ...props.company, clientCode: value }) }
+    const handleSetDescription = (value) => { handleSet({ ...props.company, description: value }) }
+    const handleSetClientCode = (value) => {
+        let val = 0
+        if (parseInt(value)) {
+            val = parseInt(value)
+        }
+        handleSet({ ...props.company, clientCode: val })
+    }
 
     const handleSet = (value: Company) => {
         if (props.onSet) {
@@ -77,24 +86,19 @@ export default function CompanyDataForm(props: CompanyDataFormProps) {
                             onSet={handleSetClientCode}
                             elementId={props.company.id}
                             isDisabled={props.isDisabled}
-                            value={props.company.clientCode}
+                            value={props.company.clientCode?.toString()}
                         />
                     </FormRowColumn>
                 </FormRow>
                 <FormRow>
                     <FormRowColumn unit="3">
-                        <InputText
-                            mask="cnpj"
-                            title="CNPJ"
-                            maxLength={18}
-                            id="company-cnpj"
-                            validation={CNPJ_MARK}
-                            onSetText={handleSetCnpj}
+                        <InputCNPJ
+                            id="company-cpf"
+                            onSet={handleSetCnpj}
                             value={props.company.cnpj}
                             isLoading={props.isLoading}
+                            elementId={props.company.id}
                             isDisabled={props.isDisabled}
-                            onValidate={handleChangeFormValidation}
-                            validationMessage="O CPNPJ não pode ficar em branco."
                         />
                     </FormRowColumn>
                 </FormRow>
@@ -112,15 +116,26 @@ export default function CompanyDataForm(props: CompanyDataFormProps) {
                         />
                     </FormRowColumn>
                 </FormRow>
+                <FormRow>
+                    <FormRowColumn unit="6" className="">
+                        <InputTextArea
+                            title="Descrição"
+                            onBlur={props.onBlur}
+                            id="company-description"
+                            isLoading={props.isLoading}
+                            isDisabled={props.isDisabled}
+                            onSetText={handleSetDescription}
+                            value={props.company.description}
+                        />
+                    </FormRowColumn>
+                </FormRow>
             </Form>
-            <ArrayTextForm
-                maxLength={15}
-                mask="telephone"
-                title="Telefones"
+            <TelephoneForm
+                title="Contatos"
                 id="company-telephone"
-                inputTitle="Telephone"
                 isLoading={props.isLoading}
-                validation={TELEPHONE_MARK}
+                companyId={props.company.id}
+                isDisabled={props.isDisabled}
                 texts={props.company.telephones}
                 onSetTexts={handleSetTelephones}
                 subtitle="Informações sobre os contatos"

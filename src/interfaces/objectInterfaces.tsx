@@ -45,16 +45,18 @@ export interface Person {
 }
 
 export interface Company {
-    id?: string,
     cnpj?: string,
     name?: string,
-    clientCode?: string,
+    description?: string,
+    id?: number,
+    personId?: number,
+    clientCode?: number,
     dateInsertUTC?: number,
     dateLastUpdateUTC?: number,
     oldData?: any,
     address?: Address,
     owners?: any[],
-    telephones?: string[],
+    telephones?: Telephone[],
 }
 
 export interface User {
@@ -288,10 +290,12 @@ export const defaultPerson: Person = {
 
 
 export const defaultCompany: Company = {
-    id: "",
     cnpj: "",
     name: "",
-    clientCode: "",
+    description: "",
+    id: 0,
+    personId: 0,
+    clientCode: 0,
     dateInsertUTC: 0,
     dateLastUpdateUTC: 0,
     oldData: {},

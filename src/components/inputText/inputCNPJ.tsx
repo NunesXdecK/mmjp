@@ -51,15 +51,15 @@ export default function InputCNPJ(props: InputCNPJProps) {
 
     return (
         <InputText
-            mask="cpf"
-            maxLength={14}
+            mask="cnpj"
+            maxLength={18}
             value={props.value}
             validation={CNPJ_MARK}
             onSetText={props.onSet}
             isInvalid={isCNPJInvalid}
             isLoading={props.isLoading}
             title={props.title ?? "CNPJ"}
-            id={props.id + "-input-cpf"}
+            id={props.id + "-input-cnpj"}
             isDisabled={props.isDisabled}
             message="Verificando o CNPJ..."
             isForShowMessage={isCheckingCNPJ}

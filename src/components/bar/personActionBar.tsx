@@ -41,7 +41,7 @@ export const handlePersonValidationForDB = (person: Person) => {
 
 export const handlePersonValidationForDBInner = (person: Person, isSearching, isCPF) => {
     let isValid = handlePersonValidationForDB(person)
-    if (person.clientCode?.toString().length > 0) {
+    if (person?.clientCode?.toString().length > 0) {
         if (isSearching) {
             isValid = {
                 ...isValid,
@@ -50,7 +50,7 @@ export const handlePersonValidationForDBInner = (person: Person, isSearching, is
             }
         }
     }
-    if (person.cpf.length > 0) {
+    if (person?.cpf?.length > 0) {
         if (isCPF) {
             isValid = {
                 ...isValid,

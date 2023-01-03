@@ -1,41 +1,60 @@
-import { collection, doc, getDoc } from "firebase/firestore"
-import { Company, Person } from "../../../interfaces/objectInterfaces"
-import { CompanyConversor, PersonConversor } from "../../../db/converters"
-import { db, COMPANY_COLLECTION_NAME, PERSON_COLLECTION_NAME } from "../../../db/firebaseDB"
+import prisma from "../../../prisma/prisma"
+import { handleMaskCEP, handleMaskCNPJ } from "../../../util/maskUtil"
+import { defaultPerson } from "../../../interfaces/objectInterfaces"
+
+export const handleGetCompany = async (id: number) => {
+    try {
+        const company = await prisma.company.findFirst({
+            where: {
+                id: id,
+            }
+        })
+        const addressData = await prisma.address.findFirst({
+            where: {
+                companyId: id,
+            }
+        })
+        const telephoneData = await prisma.telephone.findMany({
+            where: {
+                companyId: id,
+            }
+        })
+        let person = defaultPerson
+        if (company?.personId > 0) {
+            let person = await prisma.person.findFirst({
+                where: {
+                    id: company.personId,
+                }
+            })
+        }
+        return {
+            ...company,
+            owners: [person],
+            telephones: telephoneData,
+            cnpj: handleMaskCNPJ(company?.cnpj),
+            address: { ...addressData, cep: handleMaskCEP(addressData?.cep) },
+        }
+    } catch (err) {
+        console.error(err)
+    }
+    return { id: 0 }
+}
 
 export default async function handler(req, res) {
-    const { query, method, body } = req
-
-    const personCollection = collection(db, PERSON_COLLECTION_NAME).withConverter(PersonConversor)
-    const companyCollection = collection(db, COMPANY_COLLECTION_NAME).withConverter(CompanyConversor)
-
+    const { query, method } = req
     switch (method) {
         case "GET":
             let resGET = { status: "ERROR", error: {}, message: "", data: {} }
-            try {
-                const { id } = query
-                let ownersArray = []
-                if (id) {
-                    const docRef = doc(companyCollection, id)
-                    let data: Company = (await getDoc(docRef)).data()
-                    await Promise.all(
-                        data.owners.map(async (element, index) => {
-                            const personDocRef = doc(personCollection, element.id)
-                            if (personDocRef) {
-                                const personData: Person = (await getDoc(personDocRef)).data()
-                                if (personData) {
-                                    ownersArray = [...ownersArray, personData]
-                                }
-                            }
-                        }))
-                    data = { ...data, owners: ownersArray }
+            const { id } = query
+            if (id && parseInt(id)) {
+                const data = await handleGetCompany(parseInt(id))
+                if (data?.id > 0) {
                     resGET = { ...resGET, status: "SUCCESS", data: data }
                 } else {
-                    resGET = { ...resGET, status: "ERROR", message: "ID invalido!" }
+                    resGET = { ...resGET, status: "ERROR", message: "Não encontrado" }
                 }
-            } catch (err) {
-                console.error(err)
-                resGET = { ...resGET, status: "ERROR", error: err }
+            } else {
+                resGET = { ...resGET, status: "ERROR", message: "ID invalido!" }
             }
             res.status(200).json(resGET)
             break

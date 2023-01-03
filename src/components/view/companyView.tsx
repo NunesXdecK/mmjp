@@ -1,25 +1,22 @@
 import InfoView from "./infoView"
-import Button from "../button/button"
 import PersonView from "./personView"
 import AddressView from "./addressView"
 import { useEffect, useState } from "react"
 import InfoHolderView from "./infoHolderView"
+import SwitchTextButton from "../button/switchTextButton"
 import PlaceholderItemList from "../list/placeholderItemList"
 import ScrollDownTransition from "../animation/scrollDownTransition"
 import { handleMaskCNPJ, handleMaskTelephone } from "../../util/maskUtil"
-import { defaultCompany, Company } from "../../interfaces/objectInterfaces"
-import { ChevronDownIcon, ChevronRightIcon } from "@heroicons/react/outline"
-import { handleUTCToDateShow } from "../../util/dateUtils"
-import SwitchTextButton from "../button/switchTextButton"
+import { defaultCompany, Company, Telephone } from "../../interfaces/objectInterfaces"
 
 interface CompanyViewProps {
     id?: string,
     title?: string,
-    elementId?: string,
     addressTitle?: string,
     classNameTitle?: string,
     classNameHolder?: string,
     classNameContentHolder?: string,
+    elementId?: number,
     hideData?: boolean,
     dataInside?: boolean,
     hideBorder?: boolean,
@@ -37,7 +34,7 @@ export default function CompanyView(props: CompanyViewProps) {
     const hasData = hasHideData ||
         company.name?.length ||
         company.cnpj?.length ||
-        company.clientCode?.length
+        company.clientCode > 0
 
     const handlePutData = () => {
         return (
@@ -63,7 +60,7 @@ export default function CompanyView(props: CompanyViewProps) {
 
     useEffect(() => {
         if (isFirst) {
-            if (props.elementId && props.elementId.length !== 0 && company.id?.length === 0) {
+            if (props.elementId && props.elementId > 0) {
                 fetch("api/company/" + props.elementId).then((res) => res.json()).then((res) => {
                     setIsFirst(old => false)
                     setCompany(res.data)
@@ -74,7 +71,7 @@ export default function CompanyView(props: CompanyViewProps) {
 
     return (
         <>
-            {company.id?.length === 0 ? (
+            {company?.id === 0 ? (
                 <div className="mt-6 w-full">
                     <PlaceholderItemList />
                 </div>
@@ -96,8 +93,8 @@ export default function CompanyView(props: CompanyViewProps) {
                                 <ScrollDownTransition isOpen={isShowInfo}>
                                     {company.telephones?.length > 0 && (
                                         <InfoView title="Telefones">
-                                            {company.telephones?.map((element, index) => (
-                                                <span key={index + element}>{handleMaskTelephone(element) + (index === company.telephones.length - 1 ? "" : ", ")}</span>
+                                            {company.telephones?.map((element: Telephone, index) => (
+                                                <span key={index + element.type + element.value}>{(element.type.substring(0, 1).toUpperCase() + element.type.substring(1, element.type.length)) + ", " + handleMaskTelephone(element.value) + (index === company.telephones.length - 1 ? "" : ", ")}</span>
                                             ))}
                                         </InfoView>
                                     )}

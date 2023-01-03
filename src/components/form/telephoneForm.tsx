@@ -34,9 +34,18 @@ export default function TelephoneForm(props: TelephoneFormProps) {
     const handleSetType = (value) => { setTelephone({ ...telephone, type: value }) }
     const handleSetValue = (value) => { setTelephone({ ...telephone, value: value }) }
     const handleChangeFormValidation = (isValid) => { setIsFormValid(isValid) }
+    const handleAddTextInner = () => {
+        let localTexts: Telephone[] = [...props.texts]
+        if (localTexts.indexOf(telephone) === -1) {
+            localTexts = [...localTexts, { ...telephone }]
+            props.onSetTexts(localTexts)
+            setTelephone(defaultTelephone)
+        }
+    }
     const handleAddText = (event) => {
         event.preventDefault()
         if (isFormValid && telephone.value.trim() !== "") {
+            /*
             if ((props.personId && props.personId > 0) || (props.companyId && props.companyId > 0)) {
                 fetch("api/telephone", {
                     method: "POST",
@@ -48,12 +57,8 @@ export default function TelephoneForm(props: TelephoneFormProps) {
                     }),
                 })
             }
-            let localTexts: Telephone[] = [...props.texts]
-            if (localTexts.indexOf(telephone) === -1) {
-                localTexts = [...localTexts, { ...telephone }]
-                props.onSetTexts(localTexts)
-                setTelephone(defaultTelephone)
-            }
+            */
+            handleAddTextInner()
         }
     }
     const handleMaskInner = (text) => {

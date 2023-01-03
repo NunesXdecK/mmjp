@@ -1,69 +1,146 @@
-import { CompanyConversor } from "../../../db/converters"
-import { handleNewDateToUTC } from "../../../util/dateUtils"
-import { Company } from "../../../interfaces/objectInterfaces"
-import { addDoc, collection, deleteDoc, doc, updateDoc } from "firebase/firestore"
-import { db, COMPANY_COLLECTION_NAME, HISTORY_COLLECTION_NAME } from "../../../db/firebaseDB"
+import prisma from "../../../prisma/prisma"
+import { Company, Telephone } from "../../../interfaces/objectInterfaces"
+
+const handleAddCompany = async (company: Company) => {
+    if (!company) {
+        return 0
+    }
+    let data: any = {
+        cnpj: company.cnpj,
+        name: company.name,
+        clientCode: company.clientCode,
+        description: company.description,
+        personId: company.personId > 0 ? company.personId : null,
+    }
+    let id = company?.id ?? 0
+    try {
+        if (company?.id === 0) {
+            id = await prisma.company.create({
+                data: data,
+            }).then(res => res.id)
+        } else if (company?.id > 0) {
+            id = await prisma.company.update({
+                where: { id: company.id },
+                data: data,
+            }).then(res => res.id)
+        }
+    } catch (error) {
+        console.error(error)
+    }
+    if (id > 0) {
+        let dataAddress: any = {
+            companyId: id,
+            cep: company?.address?.cep,
+            number: company?.address?.number,
+            county: company?.address?.county,
+            district: company?.address?.district,
+            complement: company?.address?.complement,
+            publicPlace: company?.address?.publicPlace,
+        }
+        try {
+            const address = await prisma.address.findFirst({
+                where: {
+                    companyId: id,
+                }
+            })
+            let addressId = address?.id ?? company?.address?.id ?? 0
+            if (addressId === 0) {
+                addressId = await prisma.address.create({
+                    data: dataAddress,
+                }).then(res => res.id)
+            } else if (addressId > 0) {
+                addressId = await prisma.address.update({
+                    where: { id: addressId },
+                    data: dataAddress,
+                }).then(res => res.id)
+            }
+        } catch (error) {
+            console.error(error)
+        }
+        if (company?.telephones?.length > 0) {
+            await Promise.all(
+                company?.telephones?.map(async (element: Telephone, index) => {
+                    let dataTelephone: any = {
+                        companyId: id,
+                        type: element.type,
+                        value: element.value,
+                    }
+                    try {
+                        const telephone = await prisma.telephone.findFirst({
+                            where: {
+                                companyId: id,
+                                type: element.type,
+                                value: element.value,
+                            }
+                        })
+                        let telephoneId = telephone?.id ?? element?.id
+                        if (telephoneId === 0) {
+                            telephoneId = await prisma.telephone.create({
+                                data: dataTelephone,
+                            }).then(res => res.id)
+                        }
+                    } catch (error) {
+                        console.error(error)
+                    }
+                })
+            )
+        }
+    }
+    return id
+}
+
+const handleDelete = async (id: number) => {
+    try {
+        await prisma.address.deleteMany({
+            where: { companyId: id },
+        })
+        await prisma.telephone.deleteMany({
+            where: { companyId: id },
+        })
+        await prisma.company.delete({
+            where: { id: id },
+        })
+        return true
+    } catch (error) {
+        console.error(error)
+        return false
+    }
+}
 
 export default async function handler(req, res) {
     const { method, body } = req
-
-    const historyCollection = collection(db, HISTORY_COLLECTION_NAME)
-    const companyCollection = collection(db, COMPANY_COLLECTION_NAME).withConverter(CompanyConversor)
-
+    const { token, data, id } = JSON.parse(body)
+    let resFinal = { status: "ERROR", error: {}, id: 0, message: "" }
     switch (method) {
         case "POST":
-            let resPOST = { status: "ERROR", error: {}, id: "", message: "" }
-            let { token, data, history } = JSON.parse(body)
+            let company: Company = data
             if (token === "tokenbemseguro") {
-                let nowID = data?.id ?? ""
-                const isSave = nowID === ""
-                let company: Company = data
-                try {
-                    if (company.oldData) {
-                        delete company.oldData
-                    }
-                    if (isSave) {
-                        company = { ...company, dateInsertUTC: handleNewDateToUTC() }
-                        const docRef = await addDoc(companyCollection, CompanyConversor.toFirestore(company))
-                        nowID = docRef.id
-                    } else {
-                        company = { ...company, dateLastUpdateUTC: handleNewDateToUTC() }
-                        const docRef = doc(companyCollection, nowID)
-                        await updateDoc(docRef, CompanyConversor.toFirestore(company))
-                    }
-                    if (history) {
-                        const dataForHistory = { ...CompanyConversor.toFirestore(company), databaseid: nowID, databasename: COMPANY_COLLECTION_NAME }
-                        await addDoc(historyCollection, dataForHistory)
-                    }
-                    resPOST = { ...resPOST, status: "SUCCESS", id: nowID }
-                } catch (err) {
-                    console.error(err)
-                    resPOST = { ...resPOST, status: "ERROR", error: err }
+                const resAdd = await handleAddCompany(company).then(res => res)
+                if (resAdd === 0) {
+                    resFinal = { ...resFinal, status: "ERROR" }
+                } else {
+                    resFinal = { ...resFinal, status: "SUCCESS", id: resAdd }
                 }
             } else {
-                resPOST = { ...resPOST, status: "ERROR", message: "Token invalido!" }
+                resFinal = { ...resFinal, status: "ERROR", message: "Token invalido!" }
             }
-            res.status(200).json(resPOST)
+            res.status(200).json(resFinal)
             break
         case "DELETE":
-            let resDELETE = { status: "ERROR", error: {}, message: "" }
-            try {
-                const { token, id } = JSON.parse(body)
-                if (token === "tokenbemseguro") {
-                    const docRef = doc(companyCollection, id)
-                    await deleteDoc(docRef)
-                    resDELETE = { ...resDELETE, status: "SUCCESS" }
+            if (token === "tokenbemseguro") {
+                const resDelete = await handleDelete(id).then(res => res)
+                if (resDelete) {
+                    resFinal = { ...resFinal, status: "SUCCESS" }
                 } else {
-                    resDELETE = { ...resDELETE, status: "ERROR", message: "Token invalido!" }
+                    resFinal = { ...resFinal, status: "ERROR" }
                 }
-            } catch (err) {
-                console.error(err)
-                resDELETE = { ...resDELETE, status: "ERROR", error: err }
+            } else {
+                resFinal = { ...resFinal, status: "ERROR", message: "Token invalido!" }
             }
-            res.status(200).json(resDELETE)
+            res.status(200).json(resFinal)
             break
         default:
-            res.setHeader("Allow", ["PUT", "UPDATE", "DELETE"])
+            res.setHeader("Allow", ["POST", "DELETE"])
             res.status(405).end(`Metodo ${method} nao permitido`)
     }
 }
