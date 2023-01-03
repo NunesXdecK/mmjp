@@ -333,14 +333,14 @@ model SubjectMessage {
 }
 
 model LoginToken {
-  id            Int       @id @default(autoincrement())
-  dateInsert    DateTime  @default(now()) @map("date_insert")
-  dateUpdate    DateTime  @updatedAt @map("date_update")
-  token         String    @db.VarChar(255)
-  isBlocked     Boolean   @default(false) @map("is_blocked")
-  validationDue DateTime? @map("validation_due")
-  user          User      @relation(fields: [userId], references: [id])
-  userId        Int       @map("user_id")
+  id            Int      @id @default(autoincrement())
+  dateInsert    DateTime @default(now()) @map("date_insert")
+  dateUpdate    DateTime @updatedAt @map("date_update")
+  token         String   @db.VarChar(255)
+  isBlocked     Boolean  @default(false) @map("is_blocked")
+  validationDue String?  @map("validation_due")
+  user          User     @relation(fields: [userId], references: [id])
+  userId        Int      @map("user_id")
 
   @@map("login_token")
 }

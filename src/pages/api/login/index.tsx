@@ -1,8 +1,6 @@
 import { v4 as uuid } from "uuid"
+import prisma from "../../../prisma/prisma"
 import { handleNewDateToUTC } from "../../../util/dateUtils"
-import { LoginTokenConversor, UserConversor } from "../../../db/converters"
-import { addDoc, collection, getDocs, query, where } from "firebase/firestore"
-import { db, LOGIN_TOKEN_COLLECTION_NAME, USER_COLLECTION_NAME } from "../../../db/firebaseDB"
 import { User, defaultUser, LoginToken, defaultLoginToken } from "../../../interfaces/objectInterfaces"
 
 const delay = (amount = 750) => new Promise(resolve => setTimeout(resolve, amount))
@@ -24,38 +22,37 @@ export const handlePrepareLoginTokenForDB = (loginToken: LoginToken) => {
 
 export default async function handler(req, res) {
     const { method, body } = req
-    const userCollection = collection(db, USER_COLLECTION_NAME).withConverter(UserConversor)
-    const loginTokenCollection = collection(db, LOGIN_TOKEN_COLLECTION_NAME).withConverter(LoginTokenConversor)
 
     switch (method) {
         case 'POST':
             let resPOST = { status: "ERROR", error: {}, message: "", isAuth: false, data: {}, token: "" }
+            const { username, password } = JSON.parse(body)
             try {
                 //await delay()
-                let { username, password } = JSON.parse(body)
                 let user: User = defaultUser
-                const queryUser = query(userCollection,
-                    where("isBlocked", "==", false),
-                    where("username", "==", username),
-                    where("password", "==", password)
-                )
-                const querySnapshot = await getDocs(queryUser)
-                querySnapshot.forEach((doc) => {
-                    user = doc.data()
+                user = await prisma.user.findFirst({
+                    where: {
+                        username: username,
+                        password: password,
+                    }
                 })
-                if (user?.id?.length > 0) {
-                    let loginToken: LoginToken = handlePrepareLoginTokenForDB({
+                console.log(user)
+                if (user?.id > 0) {
+                    const data: any = handlePrepareLoginTokenForDB({
                         ...defaultLoginToken,
                         token: uuid(),
-                        user: { id: user.id },
-                        validationDue: handleNewDateToUTC() + (3600000 * 12), //12 horas
+                        user: user.id,
+                        validationDue: (handleNewDateToUTC() + (3600000 * 12)).toString(), //12 horas
                     })
-                    const docRef = await addDoc(loginTokenCollection, LoginTokenConversor.toFirestore(loginToken))
-                    if (docRef?.id?.length) {
+                    const res = await prisma.loginToken.create({
+                        data: data,
+                    })
+                    console.log(res)
+                    if (res?.id > 0) {
                         resPOST = {
                             ...resPOST,
                             isAuth: true,
-                            token: loginToken.token,
+                            token: data.token,
                             status: "SUCCESS",
                             data: { ...user, password: "" },
                         }

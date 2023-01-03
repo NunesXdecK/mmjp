@@ -15,12 +15,11 @@ export default async function handler(req, res) {
     switch (method) {
         case 'POST':
             let resPOST = { status: "ERROR", error: {}, message: "", isAuth: false, data: {}, token: "" }
+            let { token } = JSON.parse(body)
+            let loginToken: LoginToken = defaultLoginToken
             try {
                 //await delay()
-                let { token } = JSON.parse(body)
-                let loginToken: LoginToken = defaultLoginToken
                 if (token) {
-
                     const nowTime = handleNewDateToUTC()
                     const queryLoginToken = query(loginTokenCollection,
                         where("token", "==", token),

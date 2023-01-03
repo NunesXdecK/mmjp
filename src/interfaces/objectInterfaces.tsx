@@ -58,12 +58,12 @@ export interface Company {
 }
 
 export interface User {
-    id?: string,
+    id?: number,
     email?: string,
     username?: string,
     password?: string,
     passwordConfirm?: string,
-    office?: UserOffice,
+    office?: UserOffice | string,
     dateInsertUTC?: number,
     dateLastUpdateUTC?: number,
     isBlocked?: boolean,
@@ -73,7 +73,7 @@ export interface User {
 export interface LoginToken {
     id?: string,
     token?: string,
-    validationDue?: number,
+    validationDue?: string | number,
     dateInsertUTC?: number,
     dateLastUpdateUTC?: number,
     isBlocked?: boolean,
@@ -298,18 +298,8 @@ export const defaultCompany: Company = {
     address: defaultAddress,
 }
 
-export const defaultLoginToken: LoginToken = {
-    id: "",
-    token: "",
-    validationDue: 0,
-    dateInsertUTC: 0,
-    dateLastUpdateUTC: 0,
-    isBlocked: false,
-    user: {},
-}
-
 export const defaultUser: User = {
-    id: "",
+    id: 0,
     email: "",
     username: "",
     password: "",
@@ -319,6 +309,16 @@ export const defaultUser: User = {
     dateLastUpdateUTC: 0,
     isBlocked: true,
     person: {},
+}
+
+export const defaultLoginToken: LoginToken = {
+    id: "",
+    token: "",
+    validationDue: 0,
+    dateInsertUTC: 0,
+    dateLastUpdateUTC: 0,
+    isBlocked: false,
+    user: defaultUser,
 }
 
 export const defaultProfessional: Professional = {
