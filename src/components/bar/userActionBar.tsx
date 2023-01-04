@@ -158,12 +158,20 @@ export default function UserActionBarForm(props: UserActionBarFormProps) {
     return (
         <ActionBar className={props.className + " bg-slate-50 dark:bg-slate-800 dark:border dark:border-gray-700"}>
             <div className="w-full flex flex-row justify-between">
-                <Button
-                    isLoading={props.isLoading}
-                    onClick={() => handleSave(false)}
-                >
-                    Salvar
-                </Button>
+                <div className="flex flex-row gap-2">
+                    <Button
+                        isLoading={props.isLoading}
+                        onClick={() => handleSave(true)}
+                    >
+                        Salvar
+                    </Button>
+                    <Button
+                        isLoading={props.isLoading}
+                        onClick={() => handleSave(false)}
+                    >
+                        Salvar e sair
+                    </Button>
+                </div>
             </div>
         </ActionBar>
     )

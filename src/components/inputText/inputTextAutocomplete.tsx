@@ -169,7 +169,7 @@ export default function InputTextAutoComplete(props: InputTextAutoCompleteProps)
             </div>
             <div
                 id={props.id + "-suggestions-holder"}
-                className="absolute shadow-m dark:shadow-none mt-2 z-40 bg-slate-50 dark:bg-gray-800 dark:text-slate-200 rounded"
+                className="absolute shadow-md dark:shadow-none mt-2 z-40 bg-slate-50 dark:bg-gray-800 dark:text-slate-200 rounded"
             >
                 {(props.value.length > 0 && !props.isDisabled) && (
                     <div

@@ -109,7 +109,7 @@ export default function InputSelectProfessional(props: InputSelectProfessionalPr
         if (short) {
             //path = { ...path, path: "S" }
         }
-        if (professional.id?.length > 0) {
+        if (professional.id > 0) {
             path = { ...path, path: "Profissional-" + professional.title, onClick: null }
         }
         try {
@@ -232,6 +232,7 @@ export default function InputSelectProfessional(props: InputSelectProfessionalPr
                     {isOpen && (
                         <ProfessionalDataForm
                             onSet={setProfessional}
+                            isLoading={props.isLoading}
                             professional={professional}
                             title="Informações pessoais"
                             onShowMessage={props.onShowMessage}

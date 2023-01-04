@@ -295,6 +295,7 @@ export default function InputSelectPersonCompany(props: InputSelectPersonCompany
                                 <PersonDataForm
                                     person={element}
                                     onSet={setElement}
+                                    isLoading={props.isLoading}
                                     title="Informações pessoais"
                                     onShowMessage={props.onShowMessage}
                                     prevPath={(handlePutModalTitle(true))}

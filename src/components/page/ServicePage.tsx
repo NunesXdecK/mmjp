@@ -256,12 +256,14 @@ export default function ServicePage(props: ServicePageProps) {
     useEffect(() => {
         if (isFirst) {
             if (props.projectId?.length > 0) {
+                handleSetIsLoading(true)
                 fetch("api/services/" + props.projectId).then((res) => res.json()).then((res) => {
                     setServices(res.list ?? [])
                     setIsFirst(old => false)
                     handleSetIsLoading(false)
                 })
             } else if (props.projectId === undefined) {
+                handleSetIsLoading(true)
                 fetch("api/services").then((res) => res.json()).then((res) => {
                     setServices(res.list ?? [])
                     setIsFirst(old => false)

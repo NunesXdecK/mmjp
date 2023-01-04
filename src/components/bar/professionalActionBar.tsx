@@ -19,7 +19,7 @@ interface ProfessionalActionBarFormProps {
 export const handleProfessionalValidationForDB = (professional: Professional) => {
     let validation: ValidationReturn = { validation: false, messages: [] }
     let titleCheck = handleValidationNotNull(professional.title)
-    let personCheck = professional?.person?.id?.length > 0 ?? false
+    let personCheck = professional?.personId > 0 ?? false
     if (!titleCheck) {
         validation = { ...validation, messages: [...validation.messages, "O campo titúlo está em branco."] }
     }
@@ -44,7 +44,7 @@ export const handleProfessionalForDB = (professional: Professional) => {
 }
 
 export const handleSaveProfessionalInner = async (professional, history) => {
-    let res = { status: "ERROR", id: "", professional: professional }
+    let res = { status: "ERROR", id: 0, professional: professional }
     professional = handleProfessionalForDB(professional)
     try {
         const saveRes = await fetch("api/professional", {
@@ -105,12 +105,20 @@ export default function ProfessionalActionBarForm(props: ProfessionalActionBarFo
     return (
         <ActionBar className={props.className + " bg-slate-50 dark:bg-slate-800 dark:border dark:border-gray-700"}>
             <div className="w-full flex flex-row justify-between">
-                <Button
-                    isLoading={props.isLoading}
-                    onClick={() => handleSave(false)}
-                >
-                    Salvar
-                </Button>
+                <div className="flex flex-row gap-2">
+                    <Button
+                        isLoading={props.isLoading}
+                        onClick={() => handleSave(true)}
+                    >
+                        Salvar
+                    </Button>
+                    <Button
+                        isLoading={props.isLoading}
+                        onClick={() => handleSave(false)}
+                    >
+                        Salvar e sair
+                    </Button>
+                </div>
             </div>
         </ActionBar>
     )

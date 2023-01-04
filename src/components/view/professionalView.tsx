@@ -13,10 +13,10 @@ import SwitchTextButton from "../button/switchTextButton"
 interface ProfessionalViewProps {
     id?: string,
     title?: string,
-    elementId?: string,
     classNameTitle?: string,
     classNameHolder?: string,
     classNameContentHolder?: string,
+    elementId?: number,
     hideData?: boolean,
     dataInside?: boolean,
     hideBorder?: boolean,
@@ -50,7 +50,7 @@ export default function ProfessionalView(props: ProfessionalViewProps) {
 
     useEffect(() => {
         if (isFirst) {
-            if (props.elementId && props.elementId.length !== 0 && professional.id?.length === 0) {
+            if (props.elementId && props?.elementId > 0 && professional?.id > 0) {
                 fetch("api/professional/" + props.elementId).then((res) => res.json()).then((res) => {
                     setIsFirst(old => false)
                     setProfessional(res.data)
@@ -61,7 +61,7 @@ export default function ProfessionalView(props: ProfessionalViewProps) {
 
     return (
         <>
-            {professional.id?.length === 0 ? (
+            {professional?.id === 0 ? (
                 <div className="mt-6">
                     <PlaceholderItemList />
                 </div>

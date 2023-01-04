@@ -51,6 +51,7 @@ export default function ProfilePage(props: ProfilePageProps) {
 
     useEffect(() => {
         if (isFirst && user?.id > 0) {
+            handleSetIsLoading(true)
             fetch("api/user/" + user.id).then((res) => res.json()).then((res) => {
                 setIsFirst(false)
                 const localUser: User = {

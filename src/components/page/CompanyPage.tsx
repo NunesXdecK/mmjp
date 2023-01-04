@@ -194,6 +194,7 @@ export default function CompanyPage(props: CompanyPageProps) {
 
     useEffect(() => {
         if (isFirst) {
+            handleSetIsLoading(true)
             fetch("api/companies/").then((res) => res.json()).then((res) => {
                 setCompanys(res.list ?? [])
                 setIsFirst(old => false)
@@ -244,9 +245,9 @@ export default function CompanyPage(props: CompanyPageProps) {
                                 company={company}
                                 onSet={setCompany}
                                 isLoading={props.isLoading}
-                                onSetIsLoading={handleSetIsLoading}
                                 onAfterSave={handleAfterSave}
                                 onShowMessage={handleShowMessage}
+                                onSetIsLoading={handleSetIsLoading}
                             />
                         )}
                         {isForShow && (
@@ -272,6 +273,8 @@ export default function CompanyPage(props: CompanyPageProps) {
                             company={company}
                             onSet={setCompany}
                             isLoading={props.isLoading}
+                            onShowMessage={handleShowMessage}
+                            onSetIsLoading={handleSetIsLoading}
                             prevPath={(handlePutModalTitle(true))}
                         />
                     )}

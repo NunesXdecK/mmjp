@@ -64,6 +64,7 @@ export interface User {
     email?: string,
     username?: string,
     password?: string,
+    description?: string,
     passwordConfirm?: string,
     office?: UserOffice | string,
     personId?: number,
@@ -85,10 +86,12 @@ export interface LoginToken {
 }
 
 export interface Professional {
-    id?: string,
     title?: string,
     creaNumber?: string,
+    description?: string,
     credentialCode?: string,
+    id?: number,
+    personId?: number,
     dateInsertUTC?: number,
     dateLastUpdateUTC?: number,
     person?: any,
@@ -309,6 +312,7 @@ export const defaultUser: User = {
     email: "",
     username: "",
     password: "",
+    description: "",
     passwordConfirm: "",
     office: "visitante",
     dateInsertUTC: 0,
@@ -329,10 +333,12 @@ export const defaultLoginToken: LoginToken = {
 }
 
 export const defaultProfessional: Professional = {
-    id: "",
     title: "",
     creaNumber: "",
+    description: "",
     credentialCode: "",
+    id: 0,
+    personId: 0,
     dateInsertUTC: 0,
     dateLastUpdateUTC: 0,
     oldData: {},

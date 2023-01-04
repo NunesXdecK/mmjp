@@ -246,12 +246,14 @@ export default function PaymentPage(props: PaymentPageProps) {
     useEffect(() => {
         if (isFirst) {
             if (props.projectId?.length > 0) {
+                handleSetIsLoading(true)
                 fetch("api/payments/" + props.projectId).then((res) => res.json()).then((res) => {
                     setPayments(res.list ?? [])
                     setIsFirst(old => false)
                     handleSetIsLoading(false)
                 })
             } else if (props.projectId === undefined) {
+                handleSetIsLoading(true)
                 fetch("api/payments").then((res) => res.json()).then((res) => {
                     setPayments(res.list ?? [])
                     setIsFirst(old => false)

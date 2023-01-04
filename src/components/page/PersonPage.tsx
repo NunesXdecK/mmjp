@@ -196,9 +196,7 @@ export default function PersonPage(props: PersonPageProps) {
 
     useEffect(() => {
         if (isFirst) {
-            if (props.getInfo) {
-                handleSetIsLoading(true)
-            }
+            handleSetIsLoading(true)
             fetch("api/persons/").then((res) => res.json()).then((res) => {
                 setPersons(res.list ?? [])
                 setIsFirst(old => false)

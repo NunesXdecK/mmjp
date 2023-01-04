@@ -267,6 +267,7 @@ export default function BudgetPage(props: BudgetPageProps) {
 
     useEffect(() => {
         if (isFirst) {
+            handleSetIsLoading(true)
             fetch("api/budgets").then((res) => res.json()).then((res) => {
                 setBudgets(res.list ?? [])
                 setIsFirst(old => false)

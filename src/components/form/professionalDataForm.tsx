@@ -1,12 +1,13 @@
 import Form from "./form";
 import FormRow from "./formRow";
 import { useState } from "react";
+import { NavBarPath } from "../bar/navBar";
 import FormRowColumn from "./formRowColumn";
 import InputText from "../inputText/inputText";
-import { Professional } from "../../interfaces/objectInterfaces";
 import InputSelectPerson from "../inputText/inputSelectPerson";
 import { NOT_NULL_MARK } from "../../util/patternValidationUtil";
-import { NavBarPath } from "../bar/navBar";
+import { Professional } from "../../interfaces/objectInterfaces";
+import InputTextArea from "../inputText/inputTextArea";
 
 interface ProfessionalDataFormProps {
     title?: string,
@@ -20,15 +21,17 @@ interface ProfessionalDataFormProps {
     onBlur?: (any) => void,
     onShowMessage?: (any) => void,
     onSet?: (any, number?) => void,
+    onSetIsLoading?: (boolean) => void,
 }
 
 export default function ProfessionalDataForm(props: ProfessionalDataFormProps) {
     const [isFormValid, setIsFormValid] = useState(true)
 
     const handleSetTitle = (value) => { handleSet({ ...props.professional, title: value }) }
-    const handleSetPerson = (value) => { handleSet({ ...props.professional, person: value }) }
     const handleSetCreaNumber = (value) => { handleSet({ ...props.professional, creaNumber: value }) }
+    const handleSetDescription = (value) => { handleSet({ ...props.professional, description: value }) }
     const handleSetCredentialCode = (value) => { handleSet({ ...props.professional, credentialCode: value }) }
+    const handleSetPerson = (value) => { handleSet({ ...props.professional, personId: value.id, person: value }) }
 
     const handleSet = (value: Professional) => {
         if (props.onSet) {
@@ -84,9 +87,9 @@ export default function ProfessionalDataForm(props: ProfessionalDataFormProps) {
                         isLoading={props.isLoading}
                         title="Codigo credencial"
                         isDisabled={props.isDisabled}
-                        value={props.professional.credentialCode}
                         onSetText={handleSetCredentialCode}
                         onValidate={handleChangeFormValidation}
+                        value={props.professional.credentialCode}
                         validationMessage="O codigo credencial não pode ficar em branco."
                     />
                 </FormRowColumn>
@@ -100,8 +103,23 @@ export default function ProfessionalDataForm(props: ProfessionalDataFormProps) {
                         prevPath={props.prevPath}
                         isLoading={props.isLoading}
                         isDisabled={props.isDisabled}
+                        onShowMessage={props.onShowMessage}
+                        onSetLoading={props.onSetIsLoading}
                         value={props.professional?.person?.name}
                         id={"professional-person" + (props.index ? "-" + props.index : "")}
+                    />
+                </FormRowColumn>
+            </FormRow>
+            <FormRow>
+                <FormRowColumn unit="6" className="">
+                    <InputTextArea
+                        title="Descrição"
+                        onBlur={props.onBlur}
+                        isLoading={props.isLoading}
+                        id="professional-description"
+                        isDisabled={props.isDisabled}
+                        onSetText={handleSetDescription}
+                        value={props.professional.description}
                     />
                 </FormRowColumn>
             </FormRow>

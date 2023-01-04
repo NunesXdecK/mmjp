@@ -146,7 +146,7 @@ export default function ProfessionalPage(props: ProfessionalPageProps) {
         if (short) {
             //path = { ...path, path: "S" }
         }
-        if (professional.id?.length > 0) {
+        if (professional?.id > 0) {
             path = { ...path, path: "Profissional-" + professional.title, onClick: null }
         }
         try {
@@ -176,9 +176,9 @@ export default function ProfessionalPage(props: ProfessionalPageProps) {
     const handlePutHeaders = () => {
         return (
             <FormRow>
-                <FormRowColumn unit="2">Nome</FormRowColumn>
-                <FormRowColumn unit="2">Profissão</FormRowColumn>
-                <FormRowColumn unit="2">CREA</FormRowColumn>
+                <FormRowColumn unit="4">Nome</FormRowColumn>
+                <FormRowColumn unit="1">CREA</FormRowColumn>
+                <FormRowColumn unit="1">Credencial</FormRowColumn>
             </FormRow>
         )
     }
@@ -186,15 +186,16 @@ export default function ProfessionalPage(props: ProfessionalPageProps) {
     const handlePutRows = (element: Professional) => {
         return (
             <FormRow>
-                <FormRowColumn unit="2"><PersonNameListItem id={element.person?.id} /></FormRowColumn>
-                <FormRowColumn unit="2">{element.title}</FormRowColumn>
-                <FormRowColumn unit="2">{element.creaNumber}</FormRowColumn>
+                <FormRowColumn unit="4"><PersonNameListItem id={element.personId} complement={"/" + element.title} /></FormRowColumn>
+                <FormRowColumn unit="1">{element.creaNumber}</FormRowColumn>
+                <FormRowColumn unit="1">{element.credentialCode}</FormRowColumn>
             </FormRow>
         )
     }
 
     useEffect(() => {
         if (isFirst) {
+            handleSetIsLoading(true)
             fetch("api/professionals/").then((res) => res.json()).then((res) => {
                 setProfessionals(res.list ?? [])
                 setIsFirst(old => false)
@@ -242,12 +243,12 @@ export default function ProfessionalPage(props: ProfessionalPageProps) {
                     <div className="p-4 pb-0">
                         {isRegister && (
                             <ProfessionalActionBarForm
-                                professional={professional}
                                 onSet={setProfessional}
+                                professional={professional}
                                 isLoading={props.isLoading}
-                                onSetIsLoading={handleSetIsLoading}
                                 onAfterSave={handleAfterSave}
                                 onShowMessage={handleShowMessage}
+                                onSetIsLoading={handleSetIsLoading}
                             />
                         )}
                         {isForShow && (
@@ -273,6 +274,8 @@ export default function ProfessionalPage(props: ProfessionalPageProps) {
                             onSet={setProfessional}
                             isLoading={props.isLoading}
                             professional={professional}
+                            onShowMessage={handleShowMessage}
+                            onSetIsLoading={handleSetIsLoading}
                             prevPath={(handlePutModalTitle(true))}
                         />
                     )}

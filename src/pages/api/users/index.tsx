@@ -14,8 +14,8 @@ export default async function handler(req, res) {
     switch (method) {
         case "GET":
             let resGET = { status: "ERROR", error: {}, message: "", list: [] }
-            const persons = await main().then(res => res)
-            res.status(200).json({ ...resGET, list: persons })
+            const users = await main().then(res => res)
+            res.status(200).json({ ...resGET, list: users })
             break
         default:
             res.setHeader("Allow", ["GET"])

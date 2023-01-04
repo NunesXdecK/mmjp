@@ -23,13 +23,13 @@ export default async function handler(req, res) {
                             isBlocked: false,
                         }
                     })
-                    if (loginToken?.id === 0) {
+                    if (!loginToken || loginToken?.id === 0) {
                         resPOST = { ...resPOST, status: "ERROR", message: "Token não encontrado." }
                         res.status(200).json(resPOST)
                         return
                     }
-                    if (parseInt(loginToken.validationDue)) {
-                        notExpired = nowTime < parseInt(loginToken.validationDue)
+                    if (parseInt(loginToken?.validationDue)) {
+                        notExpired = nowTime < parseInt(loginToken?.validationDue)
                     }
                     if (!notExpired) {
                         resPOST = { ...resPOST, status: "ERROR", message: "Token expirado." }

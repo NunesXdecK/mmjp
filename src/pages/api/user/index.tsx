@@ -12,6 +12,7 @@ const handleAddUser = async (user: User) => {
         password: user.password,
         personId: user.personId,
         isBlocked: user.isBlocked,
+        description: user.description,
     }
     let id = user?.id ?? 0
     try {

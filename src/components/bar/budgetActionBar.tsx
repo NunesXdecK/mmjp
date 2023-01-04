@@ -223,12 +223,20 @@ export default function BudgetActionBarForm(props: BudgetActionBarFormProps) {
     return (
         <ActionBar className={props.className + " bg-slate-50 dark:bg-slate-800 dark:border dark:border-gray-700"}>
             <div className="w-full flex flex-row justify-between">
-                <Button
-                    isLoading={props.isLoading}
-                    onClick={() => handleSave(props.budget.status, false)}
-                >
-                    Salvar
-                </Button>
+                <div className="flex flex-row gap-2">
+                    <Button
+                        isLoading={props.isLoading}
+                        onClick={() => handleSave(props.budget.status, true)}
+                    >
+                        Salvar
+                    </Button>
+                    <Button
+                        isLoading={props.isLoading}
+                        onClick={() => handleSave(props.budget.status, false)}
+                    >
+                        Salvar e sair
+                    </Button>
+                </div>
                 <DropDownButton
                     isLeft
                     title="..."

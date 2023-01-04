@@ -9,6 +9,7 @@ import InputCheckbox from "../inputText/inputCheckbox"
 import { User } from "../../interfaces/objectInterfaces"
 import InputSelectPerson from "../inputText/inputSelectPerson"
 import { EMAIL_MARK, NOT_NULL_MARK } from "../../util/patternValidationUtil"
+import InputTextArea from "../inputText/inputTextArea"
 
 interface UserDataFormProps {
     title?: string,
@@ -23,6 +24,7 @@ interface UserDataFormProps {
     onBlur?: (any) => void,
     onShowMessage?: (any) => void,
     onSet?: (any, number?) => void,
+    onSetIsLoading?: (boolean) => void,
 }
 
 export const handleCheckUsername = async (username, id) => {
@@ -54,11 +56,12 @@ export default function UserDataForm(props: UserDataFormProps) {
 
     const handleSetEmail = (value) => { handleSet({ ...props.user, email: value }) }
     const handleSetOffice = (value) => { handleSet({ ...props.user, office: value }) }
-    const handleSetPerson = (value) => { handleSet({ ...props.user, personId: value?.id }) }
     const handleSetPassword = (value) => { handleSet({ ...props.user, password: value }) }
     const handleSetUsername = (value) => { handleSet({ ...props.user, username: value }) }
     const handleSetIsBlocked = (value) => { handleSet({ ...props.user, isBlocked: value }) }
+    const handleSetDescription = (value) => { handleSet({ ...props.user, description: value }) }
     const handleSetPasswordConfirm = (value) => { handleSet({ ...props.user, passwordConfirm: value }) }
+    const handleSetPerson = (value) => { handleSet({ ...props.user, personId: value?.id, person: value }) }
 
     const handleValidEmail = async (event, show?) => {
         if (event && event.relatedTarget?.tagName?.toLowerCase() !== ("input" || "select" || "textarea")) {
@@ -235,11 +238,27 @@ export default function UserDataForm(props: UserDataFormProps) {
                             isLoading={props.isLoading}
                             isDisabled={props.isDisabled}
                             value={props.user?.person?.name}
+                            onShowMessage={props.onShowMessage}
+                            onSetLoading={props.onSetIsLoading}
                             id={"user-person" + (props.index ? "-" + props.index : "")}
                         />
                     </FormRowColumn>
                 </FormRow>
             )}
+
+            <FormRow>
+                <FormRowColumn unit="6" className="">
+                    <InputTextArea
+                        title="Descrição"
+                        onBlur={props.onBlur}
+                        isLoading={props.isLoading}
+                        id="professional-description"
+                        isDisabled={props.isDisabled}
+                        value={props.user.description}
+                        onSetText={handleSetDescription}
+                    />
+                </FormRowColumn>
+            </FormRow>
         </Form>
     )
 }

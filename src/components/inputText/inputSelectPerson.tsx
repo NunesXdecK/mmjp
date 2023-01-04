@@ -233,6 +233,7 @@ export default function InputSelectPerson(props: InputSelectPersonProps) {
                         <PersonDataForm
                             person={person}
                             onSet={setPerson}
+                            isLoading={props.isLoading}
                             title="Informações pessoais"
                             onShowMessage={props.onShowMessage}
                             prevPath={(handlePutModalTitle(true))}

@@ -305,6 +305,7 @@ model User {
   id             Int              @id @default(autoincrement())
   dateInsert     DateTime         @default(now()) @map("date_insert")
   dateUpdate     DateTime         @updatedAt @map("date_update")
+  description    String?          @db.VarChar(255)
   username       String           @unique @db.VarChar(255)
   email          String           @unique @db.VarChar(255)
   password       String           @db.VarChar(255)

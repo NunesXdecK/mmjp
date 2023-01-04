@@ -21,7 +21,7 @@ export const handleGetCompany = async (id: number) => {
         })
         let person = defaultPerson
         if (company?.personId > 0) {
-            let person = await prisma.person.findFirst({
+            person = await prisma.person.findFirst({
                 where: {
                     id: company.personId,
                 }

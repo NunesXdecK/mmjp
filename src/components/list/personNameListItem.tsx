@@ -2,6 +2,7 @@ import { useEffect, useState } from "react"
 
 interface PersonNameListItemProps {
     id?: number,
+    complement?: string,
 }
 
 export default function PersonNameListItem(props: PersonNameListItemProps) {
@@ -27,7 +28,7 @@ export default function PersonNameListItem(props: PersonNameListItemProps) {
                 <div className="animate-pulse p-2 w-full bg-gray-300 dark:bg-gray-700"></div>
             ) : (
                 <>
-                    {personName}
+                    {personName + (props.complement ?? "")}
                 </>
             )}
         </>

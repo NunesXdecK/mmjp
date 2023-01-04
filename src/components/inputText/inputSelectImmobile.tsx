@@ -233,6 +233,7 @@ export default function InputSelectImmobile(props: InputSelectImmobileProps) {
                         <ImmobileDataForm
                             immobile={immobile}
                             onSet={setImmobile}
+                            isLoading={props.isLoading}
                             title="Informações pessoais"
                             onShowMessage={props.onShowMessage}
                             prevPath={(handlePutModalTitle(true))}

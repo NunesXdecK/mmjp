@@ -25,6 +25,7 @@ interface CompanyDataFormProps {
     onBlur?: (any) => void,
     onShowMessage?: (any) => void,
     onSet?: (any, number?) => void,
+    onSetIsLoading?: (boolean) => void,
 }
 
 export default function CompanyDataForm(props: CompanyDataFormProps) {
@@ -33,9 +34,9 @@ export default function CompanyDataForm(props: CompanyDataFormProps) {
     const handleSetName = (value) => { handleSet({ ...props.company, name: value }) }
     const handleSetCnpj = (value) => { handleSet({ ...props.company, cnpj: value }) }
     const handleSetAddress = (value) => { handleSet({ ...props.company, address: value }) }
-    const handleSetOwners = (value) => { handleSet({ ...props.company, personId: value?.id }) }
     const handleSetTelephones = (value) => { handleSet({ ...props.company, telephones: value }) }
     const handleSetDescription = (value) => { handleSet({ ...props.company, description: value }) }
+    const handleSetOwners = (value) => { handleSet({ ...props.company, owners: [value], personId: value?.id }) }
     const handleSetClientCode = (value) => {
         let val = 0
         if (parseInt(value)) {
@@ -111,6 +112,8 @@ export default function CompanyDataForm(props: CompanyDataFormProps) {
                             prevPath={props.prevPath}
                             isLoading={props.isLoading}
                             isDisabled={props.isDisabled}
+                            onSetLoading={props.onSetIsLoading}
+                            onShowMessage={props.onShowMessage}
                             value={props.company?.owners[0]?.name}
                             id={"company-responsible" + (props.index ? "-" + props.index : "")}
                         />
@@ -126,7 +129,7 @@ export default function CompanyDataForm(props: CompanyDataFormProps) {
                             isDisabled={props.isDisabled}
                             onSetText={handleSetDescription}
                             value={props.company.description}
-                        />
+                            />
                     </FormRowColumn>
                 </FormRow>
             </Form>

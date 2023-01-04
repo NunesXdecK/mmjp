@@ -195,8 +195,7 @@ export default function UserPage(props: UserPageProps) {
     const handlePutHeaders = () => {
         return (
             <FormRow>
-                <FormRowColumn unit="2">Nome</FormRowColumn>
-                <FormRowColumn unit="1">Username</FormRowColumn>
+                <FormRowColumn unit="3">Username</FormRowColumn>
                 <FormRowColumn unit="2">E-mail</FormRowColumn>
                 <FormRowColumn unit="1"></FormRowColumn>
             </FormRow>
@@ -206,8 +205,7 @@ export default function UserPage(props: UserPageProps) {
     const handlePutRows = (element: User) => {
         return (
             <FormRow>
-                <FormRowColumn unit="2"><PersonNameListItem id={element?.personId} /></FormRowColumn>
-                <FormRowColumn unit="1">{element.username}</FormRowColumn>
+                <FormRowColumn unit="3"><PersonNameListItem id={element?.personId} complement={"/" + element.username} /></FormRowColumn>
                 <FormRowColumn unit="2">{element.email}</FormRowColumn>
                 <FormRowColumn unit="1">
                     <UserStatusButton
@@ -227,6 +225,7 @@ export default function UserPage(props: UserPageProps) {
 
     useEffect(() => {
         if (isFirst) {
+            handleSetIsLoading(true)
             fetch("api/users/").then((res) => res.json()).then((res) => {
                 setUsers(res.list ?? [])
                 setIsFirst(old => false)
@@ -277,9 +276,9 @@ export default function UserPage(props: UserPageProps) {
                                 user={user}
                                 onSet={setUser}
                                 isLoading={props.isLoading}
-                                onSetIsLoading={handleSetIsLoading}
                                 onAfterSave={handleAfterSave}
                                 onShowMessage={handleShowMessage}
+                                onSetIsLoading={handleSetIsLoading}
                             />
                         )}
                         {isForShow && (
@@ -305,6 +304,8 @@ export default function UserPage(props: UserPageProps) {
                             user={user}
                             onSet={setUser}
                             isLoading={props.isLoading}
+                            onShowMessage={handleShowMessage}
+                            onSetIsLoading={handleSetIsLoading}
                             prevPath={(handlePutModalTitle(true))}
                         />
                     )}

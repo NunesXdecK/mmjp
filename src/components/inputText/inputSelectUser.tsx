@@ -109,7 +109,7 @@ export default function InputSelectUser(props: InputSelectUserProps) {
         if (short) {
             //path = { ...path, path: "S" }
         }
-        if (user.id?.length > 0) {
+        if (user.id > 0) {
             path = { ...path, path: "Usuário-" + user.username, onClick: null }
         }
         try {
@@ -233,6 +233,7 @@ export default function InputSelectUser(props: InputSelectUserProps) {
                         <UserDataForm
                             user={user}
                             onSet={setUser}
+                            isLoading={props.isLoading}
                             title="Informações pessoais"
                             onShowMessage={props.onShowMessage}
                             prevPath={(handlePutModalTitle(true))}

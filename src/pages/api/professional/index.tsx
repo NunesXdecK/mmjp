@@ -1,44 +1,60 @@
-import { ProfessionalConversor } from "../../../db/converters"
-import { addDoc, collection, deleteDoc, doc, updateDoc } from "firebase/firestore"
-import { db, PROFESSIONAL_COLLECTION_NAME, HISTORY_COLLECTION_NAME } from "../../../db/firebaseDB"
+import prisma from "../../../prisma/prisma"
 import { Professional } from "../../../interfaces/objectInterfaces"
-import { handleNewDateToUTC } from "../../../util/dateUtils"
+
+const handleAddProfessional = async (professional: Professional) => {
+    if (!professional) {
+        return 0
+    }
+    let data: any = {
+        title: professional.title,
+        personId: professional.personId,
+        creaNumber: professional.creaNumber,
+        description: professional.description,
+        credentialCode: professional.credentialCode,
+    }
+    let id = professional?.id ?? 0
+    try {
+        if (professional?.id === 0) {
+            id = await prisma.professional.create({
+                data: data,
+            }).then(res => res.id)
+        } else if (professional?.id > 0) {
+            id = await prisma.professional.update({
+                where: { id: professional.id },
+                data: data,
+            }).then(res => res.id)
+        }
+    } catch (error) {
+        console.error(error)
+    }
+    return id
+}
+
+const handleDelete = async (id: number) => {
+    try {
+        await prisma.professional.delete({
+            where: { id: id },
+        })
+        return true
+    } catch (error) {
+        console.error(error)
+        return false
+    }
+}
 
 export default async function handler(req, res) {
     const { method, body } = req
-
-    const historyCollection = collection(db, HISTORY_COLLECTION_NAME)
-    const professionalCollection = collection(db, PROFESSIONAL_COLLECTION_NAME).withConverter(ProfessionalConversor)
-
     switch (method) {
         case "POST":
-            let resPOST = { status: "ERROR", error: {}, id: "", message: "" }
+            let resPOST = { status: "ERROR", error: {}, id: 0, message: "" }
             let { token, data, history } = JSON.parse(body)
             if (token === "tokenbemseguro") {
-                let nowID = data?.id ?? ""
-                const isSave = nowID === ""
                 let professional: Professional = data
-                try {
-                    if (professional.oldData) {
-                        delete professional.oldData
-                    }
-                    if (isSave) {
-                        professional = { ...professional, dateInsertUTC: handleNewDateToUTC() }
-                        const docRef = await addDoc(professionalCollection, ProfessionalConversor.toFirestore(professional))
-                        nowID = docRef.id
-                    } else {
-                        professional = { ...professional, dateLastUpdateUTC: handleNewDateToUTC() }
-                        const docRef = doc(professionalCollection, nowID)
-                        await updateDoc(docRef, ProfessionalConversor.toFirestore(professional))
-                    }
-                    if (history) {
-                        const dataForHistory = { ...ProfessionalConversor.toFirestore(professional), databaseid: nowID, databasename: PROFESSIONAL_COLLECTION_NAME }
-                        await addDoc(historyCollection, dataForHistory)
-                    }
-                    resPOST = { ...resPOST, status: "SUCCESS", id: nowID }
-                } catch (err) {
-                    console.error(err)
-                    resPOST = { ...resPOST, status: "ERROR", error: err }
+                const resAdd = await handleAddProfessional(professional).then(res => res)
+                if (resAdd === 0) {
+                    resPOST = { ...resPOST, status: "ERROR" }
+                } else {
+                    resPOST = { ...resPOST, status: "SUCCESS", id: resAdd }
                 }
             } else {
                 resPOST = { ...resPOST, status: "ERROR", message: "Token invalido!" }
@@ -50,9 +66,12 @@ export default async function handler(req, res) {
             try {
                 const { token, id } = JSON.parse(body)
                 if (token === "tokenbemseguro") {
-                    const docRef = doc(professionalCollection, id)
-                    await deleteDoc(docRef)
-                    resDELETE = { ...resDELETE, status: "SUCCESS" }
+                    const resDelete = await handleDelete(id).then(res => res)
+                    if (resDelete) {
+                        resDELETE = { ...resDELETE, status: "SUCCESS" }
+                    } else {
+                        resDELETE = { ...resDELETE, status: "ERROR" }
+                    }
                 } else {
                     resDELETE = { ...resDELETE, status: "ERROR", message: "Token invalido!" }
                 }

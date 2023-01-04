@@ -225,6 +225,7 @@ export default function ImmobilePage(props: ImmobilePageProps) {
 
     useEffect(() => {
         if (isFirst) {
+            handleSetIsLoading(true)
             fetch("api/immobiles/").then((res) => res.json()).then((res) => {
                 setImmobiles(res.list ?? [])
                 setIsFirst(old => false)
