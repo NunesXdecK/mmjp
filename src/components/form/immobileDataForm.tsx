@@ -2,6 +2,7 @@ import Form from "./form";
 import FormRow from "./formRow";
 import { useState } from "react";
 import AddressForm from "./addressForm";
+import { NavBarPath } from "../bar/navBar";
 import FormRowColumn from "./formRowColumn";
 import InputText from "../inputText/inputText";
 import InputSelect from "../inputText/inputSelect";
@@ -9,7 +10,6 @@ import { Immobile } from "../../interfaces/objectInterfaces";
 import InputImmobilePoints from "../inputText/inputImmobilePoints";
 import SelectPersonCompanyForm from "../select/selectPersonCompanyForm";
 import { CCIR_MARK, NOT_NULL_MARK, NUMBER_MARK } from "../../util/patternValidationUtil";
-import { NavBarPath } from "../bar/navBar";
 
 interface ImmobileDataFormProps {
     title?: string,
@@ -23,6 +23,7 @@ interface ImmobileDataFormProps {
     onBlur?: (any) => void,
     onShowMessage?: (any) => void,
     onSet?: (any, number?) => void,
+    onSetIsLoading?: (boolean) => void,
 }
 
 export default function ImmobileDataForm(props: ImmobileDataFormProps) {
@@ -76,7 +77,6 @@ export default function ImmobileDataForm(props: ImmobileDataFormProps) {
                             validationMessage="O nome do imóvel não pode ficar em branco."
                         />
                     </FormRowColumn>
-
                     <FormRowColumn unit="2">
                         <InputText
                             id="status"
@@ -99,7 +99,6 @@ export default function ImmobileDataForm(props: ImmobileDataFormProps) {
                             validationMessage="A gleba não pode ficar em branco."
                         />
                     </FormRowColumn>
-
                     <FormRowColumn unit="3">
                         <InputText
                             id="immobile-county"
@@ -128,7 +127,6 @@ export default function ImmobileDataForm(props: ImmobileDataFormProps) {
                             validationMessage="A área não pode ficar em branco."
                         />
                     </FormRowColumn>
-
                     <FormRowColumn unit="3">
                         <InputText
                             mask="perimeter"
@@ -144,7 +142,6 @@ export default function ImmobileDataForm(props: ImmobileDataFormProps) {
                         />
                     </FormRowColumn>
                 </FormRow>
-
                 <FormRow>
                     <FormRowColumn unit="3">
                         <InputText
@@ -156,7 +153,6 @@ export default function ImmobileDataForm(props: ImmobileDataFormProps) {
                             value={props.immobile.comarca}
                         />
                     </FormRowColumn>
-
                     <FormRowColumn unit="3">
                         <InputSelect
                             title="Codigo da comarca"
@@ -169,7 +165,6 @@ export default function ImmobileDataForm(props: ImmobileDataFormProps) {
                         />
                     </FormRowColumn>
                 </FormRow>
-
                 <FormRow>
                     <FormRowColumn unit="3">
                         <InputText
@@ -181,7 +176,6 @@ export default function ImmobileDataForm(props: ImmobileDataFormProps) {
                             value={props.immobile.process}
                         />
                     </FormRowColumn>
-
                     <FormRowColumn unit="3">
                         <InputText
                             mask="ccir"
@@ -198,7 +192,6 @@ export default function ImmobileDataForm(props: ImmobileDataFormProps) {
                         />
                     </FormRowColumn>
                 </FormRow>
-
                 <FormRow>
                     <FormRowColumn unit="3">
                         <InputText
@@ -218,11 +211,14 @@ export default function ImmobileDataForm(props: ImmobileDataFormProps) {
                 title="Proprietários"
                 onSet={handleSetOwners}
                 prevPath={props.prevPath}
+                isLoading={props.isLoading}
                 value={props.immobile.owners}
                 isDisabled={props.isDisabled}
-                excludeList={props.immobile.owners}
                 subtitle="Selecione o proprietário"
+                onShowMessage={props.onShowMessage}
+                excludeList={props.immobile.owners}
                 isDisabledExclude={props.isDisabled}
+                onSetIsLoading={props.onSetIsLoading}
                 placeholder="Pesquise o proprietário..."
             />
             <InputImmobilePoints

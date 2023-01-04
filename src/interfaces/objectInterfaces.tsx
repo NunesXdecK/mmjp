@@ -1,11 +1,11 @@
-export type ImmobileStatus = "NORMAL" | "DESMEMBRADO" | "UNIFICADO"
-export type BudgetStatus = "ORÇAMENTO" | "VENCIDO" | "NEGOCIANDO" | "REJEITADO" | "APROVADO"
-export type ProjectStatus = "PARADO" | "EM ANDAMENTO" | "PENDENTE" | "FINALIZADO" | "ARQUIVADO"
-export type ServiceStatus = "PARADO" | "EM ANDAMENTO" | "PENDENTE" | "FINALIZADO"
-export type ServiceStageStatus = "PARADO" | "EM ANDAMENTO" | "PENDENTE" | "FINALIZADO"
-export type PaymentStatus = "EM ABERTO" | "ATRASADO" | "PAGO"
-export type UserOffice = "visitante" | "secretaria" | "projetista" | "gerente" | "administrador"
-export type TelephoneType = "comercial" | "pessoal" | "whatsapp" | "outro"
+export type ImmobileStatus = "NORMAL" | "DESMEMBRADO" | "UNIFICADO" | string
+export type BudgetStatus = "ORÇAMENTO" | "VENCIDO" | "NEGOCIANDO" | "REJEITADO" | "APROVADO" | string
+export type ProjectStatus = "PARADO" | "EM ANDAMENTO" | "PENDENTE" | "FINALIZADO" | "ARQUIVADO" | string
+export type ServiceStatus = "PARADO" | "EM ANDAMENTO" | "PENDENTE" | "FINALIZADO" | string
+export type ServiceStageStatus = "PARADO" | "EM ANDAMENTO" | "PENDENTE" | "FINALIZADO" | string
+export type PaymentStatus = "EM ABERTO" | "ATRASADO" | "PAGO" | string
+export type UserOffice = "visitante" | "secretaria" | "projetista" | "gerente" | "administrador" | string
+export type TelephoneType = "comercial" | "pessoal" | "whatsapp" | "outro" | string
 
 export interface Telephone {
     id?: number,
@@ -66,7 +66,7 @@ export interface User {
     password?: string,
     description?: string,
     passwordConfirm?: string,
-    office?: UserOffice | string,
+    office?: UserOffice,
     personId?: number,
     dateInsertUTC?: number,
     dateLastUpdateUTC?: number,
@@ -99,7 +99,7 @@ export interface Professional {
 }
 
 export interface ImmobilePoint {
-    id?: string,
+    id?: number,
     description?: string,
     latitude?: string,
     longitude?: string,
@@ -109,7 +109,6 @@ export interface ImmobilePoint {
 }
 
 export interface Immobile {
-    id?: string,
     name?: string,
     land?: string,
     area?: string,
@@ -118,8 +117,10 @@ export interface Immobile {
     comarca?: string,
     perimeter?: string,
     ccirNumber?: string,
+    description?: string,
     comarcaCode?: string,
     registration?: string,
+    id?: number,
     dateInsertUTC?: number,
     dateLastUpdateUTC?: number,
     status?: ImmobileStatus,
@@ -235,7 +236,7 @@ export interface ServicePayment {
     value?: string,
     dateString?: string,
     description?: string,
-    status?: "ORÇAMENTO" | "NORMAL" | "ARQUIVADO" | "FINALIZADO" | "PENDENTE",
+    status?: "ORÇAMENTO" | "NORMAL" | "ARQUIVADO" | "FINALIZADO" | "PENDENTE" | string,
     index?: number,
     dateDue?: number,
     priority?: number,
@@ -346,7 +347,6 @@ export const defaultProfessional: Professional = {
 }
 
 export const defaultImmobile: Immobile = {
-    id: "",
     name: "",
     land: "",
     area: "",
@@ -355,9 +355,11 @@ export const defaultImmobile: Immobile = {
     comarca: "",
     perimeter: "",
     ccirNumber: "",
+    description: "",
     comarcaCode: "",
     registration: "",
     status: "NORMAL",
+    id: 0,
     dateInsertUTC: 0,
     dateLastUpdateUTC: 0,
     oldData: {},
@@ -367,7 +369,7 @@ export const defaultImmobile: Immobile = {
 }
 
 export const defaultImmobilePoint: ImmobilePoint = {
-    id: "",
+    id: 0,
     latitude: "",
     longitude: "",
     description: "",

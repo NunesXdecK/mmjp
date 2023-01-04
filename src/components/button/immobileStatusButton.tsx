@@ -5,11 +5,12 @@ import { Immobile } from "../../interfaces/objectInterfaces"
 interface ImmobileStatusButtonProps {
     id?: string,
     value?: string,
-    children?: any,
+    elementId?: number,
     isHidden?: boolean,
     isLoading?: boolean,
     isNotFloat?: boolean,
     isDisabled?: boolean,
+    children?: any,
     immobile?: Immobile,
     onClick?: (string) => void,
     onAfter?: (feedbackMessage, immobile, isForCloseModal) => void,

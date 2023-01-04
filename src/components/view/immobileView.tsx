@@ -1,27 +1,24 @@
 import InfoView from "./infoView"
-import Button from "../button/button"
 import PersonView from "./personView"
 import AddressView from "./addressView"
 import CompanyView from "./companyView"
 import { useEffect, useState } from "react"
 import InfoHolderView from "./infoHolderView"
+import SwitchTextButton from "../button/switchTextButton"
 import PlaceholderItemList from "../list/placeholderItemList"
 import { handleMountNumberCurrency } from "../../util/maskUtil"
-import ScrollDownTransition from "../animation/scrollDownTransition"
-import { ChevronDownIcon, ChevronRightIcon } from "@heroicons/react/outline"
-import { defaultImmobile, Immobile } from "../../interfaces/objectInterfaces"
-import { handleUTCToDateShow } from "../../util/dateUtils"
-import SwitchTextButton from "../button/switchTextButton"
 import ImmobileStatusButton from "../button/immobileStatusButton"
+import ScrollDownTransition from "../animation/scrollDownTransition"
+import { defaultImmobile, Immobile } from "../../interfaces/objectInterfaces"
 
 interface ImmobileViewProps {
     id?: string,
     title?: string,
-    elementId?: string,
     addressTitle?: string,
     classNameTitle?: string,
     classNameHolder?: string,
     classNameContentHolder?: string,
+    elementId?: number,
     hideData?: boolean,
     dataInside?: boolean,
     hideBorder?: boolean,
@@ -87,7 +84,7 @@ export default function ImmobileView(props: ImmobileViewProps) {
 
     useEffect(() => {
         if (isFirst) {
-            if (props.elementId && props.elementId.length !== 0 && immobile.id?.length === 0) {
+            if (props.elementId && props?.elementId !== 0 && immobile?.id === 0) {
                 fetch("api/immobile/" + props.elementId).then((res) => res.json()).then((res) => {
                     setIsFirst(old => false)
                     setImmobile(res.data)
@@ -98,7 +95,7 @@ export default function ImmobileView(props: ImmobileViewProps) {
 
     return (
         <>
-            {immobile.id?.length === 0 ? (
+            {immobile?.id === 0 ? (
                 <div className="mt-6">
                     <PlaceholderItemList />
                 </div>

@@ -305,7 +305,9 @@ export default function InputSelectPersonCompany(props: InputSelectPersonCompany
                                 <CompanyDataForm
                                     company={element}
                                     onSet={setElement}
+                                    isLoading={props.isLoading}
                                     title="Informações empresariais"
+                                    onSetIsLoading={props.onSetLoading}
                                     onShowMessage={props.onShowMessage}
                                     prevPath={(handlePutModalTitle(true))}
                                     subtitle="Dados importantes sobre a empresa" />

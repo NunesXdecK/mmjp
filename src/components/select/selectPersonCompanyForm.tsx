@@ -3,12 +3,12 @@ import { useState } from "react"
 import Button from "../button/button"
 import FormRow from "../form/formRow"
 import ListTable from "../list/listTable"
+import { NavBarPath } from "../bar/navBar"
 import WindowModal from "../modal/windowModal"
 import FormRowColumn from "../form/formRowColumn"
 import { TrashIcon } from "@heroicons/react/solid"
 import InputSelectPersonCompany from "../inputText/inputSelectPersonCompany"
 import { Company, defaultPerson, Person } from "../../interfaces/objectInterfaces"
-import { NavBarPath } from "../bar/navBar"
 
 interface SelectPersonCompanyFormProps {
     id?: string,
@@ -28,6 +28,7 @@ interface SelectPersonCompanyFormProps {
     excludeList?: (Person | Company)[],
     onSet?: (any?) => void,
     onBlur?: (any?) => void,
+    onSetIsLoading?: (boolean) => void,
     onShowMessage?: (FeedbackMessage) => void,
 }
 
@@ -131,6 +132,8 @@ export default function SelectPersonCompanyForm(props: SelectPersonCompanyFormPr
                             onFilter={handleFilterList}
                             isDisabled={props.isDisabled}
                             placeholder={props.placeholder}
+                            onShowMessage={props.onShowMessage}
+                            onSetLoading={props.onSetIsLoading}
                             id={"select-person" + (props.id ? "-" + props.id : "")}
                         />
                     </FormRowColumn>

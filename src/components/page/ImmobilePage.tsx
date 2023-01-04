@@ -163,7 +163,7 @@ export default function ImmobilePage(props: ImmobilePageProps) {
         if (short) {
             //path = { ...path, path: "S" }
         }
-        if (immobile.id?.length > 0) {
+        if (immobile.id > 0) {
             path = { ...path, path: "Imóvel-" + immobile.name, onClick: null }
         }
         try {
@@ -207,7 +207,7 @@ export default function ImmobilePage(props: ImmobilePageProps) {
                 <FormRowColumn unit="2">{element.name}</FormRowColumn>
                 <FormRowColumn unit="1">
                     <ImmobileStatusButton
-                        id={element.id}
+                        id={element.id + ""}
                         immobile={element}
                         value={element.status}
                         onAfter={handleAfterSave}
@@ -276,9 +276,9 @@ export default function ImmobilePage(props: ImmobilePageProps) {
                                 immobile={immobile}
                                 onSet={setImmobile}
                                 isLoading={props.isLoading}
-                                onSetIsLoading={handleSetIsLoading}
                                 onAfterSave={handleAfterSave}
                                 onShowMessage={handleShowMessage}
+                                onSetIsLoading={handleSetIsLoading}
                             />
                         )}
                         {isForShow && (
@@ -304,6 +304,8 @@ export default function ImmobilePage(props: ImmobilePageProps) {
                             onSet={setImmobile}
                             immobile={immobile}
                             isLoading={props.isLoading}
+                            onShowMessage={handleShowMessage}
+                            onSetIsLoading={handleSetIsLoading}
                             prevPath={(handlePutModalTitle(true))}
                         />
                     )}

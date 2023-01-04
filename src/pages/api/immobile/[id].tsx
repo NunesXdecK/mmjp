@@ -1,64 +1,21 @@
-import { Company, Immobile, Person } from "../../../interfaces/objectInterfaces"
-import { collection, doc, getDoc } from "firebase/firestore"
-import { CompanyConversor, ImmobileConversor, PersonConversor } from "../../../db/converters"
-import { db, COMPANY_COLLECTION_NAME, PERSON_COLLECTION_NAME, IMMOBILE_COLLECTION_NAME } from "../../../db/firebaseDB"
+import prisma from "../../../prisma/prisma"
+import { Immobile, defaultImmobile } from "../../../interfaces/objectInterfaces"
 
 export default async function handler(req, res) {
     const { query, method } = req
-
-    const personCollection = collection(db, PERSON_COLLECTION_NAME).withConverter(PersonConversor)
-    const companyCollection = collection(db, COMPANY_COLLECTION_NAME).withConverter(CompanyConversor)
-    const immobileCollection = collection(db, IMMOBILE_COLLECTION_NAME).withConverter(ImmobileConversor)
-
     switch (method) {
         case "GET":
             let resGET = { status: "ERROR", error: {}, message: "", data: {} }
+            const { id } = query
             try {
-                const { id } = query
-                let ownersArray = []
-                if (id) {
-                    const docRef = doc(immobileCollection, id)
-                    let data: Immobile = (await getDoc(docRef)).data()
-                    await Promise.all(data.owners.map(async (element, index) => {
-                        if (element && element.id && "cpf" in element) {
-                            const docRef = doc(personCollection, element.id)
-                            if (docRef) {
-                                const data: Person = (await getDoc(docRef)).data()
-                                if (data) {
-                                    ownersArray = [...ownersArray, data]
-                                }
-                            }
-                        } else if (element && element.id && "cnpj" in element) {
-                            const docRef = doc(companyCollection, element.id)
-                            if (docRef) {
-                                const data: Company = (await getDoc(docRef)).data()
-                                if (data) {
-                                    ownersArray = [...ownersArray, data]
-                                }
-                            }
+                if (id && parseInt(id)) {
+                    let immobile: Immobile = defaultImmobile
+                    immobile = await prisma.immobile.findFirst({
+                        where: {
+                            id: parseInt(id)
                         }
-                        /*
-                        if (element.path.includes(PERSON_COLLECTION_NAME)) {
-                            const docRef = doc(personCollection, element.id)
-                            if (docRef) {
-                                const data: Person = (await getDoc(docRef)).data()
-                                if (data) {
-                                    ownersArray = [...ownersArray, data]
-                                }
-                            }
-                        } else if (element.path.includes(COMPANY_COLLECTION_NAME)) {
-                            const docRef = doc(companyCollection, element.id)
-                            if (docRef) {
-                                const data: Company = (await getDoc(docRef)).data()
-                                if (data) {
-                                    ownersArray = [...ownersArray, data]
-                                }
-                            }
-                        }
-                        */
-                    }))
-                    data = { ...data, owners: ownersArray }
-                    resGET = { ...resGET, status: "SUCCESS", data: data }
+                    })
+                    resGET = { ...resGET, status: "SUCCESS", data: { ...immobile } }
                 } else {
                     resGET = { ...resGET, status: "ERROR", message: "ID invalido!" }
                 }

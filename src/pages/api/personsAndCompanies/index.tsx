@@ -1,47 +1,35 @@
-import { collection, getDoc, getDocs, query, where } from "firebase/firestore"
-import { Company, Person } from "../../../interfaces/objectInterfaces"
-import { CompanyConversor, PersonConversor } from "../../../db/converters"
-import { COMPANY_COLLECTION_NAME, db, PERSON_COLLECTION_NAME } from "../../../db/firebaseDB"
+import prisma from "../../../prisma/prisma"
+
+const main = async () => {
+    try {
+        const persons = await prisma.person.findMany({
+            where: {
+                clientCode: {
+                    gt: 2,
+                },
+            },
+        })
+        const companies = await prisma.company.findMany({
+            where: {
+                clientCode: {
+                    gt: 2,
+                },
+            },
+        })
+        return [...persons, ...companies]
+    } catch (error) {
+        console.error(error)
+        return []
+    }
+}
 
 export default async function handler(req, res) {
     const { method } = req
-
     switch (method) {
-        case 'GET':
+        case "GET":
             let resGET = { status: "ERROR", error: {}, message: "", list: [] }
-            const personCollection = collection(db, PERSON_COLLECTION_NAME).withConverter(PersonConversor)
-            const companyCollection = collection(db, COMPANY_COLLECTION_NAME).withConverter(CompanyConversor)
-            let list = []
-            let listCompanies = []
-            try {
-                const qPerson = await query(personCollection, where("clientCode", "!=", ""))
-                const querySnapshot = await getDocs(qPerson)
-                const qCompany = await query(companyCollection, where("clientCode", "!=", ""))
-                const querySnapshotCompany = await getDocs(qCompany)
-                querySnapshot.forEach((doc) => {
-                    list = [...list, doc.data()]
-                })
-                querySnapshotCompany.forEach(async (doc) => {
-                    list = [...list, doc.data()]
-                })
-                list = list.sort((elementOne: Person, elementTwo: Person) => {
-                    let dateOne = elementOne.dateInsertUTC
-                    let dateTwo = elementTwo.dateInsertUTC
-                    if (elementOne.dateLastUpdateUTC > 0 && elementOne.dateLastUpdateUTC > dateOne) {
-                        dateOne = elementOne.dateLastUpdateUTC
-                    }
-                    if (elementTwo.dateLastUpdateUTC > 0 && elementTwo.dateLastUpdateUTC > dateTwo) {
-                        dateTwo = elementTwo.dateLastUpdateUTC
-                    }
-                    return dateTwo - dateOne
-                })
-
-                resGET = { ...resGET, status: "SUCCESS", list: list }
-            } catch (err) {
-                console.error(err)
-                resGET = { ...resGET, status: "ERROR", error: err }
-            }
-            res.status(200).json(resGET)
+            const result = await main().then(res => res)
+            res.status(200).json({ ...resGET, list: result })
             break
         default:
             res.setHeader("Allow", ["GET"])
