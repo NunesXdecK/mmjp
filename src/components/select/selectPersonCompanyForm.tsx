@@ -18,6 +18,7 @@ interface SelectPersonCompanyFormProps {
     inputTitle?: string,
     placeholder?: string,
     formClassName?: string,
+    immobileId?: number,
     isFull?: boolean,
     isLoading?: boolean,
     isDisabled?: boolean,
@@ -43,7 +44,16 @@ export default function SelectPersonCompanyForm(props: SelectPersonCompanyFormPr
         }
     }
 
-    const handleRemovePerson = () => {
+    const handleRemove = () => {
+        fetch("api/immobileOwner", {
+            method: "DELETE",
+            body: JSON.stringify({
+                token: "tokenbemseguro",
+                immobileId: props?.immobileId ?? 0,
+                personId: "cpf" in element ? element?.id : 0,
+                companyId: "cnpj" in element ? element?.id : 0,
+            }),
+        })
         if (props.isSingle) {
             handleOnSet([])
         } else {
@@ -59,6 +69,18 @@ export default function SelectPersonCompanyForm(props: SelectPersonCompanyFormPr
 
     const handleAdd = (value: (Person | Company)) => {
         if (!props.excludeList?.includes(value)) {
+            if (props.immobileId && props.immobileId > 0) {
+                fetch("api/immobileOwner", {
+                    method: "POST",
+                    body: JSON.stringify({
+                        token: "tokenbemseguro",
+                        data: {
+                            ...value,
+                            immobileId: props?.immobileId,
+                        },
+                    }),
+                })
+            }
             handleOnSet([...props.value, value])
         }
     }
@@ -169,7 +191,7 @@ export default function SelectPersonCompanyForm(props: SelectPersonCompanyFormPr
                         type="submit"
                         onClick={(event) => {
                             event.preventDefault()
-                            handleRemovePerson()
+                            handleRemove()
                             setIsOpenDelete(false)
                         }}
                     >

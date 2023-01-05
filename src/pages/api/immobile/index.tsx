@@ -73,12 +73,12 @@ const handleAddImmobile = async (immobile: Immobile) => {
                     if ("cpf" in element) {
                         dataImmobileOwner = {
                             ...dataImmobileOwner,
-                            personId: id,
+                            personId: element.id,
                         }
                     } else if ("cnpj" in element) {
                         dataImmobileOwner = {
                             ...dataImmobileOwner,
-                            companyId: id,
+                            companyId: element.id,
                         }
                     }
                     try {
@@ -122,13 +122,13 @@ export default async function handler(req, res) {
             if (token === "tokenbemseguro") {
                 let immobile: Immobile = data
                 console.log(immobile)
-                /*
                 const resAdd = await handleAddImmobile(immobile).then(res => res)
                 if (resAdd === 0) {
                     resPOST = { ...resPOST, status: "ERROR" }
                 } else {
                     resPOST = { ...resPOST, status: "SUCCESS", id: resAdd }
                 }
+                /*
                 */
             } else {
                 resPOST = { ...resPOST, status: "ERROR", message: "Token invalido!" }

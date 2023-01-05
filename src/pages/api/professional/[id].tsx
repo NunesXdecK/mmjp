@@ -1,5 +1,4 @@
 import prisma from "../../../prisma/prisma"
-import { handleGetPerson } from "../person/[id]"
 import { Professional, defaultProfessional } from "../../../interfaces/objectInterfaces"
 
 export default async function handler(req, res) {
@@ -14,10 +13,12 @@ export default async function handler(req, res) {
                     professional = await prisma.professional.findFirst({
                         where: {
                             id: parseInt(id)
+                        },
+                        include: {
+                            person: true,
                         }
                     })
-                    const person = await handleGetPerson(professional.personId)
-                    resGET = { ...resGET, status: "SUCCESS", data: { ...professional, person: person } }
+                    resGET = { ...resGET, status: "SUCCESS", data: { ...professional } }
                 } else {
                     resGET = { ...resGET, status: "ERROR", message: "ID invalido!" }
                 }

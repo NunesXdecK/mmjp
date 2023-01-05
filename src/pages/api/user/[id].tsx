@@ -14,10 +14,12 @@ export default async function handler(req, res) {
                     user = await prisma.user.findFirst({
                         where: {
                             id: parseInt(id)
+                        },
+                        include: {
+                            person: true,
                         }
                     })
-                    const person = await handleGetPerson(user.personId)
-                    resGET = { ...resGET, status: "SUCCESS", data: { ...user, person: person } }
+                    resGET = { ...resGET, status: "SUCCESS", data: { ...user } }
                 } else {
                     resGET = { ...resGET, status: "ERROR", message: "ID invalido!" }
                 }

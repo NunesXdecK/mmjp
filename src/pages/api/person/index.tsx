@@ -78,7 +78,6 @@ const handleAddPerson = async (person: Person) => {
                                 value: element.value,
                             }
                         })
-                        console.log(telephone?.id, element?.id)
                         let telephoneId = telephone?.id ?? element?.id
                         if (telephoneId === 0) {
                             telephoneId = await prisma.telephone.create({

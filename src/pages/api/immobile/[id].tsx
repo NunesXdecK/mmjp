@@ -13,9 +13,41 @@ export default async function handler(req, res) {
                     immobile = await prisma.immobile.findFirst({
                         where: {
                             id: parseInt(id)
+                        },
+                        include: {
+                            immobileOwner: {
+                                include: {
+                                    person: true,
+                                    company: true,
+                                },
+                            },
+                            ImmobilePoint: {
+                                include: {
+                                    point: true,
+                                }
+                            },
                         }
                     })
-                    resGET = { ...resGET, status: "SUCCESS", data: { ...immobile } }
+                    let owners = []
+                    immobile?.immobileOwner?.map((element, index) => {
+                        if (element?.id > 0) {
+                            owners = [...owners, element?.person ?? element?.company]
+                        }
+                    })
+                    let points = []
+                    immobile?.immobilePoint?.map((element, index) => {
+                        if (element?.id > 0) {
+                            points = [...points, element?.point]
+                        }
+                    })
+                    console.log(immobile)
+                    resGET = {
+                        ...resGET, status: "SUCCESS", data: {
+                            ...immobile,
+                            owners: owners,
+                            points: points,
+                        }
+                    }
                 } else {
                     resGET = { ...resGET, status: "ERROR", message: "ID invalido!" }
                 }

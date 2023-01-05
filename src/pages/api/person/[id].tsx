@@ -6,22 +6,16 @@ export const handleGetPerson = async (id: number) => {
         const person = await prisma.person.findFirst({
             where: {
                 id: id,
-            }
-        })
-        const addressData = await prisma.address.findFirst({
-            where: {
-                personId: id,
-            }
-        })
-        const telephoneData = await prisma.telephone.findMany({
-            where: {
-                personId: id,
+            },
+            include: {
+                address: true,
+                telephone: true,
             }
         })
         return {
             ...person,
-            telephones: telephoneData,
-            address: { ...addressData, cep: handleMaskCEP(addressData?.cep) },
+            telephones: person?.telephone,
+            address: { ...person?.address[0], cep: handleMaskCEP(person?.address[0]?.cep) },
         }
     } catch (err) {
         console.error(err)

@@ -45,19 +45,20 @@ export default function TelephoneForm(props: TelephoneFormProps) {
     const handleAddText = (event) => {
         event.preventDefault()
         if (isFormValid && telephone.value.trim() !== "") {
-            /*
             if ((props.personId && props.personId > 0) || (props.companyId && props.companyId > 0)) {
                 fetch("api/telephone", {
                     method: "POST",
                     body: JSON.stringify({
                         token: "tokenbemseguro",
-                        data: telephone,
+                        data: {
+                            ...telephone,
+                            value: handleRemoveTelephoneMask(telephone?.value),
+                        },
                         personId: props.personId,
                         companyId: props.companyId,
                     }),
                 })
             }
-            */
             handleAddTextInner()
         }
     }
@@ -78,12 +79,16 @@ export default function TelephoneForm(props: TelephoneFormProps) {
     }
     const handleRemoveText = async (event, telephone) => {
         event.preventDefault()
-        if (telephone.id > 0) {
-            fetch("api/telephone", {
-                method: "DELETE",
-                body: JSON.stringify({ token: "tokenbemseguro", id: telephone.id }),
-            })
-        }
+        fetch("api/telephone", {
+            method: "DELETE",
+            body: JSON.stringify({
+                type: telephone.type,
+                token: "tokenbemseguro",
+                personId: props?.personId ?? 0,
+                companyId: props?.companyId ?? 0,
+                value: handleRemoveTelephoneMask(telephone?.value),
+            }),
+        })
         let localTexts = [...props.texts]
         if (localTexts?.length > -1) {
             const index = localTexts.indexOf(telephone)

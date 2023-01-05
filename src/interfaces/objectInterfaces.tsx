@@ -128,6 +128,8 @@ export interface Immobile {
     oldData?: any,
     owners?: any[],
     points?: any[],
+    immobileOwner?: any[],
+    immobilePoint?: any[],
 }
 
 export interface Budget {
@@ -366,6 +368,8 @@ export const defaultImmobile: Immobile = {
     address: defaultAddress,
     owners: [],
     points: [],
+    immobileOwner: [],
+    immobilePoint: [],
 }
 
 export const defaultImmobilePoint: ImmobilePoint = {

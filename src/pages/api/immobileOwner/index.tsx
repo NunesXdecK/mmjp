@@ -1,20 +1,15 @@
 import prisma from "../../../prisma/prisma"
-import { Telephone } from "../../../interfaces/objectInterfaces"
 
-const handleAddTelephone = async (telephone: Telephone, personId: number, companyId: number) => {
-    if (!telephone) {
+const handleAddImmobileOwner = async (immobileOwner, immobileId: number) => {
+    if (!immobileOwner) {
         return 0
     }
     let data: any = {
-        personId: personId,
-        type: telephone.type,
-        companyId: companyId,
-        value: telephone.value,
     }
-    let id = telephone?.id ?? 0
+    let id = immobileOwner?.id ?? 0
     try {
         if (id === 0) {
-            id = await prisma.telephone.create({
+            id = await prisma.immobileOwner.create({
                 data: data,
             }).then(res => res.id)
         }
@@ -24,14 +19,14 @@ const handleAddTelephone = async (telephone: Telephone, personId: number, compan
     return id
 }
 
-const handleDelete = async (type: string, value: string, personId: number, companyId: number) => {
+const handleDelete = async (immobileId: number, personId: number, companyId: number) => {
+    console.log(immobileId, personId, companyId)
     try {
-        const res = await prisma.telephone.deleteMany({
+        await prisma.immobileOwner.deleteMany({
             where: {
-                type: type,
-                value: value,
                 personId: personId === 0 ? null : personId,
                 companyId: companyId === 0 ? null : companyId,
+                immobileId: immobileId === 0 ? null : immobileId,
             },
         })
         return true
@@ -43,13 +38,12 @@ const handleDelete = async (type: string, value: string, personId: number, compa
 
 export default async function handler(req, res) {
     const { method, body } = req
-    const { token, id, data, personId, companyId, type, value } = JSON.parse(body)
+    const { token, id, data, immobileId, personId, companyId } = JSON.parse(body)
     let resFinal = { status: "ERROR", error: {}, id: 0, message: "" }
     switch (method) {
         case "POST":
             if (token === "tokenbemseguro") {
-                console.log(type, value, personId, companyId)
-                const resDelete = await handleAddTelephone(data, personId, companyId).then(res => res)
+                const resDelete = await handleAddImmobileOwner(data, immobileId).then(res => res)
                 if (resDelete) {
                     resFinal = { ...resFinal, status: "SUCCESS" }
                 } else {
@@ -62,7 +56,7 @@ export default async function handler(req, res) {
             break
         case "DELETE":
             if (token === "tokenbemseguro") {
-                const resDelete = await handleDelete(type, value, personId, companyId).then(res => res)
+                const resDelete = await handleDelete(immobileId, personId, companyId).then(res => res)
                 if (resDelete) {
                     resFinal = { ...resFinal, status: "SUCCESS" }
                 } else {

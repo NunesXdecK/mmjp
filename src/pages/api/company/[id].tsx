@@ -1,38 +1,24 @@
 import prisma from "../../../prisma/prisma"
 import { handleMaskCEP, handleMaskCNPJ } from "../../../util/maskUtil"
-import { defaultPerson } from "../../../interfaces/objectInterfaces"
 
 export const handleGetCompany = async (id: number) => {
     try {
         const company = await prisma.company.findFirst({
             where: {
                 id: id,
+            },
+            include: {
+                person: true,
+                address: true,
+                telephone: true,
             }
         })
-        const addressData = await prisma.address.findFirst({
-            where: {
-                companyId: id,
-            }
-        })
-        const telephoneData = await prisma.telephone.findMany({
-            where: {
-                companyId: id,
-            }
-        })
-        let person = defaultPerson
-        if (company?.personId > 0) {
-            person = await prisma.person.findFirst({
-                where: {
-                    id: company.personId,
-                }
-            })
-        }
         return {
             ...company,
-            owners: [person],
-            telephones: telephoneData,
+            owners: [company?.person],
+            telephones: company?.telephone,
             cnpj: handleMaskCNPJ(company?.cnpj),
-            address: { ...addressData, cep: handleMaskCEP(addressData?.cep) },
+            address: { ...company?.address[0], cep: handleMaskCEP(company?.address[0]?.cep) },
         }
     } catch (err) {
         console.error(err)
