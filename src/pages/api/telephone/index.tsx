@@ -48,7 +48,6 @@ export default async function handler(req, res) {
     switch (method) {
         case "POST":
             if (token === "tokenbemseguro") {
-                console.log(type, value, personId, companyId)
                 const resDelete = await handleAddTelephone(data, personId, companyId).then(res => res)
                 if (resDelete) {
                     resFinal = { ...resFinal, status: "SUCCESS" }

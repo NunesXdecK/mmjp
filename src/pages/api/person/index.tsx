@@ -17,79 +17,61 @@ const handleAddPerson = async (person: Person) => {
         nationality: person.nationality,
         maritalStatus: person.maritalStatus,
     }
+    let dataAddress: any = [{
+        cep: person?.address?.cep,
+        number: person?.address?.number,
+        county: person?.address?.county,
+        district: person?.address?.district,
+        complement: person?.address?.complement,
+        publicPlace: person?.address?.publicPlace,
+    }]
+    let dataTelephone = []
+    person?.telephones?.map(async (element: Telephone, index) => {
+        dataTelephone = [
+            ...dataTelephone,
+            {
+                companyId: null,
+                type: element.type,
+                value: element.value,
+            }]
+    })
     let id = person?.id ?? 0
     try {
-        if (person?.id === 0) {
+        if (id === 0) {
+            data = {
+                ...data,
+                address: { create: [...dataAddress] },
+                telephone: { create: [...dataTelephone] },
+            }
             id = await prisma.person.create({
-                data: data,
+                data: {
+                    ...data,
+                },
+                include: {
+                    address: true,
+                    telephone: true,
+                },
             }).then(res => res.id)
-        } else if (person?.id > 0) {
+        } else if (id > 0) {
+            data = {
+                ...data,
+                address: {
+                    updateMany: {
+                        data: dataAddress[0],
+                        where: { personId: id },
+                    }
+                },
+            }
             id = await prisma.person.update({
-                where: { id: person.id },
+                where: { id: id },
                 data: data,
+                include: {
+                    address: true,
+                },
             }).then(res => res.id)
         }
     } catch (error) {
         console.error(error)
-    }
-    if (id > 0) {
-        let dataAddress: any = {
-            personId: id,
-            cep: person?.address?.cep,
-            number: person?.address?.number,
-            county: person?.address?.county,
-            district: person?.address?.district,
-            complement: person?.address?.complement,
-            publicPlace: person?.address?.publicPlace,
-        }
-        try {
-            const address = await prisma.address.findFirst({
-                where: {
-                    personId: id,
-                }
-            })
-            let addressId = address?.id ?? person?.address?.id ?? 0
-            if (addressId === 0) {
-                addressId = await prisma.address.create({
-                    data: dataAddress,
-                }).then(res => res.id)
-            } else if (addressId > 0) {
-                addressId = await prisma.address.update({
-                    where: { id: addressId },
-                    data: dataAddress,
-                }).then(res => res.id)
-            }
-        } catch (error) {
-            console.error(error)
-        }
-        if (person?.telephones?.length > 0) {
-            await Promise.all(
-                person?.telephones?.map(async (element: Telephone, index) => {
-                    let dataTelephone: any = {
-                        personId: id,
-                        type: element.type,
-                        value: element.value,
-                    }
-                    try {
-                        const telephone = await prisma.telephone.findFirst({
-                            where: {
-                                personId: id,
-                                type: element.type,
-                                value: element.value,
-                            }
-                        })
-                        let telephoneId = telephone?.id ?? element?.id
-                        if (telephoneId === 0) {
-                            telephoneId = await prisma.telephone.create({
-                                data: dataTelephone,
-                            }).then(res => res.id)
-                        }
-                    } catch (error) {
-                        console.error(error)
-                    }
-                })
-            )
-        }
     }
     return id
 }

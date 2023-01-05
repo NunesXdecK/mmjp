@@ -214,6 +214,7 @@ export default function ImmobileDataForm(props: ImmobileDataFormProps) {
                 isLoading={props.isLoading}
                 value={props.immobile.owners}
                 isDisabled={props.isDisabled}
+                immobileId={props.immobile?.id}
                 subtitle="Selecione o proprietário"
                 onShowMessage={props.onShowMessage}
                 excludeList={props.immobile.owners}

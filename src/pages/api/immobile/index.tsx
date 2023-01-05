@@ -68,18 +68,9 @@ const handleAddImmobile = async (immobile: Immobile) => {
             await Promise.all(
                 immobile?.owners?.map(async (element: (Person | Company), index) => {
                     let dataImmobileOwner: any = {
+                        personId: "cpf" in element ? element.id : null,
+                        companyId: "cnpj" in element ? element.id : null,
                         immobileId: id,
-                    }
-                    if ("cpf" in element) {
-                        dataImmobileOwner = {
-                            ...dataImmobileOwner,
-                            personId: element.id,
-                        }
-                    } else if ("cnpj" in element) {
-                        dataImmobileOwner = {
-                            ...dataImmobileOwner,
-                            companyId: element.id,
-                        }
                     }
                     try {
                         const immobileOwner = await prisma.immobileOwner.findFirst({
@@ -121,7 +112,6 @@ export default async function handler(req, res) {
             let { token, data, history } = JSON.parse(body)
             if (token === "tokenbemseguro") {
                 let immobile: Immobile = data
-                console.log(immobile)
                 const resAdd = await handleAddImmobile(immobile).then(res => res)
                 if (resAdd === 0) {
                     resPOST = { ...resPOST, status: "ERROR" }

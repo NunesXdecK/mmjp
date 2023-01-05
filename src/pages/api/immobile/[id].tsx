@@ -40,7 +40,6 @@ export default async function handler(req, res) {
                             points = [...points, element?.point]
                         }
                     })
-                    console.log(immobile)
                     resGET = {
                         ...resGET, status: "SUCCESS", data: {
                             ...immobile,

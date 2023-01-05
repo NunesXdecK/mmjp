@@ -45,7 +45,6 @@ export const handleImmobileValidationForDB = (immobile: Immobile) => {
 export const handleImmobileForDB = (immobile: Immobile) => {
     let owners = []
     if (immobile?.owners?.length > 0) {
-        console.log(immobile.owners)
         immobile.owners?.map((element: (Person | Company), index) => {
             if (element?.id > 0) {
                 if ("cpf" in element) {

@@ -1,18 +1,21 @@
 import prisma from "../../../prisma/prisma"
 
-const handleAddImmobileOwner = async (immobileOwner, immobileId: number) => {
-    if (!immobileOwner) {
+const handleAddImmobileOwner = async (immobileOwner) => {
+    if (
+        (!immobileOwner.id && immobileOwner.id === null)
+        || (!immobileOwner.immobileId && immobileOwner.immobileId === null)) {
         return 0
     }
     let data: any = {
+        immobileId: immobileOwner.immobileId,
+        personId: "cpf" in immobileOwner ? immobileOwner?.id : null,
+        companyId: "cnpj" in immobileOwner ? immobileOwner?.id : null,
     }
     let id = immobileOwner?.id ?? 0
     try {
-        if (id === 0) {
-            id = await prisma.immobileOwner.create({
-                data: data,
-            }).then(res => res.id)
-        }
+        id = await prisma.immobileOwner.create({
+            data: data,
+        }).then(res => res.id)
     } catch (error) {
         console.error(error)
     }
@@ -20,7 +23,9 @@ const handleAddImmobileOwner = async (immobileOwner, immobileId: number) => {
 }
 
 const handleDelete = async (immobileId: number, personId: number, companyId: number) => {
-    console.log(immobileId, personId, companyId)
+    if (!immobileId) {
+        return false
+    }
     try {
         await prisma.immobileOwner.deleteMany({
             where: {
@@ -43,7 +48,7 @@ export default async function handler(req, res) {
     switch (method) {
         case "POST":
             if (token === "tokenbemseguro") {
-                const resDelete = await handleAddImmobileOwner(data, immobileId).then(res => res)
+                const resDelete = await handleAddImmobileOwner(data).then(res => res)
                 if (resDelete) {
                     resFinal = { ...resFinal, status: "SUCCESS" }
                 } else {
