@@ -35,12 +35,6 @@ export const handleGetImmobile = async (id: number) => {
                 points = [...points, { ...element?.point }]
             }
         })
-        if (immobile.immobileOwner) {
-            delete immobile.immobileOwner
-        }
-        if (immobile.immobilePoint) {
-            delete immobile.immobilePoint
-        }
         return {
             ...immobile,
             owners: owners,

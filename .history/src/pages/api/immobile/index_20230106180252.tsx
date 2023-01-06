@@ -42,7 +42,7 @@ const handleAddImmobile = async (immobile: Immobile) => {
             ...dataPoints,
             {
                 point: {
-                    connectOrCreate: {
+                    connectOrCreateMany: {
                         where: {
                             pointId: element.pointId,
                         },

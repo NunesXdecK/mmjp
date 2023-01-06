@@ -42,27 +42,22 @@ const handleAddImmobile = async (immobile: Immobile) => {
             ...dataPoints,
             {
                 point: {
-                    connectOrCreate: {
-                        where: {
-                            pointId: element.pointId,
-                        },
-                        create: {
-                            type: element.type,
-                            epoch: element.epoch,
-                            pointId: element.pointId,
-                            eastingX: element.eastingX,
-                            gnssType: element.gnssType,
-                            northingY: element.northingY,
-                            frequency: element.frequency,
-                            description: element.description,
-                            posnQuality: element.posnQuality,
-                            storedStatus: element.storedStatus,
-                            solutionType: element.solutionType,
-                            elipseHeightZ: element.elipseHeightZ,
-                            heightQuality: element.heightQuality,
-                            ambiguityStatus: element.ambiguityStatus,
-                            posnHeightQuality: element.posnHeightQuality,
-                        }
+                    create: {
+                        type: element.type,
+                        epoch: element.epoch,
+                        pointId: element.pointId,
+                        eastingX: element.eastingX,
+                        gnssType: element.gnssType,
+                        northingY: element.northingY,
+                        frequency: element.frequency,
+                        description: element.description,
+                        posnQuality: element.posnQuality,
+                        storedStatus: element.storedStatus,
+                        solutionType: element.solutionType,
+                        elipseHeightZ: element.elipseHeightZ,
+                        heightQuality: element.heightQuality,
+                        ambiguityStatus: element.ambiguityStatus,
+                        posnHeightQuality: element.posnHeightQuality,
                     }
                 }
             }
@@ -75,7 +70,12 @@ const handleAddImmobile = async (immobile: Immobile) => {
                 ...data,
                 address: { create: [...dataAddress] },
                 immobileOwner: { create: [...dataOwners] },
-                immobilePoint: { create: [...dataPoints] },
+                ImmobilePoint: {
+                    create: [...dataOwners],
+                    include: {
+                        point: true
+                    }
+                },
             }
             id = await prisma.immobile.create({
                 data: {
@@ -84,7 +84,7 @@ const handleAddImmobile = async (immobile: Immobile) => {
                 include: {
                     address: true,
                     immobileOwner: true,
-                    immobilePoint: true,
+                    ImmobilePoint: true,
                 },
             }).then(res => res.id)
         } else if (id > 0) {
@@ -113,16 +113,16 @@ const handleAddImmobile = async (immobile: Immobile) => {
 
 const handleDelete = async (id: number) => {
     try {
-        const deletePoints = await prisma.immobilePoint.deleteMany({
-            where: { immobileId: id }
-        })
-        const deleteOwners = await prisma.immobileOwner.deleteMany({
+        await prisma.immobilePoint.deleteMany({
             where: { immobileId: id },
         })
-        const deleteAddress = await prisma.address.deleteMany({
+        await prisma.immobileOwner.deleteMany({
             where: { immobileId: id },
         })
-        const deleteImmobile = await prisma.immobile.delete({
+        await prisma.address.deleteMany({
+            where: { immobileId: id },
+        })
+        await prisma.immobile.delete({
             where: { id: id },
         })
         return true
@@ -140,6 +140,7 @@ export default async function handler(req, res) {
             let { token, data, history } = JSON.parse(body)
             if (token === "tokenbemseguro") {
                 let immobile: Immobile = data
+                console.log(immobile)
                 const resAdd = await handleAddImmobile(immobile).then(res => res)
                 if (resAdd === 0) {
                     resPOST = { ...resPOST, status: "ERROR" }

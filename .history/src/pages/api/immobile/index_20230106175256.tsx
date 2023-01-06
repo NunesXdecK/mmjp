@@ -42,27 +42,22 @@ const handleAddImmobile = async (immobile: Immobile) => {
             ...dataPoints,
             {
                 point: {
-                    connectOrCreate: {
-                        where: {
-                            pointId: element.pointId,
-                        },
-                        create: {
-                            type: element.type,
-                            epoch: element.epoch,
-                            pointId: element.pointId,
-                            eastingX: element.eastingX,
-                            gnssType: element.gnssType,
-                            northingY: element.northingY,
-                            frequency: element.frequency,
-                            description: element.description,
-                            posnQuality: element.posnQuality,
-                            storedStatus: element.storedStatus,
-                            solutionType: element.solutionType,
-                            elipseHeightZ: element.elipseHeightZ,
-                            heightQuality: element.heightQuality,
-                            ambiguityStatus: element.ambiguityStatus,
-                            posnHeightQuality: element.posnHeightQuality,
-                        }
+                    create: {
+                        type: element.type,
+                        epoch: element.epoch,
+                        pointId: element.pointId,
+                        eastingX: element.eastingX,
+                        gnssType: element.gnssType,
+                        northingY: element.northingY,
+                        frequency: element.frequency,
+                        description: element.description,
+                        posnQuality: element.posnQuality,
+                        storedStatus: element.storedStatus,
+                        solutionType: element.solutionType,
+                        elipseHeightZ: element.elipseHeightZ,
+                        heightQuality: element.heightQuality,
+                        ambiguityStatus: element.ambiguityStatus,
+                        posnHeightQuality: element.posnHeightQuality,
                     }
                 }
             }
@@ -113,16 +108,16 @@ const handleAddImmobile = async (immobile: Immobile) => {
 
 const handleDelete = async (id: number) => {
     try {
-        const deletePoints = await prisma.immobilePoint.deleteMany({
+        await prisma.immobilePoint.deleteMany({
             where: { immobileId: id }
         })
-        const deleteOwners = await prisma.immobileOwner.deleteMany({
+        await prisma.immobileOwner.deleteMany({
             where: { immobileId: id },
         })
-        const deleteAddress = await prisma.address.deleteMany({
+        await prisma.address.deleteMany({
             where: { immobileId: id },
         })
-        const deleteImmobile = await prisma.immobile.delete({
+        await prisma.immobile.delete({
             where: { id: id },
         })
         return true

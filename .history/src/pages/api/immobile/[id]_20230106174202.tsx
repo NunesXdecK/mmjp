@@ -6,7 +6,7 @@ export const handleGetImmobile = async (id: number) => {
     try {
         let immobile = await prisma.immobile.findFirst({
             where: {
-                id: id
+                id: parseInt(id)
             },
             include: {
                 immobileOwner: {
@@ -35,12 +35,6 @@ export const handleGetImmobile = async (id: number) => {
                 points = [...points, { ...element?.point }]
             }
         })
-        if (immobile.immobileOwner) {
-            delete immobile.immobileOwner
-        }
-        if (immobile.immobilePoint) {
-            delete immobile.immobilePoint
-        }
         return {
             ...immobile,
             owners: owners,

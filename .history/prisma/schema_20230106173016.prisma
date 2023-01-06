@@ -146,7 +146,7 @@ model Point {
   description       String?         @db.VarChar(255)
   type              String?         @db.VarChar(255)
   epoch             String?         @db.VarChar(255)
-  pointId           String?         @unique @map("point_id") @db.VarChar(255)
+  pointId           String?         @map("point_id") @db.VarChar(255)
   eastingX          String?         @map("easting_x") @db.VarChar(255)
   gnssType          String?         @map("gnss_type") @db.VarChar(255)
   northingY         String?         @map("northing_y") @db.VarChar(255)
