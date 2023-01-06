@@ -1,5 +1,5 @@
 import prisma from "../../../prisma/prisma"
-import { Company, Immobile, Person } from "../../../interfaces/objectInterfaces"
+import { Immobile } from "../../../interfaces/objectInterfaces"
 
 const handleAddImmobile = async (immobile: Immobile) => {
     if (!immobile) {
@@ -19,81 +19,76 @@ const handleAddImmobile = async (immobile: Immobile) => {
         description: immobile.description,
         registration: immobile.registration,
     }
+    let dataAddress: any = [{
+        cep: immobile?.address?.cep,
+        number: immobile?.address?.number,
+        county: immobile?.address?.county,
+        district: immobile?.address?.district,
+        complement: immobile?.address?.complement,
+        publicPlace: immobile?.address?.publicPlace,
+    }]
+    let dataOwners = []
+    immobile?.owners?.map(async (element, index) => {
+        dataOwners = [
+            ...dataOwners,
+            {
+                personId: "cpf" in element ? element.id : null,
+                companyId: "cnpj" in element ? element.id : null,
+            }]
+    })
     let id = immobile?.id ?? 0
     try {
-        if (immobile?.id === 0) {
+        if (id === 0) {
+            data = {
+                ...data,
+                address: { create: [...dataAddress] },
+                immobileOwner: { create: [...dataOwners] },
+            }
             id = await prisma.immobile.create({
-                data: data,
+                data: {
+                    ...data,
+                },
+                include: {
+                    address: true,
+                    immobileOwner: true,
+                    ImmobilePoint: true,
+                },
             }).then(res => res.id)
-        } else if (immobile?.id > 0) {
+        } else if (id > 0) {
+            data = {
+                ...data,
+                address: {
+                    updateMany: {
+                        data: dataAddress[0],
+                        where: { immobileId: id },
+                    }
+                },
+            }
             id = await prisma.immobile.update({
-                where: { id: immobile.id },
+                where: { id: id },
                 data: data,
+                include: {
+                    address: true,
+                },
             }).then(res => res.id)
         }
     } catch (error) {
         console.error(error)
-    }
-    if (id > 0) {
-        let dataAddress: any = {
-            immobileId: id,
-            cep: immobile?.address?.cep,
-            number: immobile?.address?.number,
-            county: immobile?.address?.county,
-            district: immobile?.address?.district,
-            complement: immobile?.address?.complement,
-            publicPlace: immobile?.address?.publicPlace,
-        }
-        try {
-            const address = await prisma.address.findFirst({
-                where: {
-                    immobileId: id,
-                }
-            })
-            let addressId = address?.id ?? immobile?.address?.id ?? 0
-            if (addressId === 0) {
-                addressId = await prisma.address.create({
-                    data: dataAddress,
-                }).then(res => res.id)
-            } else if (addressId > 0) {
-                addressId = await prisma.address.update({
-                    where: { id: addressId },
-                    data: dataAddress,
-                }).then(res => res.id)
-            }
-        } catch (error) {
-            console.error(error)
-        }
-        if (immobile?.owners?.length > 0) {
-            await Promise.all(
-                immobile?.owners?.map(async (element: (Person | Company), index) => {
-                    let dataImmobileOwner: any = {
-                        personId: "cpf" in element ? element.id : null,
-                        companyId: "cnpj" in element ? element.id : null,
-                        immobileId: id,
-                    }
-                    try {
-                        const immobileOwner = await prisma.immobileOwner.findFirst({
-                            where: dataImmobileOwner
-                        })
-                        let immobileOwnerId = immobileOwner?.id ?? 0
-                        if (immobileOwnerId === 0) {
-                            immobileOwnerId = await prisma.immobileOwner.create({
-                                data: dataImmobileOwner,
-                            }).then(res => res.id)
-                        }
-                    } catch (error) {
-                        console.error(error)
-                    }
-                })
-            )
-        }
     }
     return id
 }
 
 const handleDelete = async (id: number) => {
     try {
+        await prisma.immobilePoint.deleteMany({
+            where: { immobileId: id },
+        })
+        await prisma.immobileOwner.deleteMany({
+            where: { immobileId: id },
+        })
+        await prisma.address.deleteMany({
+            where: { immobileId: id },
+        })
         await prisma.immobile.delete({
             where: { id: id },
         })

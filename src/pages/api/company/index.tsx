@@ -12,79 +12,61 @@ const handleAddCompany = async (company: Company) => {
         description: company.description,
         personId: company.personId > 0 ? company.personId : null,
     }
+    let dataAddress: any = [{
+        cep: company?.address?.cep,
+        number: company?.address?.number,
+        county: company?.address?.county,
+        district: company?.address?.district,
+        complement: company?.address?.complement,
+        publicPlace: company?.address?.publicPlace,
+    }]
+    let dataTelephone = []
+    company?.telephones?.map(async (element: Telephone, index) => {
+        dataTelephone = [
+            ...dataTelephone,
+            {
+                personId: null,
+                type: element.type,
+                value: element.value,
+            }]
+    })
     let id = company?.id ?? 0
     try {
-        if (company?.id === 0) {
+        if (id === 0) {
+            data = {
+                ...data,
+                address: { create: [...dataAddress] },
+                telephone: { create: [...dataTelephone] },
+            }
             id = await prisma.company.create({
-                data: data,
+                data: {
+                    ...data,
+                },
+                include: {
+                    address: true,
+                    telephone: true,
+                },
             }).then(res => res.id)
-        } else if (company?.id > 0) {
+        } else if (id > 0) {
+            data = {
+                ...data,
+                address: {
+                    updateMany: {
+                        data: dataAddress[0],
+                        where: { companyId: id },
+                    }
+                },
+            }
             id = await prisma.company.update({
-                where: { id: company.id },
+                where: { id: id },
                 data: data,
+                include: {
+                    address: true,
+                },
             }).then(res => res.id)
         }
     } catch (error) {
         console.error(error)
-    }
-    if (id > 0) {
-        let dataAddress: any = {
-            companyId: id,
-            cep: company?.address?.cep,
-            number: company?.address?.number,
-            county: company?.address?.county,
-            district: company?.address?.district,
-            complement: company?.address?.complement,
-            publicPlace: company?.address?.publicPlace,
-        }
-        try {
-            const address = await prisma.address.findFirst({
-                where: {
-                    companyId: id,
-                }
-            })
-            let addressId = address?.id ?? company?.address?.id ?? 0
-            if (addressId === 0) {
-                addressId = await prisma.address.create({
-                    data: dataAddress,
-                }).then(res => res.id)
-            } else if (addressId > 0) {
-                addressId = await prisma.address.update({
-                    where: { id: addressId },
-                    data: dataAddress,
-                }).then(res => res.id)
-            }
-        } catch (error) {
-            console.error(error)
-        }
-        if (company?.telephones?.length > 0) {
-            await Promise.all(
-                company?.telephones?.map(async (element: Telephone, index) => {
-                    let dataTelephone: any = {
-                        companyId: id,
-                        type: element.type,
-                        value: element.value,
-                    }
-                    try {
-                        const telephone = await prisma.telephone.findFirst({
-                            where: {
-                                companyId: id,
-                                type: element.type,
-                                value: element.value,
-                            }
-                        })
-                        let telephoneId = telephone?.id ?? element?.id
-                        if (telephoneId === 0) {
-                            telephoneId = await prisma.telephone.create({
-                                data: dataTelephone,
-                            }).then(res => res.id)
-                        }
-                    } catch (error) {
-                        console.error(error)
-                    }
-                })
-            )
-        }
     }
     return id
 }

@@ -3,6 +3,7 @@ import { useState } from "react"
 import InputText from "./inputText"
 import Button from "../button/button"
 import FormRow from "../form/formRow"
+import InputCVSFile from "./inputCSVFile"
 import InputTextArea from "./inputTextArea"
 import FormRowColumn from "../form/formRowColumn"
 import { handleJSONcheck } from "../../util/validationUtil"
@@ -33,7 +34,7 @@ export default function InputImmobilePoints(props: InputImmobilePointsProps) {
         for (let i = 0; i < 6; i++) {
             const randomPoint: ImmobilePoint = {
                 ...defaultImmobilePoint,
-                id: "",
+                id: 0,
                 dateInsertUTC: handleNewDateToUTC(),
                 description: "PT" + handleGenerateNumber(),
                 latitude: handleGenerateNumber().toString(),
@@ -59,6 +60,11 @@ export default function InputImmobilePoints(props: InputImmobilePointsProps) {
             title={props.title}
             subtitle={props.subtitle}>
 
+            <FormRow>
+                <FormRowColumn unit="6">
+                    <InputCVSFile />
+                </FormRowColumn>
+            </FormRow>
             <FormRow>
                 <FormRowColumn unit="6">
                     <InputTextArea
