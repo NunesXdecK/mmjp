@@ -40,24 +40,14 @@ const handleAddImmobile = async (immobile: Immobile) => {
     immobile?.points?.map(async (element, index) => {
         dataPoints = [
             ...dataPoints,
-            {
-                point: {
-                    type: element.type,
-                    epoch: element.epoch,
-                    pointId: element.pointId,
-                    eastingX: element.eastingX,
-                    gnssType: element.gnssType,
-                    northingY: element.northingY,
-                    frequency: element.frequency,
-                    description: element.description,
-                    posnQuality: element.posnQuality,
-                    storedStatus: element.storedStatus,
-                    solutionType: element.solutionType,
-                    elipseHeightZ: element.elipseHeightZ,
-                    heightQuality: element.heightQuality,
-                    ambiguityStatus: element.ambiguityStatus,
-                    posnHeightQuality: element.posnHeightQuality,
-                }
+            point: {
+                type: element.type,
+                epoch: element.epoch,
+                pointId: element.pointId,
+                eastingX: element.eastingX,
+                gnssType: element.gnssType,
+                northingY: element.northingY,
+                frequency: element.frequency,
             }
         ]
     })

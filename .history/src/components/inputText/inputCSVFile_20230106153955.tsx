@@ -1,31 +1,17 @@
-import Button from "../button/button"
+import { useState } from "react"
 
 interface InputCVSFileProps {
     id?: string,
-    text?: string,
     isLoading?: boolean,
     isDisabled?: boolean,
-    onSet?: (arg0: string) => void,
-    onSetPoints?: (arg0: any[]) => void,
 }
 
 export default function InputCVSFile(props: InputCVSFileProps) {
 
-    const handleOnSet = (value) => {
-        if (props.onSet) {
-            props.onSet(value)
-        }
-    }
-    const handleOnSetPoints = (value) => {
-        if (props.onSetPoints) {
-            props.onSetPoints(value)
-        }
-    }
-
     const handleOnChange = (event) => {
         let files = [...event.target.files]
         if (files && files.length > 0) {
-            handleOnSet(files[0].name)
+            setFile(files[0].name)
             const reader = new FileReader()
             reader.readAsText(files[0])
             reader.onload = (event) => {
@@ -33,7 +19,7 @@ export default function InputCVSFile(props: InputCVSFileProps) {
                 let listResult = []
                 const listFull = rawLog.toString().split("\n")
                 listFull.map((element, index) => {
-                    const list = element?.trim().split(",")
+                    const list = element.split(",")
                     if (list[0]?.length > 0) {
                         listResult = [
                             ...listResult,
@@ -47,7 +33,7 @@ export default function InputCVSFile(props: InputCVSFileProps) {
                                 solutionType: list[6],
                                 frequency: list[7],
                                 eastingX: list[8],
-                                northingY: list[9],
+                                northY: list[9],
                                 elipseHeightZ: list[10],
                                 posnQuality: list[11],
                                 heightQuality: list[12],
@@ -56,26 +42,16 @@ export default function InputCVSFile(props: InputCVSFileProps) {
                         ]
                     }
                 })
-                handleOnSetPoints(listResult)
             }
         }
     }
 
     return (
         <div>
-            <label className="block text-sm font-medium text-gray-700">{props.text?.length > 0 ? "Arquivo escolhido" : "Escolha um arquivo .CSV"}</label>
+            <label className="block text-sm font-medium text-gray-700">Escolha um arquivo .CSV</label>
             <div className="my-4 flex flex-row gap-2 items-center font-medium text-indigo-600 hover:text-indigo-500 ">
-                {props?.text?.length > 0 ?
-                    <>
-                        <span>{props?.text}</span>
-                        <Button
-                            onClick={() => {
-                                handleOnSet("")
-                                handleOnSetPoints([])
-                            }}
-                            color="red"
-                        >X</Button>
-                    </>
+                {text.length > 0 ?
+                    <span>{text}</span>
                     :
                     <>
                         <span className="inline-block h-12 w-12 overflow-hidden rounded-full bg-gray-100">
@@ -110,9 +86,7 @@ export default function InputCVSFile(props: InputCVSFileProps) {
                     </>
                 }
             </div>
-            {false && props?.text?.length === 0 &&
-                <label className="block text-sm font-medium text-gray-700">ou</label>
-            }
+            <label className="block text-sm font-medium text-gray-700">ou</label>
         </div>
     )
 }

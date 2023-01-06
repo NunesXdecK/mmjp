@@ -385,10 +385,10 @@ export const defaultImmobile: Immobile = {
 export const defaultImmobilePoint: ImmobilePoint = {
     type: "",
     epoch: "",
+    northY: "",
     pointId: "",
     eastingX: "",
     gnssType: "",
-    northingY: "",
     frequency: "",
     description: "",
     posnQuality: "",

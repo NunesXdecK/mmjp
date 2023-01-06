@@ -99,22 +99,15 @@ export interface Professional {
 }
 
 export interface ImmobilePoint {
-    type?: string,
-    epoch?: string,
-    pointId?: string,
-    gnssType?: string,
-    eastingX?: string,
-    northingY?: string,
-    frequency?: string,
     description?: string,
-    posnQuality?: string,
+    pointId?: string,
     storedStatus?: string,
-    solutionType?: string,
-    elipseHeightZ?: string,
-    heightQuality?: string,
-    ambiguityStatus?: string,
-    posnHeightQuality?: string,
+    epoch?: string,
     id?: number,
+    latitudeX?: string,
+    longitudeY?: string,
+    dateInsertUTC?: number,
+    dateLastUpdateUTC?: number,
     immobile?: any,
 }
 
@@ -383,23 +376,12 @@ export const defaultImmobile: Immobile = {
 }
 
 export const defaultImmobilePoint: ImmobilePoint = {
-    type: "",
-    epoch: "",
-    pointId: "",
-    eastingX: "",
-    gnssType: "",
-    northingY: "",
-    frequency: "",
-    description: "",
-    posnQuality: "",
-    storedStatus: "",
-    solutionType: "",
-    elipseHeightZ: "",
-    heightQuality: "",
-    ambiguityStatus: "",
-    posnHeightQuality: "",
     id: 0,
-    immobile: {},
+    latitude: "",
+    longitude: "",
+    description: "",
+    dateInsertUTC: 0,
+    dateLastUpdateUTC: 0,
 }
 
 export const defaultBudget: Budget = {

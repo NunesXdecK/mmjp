@@ -140,25 +140,16 @@ model ImmobileOwner {
 }
 
 model Point {
-  id                Int             @id @default(autoincrement())
-  dateInsert        DateTime        @default(now()) @map("date_insert")
-  dateUpdate        DateTime        @updatedAt @map("date_update")
-  description       String?         @db.VarChar(255)
-  type              String?         @db.VarChar(255)
-  epoch             String?         @db.VarChar(255)
-  pointId           String?         @map("point_id") @db.VarChar(255)
-  eastingX          String?         @map("easting_x") @db.VarChar(255)
-  gnssType          String?         @map("gnss_type") @db.VarChar(255)
-  northingY         String?         @map("northing_y") @db.VarChar(255)
-  frequency         String?         @db.VarChar(255)
-  posnQuality       String?         @map("posn_quality") @db.VarChar(255)
-  storedStatus      String?         @map("stored_status") @db.VarChar(255)
-  solutionType      String?         @map("solution_type") @db.VarChar(255)
-  elipseHeightZ     String?         @map("elipse_height_z") @db.VarChar(255)
-  heightQuality     String?         @map("height_quality") @db.VarChar(255)
-  ambiguityStatus   String?         @map("ambiguity_status") @db.VarChar(255)
-  posnHeightQuality String?         @map("posn_height_quality") @db.VarChar(255)
-  ImmobilePoint     ImmobilePoint[]
+  id            Int             @id @default(autoincrement())
+  dateInsert    DateTime        @default(now()) @map("date_insert")
+  dateUpdate    DateTime        @updatedAt @map("date_update")
+  description   String?         @db.VarChar(255)
+  type   String?         @db.VarChar(255)
+  epoch   String?         @db.VarChar(255)
+  pointId   String?         @db.VarChar(255)
+  eastingX   String?         @db.VarChar(255)
+  gnssType   String?         @db.VarChar(255)
+  ImmobilePoint ImmobilePoint[]
 
   @@map("point")
 }

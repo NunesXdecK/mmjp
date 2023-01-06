@@ -41,25 +41,9 @@ const handleAddImmobile = async (immobile: Immobile) => {
         dataPoints = [
             ...dataPoints,
             {
-                point: {
-                    type: element.type,
-                    epoch: element.epoch,
-                    pointId: element.pointId,
-                    eastingX: element.eastingX,
-                    gnssType: element.gnssType,
-                    northingY: element.northingY,
-                    frequency: element.frequency,
-                    description: element.description,
-                    posnQuality: element.posnQuality,
-                    storedStatus: element.storedStatus,
-                    solutionType: element.solutionType,
-                    elipseHeightZ: element.elipseHeightZ,
-                    heightQuality: element.heightQuality,
-                    ambiguityStatus: element.ambiguityStatus,
-                    posnHeightQuality: element.posnHeightQuality,
-                }
-            }
-        ]
+                personId: "cpf" in element ? element.id : null,
+                companyId: "cnpj" in element ? element.id : null,
+            }]
     })
     let id = immobile?.id ?? 0
     try {

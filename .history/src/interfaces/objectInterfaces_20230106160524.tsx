@@ -101,10 +101,10 @@ export interface Professional {
 export interface ImmobilePoint {
     type?: string,
     epoch?: string,
+    northY?: string,
     pointId?: string,
     gnssType?: string,
     eastingX?: string,
-    northingY?: string,
     frequency?: string,
     description?: string,
     posnQuality?: string,
@@ -385,10 +385,10 @@ export const defaultImmobile: Immobile = {
 export const defaultImmobilePoint: ImmobilePoint = {
     type: "",
     epoch: "",
+    northY: "",
     pointId: "",
     eastingX: "",
     gnssType: "",
-    northingY: "",
     frequency: "",
     description: "",
     posnQuality: "",

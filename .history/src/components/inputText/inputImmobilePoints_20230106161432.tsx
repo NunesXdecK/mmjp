@@ -105,7 +105,7 @@ export default function InputImmobilePoints(props: InputImmobilePointsProps) {
             }
 
             {props.points && props.points?.map((element: ImmobilePoint, index) => (
-                <div className="mb-2 shadow-md dark:shadow-none p-4 flex flex-row items-center justify-between" key={index + element.pointId + element.epoch}>
+                <div className="mb-2 shadow-md dark:shadow-none p-2 flex flex-row items-center justify-between" key={index + element.pointId + element.epoch}>
                     <span className="w-full">
                         {element.pointId},
                         {" "+ element.epoch},

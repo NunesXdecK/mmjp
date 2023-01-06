@@ -66,7 +66,6 @@ export default function InputImmobilePoints(props: InputImmobilePointsProps) {
                     <InputCVSFile
                         text={text}
                         onSet={setText}
-                        onSetPoints={props.onSetPoints}
                     />
                 </FormRowColumn>
             </FormRow>
@@ -105,22 +104,12 @@ export default function InputImmobilePoints(props: InputImmobilePointsProps) {
             }
 
             {props.points && props.points?.map((element: ImmobilePoint, index) => (
-                <div className="mb-2 shadow-md dark:shadow-none p-4 flex flex-row items-center justify-between" key={index + element.pointId + element.epoch}>
+                <div className="mb-2 shadow-md dark:shadow-none py-2 flex flex-row justify-between" key={index + element.id + element.description}>
                     <span className="w-full">
-                        {element.pointId},
-                        {" "+ element.epoch},
-                        {" "+ element.storedStatus},
-                        {" "+ element.ambiguityStatus},
-                        {" "+ element.gnssType},
-                        {" "+ element.type},
-                        {" "+ element.solutionType},
-                        {" "+ element.frequency},
-                        {" "+ element.eastingX},
-                        {" "+ element.northingY},
-                        {" "+ element.elipseHeightZ},
-                        {" "+ element.posnQuality},
-                        {" "+ element.heightQuality},
-                        {" "+ element.posnHeightQuality}
+                        {element.pointId}
+                        {element.epoch}
+                        {element.storedStatus}
+                        {element.ambiguityStatus}
                     </span>
 
                     <Button

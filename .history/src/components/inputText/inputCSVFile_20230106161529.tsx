@@ -30,6 +30,7 @@ export default function InputCVSFile(props: InputCVSFileProps) {
             reader.readAsText(files[0])
             reader.onload = (event) => {
                 var rawLog = reader.result
+                console.log(rawLog)
                 let listResult = []
                 const listFull = rawLog.toString().split("\n")
                 listFull.map((element, index) => {

@@ -1,5 +1,6 @@
 import Form from "../form/form"
 import { useState } from "react"
+import InputText from "./inputText"
 import Button from "../button/button"
 import FormRow from "../form/formRow"
 import InputCVSFile from "./inputCSVFile"
@@ -7,7 +8,8 @@ import InputTextArea from "./inputTextArea"
 import FormRowColumn from "../form/formRowColumn"
 import { handleJSONcheck } from "../../util/validationUtil"
 import { JSON_MARK } from "../../util/patternValidationUtil"
-import { ImmobilePoint } from "../../interfaces/objectInterfaces"
+import { handleNewDateToUTC, handleUTCToDateShow } from "../../util/dateUtils"
+import { defaultImmobilePoint, ImmobilePoint } from "../../interfaces/objectInterfaces"
 
 interface InputImmobilePointsProps {
     id?: string,
@@ -66,7 +68,6 @@ export default function InputImmobilePoints(props: InputImmobilePointsProps) {
                     <InputCVSFile
                         text={text}
                         onSet={setText}
-                        onSetPoints={props.onSetPoints}
                     />
                 </FormRowColumn>
             </FormRow>
@@ -105,29 +106,6 @@ export default function InputImmobilePoints(props: InputImmobilePointsProps) {
             }
 
             {props.points && props.points?.map((element: ImmobilePoint, index) => (
-                <div className="mb-2 shadow-md dark:shadow-none p-4 flex flex-row items-center justify-between" key={index + element.pointId + element.epoch}>
-                    <span className="w-full">
-                        {element.pointId},
-                        {" "+ element.epoch},
-                        {" "+ element.storedStatus},
-                        {" "+ element.ambiguityStatus},
-                        {" "+ element.gnssType},
-                        {" "+ element.type},
-                        {" "+ element.solutionType},
-                        {" "+ element.frequency},
-                        {" "+ element.eastingX},
-                        {" "+ element.northingY},
-                        {" "+ element.elipseHeightZ},
-                        {" "+ element.posnQuality},
-                        {" "+ element.heightQuality},
-                        {" "+ element.posnHeightQuality}
-                    </span>
-
-                    <Button
-                        onClick={() => { }}
-                        color="red"
-                    >X</Button>
-                </div>
             ))}
             {/*
                 <div className="mb-2 shadow-md dark:shadow-none py-2" key={index + element.id + element.description}>
