@@ -18,30 +18,31 @@ export default function InputCVSFile(props: InputCVSFileProps) {
                 var rawLog = reader.result
                 let listResult = []
                 const listFull = rawLog.toString().split("\n")
+                const objectSize = 15
+                const objectLength = Math.round(listFull.length / objectSize)
                 listFull.map((element, index) => {
                     const list = element.split(",")
-                    if (list[0]?.length > 0) {
-                        listResult = [
-                            ...listResult,
-                            {
-                                pointId: list[0],
-                                epoch: list[1],
-                                storedStatus: list[2],
-                                ambiguityStatus: list[3],
-                                gnssType: list[4],
-                                type: list[5],
-                                solutionType: list[6],
-                                frequency: list[7],
-                                eastingX: list[8],
-                                northY: list[9],
-                                elipseHeightZ: list[10],
-                                posnQuality: list[11],
-                                heightQuality: list[12],
-                                posnHeightQuality: list[13],
-                            }
-                        ]
-                    }
+                    listResult = [
+                        ...listResult,
+                        {
+                            pointId: list[0],
+                            epoch: list[1],
+                            storedStatus: list[2],
+                            ambiguityStatus: list[3],
+                            gnssType: list[4],
+                            type: list[5],
+                            solutionType: list[6],
+                            frequency: list[7],
+                            eastingX: list[8],
+                            northY: list[9],
+                            elipseHeightZ: list[10],
+                            posnQuality: list[11],
+                            heightQuality: list[12],
+                            posnHeightQuality: list[13],
+                        }
+                    ]
                 })
+                console.log(objectLength)
                 console.log(rawLog)
                 console.log(listFull)
                 console.log(listResult)
