@@ -224,6 +224,7 @@ export default function ImmobileDataForm(props: ImmobileDataFormProps) {
             />
             <InputImmobilePoints
                 canTest
+                isLoading={props.isLoading}
                 onSetPoints={handleSetPoints}
                 points={props.immobile.points}
                 title="Pontos geograficos do imóvel"

@@ -1,10 +1,9 @@
 import prisma from "../../../prisma/prisma"
-import { defaultImmobile } from "../../../interfaces/objectInterfaces"
 import { handleMaskCEP } from "../../../util/maskUtil"
 
 export const handleGetImmobile = async (id: number) => {
     try {
-        let immobile = await prisma.immobile.findFirst({
+        let immobile: any = await prisma.immobile.findFirst({
             where: {
                 id: id
             },
@@ -18,7 +17,7 @@ export const handleGetImmobile = async (id: number) => {
                 immobilePoint: {
                     include: {
                         point: true,
-                    }
+                    },
                 },
                 address: true,
             }

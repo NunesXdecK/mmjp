@@ -6,8 +6,8 @@ import InputCVSFile from "./inputCSVFile"
 import InputTextArea from "./inputTextArea"
 import FormRowColumn from "../form/formRowColumn"
 import { handleJSONcheck } from "../../util/validationUtil"
-import { JSON_MARK } from "../../util/patternValidationUtil"
 import { ImmobilePoint } from "../../interfaces/objectInterfaces"
+import { JSON_MARK, STYLE_FOR_INPUT_LOADING_TRANSPARENT } from "../../util/patternValidationUtil"
 
 interface InputImmobilePointsProps {
     id?: string,
@@ -56,6 +56,11 @@ export default function InputImmobilePoints(props: InputImmobilePointsProps) {
         }
     }
 
+    let classNameHolder = "mb-2 shadow-md dark:shadow-none p-4 flex flex-row items-center justify-between "
+    if (props.isLoading) {
+        classNameHolder = classNameHolder + STYLE_FOR_INPUT_LOADING_TRANSPARENT
+    }
+
     return (
         <Form
             title={props.title}
@@ -66,6 +71,8 @@ export default function InputImmobilePoints(props: InputImmobilePointsProps) {
                     <InputCVSFile
                         text={text}
                         onSet={setText}
+                        isLoading={props.isLoading}
+                        isDisabled={props.isDisabled}
                         onSetPoints={props.onSetPoints}
                     />
                 </FormRowColumn>
@@ -80,6 +87,8 @@ export default function InputImmobilePoints(props: InputImmobilePointsProps) {
                                 validation={JSON_MARK}
                                 title="Texto dos pontos"
                                 onChange={handleChangeText}
+                                isLoading={props.isLoading}
+                                isDisabled={props.isDisabled}
                                 id={"text-for-points-" + props.id}
                                 validationMessage="Formato errado"
                                 placeholder="BFBM5250,01/25/2012 10:51:59,Yes,yes,GPS/GLONASS,Static,Phase: fix all,L1 + L2,742950.2581,384858.5917,54.8052,0.0002,0.0002,0.0009"
@@ -93,7 +102,7 @@ export default function InputImmobilePoints(props: InputImmobilePointsProps) {
                                 <Button
                                     type="button"
                                     isLoading={props.isLoading}
-                                    isDisabled={props.isLoading}
+                                    isDisabled={props.isLoading || props.isDisabled}
                                     onClick={handleCopyTestText}
                                 >
                                     Copiar texto de teste
@@ -105,27 +114,29 @@ export default function InputImmobilePoints(props: InputImmobilePointsProps) {
             }
 
             {props.points && props.points?.map((element: ImmobilePoint, index) => (
-                <div className="mb-2 shadow-md dark:shadow-none p-4 flex flex-row items-center justify-between" key={index + element.pointId + element.epoch}>
+                <div className={classNameHolder} key={index + element.pointId + element.epoch}>
                     <span className="w-full">
                         {element.pointId},
-                        {" "+ element.epoch},
-                        {" "+ element.storedStatus},
-                        {" "+ element.ambiguityStatus},
-                        {" "+ element.gnssType},
-                        {" "+ element.type},
-                        {" "+ element.solutionType},
-                        {" "+ element.frequency},
-                        {" "+ element.eastingX},
-                        {" "+ element.northingY},
-                        {" "+ element.elipseHeightZ},
-                        {" "+ element.posnQuality},
-                        {" "+ element.heightQuality},
-                        {" "+ element.posnHeightQuality}
+                        {" " + element.epoch},
+                        {" " + element.storedStatus},
+                        {" " + element.ambiguityStatus},
+                        {" " + element.gnssType},
+                        {" " + element.type},
+                        {" " + element.solutionType},
+                        {" " + element.frequency},
+                        {" " + element.eastingX},
+                        {" " + element.northingY},
+                        {" " + element.elipseHeightZ},
+                        {" " + element.posnQuality},
+                        {" " + element.heightQuality},
+                        {" " + element.posnHeightQuality}
                     </span>
 
                     <Button
-                        onClick={() => { }}
                         color="red"
+                        onClick={() => { }}
+                        isLoading={props.isLoading}
+                        isDisabled={props.isLoading || props.isDisabled}
                     >X</Button>
                 </div>
             ))}
