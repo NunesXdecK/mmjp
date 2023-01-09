@@ -5,8 +5,8 @@ const handleAddImmobilePoint = async (immobileId, pointId) => {
         return 0
     }
     let data: any = {
-        pointId: pointId,
         immobileId: immobileId,
+        pointId: pointId,
     }
     let id = 0
     try {
@@ -39,11 +39,7 @@ const handleDelete = async (immobileId, pointId) => {
     try {
         await prisma.immobilePoint.deleteMany({
             where: {
-                point: {
-                    pointId: {
-                        equals: pointId,
-                    }
-                },
+                pointId: pointId,
                 immobileId: immobileId,
             }
         })
@@ -72,8 +68,9 @@ export default async function handler(req, res) {
             }
             res.status(200).json(resFinal)
             break
-        case "DELETE":
-            if (token === "tokenbemseguro" && pointId?.length > 0 && immobileId > 0) {
+            case "DELETE":
+            console.log(immobileId, pointId)
+            if (token === "tokenbemseguro" && pointId > 0 && immobileId > 0) {
                 const resDelete = await handleDelete(immobileId, pointId).then(res => res)
                 if (resDelete) {
                     resFinal = { ...resFinal, status: "SUCCESS" }

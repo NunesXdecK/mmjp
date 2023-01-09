@@ -19,46 +19,44 @@ const handleAddImmobilePoints = async (immobilePoints: ImmobilePoint[], immobile
                     }
                 })
                 const id = immobilePoint?.id ?? 0
-                if (id === 0) {
-                    const data: any = {
-                        immobile: {
-                            connect: {
-                                id: immobileId,
-                            },
+                const data: any = {
+                    immobile: {
+                        connect: {
+                            id: immobileId,
                         },
-                        point: {
-                            connectOrCreate: {
-                                where: {
-                                    pointId: element.pointId,
-                                },
-                                create: {
-                                    type: element.type,
-                                    epoch: element.epoch,
-                                    pointId: element.pointId,
-                                    eastingX: element.eastingX,
-                                    gnssType: element.gnssType,
-                                    northingY: element.northingY,
-                                    frequency: element.frequency,
-                                    description: element.description,
-                                    posnQuality: element.posnQuality,
-                                    storedStatus: element.storedStatus,
-                                    solutionType: element.solutionType,
-                                    elipseHeightZ: element.elipseHeightZ,
-                                    heightQuality: element.heightQuality,
-                                    ambiguityStatus: element.ambiguityStatus,
-                                    posnHeightQuality: element.posnHeightQuality,
-                                }
+                    },
+                    point: {
+                        connectOrCreate: {
+                            where: {
+                                pointId: element.pointId,
+                            },
+                            create: {
+                                type: element.type,
+                                epoch: element.epoch,
+                                pointId: element.pointId,
+                                eastingX: element.eastingX,
+                                gnssType: element.gnssType,
+                                northingY: element.northingY,
+                                frequency: element.frequency,
+                                description: element.description,
+                                posnQuality: element.posnQuality,
+                                storedStatus: element.storedStatus,
+                                solutionType: element.solutionType,
+                                elipseHeightZ: element.elipseHeightZ,
+                                heightQuality: element.heightQuality,
+                                ambiguityStatus: element.ambiguityStatus,
+                                posnHeightQuality: element.posnHeightQuality,
                             }
                         }
                     }
-                    await prisma.immobilePoint.create({
-                        data: { ...data },
-                        include: {
-                            point: true,
-                            immobile: true,
-                        }
-                    })
                 }
+                await prisma.immobilePoint.create({
+                    data: { ...data },
+                    include: {
+                        point: true,
+                        immobile: true,
+                    }
+                })
             })
         )
         return true

@@ -2,6 +2,11 @@ ULTIMO PENSAMENTO:
 ERRO NA VERCEL ME SALVOU KKKKKKKKK, ARRUMAR DEPOIS
 TENTANDO COLOCAR SALVAR E ATUALIZAR SEM DUPLICAR
 Immovel
+Melhorar visibilidade do autocomplete.
+Baixar arquivo CSV
+Nome, data, ambiguidade, x, y, z
+PointId, epoch(datahora), ambiguity, gnss type(tipo de ponto), easting (x), North (y), elipse height(z), qualidade x, y, z
+Desenvolver calendário
 Colocar opções de status na actionbar
 Colocar botão salvar e salvar e sair em todas as action bar
 Unificar informações do projeto com títulos nas tabelas número do projeto/nome projeto/pagamento, serviço
@@ -13,7 +18,6 @@ Pagamentos
 Colocar data inicial do dia
 Etapa
 Vincular mais de um usuário
-Desenvolver calendário
 
 MONTAR COMPONENTE DE CADASTRO E VIEW PARA COMPONENTE
 ORCAMENTO QUANDO VENCIDO SERA ARQUIVADO E SE FOR REATIVADO PRECISA DE CONFIMACAO DE NOVO PRAZO
@@ -54,10 +58,6 @@ PRECISA DE MAIS TESTES, MAS OK - TESTAR CADASTRO DE PROJETO COM ETAPAS BASICOS, 
 PRECISA DE MAIS TESTES, MAS OK - COLOCAR FUNÇÃO ADICIONAR AO PESQUISAR OPÇÕES
 PRECISA DE MAIS TESTES, MAS OK - ATUALIZAR EM OUTROS CADASTROS AUTO SALVAR PROJETO EVITAR BURRICE DE PERDER TUDO
 TESTADO - NAO REPAREI NA DIFERENCA - Retornar ids no projeto para testar carregamento unitário
-OK - Melhorar visibilidade do autocomplete.
-OK - Baixar arquivo CSV
-OK - Nome, data, ambiguidade, x, y, z
-OK - PointId, epoch(datahora), ambiguity, gnss type(tipo de ponto), easting (x), North (y), elipse height(z), qualidade x, y, z
 OK - Tipo de telefone.
 OK - Código do cliente só aceita números 
 OK - Erro na visualização do projeto. 

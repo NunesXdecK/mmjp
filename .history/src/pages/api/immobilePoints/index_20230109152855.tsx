@@ -19,6 +19,7 @@ const handleAddImmobilePoints = async (immobilePoints: ImmobilePoint[], immobile
                     }
                 })
                 const id = immobilePoint?.id ?? 0
+                console.log(id)
                 if (id === 0) {
                     const data: any = {
                         immobile: {

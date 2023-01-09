@@ -3,6 +3,7 @@ ERRO NA VERCEL ME SALVOU KKKKKKKKK, ARRUMAR DEPOIS
 TENTANDO COLOCAR SALVAR E ATUALIZAR SEM DUPLICAR
 Immovel
 Colocar opções de status na actionbar
+Desenvolver calendário
 Colocar botão salvar e salvar e sair em todas as action bar
 Unificar informações do projeto com títulos nas tabelas número do projeto/nome projeto/pagamento, serviço
 Serviço
@@ -13,7 +14,6 @@ Pagamentos
 Colocar data inicial do dia
 Etapa
 Vincular mais de um usuário
-Desenvolver calendário
 
 MONTAR COMPONENTE DE CADASTRO E VIEW PARA COMPONENTE
 ORCAMENTO QUANDO VENCIDO SERA ARQUIVADO E SE FOR REATIVADO PRECISA DE CONFIMACAO DE NOVO PRAZO
