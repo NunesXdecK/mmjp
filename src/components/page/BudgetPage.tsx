@@ -123,14 +123,14 @@ export default function BudgetPage(props: BudgetPageProps) {
         if (localBudget?.clients?.length > 0) {
             await Promise.all(
                 localBudget.clients.map(async (element, index) => {
-                    if (element && element?.id?.length) {
+                    if (element && element?.id > 0) {
                         let localClient: (Person | Company) = {}
                         if ("cpf" in element) {
                             localClient = await fetch("api/person/" + element.id).then((res) => res.json()).then((res) => res.data)
                         } else if ("cnpj" in element) {
                             localClient = await fetch("api/company/" + element.id).then((res) => res.json()).then((res) => res.data)
                         }
-                        if (localClient && "id" in localClient && localClient?.id?.length) {
+                        if (localClient && "id" in localClient && localClient?.id > 0) {
                             localClients = [...localClients, localClient]
                         }
                     }

@@ -19,8 +19,8 @@ import ServiceView from "../view/serviceView"
 
 interface ServicePageProps {
     id?: string,
-    userId?: string,
     projectId?: string,
+    userId?: number,
     canSave?: boolean,
     getInfo?: boolean,
     canDelete?: boolean,

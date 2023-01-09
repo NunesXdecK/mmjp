@@ -18,7 +18,7 @@ interface InputCNPJProps {
 export const handleCheckCNPJ = async (code, id) => {
     let res = { data: false }
     try {
-        res = await fetch("api/isCNPJAvaliable/" + handleRemoveCNPJMask(code) + "/" + id).then(res => res.json())
+        res = await fetch("api/isCNPJAvaliable/" + handleRemoveCNPJMask(code) + "/" + (id ?? 0)).then(res => res.json())
     } catch (err) {
         console.error(err)
     }

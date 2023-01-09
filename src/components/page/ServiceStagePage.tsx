@@ -19,8 +19,8 @@ import ServiceStageView from "../view/serviceStageView"
 
 interface ServiceStagePageProps {
     id?: string,
-    userId?: string,
     serviceId?: string,
+    userId?: number,
     canSave?: boolean,
     getInfo?: boolean,
     canDelete?: boolean,
@@ -342,7 +342,7 @@ export default function ServiceStagePage(props: ServiceStagePageProps) {
 
     useEffect(() => {
         if (isFirst) {
-            if (props.userId?.length > 0) {
+            if (props?.userId > 0) {
                 handleSetIsLoading(true)
                 fetch("api/serviceStagesByUser/" + props.userId).then((res) => res.json()).then((res) => {
                     setServiceStages(res.list ?? [])

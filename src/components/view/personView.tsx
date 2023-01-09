@@ -1,15 +1,12 @@
 import InfoView from "./infoView"
-import Button from "../button/button"
 import AddressView from "./addressView"
 import { useEffect, useState } from "react"
 import InfoHolderView from "./infoHolderView"
+import SwitchTextButton from "../button/switchTextButton"
 import PlaceholderItemList from "../list/placeholderItemList"
 import ScrollDownTransition from "../animation/scrollDownTransition"
 import { handleMaskCPF, handleMaskTelephone } from "../../util/maskUtil"
 import { defaultPerson, Person, Telephone } from "../../interfaces/objectInterfaces"
-import { ChevronDownIcon, ChevronRightIcon } from "@heroicons/react/outline"
-import { handleUTCToDateShow } from "../../util/dateUtils"
-import SwitchTextButton from "../button/switchTextButton"
 
 interface PersonViewProps {
     id?: string,

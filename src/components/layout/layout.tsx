@@ -39,6 +39,7 @@ const menus: LayoutMenuItem[] = [
                 { name: "Empresas", href: "/company", value: "COMPANY", current: false, disabled: false },
                 { name: "Profissionais", href: "/professional", value: "PROFESSIONAL", current: false, disabled: false },
                 { name: "Imóveis", href: "/immobile", value: "IMMOBILE", current: false, disabled: false },
+                { name: "Pontos dos imóveis", href: "/immobilePoint", value: "IMMOBILE_POINT", current: false, disabled: false },
                 { name: "Usuários", href: "/user", value: "USER", current: false, disabled: false },
 
             ]

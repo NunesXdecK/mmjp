@@ -14,11 +14,12 @@ import UserPage from "../components/page/UserPage"
 import ProfilePage from "../components/page/ProfilePage"
 import FeedbackMessageModal, { defaultFeedbackMessage, FeedbackMessage } from "../components/modal/feedbackMessageModal"
 import DashboardPage from "../components/page/DashboardPage"
+import ImmobilePointPage from "../components/page/ImmobilePointPage"
 
 export type PageOps =
     "DASHBOARD"
     | "PROFILE"
-    | "PERSON" | "COMPANY" | "PROFESSIONAL" | "IMMOBILE" | "USER"
+    | "PERSON" | "COMPANY" | "PROFESSIONAL" | "IMMOBILE" | "IMMOBILE_POINT" | "USER"
     | "BUDGET"
     | "PROJECT" | "SERVICE" | "SERVICESTAGE" | "PAYMENT"
 
@@ -70,6 +71,10 @@ export default function Index(props: IndexProps) {
         case "IMMOBILE":
             title = "Imovéis"
             window.history.pushState({}, "", "/immobile");
+            break
+        case "IMMOBILE_POINT":
+            title = "Pontos dos imóveis"
+            window.history.pushState({}, "", "/immobilePoint");
             break
         case "USER":
             title = "Usuários"
@@ -190,6 +195,18 @@ const [subjectMessage, setSubjectMessage] = useState<SubjectMessage>({
             )}
             {page === "IMMOBILE" && (
                 <ImmobilePage
+                    getInfo
+                    canSave
+                    canUpdate
+                    canDelete
+                    onSetPage={setPage}
+                    isLoading={isLoading}
+                    onSetIsLoading={setIsLoading}
+                    onShowMessage={handleShowMessage}
+                />
+            )}
+            {page === "IMMOBILE_POINT" && (
+                <ImmobilePointPage
                     getInfo
                     canSave
                     canUpdate
