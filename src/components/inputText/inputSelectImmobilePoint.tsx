@@ -108,7 +108,7 @@ export default function InputSelectImmobilePoint(props: InputSelectImmobilePoint
 
     const handlePutModalTitle = (short: boolean) => {
         let paths = []
-        let path: NavBarPath = { path: "Nova ponto", onClick: null }
+        let path: NavBarPath = { path: "Novo ponto", onClick: null }
         if (short) {
             //path = { ...path, path: "S" }
         }

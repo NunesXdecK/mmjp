@@ -65,6 +65,7 @@ export default function ImmobilePointDataForm(props: ImmobilePointDataFormProps)
                         onSet={handleSetPointId}
                         isLoading={props.isLoading}
                         isDisabled={props.isDisabled}
+                        elementId={props.immobilePoint.id}
                         value={props.immobilePoint.pointId}
                     />
                 </FormRowColumn>

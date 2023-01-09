@@ -7,9 +7,9 @@ import { NavBarPath } from "../bar/navBar"
 import WindowModal from "../modal/windowModal"
 import FormRowColumn from "../form/formRowColumn"
 import { TrashIcon } from "@heroicons/react/solid"
+import InputCVSFile from "../inputText/inputCSVFile"
 import InputSelectImmobilePoint from "../inputText/inputSelectImmobilePoint"
 import { defaultPerson, ImmobilePoint } from "../../interfaces/objectInterfaces"
-import InputCVSFile from "../inputText/inputCSVFile"
 
 interface SelectImmobilePointFormProps {
     id?: string,
@@ -91,7 +91,10 @@ export default function SelectImmobilePointForm(props: SelectImmobilePointFormPr
                 if (props.excludeList?.length > 0) {
                     let canAdd = false
                     props.excludeList.map((elementExcluded, index) => {
-                        if (elementExcluded?.id === element?.id) {
+                        if (
+                            elementExcluded?.id === element?.id
+                            || elementExcluded?.pointId === element?.pointId
+                        ) {
                             canAdd = true
                         }
                     })
@@ -149,6 +152,7 @@ export default function SelectImmobilePointForm(props: SelectImmobilePointFormPr
                         onSetPoints={props.onSet}
                         isLoading={props.isLoading}
                         isDisabled={props.isDisabled}
+                        immobileId={props.immobileId}
                     />
                 )}
             >

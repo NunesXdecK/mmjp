@@ -9,14 +9,14 @@ export default async function handler(req, res) {
             try {
                 const code = id
                 if (code?.length > 1) {
-                    const clienteCode = parseInt(code[0])
+                    const clientCode = parseInt(code[0])
                     const id = parseInt(code[1])
                     const persons = await prisma.person.findMany({
                         where: {
                             id: {
                                 not: id,
                             },
-                            clientCode: clienteCode,
+                            clientCode: clientCode,
                         }
                     })
                     const companies = await prisma.company.findMany({
@@ -24,7 +24,7 @@ export default async function handler(req, res) {
                             id: {
                                 not: id,
                             },
-                            clientCode: clienteCode,
+                            clientCode: clientCode,
                         }
                     })
                     const list = [...persons, ...companies]

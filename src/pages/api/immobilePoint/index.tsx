@@ -56,7 +56,6 @@ export default async function handler(req, res) {
     let resFinal = { status: "ERROR", error: {}, id: 0, message: "" }
     switch (method) {
         case "POST":
-            console.log(pointId, immobileId)
             if (token === "tokenbemseguro" && pointId > 0 && immobileId > 0) {
                 const resAdd = await handleAddImmobilePoint(immobileId, pointId).then(res => res)
                 if (resAdd === 0) {
