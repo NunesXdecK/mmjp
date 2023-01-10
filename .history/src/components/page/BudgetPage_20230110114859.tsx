@@ -118,14 +118,33 @@ export default function BudgetPage(props: BudgetPageProps) {
         handleSetIsLoading(true)
         setIsForShow(false)
         let localBudget: Budget = await fetch("api/budget/" + budget?.id).then((res) => res.json()).then((res) => res.data)
+        let localClients = []
+        if (localBudget?.clients?.length > 0) {
+            await Promise.all(
+                localBudget.clients.map(async (element, index) => {
+                    if (element && element?.id > 0) {
+                        let localClient: (Person | Company) = {}
+                        if ("cpf" in element) {
+                            localClient = await fetch("api/person/" + element.id).then((res) => res.json()).then((res) => res.data)
+                        } else if ("cnpj" in element) {
+                            localClient = await fetch("api/company/" + element.id).then((res) => res.json()).then((res) => res.data)
+                        }
+                        if (localClient && "id" in localClient && localClient?.id > 0) {
+                            localClients = [...localClients, localClient]
+                        }
+                    }
+                })
+            )
+        }
         let localPayments = []
         if (localBudget?.payments?.length > 0) {
             localBudget.payments.map((element: BudgetPayment, index) => {
-                localPayments = [...localPayments, { ...element, dateString: handleUTCToDateShow(element?.dateDue?.toString()) }]
+                localPayments = [...localPayments, { ...element, dateString: handleUTCToDateShow(element.dateDue?.toString()) }]
             })
         }
         localBudget = {
             ...localBudget,
+            clients: localClients,
             payments: localPayments,
             dateString: handleUTCToDateShow(localBudget?.dateDue?.toString()),
         }

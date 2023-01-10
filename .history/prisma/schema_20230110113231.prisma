@@ -205,7 +205,6 @@ model BudgetService {
   budget     Budget   @relation(fields: [budgetId], references: [id])
   budgetId   Int      @map("budget_id")
 
-  @@unique([budgetId, index])
   @@map("budget_service")
 }
 

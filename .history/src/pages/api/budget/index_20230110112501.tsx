@@ -10,9 +10,9 @@ const handleAddBudget = async (budget: Budget) => {
         title: budget.title,
         status: budget.status,
         description: budget.description,
+        dateDue: new Date(budget.dateString),
         personId: "cpf" in budget?.clients[0] ? budget?.clients[0]?.id : null,
         companyId: "cnpj" in budget?.clients[0] ? budget?.clients[0]?.id : null,
-        dateDue: budget?.dateString?.length > 0 ? new Date(budget.dateString) : null,
     }
     let dataBudgetService: any[] = []
     budget?.services?.map(async (element: BudgetService, index) => {
@@ -20,7 +20,7 @@ const handleAddBudget = async (budget: Budget) => {
             title: element.title,
             value: element.value,
             index: element.index,
-            quantity: parseFloat(element.quantity) ?? 0.0,
+            quantity: element.quantity,
         }
         if (id === 0) {
             dataBudgetService = [...dataBudgetService, { ...data }]
@@ -29,13 +29,11 @@ const handleAddBudget = async (budget: Budget) => {
                 ...dataBudgetService,
                 {
                     where: {
-                        budgetId_index: {
-                            budgetId: id,
-                            index: element.index,
-                        }
+                        budgetId: id,
+                        index: element.index,
                     },
                     create: { ...data },
-                    update: { ...data },
+                    update: { ...data }
                 }]
         }
     })
@@ -54,13 +52,11 @@ const handleAddBudget = async (budget: Budget) => {
                 ...dataBudgetPayment,
                 {
                     where: {
-                        budgetId_index: {
-                            budgetId: id,
-                            index: element.index,
-                        }
+                        budgetId: id,
+                        index: element.index,
                     },
                     create: { ...data },
-                    update: { ...data },
+                    update: { ...data }
                 }]
         }
     })
@@ -106,7 +102,7 @@ const handleDelete = async (id: number) => {
         await prisma.budgetService.deleteMany({
             where: { budgetId: id },
         })
-        await prisma.budgetPayment.deleteMany({
+        await prisma.budgetService.deleteMany({
             where: { budgetId: id },
         })
         await prisma.budget.delete({

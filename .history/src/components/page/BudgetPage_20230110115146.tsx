@@ -121,7 +121,7 @@ export default function BudgetPage(props: BudgetPageProps) {
         let localPayments = []
         if (localBudget?.payments?.length > 0) {
             localBudget.payments.map((element: BudgetPayment, index) => {
-                localPayments = [...localPayments, { ...element, dateString: handleUTCToDateShow(element?.dateDue?.toString()) }]
+                localPayments = [...localPayments, { ...element, dateString: handleUTCToDateShow(element.dateDue?.toString()) }]
             })
         }
         localBudget = {

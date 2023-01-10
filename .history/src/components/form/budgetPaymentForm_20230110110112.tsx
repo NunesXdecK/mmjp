@@ -90,7 +90,7 @@ export default function BudgetPaymentForm(props: BudgetPaymentFormProps) {
 
                 <FormRowColumn unit="2" unitM="6" className="flex flex-row">
                     <InputText
-                        type="date"
+                        mask="date"
                         maxLength={10}
                         title="Vencimento"
                         onBlur={props.onBlur}

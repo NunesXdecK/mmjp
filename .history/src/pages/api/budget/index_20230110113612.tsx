@@ -29,10 +29,8 @@ const handleAddBudget = async (budget: Budget) => {
                 ...dataBudgetService,
                 {
                     where: {
-                        budgetId_index: {
-                            budgetId: id,
-                            index: element.index,
-                        }
+                        budgetId: id,
+                        index: element.index,
                     },
                     create: { ...data },
                     update: { ...data },
@@ -54,10 +52,8 @@ const handleAddBudget = async (budget: Budget) => {
                 ...dataBudgetPayment,
                 {
                     where: {
-                        budgetId_index: {
-                            budgetId: id,
-                            index: element.index,
-                        }
+                        budgetId: id,
+                        index: element.index,
                     },
                     create: { ...data },
                     update: { ...data },

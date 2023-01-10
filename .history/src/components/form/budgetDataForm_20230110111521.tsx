@@ -30,7 +30,7 @@ export default function BudgetDataForm(props: BudgetDataFormProps) {
     const [isFormValid, setIsFormValid] = useState(true)
 
     const handleSetTitle = (value) => { handleSet({ ...props.budget, title: value }) }
-    const handleSetDate = (value) => { handleSet({ ...props.budget, dateString: value }) }
+    const handleSetDate = (value) => { console.log(value);handleSet({ ...props.budget, dateString: value }) }
     const handleSetClient = (value) => { handleSet({ ...props.budget, clients: [value] }) }
     const handleSetPayments = (value) => { handleSet({ ...props.budget, payments: value }) }
     const handleSetServices = (value) => { handleSet({ ...props.budget, services: value }) }

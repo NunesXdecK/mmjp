@@ -10,32 +10,41 @@ const handleAddBudget = async (budget: Budget) => {
         title: budget.title,
         status: budget.status,
         description: budget.description,
+        dateDue: new Date(budget.dateString),
         personId: "cpf" in budget?.clients[0] ? budget?.clients[0]?.id : null,
         companyId: "cnpj" in budget?.clients[0] ? budget?.clients[0]?.id : null,
-        dateDue: budget?.dateString?.length > 0 ? new Date(budget.dateString) : null,
     }
     let dataBudgetService: any[] = []
     budget?.services?.map(async (element: BudgetService, index) => {
-        const data = {
-            title: element.title,
-            value: element.value,
-            index: element.index,
-            quantity: parseFloat(element.quantity) ?? 0.0,
-        }
         if (id === 0) {
-            dataBudgetService = [...dataBudgetService, { ...data }]
+            dataBudgetService = [
+                ...dataBudgetService,
+                {
+                    title: element.title,
+                    value: element.value,
+                    index: element.index,
+                    quantity: element.quantity,
+                }]
         } else if (id > 0) {
             dataBudgetService = [
                 ...dataBudgetService,
                 {
                     where: {
-                        budgetId_index: {
-                            budgetId: id,
-                            index: element.index,
-                        }
+                        budgetId: id,
+                        index: element.index,
                     },
-                    create: { ...data },
-                    update: { ...data },
+                    create: {
+                        title: element.title,
+                        value: element.value,
+                        index: element.index,
+                        quantity: element.quantity,
+                    },
+                    update: {
+                        title: element.title,
+                        value: element.value,
+                        index: element.index,
+                        quantity: element.quantity,
+                    }
                 }]
         }
     })
@@ -54,13 +63,21 @@ const handleAddBudget = async (budget: Budget) => {
                 ...dataBudgetPayment,
                 {
                     where: {
-                        budgetId_index: {
-                            budgetId: id,
-                            index: element.index,
-                        }
+                        budgetId: id,
+                        index: element.index,
                     },
-                    create: { ...data },
-                    update: { ...data },
+                    create: {
+                        title: element.title,
+                        value: element.value,
+                        index: element.index,
+                        dateDue: element?.dateString?.length > 0 ? new Date(element.dateString) : null,
+                    },
+                    update: {
+                        title: element.title,
+                        value: element.value,
+                        index: element.index,
+                        dateDue: element?.dateString?.length > 0 ? new Date(element.dateString) : null,
+                    }
                 }]
         }
     })
@@ -106,7 +123,7 @@ const handleDelete = async (id: number) => {
         await prisma.budgetService.deleteMany({
             where: { budgetId: id },
         })
-        await prisma.budgetPayment.deleteMany({
+        await prisma.budgetService.deleteMany({
             where: { budgetId: id },
         })
         await prisma.budget.delete({

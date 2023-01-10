@@ -19,7 +19,7 @@ export const handleGetBudget = async (id: number) => {
         budget?.budgetService?.map((element, index) => {
             services = [
                 ...services,
-                { ...element, value: handleMaskCurrency(element.value), total: handleMaskCurrency(((parseInt(element.value) ?? 0) * element.quantity).toString()) }
+                { ...element, value: handleMaskCurrency(element.value) }
             ]
         })
         let payments = []

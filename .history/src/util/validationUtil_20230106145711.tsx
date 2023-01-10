@@ -93,7 +93,7 @@ export const handleValidationOnlyTextNotNull = (text) => {
 export const handleValidationNotNull = (text) => {
     let test = false
     if (text) {
-        test = text?.toString().trim() !== ""
+        test = text?.trim() !== ""
     }
     return test
 }

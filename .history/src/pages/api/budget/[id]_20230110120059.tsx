@@ -15,13 +15,6 @@ export const handleGetBudget = async (id: number) => {
                 budgetService: true,
             }
         })
-        let services = []
-        budget?.budgetService?.map((element, index) => {
-            services = [
-                ...services,
-                { ...element, value: handleMaskCurrency(element.value), total: handleMaskCurrency(((parseInt(element.value) ?? 0) * element.quantity).toString()) }
-            ]
-        })
         let payments = []
         budget?.budgetPayment?.map((element, index) => {
             payments = [
@@ -29,9 +22,16 @@ export const handleGetBudget = async (id: number) => {
                 { ...element, value: handleMaskCurrency(element.value) }
             ]
         })
+        let services = []
+        budget?.budgetService?.map((element, index) => {
+            services = [
+                ...services,
+                { ...element, value: handleMaskCurrency(element.value) }
+            ]
+        })
         return {
             ...budget,
-            services: services,
+            services: budget.budgetService,
             payments: payments,
             clients: budget.person ? [budget.person] : budget.company ? [budget.company] : [],
         }

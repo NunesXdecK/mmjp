@@ -14,6 +14,7 @@ const handleAddBudget = async (budget: Budget) => {
         companyId: "cnpj" in budget?.clients[0] ? budget?.clients[0]?.id : null,
         dateDue: budget?.dateString?.length > 0 ? new Date(budget.dateString) : null,
     }
+    console.log(JSON.stringify(data))
     let dataBudgetService: any[] = []
     budget?.services?.map(async (element: BudgetService, index) => {
         const data = {

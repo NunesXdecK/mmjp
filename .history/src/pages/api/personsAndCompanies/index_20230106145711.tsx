@@ -5,14 +5,14 @@ const main = async () => {
         const persons = await prisma.person.findMany({
             where: {
                 clientCode: {
-                    gt: 1,
+                    gt: 2,
                 },
             },
         })
         const companies = await prisma.company.findMany({
             where: {
                 clientCode: {
-                    gt: 1,
+                    gt: 2,
                 },
             },
         })

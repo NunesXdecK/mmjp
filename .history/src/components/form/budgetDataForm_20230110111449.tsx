@@ -100,10 +100,10 @@ export default function BudgetDataForm(props: BudgetDataFormProps) {
                                     onBlur={props.onBlur}
                                     onSetText={handleSetDate}
                                     isLoading={props.isLoading}
-                                    isDisabled={props.isDisabled}
                                     value={props.budget.dateString}
                                     onValidate={handleChangeFormValidation}
                                     id={"budget-date" + (props.index ? "-" + props.index : "")}
+                                    isDisabled={props.isDisabled}
                                 />
                             </FormRowColumn>
                         </FormRow>

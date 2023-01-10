@@ -8,7 +8,6 @@ import { FeedbackMessage } from "../modal/feedbackMessageModal";
 import { handleGetDateFormatedToUTC } from "../../util/dateUtils";
 import { handleValidationNotNull, ValidationReturn } from "../../util/validationUtil";
 import { Budget, BudgetPayment, BudgetStatus, defaultBudget } from "../../interfaces/objectInterfaces";
-import { handleRemoveCurrencyMask } from "../../util/maskUtil";
 
 interface BudgetActionBarFormProps {
     className?: string,
@@ -107,22 +106,13 @@ const handleBudgetForDB = (budget: Budget) => {
     if (budget.payments && budget.payments?.length) {
         budget.payments?.map((element: BudgetPayment, index) => {
             let payment = { ...element }
-            payment = { ...payment, value: handleRemoveCurrencyMask(payment?.value) }
+            payment = { ...payment, dateDue: handleGetDateFormatedToUTC(payment.dateString) }
             payments = [...payments, payment]
-        })
-    }
-    let services = []
-    if (budget.services && budget.services?.length) {
-        budget.services?.map((element: BudgetPayment, index) => {
-            let service = { ...element }
-            service = { ...service, value: handleRemoveCurrencyMask(service?.value) }
-            services = [...services, service]
         })
     }
     budget = {
         ...budget,
         clients: clients,
-        services: services,
         payments: payments,
         title: budget.title.trim(),
     }

@@ -1,4 +1,3 @@
-import { handleMaskCurrency } from "../../../components/inputText/inputText"
 import prisma from "../../../prisma/prisma"
 import { handleMaskCEP } from "../../../util/maskUtil"
 
@@ -9,31 +8,13 @@ export const handleGetBudget = async (id: number) => {
                 id: id
             },
             include: {
-                person: true,
-                company: true,
                 budgetPayment: true,
                 budgetService: true,
             }
         })
-        let services = []
-        budget?.budgetService?.map((element, index) => {
-            services = [
-                ...services,
-                { ...element, value: handleMaskCurrency(element.value), total: handleMaskCurrency(((parseInt(element.value) ?? 0) * element.quantity).toString()) }
-            ]
-        })
-        let payments = []
-        budget?.budgetPayment?.map((element, index) => {
-            payments = [
-                ...payments,
-                { ...element, value: handleMaskCurrency(element.value) }
-            ]
-        })
         return {
             ...budget,
-            services: services,
-            payments: payments,
-            clients: budget.person ? [budget.person] : budget.company ? [budget.company] : [],
+            clients: budget.clients[0]
         }
     } catch (err) {
         console.error(err)

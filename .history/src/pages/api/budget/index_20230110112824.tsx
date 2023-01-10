@@ -20,7 +20,7 @@ const handleAddBudget = async (budget: Budget) => {
             title: element.title,
             value: element.value,
             index: element.index,
-            quantity: parseFloat(element.quantity) ?? 0.0,
+            quantity: parseFloat(element.quantity) ?? 1,
         }
         if (id === 0) {
             dataBudgetService = [...dataBudgetService, { ...data }]
@@ -29,10 +29,8 @@ const handleAddBudget = async (budget: Budget) => {
                 ...dataBudgetService,
                 {
                     where: {
-                        budgetId_index: {
-                            budgetId: id,
-                            index: element.index,
-                        }
+                        budgetId: id,
+                        index: element.index,
                     },
                     create: { ...data },
                     update: { ...data },
@@ -54,10 +52,8 @@ const handleAddBudget = async (budget: Budget) => {
                 ...dataBudgetPayment,
                 {
                     where: {
-                        budgetId_index: {
-                            budgetId: id,
-                            index: element.index,
-                        }
+                        budgetId: id,
+                        index: element.index,
                     },
                     create: { ...data },
                     update: { ...data },
@@ -106,7 +102,7 @@ const handleDelete = async (id: number) => {
         await prisma.budgetService.deleteMany({
             where: { budgetId: id },
         })
-        await prisma.budgetPayment.deleteMany({
+        await prisma.budgetService.deleteMany({
             where: { budgetId: id },
         })
         await prisma.budget.delete({

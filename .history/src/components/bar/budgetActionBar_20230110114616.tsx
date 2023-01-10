@@ -87,7 +87,7 @@ export const handleBudgetValidationForDB = (budget: Budget) => {
 
 const handleBudgetForDB = (budget: Budget) => {
     if (budget?.dateString?.length > 0) {
-        budget = { ...budget, dateDue: handleGetDateFormatedToUTC(budget.dateString) }
+        budget = { ...budget, dateDue: handleGetDateFormatedToUTC(budget.dateString), value: handleRemoveCurrencyMask(payment?.value) }
     } else {
         budget = { ...budget, dateDue: 0 }
     }
@@ -107,22 +107,13 @@ const handleBudgetForDB = (budget: Budget) => {
     if (budget.payments && budget.payments?.length) {
         budget.payments?.map((element: BudgetPayment, index) => {
             let payment = { ...element }
-            payment = { ...payment, value: handleRemoveCurrencyMask(payment?.value) }
+            payment = { ...payment, dateDue: handleGetDateFormatedToUTC(payment.dateString), value: handleRemoveCurrencyMask(payment?.value) }
             payments = [...payments, payment]
-        })
-    }
-    let services = []
-    if (budget.services && budget.services?.length) {
-        budget.services?.map((element: BudgetPayment, index) => {
-            let service = { ...element }
-            service = { ...service, value: handleRemoveCurrencyMask(service?.value) }
-            services = [...services, service]
         })
     }
     budget = {
         ...budget,
         clients: clients,
-        services: services,
         payments: payments,
         title: budget.title.trim(),
     }

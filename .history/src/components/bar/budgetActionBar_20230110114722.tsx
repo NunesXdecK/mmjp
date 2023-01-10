@@ -107,7 +107,7 @@ const handleBudgetForDB = (budget: Budget) => {
     if (budget.payments && budget.payments?.length) {
         budget.payments?.map((element: BudgetPayment, index) => {
             let payment = { ...element }
-            payment = { ...payment, value: handleRemoveCurrencyMask(payment?.value) }
+            payment = { ...payment , value: handleRemoveCurrencyMask(payment?.value) }
             payments = [...payments, payment]
         })
     }
