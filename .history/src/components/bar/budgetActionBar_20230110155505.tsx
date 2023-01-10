@@ -115,7 +115,7 @@ const handleBudgetForDB = (budget: Budget) => {
     if (budget.services && budget.services?.length) {
         budget.services?.map((element: BudgetPayment, index) => {
             let service = { ...element }
-            service = { ...service, index: index, value: handleRemoveCurrencyMask(service?.value) }
+            service = { ...service,  index: index,value: handleRemoveCurrencyMask(service?.value) }
             services = [...services, service]
         })
     }

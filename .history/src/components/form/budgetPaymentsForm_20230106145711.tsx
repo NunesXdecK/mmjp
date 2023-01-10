@@ -10,7 +10,6 @@ interface BudgetPaymentsFormProps {
     subtitle?: string,
     formClassName?: string,
     status?: "ORÇAMENTO" | "NORMAL" | "ARQUIVADO" | "FINALIZADO" | "PENDENTE",
-    budgetId?: number,
     isBack?: boolean,
     isSingle?: boolean,
     isLoading?: boolean,
@@ -38,16 +37,7 @@ export default function BudgetPaymentsForm(props: BudgetPaymentsFormProps) {
         let feedbackMessage: FeedbackMessage = { messages: ["Algo deu errado"], messageType: "ERROR" }
         let localPayments = [...props.budgetPayments]
         let canDelete = true
-        if (props?.budgetId && props?.budgetId > 0) {
-            fetch("api/budgetPayment", {
-                method: "DELETE",
-                body: JSON.stringify({
-                    index: index,
-                    token: "tokenbemseguro",
-                    budgetId: props?.budgetId ?? 0,
-                }),
-            })
-        }
+
         if (canDelete) {
             feedbackMessage = { messages: ["Removido com sucesso!"], messageType: "SUCCESS" }
             localPayments.splice(index, 1)

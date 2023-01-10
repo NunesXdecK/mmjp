@@ -1,6 +1,6 @@
 ULTIMO PENSAMENTO:
 ERRO NA VERCEL ME SALVOU KKKKKKKKK, ARRUMAR DEPOIS
-problema para criar dados apos tudo criado é arrumado fazendo estilo cadastro dentro de cadastro
+problema para criar dados apos tudo criado
 TRABALHAR COM AS DATAS KAPPA
 Colocar opções de status na actionbar
 Colocar botão salvar e salvar e sair em todas as action bar

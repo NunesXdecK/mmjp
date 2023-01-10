@@ -1,51 +1,45 @@
 import Form from "./form";
 import Button from "../button/button";
-import BudgetServiceDataForm from "./budgetServiceForm";
-import CurrencyTextView from "../text/currencyTextView";
-import { handleValueStringToInt } from "../../util/maskUtil";
+import BudgetPaymentForm from "./budgetPaymentForm";
 import { FeedbackMessage } from "../modal/feedbackMessageModal";
-import { BudgetService, defaultBudgetService } from "../../interfaces/objectInterfaces";
+import { BudgetPayment, defaultBudgetPayment } from "../../interfaces/objectInterfaces";
 
-interface BudgetServicesFormProps {
+interface BudgetPaymentsFormProps {
     id?: string,
     title?: string,
     subtitle?: string,
     formClassName?: string,
+    status?: "ORÇAMENTO" | "NORMAL" | "ARQUIVADO" | "FINALIZADO" | "PENDENTE",
     budgetId?: number,
+    isBack?: boolean,
+    isSingle?: boolean,
     isLoading?: boolean,
     isDisabled?: boolean,
-    budgetServices?: BudgetService[],
+    budgetPayments?: BudgetPayment[],
     onSet?: (any) => void,
     onBlur?: (any) => void,
     onFinishAdd?: (any?) => void,
     onShowMessage?: (FeedbackMessage) => void,
+    onUpdateBudgetValue?: (any, number) => void,
 }
 
-export default function BudgetServicesForm(props: BudgetServicesFormProps) {
-    const handleGetTotal = () => {
-        let total = 0
-        props.budgetServices?.map((element, index) => {
-            total = total + handleValueStringToInt(element.total)
-        })
-        return total.toString()
-    }
-
+export default function BudgetPaymentsForm(props: BudgetPaymentsFormProps) {
     const handleSetText = (object, index) => {
         if (props.onSet) {
             props.onSet([
-                ...props.budgetServices.slice(0, index),
+                ...props.budgetPayments.slice(0, index),
                 object,
-                ...props.budgetServices.slice(index + 1, props.budgetServices.length),
+                ...props.budgetPayments.slice(index + 1, props.budgetPayments.length),
             ])
         }
     }
 
     const handeOnDelete = async (index: number) => {
         let feedbackMessage: FeedbackMessage = { messages: ["Algo deu errado"], messageType: "ERROR" }
-        let localServices = [...props.budgetServices]
+        let localPayments = [...props.budgetPayments]
         let canDelete = true
-        if (props?.budgetId && props?.budgetId > 0) {
-            fetch("api/budgetService", {
+        if (props?.budgetId > 0) {
+            fetch("api/telephone", {
                 method: "DELETE",
                 body: JSON.stringify({
                     index: index,
@@ -56,9 +50,9 @@ export default function BudgetServicesForm(props: BudgetServicesFormProps) {
         }
         if (canDelete) {
             feedbackMessage = { messages: ["Removido com sucesso!"], messageType: "SUCCESS" }
-            localServices.splice(index, 1)
+            localPayments.splice(index, 1)
             if (props.onSet) {
-                props.onSet(localServices)
+                props.onSet(localPayments)
             }
         }
 
@@ -75,40 +69,37 @@ export default function BudgetServicesForm(props: BudgetServicesFormProps) {
                 <Button
                     isLoading={props.isLoading}
                     isDisabled={props.isDisabled || props.isLoading}
-                    onClick={async () => {
+                    onClick={() => {
                         if (props.onSet) {
-                            props.onSet([
-                                ...props.budgetServices,
-                                {
-                                    ...defaultBudgetService,
-                                    index: props.budgetServices.length,
-                                }])
+                            props.onSet([...props.budgetPayments,
+                            {
+                                ...defaultBudgetPayment,
+                                status: props.status ?? "ORÇAMENTO",
+                                index: props.budgetPayments?.length,
+                            }])
+                            //dateString: handleUTCToDateShow((handleNewDateToUTC() + 2592000000) + ""),
                         }
                     }}>
                     <span className="block sm:hidden">+</span>
-                    <span className="sm:block hidden">Adicionar serviço</span>
+                    <span className="sm:block hidden">Adicionar pagamento</span>
                 </Button>
             )}>
 
-            {props?.budgetServices?.map((element, index) => (
-                <BudgetServiceDataForm
+            {props?.budgetPayments?.map((element, index) => (
+                <BudgetPaymentForm
                     index={index}
                     onBlur={props.onBlur}
                     onSet={handleSetText}
-                    budgetService={element}
+                    budgetPayment={element}
                     onDelete={handeOnDelete}
                     isLoading={props.isLoading}
                     isDisabled={props.isDisabled}
                     onFinishAdd={props.onFinishAdd}
-                    onShowMessage={props.onShowMessage}
-                    key={"budget-services-" + index + props.id}
+                    key={"budget-payments-" + index + props.id}
+                    onUpdateServiceValue={props.onUpdateBudgetValue}
                 />
             ))}
-
-            <div className="p-2 text-gray-800 dark:text-gray-200">
-                <span className="text-lg font-bold">VALOR TOTAL: </span>
-                <CurrencyTextView className="text-lg">{handleGetTotal()}</CurrencyTextView>
-            </div>
         </Form>
+
     )
 }

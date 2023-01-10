@@ -11,7 +11,6 @@ interface BudgetServicesFormProps {
     title?: string,
     subtitle?: string,
     formClassName?: string,
-    budgetId?: number,
     isLoading?: boolean,
     isDisabled?: boolean,
     budgetServices?: BudgetService[],
@@ -44,16 +43,7 @@ export default function BudgetServicesForm(props: BudgetServicesFormProps) {
         let feedbackMessage: FeedbackMessage = { messages: ["Algo deu errado"], messageType: "ERROR" }
         let localServices = [...props.budgetServices]
         let canDelete = true
-        if (props?.budgetId && props?.budgetId > 0) {
-            fetch("api/budgetService", {
-                method: "DELETE",
-                body: JSON.stringify({
-                    index: index,
-                    token: "tokenbemseguro",
-                    budgetId: props?.budgetId ?? 0,
-                }),
-            })
-        }
+
         if (canDelete) {
             feedbackMessage = { messages: ["Removido com sucesso!"], messageType: "SUCCESS" }
             localServices.splice(index, 1)
