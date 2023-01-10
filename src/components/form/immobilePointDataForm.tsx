@@ -59,7 +59,7 @@ export default function ImmobilePointDataForm(props: ImmobilePointDataFormProps)
             subtitle={props.subtitle ?? "Informe os dados básicos"}
         >
             <FormRow>
-                <FormRowColumn unit="4">
+                <FormRowColumn unit="4" unitM="6">
                     <InputPointId
                         id="immobile-point-id"
                         onSet={handleSetPointId}
@@ -69,7 +69,7 @@ export default function ImmobilePointDataForm(props: ImmobilePointDataFormProps)
                         value={props.immobilePoint.pointId}
                     />
                 </FormRowColumn>
-                <FormRowColumn unit="2">
+                <FormRowColumn unit="2" unitM="6">
                     <InputText
                         title="Epoch"
                         isDisabled={true}
@@ -79,7 +79,7 @@ export default function ImmobilePointDataForm(props: ImmobilePointDataFormProps)
                 </FormRowColumn>
             </FormRow>
             <FormRow>
-                <FormRowColumn unit="2">
+                <FormRowColumn unit="2" unitM="3">
                     <InputText
                         title="Easting (X)"
                         validation={NUMBER_MARK}
@@ -92,7 +92,7 @@ export default function ImmobilePointDataForm(props: ImmobilePointDataFormProps)
                         validationMessage="O X não pode ficar em branco."
                     />
                 </FormRowColumn>
-                <FormRowColumn unit="2">
+                <FormRowColumn unit="2" unitM="3">
                     <InputText
                         title="Norting (Y)"
                         validation={NUMBER_MARK}
@@ -105,7 +105,7 @@ export default function ImmobilePointDataForm(props: ImmobilePointDataFormProps)
                         validationMessage="O Y não pode ficar em branco."
                     />
                 </FormRowColumn>
-                <FormRowColumn unit="2">
+                <FormRowColumn unit="2" unitM="6">
                     <InputText
                         validation={NUMBER_MARK}
                         title="Elipse Height (Z)"
@@ -120,7 +120,7 @@ export default function ImmobilePointDataForm(props: ImmobilePointDataFormProps)
                 </FormRowColumn>
             </FormRow>
             <FormRow>
-                <FormRowColumn unit="2">
+                <FormRowColumn unit="2" unitM="3">
                     <InputText
                         title="Qualidade POSN"
                         validation={NUMBER_MARK}
@@ -133,7 +133,7 @@ export default function ImmobilePointDataForm(props: ImmobilePointDataFormProps)
                         validationMessage="A qualidade POSN não pode ficar em branco."
                     />
                 </FormRowColumn>
-                <FormRowColumn unit="2">
+                <FormRowColumn unit="2" unitM="3">
                     <InputText
                         validation={NUMBER_MARK}
                         title="Qualidade da altura"
@@ -146,7 +146,7 @@ export default function ImmobilePointDataForm(props: ImmobilePointDataFormProps)
                         validationMessage="A qualidade da altura não pode ficar em branco."
                     />
                 </FormRowColumn>
-                <FormRowColumn unit="2">
+                <FormRowColumn unit="2" unitM="6">
                     <InputText
                         validation={NUMBER_MARK}
                         title="Qualidade POSN+Altura"
@@ -161,7 +161,7 @@ export default function ImmobilePointDataForm(props: ImmobilePointDataFormProps)
                 </FormRowColumn>
             </FormRow>
             <FormRow>
-                <FormRowColumn unit="2">
+                <FormRowColumn unit="2" unitM="3">
                     <InputText
                         title="Status de ambiguidade"
                         validation={NOT_NULL_MARK}
@@ -174,7 +174,7 @@ export default function ImmobilePointDataForm(props: ImmobilePointDataFormProps)
                         validationMessage="O status de ambiguidade não pode ficar em branco."
                     />
                 </FormRowColumn>
-                <FormRowColumn unit="2">
+                <FormRowColumn unit="2" unitM="3">
                     <InputText
                         title="Frequencia"
                         validation={NOT_NULL_MARK}
@@ -187,7 +187,7 @@ export default function ImmobilePointDataForm(props: ImmobilePointDataFormProps)
                         validationMessage="A frequencia não pode ficar em branco."
                     />
                 </FormRowColumn>
-                <FormRowColumn unit="2">
+                <FormRowColumn unit="2" unitM="6">
                     <InputText
                         title="Tipo de GNSS"
                         validation={NOT_NULL_MARK}
@@ -202,7 +202,7 @@ export default function ImmobilePointDataForm(props: ImmobilePointDataFormProps)
                 </FormRowColumn>
             </FormRow>
             <FormRow>
-                <FormRowColumn unit="2">
+                <FormRowColumn unit="2" unitM="3">
                     <InputText
                         title="Tipo de solução"
                         validation={NOT_NULL_MARK}
@@ -215,7 +215,7 @@ export default function ImmobilePointDataForm(props: ImmobilePointDataFormProps)
                         validationMessage="O tipo de solução não pode ficar em branco."
                     />
                 </FormRowColumn>
-                <FormRowColumn unit="2">
+                <FormRowColumn unit="2" unitM="3">
                     <InputText
                         validation={NOT_NULL_MARK}
                         isLoading={props.isLoading}
@@ -228,7 +228,7 @@ export default function ImmobilePointDataForm(props: ImmobilePointDataFormProps)
                         validationMessage="O status de armazenamento não pode ficar em branco."
                     />
                 </FormRowColumn>
-                <FormRowColumn unit="2">
+                <FormRowColumn unit="2" unitM="6">
                     <InputText
                         title="Tipo"
                         id="immobile-point-type"

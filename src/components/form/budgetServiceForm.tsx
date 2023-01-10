@@ -78,7 +78,7 @@ export default function BudgetServiceForm(props: BudgetServiceFormProps) {
     return (
         <>
             <FormRow className="py-2">
-                <FormRowColumn unit="2" className="flex flex-col sm:flex-row">
+                <FormRowColumn unit="2" unitM="6" className="flex flex-col sm:flex-row">
                     <InputTextAutoComplete
                         title="Titulo"
                         onBlur={props.onBlur}
@@ -93,7 +93,7 @@ export default function BudgetServiceForm(props: BudgetServiceFormProps) {
                         sugestions={["Ambiental", "Desmembramento", "Georeferenciamento", "União", "Licenciamento"]}
                     />
                 </FormRowColumn>
-                <FormRowColumn unit="1">
+                <FormRowColumn unit="2" unitM="6" className="flex flex-row gap-2">
                     <InputTextCurrency
                         title="Valor"
                         onBlur={props.onBlur}
@@ -104,8 +104,6 @@ export default function BudgetServiceForm(props: BudgetServiceFormProps) {
                         onValidate={handleChangeFormValidation}
                         id={"budget-service-value" + (props.index ?? 0) + "-" + props.id}
                     />
-                </FormRowColumn>
-                <FormRowColumn unit="1">
                     <InputText
                         title="Quantidade"
                         onBlur={props.onBlur}
@@ -118,7 +116,7 @@ export default function BudgetServiceForm(props: BudgetServiceFormProps) {
                         id={"budget-service-quantity" + (props.index ?? 0) + "-" + props.id}
                     />
                 </FormRowColumn>
-                <FormRowColumn unit="2" className="flex flex-col sm:flex-row">
+                <FormRowColumn unit="2" unitM="6" className="flex flex-row">
                     <InputTextCurrency
                         isDisabled
                         title="Total"

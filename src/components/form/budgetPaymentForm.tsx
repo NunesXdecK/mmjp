@@ -58,7 +58,7 @@ export default function BudgetPaymentForm(props: BudgetPaymentFormProps) {
     return (
         <>
             <FormRow>
-                <FormRowColumn unit="2">
+                <FormRowColumn unit="2" unitM="6">
                     <InputTextAutoComplete
                         title="Titulo"
                         onBlur={props.onBlur}
@@ -74,7 +74,7 @@ export default function BudgetPaymentForm(props: BudgetPaymentFormProps) {
                     />
                 </FormRowColumn>
 
-                <FormRowColumn unit="2">
+                <FormRowColumn unit="2" unitM="6">
                     <InputTextCurrency
                         title="Valor"
                         onBlur={props.onBlur}
@@ -88,7 +88,7 @@ export default function BudgetPaymentForm(props: BudgetPaymentFormProps) {
                     />
                 </FormRowColumn>
 
-                <FormRowColumn unit="2" className="flex flex-col sm:flex-row">
+                <FormRowColumn unit="2" unitM="6" className="flex flex-row">
                     <InputText
                         mask="date"
                         maxLength={10}

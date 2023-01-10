@@ -93,7 +93,7 @@ const handleBudgetForDB = (budget: Budget) => {
     let clients = []
     if (budget.clients && budget.clients.length) {
         budget.clients?.map((element, index) => {
-            if (element && "id" in element && element.id.length) {
+            if (element && "id" in element && element.id > 0) {
                 if ("cpf" in element) {
                     clients = [...clients, { id: element.id, cpf: "" }]
                 } else if ("cnpj" in element) {
@@ -120,7 +120,7 @@ const handleBudgetForDB = (budget: Budget) => {
 }
 
 export const handleSaveBudgetInner = async (budget, history) => {
-    let res = { status: "ERROR", id: "", budget: budget }
+    let res = { status: "ERROR", id: 0, budget: budget }
     let budgetForDB = handleBudgetForDB(budget)
     try {
         const saveRes = await fetch("api/budget", {
@@ -212,7 +212,7 @@ export default function BudgetActionBarForm(props: BudgetActionBarFormProps) {
     }
 
     useEffect(() => {
-        if (isFirst && props?.budget?.id?.length > 0) {
+        if (isFirst && props?.budget?.id > 0) {
             handleStartProjectButton(props.budget.id).then((res) => {
                 setIsFirst(false)
                 setHasProject(res)
@@ -226,17 +226,82 @@ export default function BudgetActionBarForm(props: BudgetActionBarFormProps) {
                 <div className="flex flex-row gap-2">
                     <Button
                         isLoading={props.isLoading}
+                        isDisabled={props.isDisabled}
                         onClick={() => handleSave(props.budget.status, true)}
                     >
                         Salvar
                     </Button>
                     <Button
                         isLoading={props.isLoading}
+                        isDisabled={props.isDisabled}
                         onClick={() => handleSave(props.budget.status, false)}
                     >
                         Salvar e sair
                     </Button>
+                    <StartProjectButton
+                        budget={props.budget}
+                        isLoading={props.isLoading}
+                        canStartProject={hasProject}
+                        onAfterClick={() => handleSetIsLoading(true)}
+                        onBeforeClick={() => {
+                            handleSetIsLoading(false)
+                            const feedbackMessage: FeedbackMessage = { messages: ["Sucesso!"], messageType: "SUCCESS" }
+                            handleShowMessage(feedbackMessage)
+                            if (props.onAfterSave) {
+                                let budget = props.budget
+                                if (budget.dateString?.length > 0) {
+                                    budget = { ...budget, dateDue: handleGetDateFormatedToUTC(budget.dateString) }
+                                }
+                                props.onAfterSave(feedbackMessage, budget, false)
+                            }
+                        }}
+                    />
+                    <Button
+                        isLoading={props.isLoading}
+                        isHidden={props.budget.status === "APROVADO"}
+                        isDisabled={props.budget.status === "APROVADO"}
+                        onClick={() => {
+                            handleSave("APROVADO", true)
+                        }}
+                    >
+                        Aprovar orçamento
+                    </Button>
+                    <Button
+                        isLoading={props.isLoading}
+                        isHidden={props.budget.status === "NEGOCIANDO"}
+                        isDisabled={props.budget.status === "NEGOCIANDO"}
+                        onClick={() => {
+                            handleSave("NEGOCIANDO", true)
+                        }}
+                    >
+                        Negociar orçamento
+                    </Button>
+                    <Button
+                        isLoading={props.isLoading}
+                        isHidden={props.budget.status === "REJEITADO"}
+                        isDisabled={props.budget.status === "REJEITADO"}
+                        onClick={() => {
+                            handleSave("REJEITADO", true)
+                        }}
+                    >
+                        Rejeitar orçamento
+                    </Button>
+                    <Button
+                        isLoading={props.isLoading}
+                        onClick={props.onPrintBudget}
+                        isHidden={!props.onPrintBudget}
+                    >
+                        Imprimir orçamento
+                    </Button>
+                    <Button
+                        isLoading={props.isLoading}
+                        onClick={props.onPrintContract}
+                        isHidden={!props.onPrintContract}
+                    >
+                        Imprimir contrato
+                    </Button>
                 </div>
+                {/*
                 <DropDownButton
                     isLeft
                     title="..."
@@ -307,6 +372,7 @@ export default function BudgetActionBarForm(props: BudgetActionBarFormProps) {
                         </MenuButton>
                     </div>
                 </DropDownButton>
+                */}
             </div>
         </ActionBar>
     )

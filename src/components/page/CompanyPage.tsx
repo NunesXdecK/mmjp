@@ -185,9 +185,10 @@ export default function CompanyPage(props: CompanyPageProps) {
 
     const handlePutRows = (element: Company) => {
         return (
-            <FormRow><FormRowColumn unit="1">{element.clientCode > -1 ? element.clientCode : "n/a"}</FormRowColumn>
-                <FormRowColumn unit="3">{element.name}</FormRowColumn>
-                <FormRowColumn unit="2">{handleMaskCNPJ(element.cnpj)}</FormRowColumn>
+            <FormRow>
+                <FormRowColumn unit="1" unitM="1">{element.clientCode > -1 ? element.clientCode : "n/a"}</FormRowColumn>
+                <FormRowColumn unit="3" unitM="3">{element.name}</FormRowColumn>
+                <FormRowColumn unit="2"  className="hidden sm:block">{handleMaskCNPJ(element.cnpj)}</FormRowColumn>
             </FormRow>
         )
     }

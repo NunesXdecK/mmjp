@@ -195,7 +195,7 @@ export default function UserPage(props: UserPageProps) {
     const handlePutHeaders = () => {
         return (
             <FormRow>
-                <FormRowColumn unit="3">Username</FormRowColumn>
+                <FormRowColumn unit="2">Username</FormRowColumn>
                 <FormRowColumn unit="2">E-mail</FormRowColumn>
                 <FormRowColumn unit="1"></FormRowColumn>
             </FormRow>
@@ -205,9 +205,9 @@ export default function UserPage(props: UserPageProps) {
     const handlePutRows = (element: User) => {
         return (
             <FormRow>
-                <FormRowColumn unit="3"><PersonNameListItem id={element?.personId} complement={"/" + element.username} /></FormRowColumn>
-                <FormRowColumn unit="2">{element.email}</FormRowColumn>
-                <FormRowColumn unit="1">
+                <FormRowColumn unit="2" unitM="3"><PersonNameListItem id={element?.personId} complement={"/" + element.username} /></FormRowColumn>
+                <FormRowColumn unit="2" className="hidden sm:block">{element.email}</FormRowColumn>
+                <FormRowColumn unit="2" unitM="3" className="justify-self-end">
                     <UserStatusButton
                         user={element}
                         id={element.id}

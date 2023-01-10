@@ -16,11 +16,11 @@ import BudgetPaymentsView from "./budgetPaymentsView"
 interface BudgetViewProps {
     id?: string,
     title?: string,
-    elementId?: string,
     addressTitle?: string,
     classNameTitle?: string,
     classNameHolder?: string,
     classNameContentHolder?: string,
+    elementId?: number,
     hideData?: boolean,
     dataInside?: boolean,
     hideBorder?: boolean,
@@ -129,7 +129,7 @@ export default function BudgetView(props: BudgetViewProps) {
 
     useEffect(() => {
         if (isFirst) {
-            if (props.elementId && props.elementId.length !== 0 && budget.id?.length === 0) {
+            if (props.elementId && props.elementId > 0 && budget?.id === 0) {
                 fetch("api/budget/" + props.elementId).then((res) => res.json()).then((res) => {
                     setIsFirst(old => false)
                     setBudget(res.data)
@@ -140,7 +140,7 @@ export default function BudgetView(props: BudgetViewProps) {
 
     return (
         <>
-            {budget.id?.length === 0 ? (
+            {budget.id === 0 ? (
                 <div className="mt-6 w-full">
                     <PlaceholderItemList />
                 </div>

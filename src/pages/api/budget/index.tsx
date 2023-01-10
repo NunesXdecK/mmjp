@@ -1,69 +1,149 @@
-import { BudgetConversor } from "../../../db/converters"
-import { handleNewDateToUTC } from "../../../util/dateUtils"
-import { Budget } from "../../../interfaces/objectInterfaces"
-import { addDoc, collection, deleteDoc, doc, updateDoc } from "firebase/firestore"
-import { db, HISTORY_COLLECTION_NAME, BUDGET_COLLECTION_NAME } from "../../../db/firebaseDB"
+import prisma from "../../../prisma/prisma"
+import { Budget, BudgetPayment, BudgetService } from "../../../interfaces/objectInterfaces"
+
+const handleAddBudget = async (budget: Budget) => {
+    if (!budget) {
+        return 0
+    }
+    let id = budget?.id ?? 0
+    let data: any = {
+        title: budget.title,
+        status: budget.status,
+        dateDue: budget.dateDue,
+        description: budget.description,
+        personId: "cpf" in budget?.clients[0] ? budget?.clients[0]?.id : null,
+        companyId: "cnpj" in budget?.clients[0] ? budget?.clients[0]?.id : null,
+    }
+    let dataBudgetService: any[] = []
+    budget?.services?.map(async (element: BudgetService, index) => {
+        dataBudgetService = [
+            ...dataBudgetService,
+            {
+                where: {
+                    budgetId: id,
+                    index: element.index,
+                },
+                create: {
+                    title: element.title,
+                    value: element.value,
+                    index: element.index,
+                    quantity: element.quantity,
+                },
+                update: {
+                    title: element.title,
+                    value: element.value,
+                    index: element.index,
+                    quantity: element.quantity,
+                }
+            }]
+    })
+    let dataBudgetPayment: any[] = []
+    budget?.payments?.map(async (element: BudgetPayment, index) => {
+        dataBudgetPayment = [
+            ...dataBudgetPayment,
+            {
+                where: {
+                    budgetId: id,
+                    index: element.index,
+                },
+                create: {
+                    title: element.title,
+                    value: element.value,
+                    index: element.index,
+                    dateDue: element.dateDue,
+                },
+                update: {
+                    title: element.title,
+                    value: element.value,
+                    index: element.index,
+                    dateDue: element.dateDue,
+                }
+            }]
+    })
+    try {
+        data = {
+            ...data,
+            budgetService: { upsert: [...dataBudgetService] },
+            budgetPayment: { upsert: [...dataBudgetPayment] },
+        }
+        if (id === 0) {
+            id = await prisma.budget.create({
+                data: {
+                    ...data,
+                },
+                include: {
+                    budgetService: true,
+                    budgetPayment: true,
+                },
+            }).then(res => res.id)
+        } else if (id > 0) {
+            id = await prisma.budget.update({
+                where: { id: id },
+                data: data,
+                include: {
+                    budgetService: true,
+                    budgetPayment: true,
+                },
+            }).then(res => res.id)
+        }
+    } catch (error) {
+        console.error(error)
+    }
+    return id
+}
+
+const handleDelete = async (id: number) => {
+    try {
+        await prisma.budgetService.deleteMany({
+            where: { budgetId: id },
+        })
+        await prisma.budgetService.deleteMany({
+            where: { budgetId: id },
+        })
+        await prisma.budget.delete({
+            where: { id: id },
+        })
+        return true
+    } catch (error) {
+        console.error(error)
+        return false
+    }
+}
 
 export default async function handler(req, res) {
     const { method, body } = req
-
-    const historyCollection = collection(db, HISTORY_COLLECTION_NAME)
-    const budgetCollection = collection(db, BUDGET_COLLECTION_NAME).withConverter(BudgetConversor)
-
+    const { token, data, id } = JSON.parse(body)
+    let resFinal = { status: "ERROR", error: {}, id: 0, message: "" }
     switch (method) {
         case "POST":
-            let resPOST = { status: "ERROR", error: {}, id: "", message: "" }
-            let { token, data, history } = JSON.parse(body)
+            let budget: Budget = data
             if (token === "tokenbemseguro") {
-                let nowID = data?.id ?? ""
-                const isSave = nowID === ""
-                let budget: Budget = data
-                if (budget.dateString) {
-                    delete budget.dateString
-                }
-                try {
-                    if (isSave) {
-                        budget = { ...budget, dateInsertUTC: handleNewDateToUTC() }
-                        const docRef = await addDoc(budgetCollection, BudgetConversor.toFirestore(budget))
-                        nowID = docRef.id
-                    } else {
-                        budget = { ...budget, dateLastUpdateUTC: handleNewDateToUTC() }
-                        const docRef = doc(budgetCollection, nowID)
-                        await updateDoc(docRef, BudgetConversor.toFirestore(budget))
-                    }
-                    if (history) {
-                        const dataForHistory = { ...BudgetConversor.toFirestore(budget), databaseid: nowID, databasename: BUDGET_COLLECTION_NAME }
-                        await addDoc(historyCollection, dataForHistory)
-                    }
-                    resPOST = { ...resPOST, status: "SUCCESS", id: nowID }
-                } catch (err) {
-                    console.error(err)
-                    resPOST = { ...resPOST, status: "ERROR", error: err }
+                const resAdd = await handleAddBudget(budget).then(res => res)
+                if (resAdd === 0) {
+                    resFinal = { ...resFinal, status: "ERROR" }
+                } else {
+                    resFinal = { ...resFinal, status: "SUCCESS", id: resAdd }
                 }
             } else {
-                resPOST = { ...resPOST, status: "ERROR", message: "Token invalido!" }
+                resFinal = { ...resFinal, status: "ERROR", message: "Token invalido!" }
             }
-            res.status(200).json(resPOST)
+            res.status(200).json(resFinal)
             break
         case "DELETE":
-            let resDELETE = { status: "ERROR", error: {}, message: "" }
-            try {
-                const { token, id } = JSON.parse(body)
-                if (token === "tokenbemseguro") {
-                    const docRef = doc(budgetCollection, id)
-                    await deleteDoc(docRef)
-                    resDELETE = { ...resDELETE, status: "SUCCESS" }
+            if (token === "tokenbemseguro") {
+                const resDelete = await handleDelete(id).then(res => res)
+                if (resDelete) {
+                    resFinal = { ...resFinal, status: "SUCCESS" }
                 } else {
-                    resDELETE = { ...resDELETE, status: "ERROR", message: "Token invalido!" }
+                    resFinal = { ...resFinal, status: "ERROR" }
                 }
-            } catch (err) {
-                console.error(err)
-                resDELETE = { ...resDELETE, status: "ERROR", error: err }
+            } else {
+                resFinal = { ...resFinal, status: "ERROR", message: "Token invalido!" }
             }
-            res.status(200).json(resDELETE)
+            res.status(200).json(resFinal)
             break
         default:
-            res.setHeader("Allow", ["PUT", "UPDATE", "DELETE"])
+            res.setHeader("Allow", ["POST", "DELETE"])
             res.status(405).end(`Metodo ${method} nao permitido`)
     }
 }

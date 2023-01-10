@@ -10,6 +10,7 @@ import { Immobile } from "../../interfaces/objectInterfaces";
 import SelectImmobilePointForm from "../select/selectImmobilePointForm";
 import SelectPersonCompanyForm from "../select/selectPersonCompanyForm";
 import { CCIR_MARK, NOT_NULL_MARK, NUMBER_MARK } from "../../util/patternValidationUtil";
+import InputTextArea from "../inputText/inputTextArea";
 
 interface ImmobileDataFormProps {
     title?: string,
@@ -42,6 +43,7 @@ export default function ImmobileDataForm(props: ImmobileDataFormProps) {
     const handleSetCCRINumber = (value) => { handleSet({ ...props.immobile, ccirNumber: value }) }
     const handleSetComarcaCode = (value) => { handleSet({ ...props.immobile, comarcaCode: value }) }
     const handleSetRegistration = (value) => { handleSet({ ...props.immobile, registration: value }) }
+    const handleSetDescription = (value) => { handleSet({ ...props.immobile, description: value }) }
 
     const handleSet = (value: Immobile) => {
         if (props.onSet) {
@@ -64,7 +66,7 @@ export default function ImmobileDataForm(props: ImmobileDataFormProps) {
                 subtitle={props.subtitle ?? "Informe os dados básicos"}
             >
                 <FormRow>
-                    <FormRowColumn unit="4">
+                    <FormRowColumn unit="4" unitM="6">
                         <InputText
                             id="immobile-name"
                             title="Nome do imóvel"
@@ -77,7 +79,7 @@ export default function ImmobileDataForm(props: ImmobileDataFormProps) {
                             validationMessage="O nome do imóvel não pode ficar em branco."
                         />
                     </FormRowColumn>
-                    <FormRowColumn unit="2">
+                    <FormRowColumn unit="2" unitM="6">
                         <InputText
                             id="status"
                             isDisabled={true}
@@ -201,6 +203,19 @@ export default function ImmobileDataForm(props: ImmobileDataFormProps) {
                             isDisabled={props.isDisabled}
                             onSetText={handleSetRegistration}
                             value={props.immobile.registration}
+                        />
+                    </FormRowColumn>
+                </FormRow>
+                <FormRow>
+                    <FormRowColumn unit="6" className="">
+                        <InputTextArea
+                            title="Descrição"
+                            onBlur={props.onBlur}
+                            id="immobile-description"
+                            isLoading={props.isLoading}
+                            isDisabled={props.isDisabled}
+                            onSetText={handleSetDescription}
+                            value={props.immobile.description}
                         />
                     </FormRowColumn>
                 </FormRow>

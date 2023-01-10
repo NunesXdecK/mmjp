@@ -105,7 +105,7 @@ export default function TelephoneForm(props: TelephoneFormProps) {
             <form
                 onSubmit={handleAddText}>
                 <FormRow>
-                    <FormRowColumn unit="2">
+                    <FormRowColumn unit="2" unitM="6">
                         <InputSelect
                             title="Tipo"
                             value={telephone.type}
@@ -116,7 +116,7 @@ export default function TelephoneForm(props: TelephoneFormProps) {
                             options={["comercial", "pessoal", "outro", "whatsapp"]}
                         />
                     </FormRowColumn>
-                    <FormRowColumn unit="4" className="flex flex-row gap-2 items-end">
+                    <FormRowColumn unit="4" unitM="6" className="flex flex-row gap-2 items-end">
                         <InputText
                             maxLength={15}
                             title="Telefone"

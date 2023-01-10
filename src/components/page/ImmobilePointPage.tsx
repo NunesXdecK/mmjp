@@ -141,12 +141,12 @@ export default function ImmobilePointPage(props: ImmobilePointPageProps) {
 
     const handlePutModalTitle = (short: boolean) => {
         let paths = []
-        let path: NavBarPath = { path: "Nova pessoa", onClick: null }
+        let path: NavBarPath = { path: "Novo ponto", onClick: null }
         if (short) {
             //path = { ...path, path: "S" }
         }
         if (immobilePoint?.id > 0) {
-            path = { ...path, path: "Pessoa-" + immobilePoint.pointId, onClick: null }
+            path = { ...path, path: "Ponto-" + immobilePoint.pointId, onClick: null }
         }
         try {
             if (props.prevPath?.length > 0) {
@@ -187,11 +187,11 @@ export default function ImmobilePointPage(props: ImmobilePointPageProps) {
     const handlePutRows = (element: ImmobilePoint) => {
         return (
             <FormRow>
-                <FormRowColumn unit="1">{element.pointId}</FormRowColumn>
-                <FormRowColumn unit="2">{element.epoch}</FormRowColumn>
-                <FormRowColumn unit="1">{element.eastingX}</FormRowColumn>
-                <FormRowColumn unit="1">{element.northingY}</FormRowColumn>
-                <FormRowColumn unit="1">{element.elipseHeightZ}</FormRowColumn>
+                <FormRowColumn unit="1" unitM="3">{element.pointId}</FormRowColumn>
+                <FormRowColumn unit="2" unitM="3">{element.epoch}</FormRowColumn>
+                <FormRowColumn unit="1" className="hidden sm:block">{element.eastingX}</FormRowColumn>
+                <FormRowColumn unit="1" className="hidden sm:block">{element.northingY}</FormRowColumn>
+                <FormRowColumn unit="1" className="hidden sm:block">{element.elipseHeightZ}</FormRowColumn>
             </FormRow>
         )
     }

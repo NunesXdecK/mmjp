@@ -78,7 +78,7 @@ export default function AddressForm(props: AddressFormProps) {
             setIsSearching(false)
 
         }
-        props.setAddress({...address, cep: value})
+        props.setAddress({ ...address, cep: value })
     }
 
     const handleOnChangePublicPlace = (value: string) => {
@@ -108,7 +108,7 @@ export default function AddressForm(props: AddressFormProps) {
                 subtitle={props.subtitle}>
 
                 <FormRow>
-                    <FormRowColumn unit="2">
+                    <FormRowColumn unit="2" unitM="6">
                         <InputText
                             id="cep"
                             mask="cep"
@@ -122,7 +122,7 @@ export default function AddressForm(props: AddressFormProps) {
                         />
                     </FormRowColumn>
 
-                    <FormRowColumn unit="4">
+                    <FormRowColumn unit="4" unitM="6">
                         <InputText
                             id="public-place"
                             title="Logradouro"
@@ -136,7 +136,7 @@ export default function AddressForm(props: AddressFormProps) {
                 </FormRow>
 
                 <FormRow>
-                    <FormRowColumn unit="2">
+                    <FormRowColumn unit="2" unitM="3">
                         <InputText
                             id="number"
                             title="Número"
@@ -148,7 +148,7 @@ export default function AddressForm(props: AddressFormProps) {
                         />
                     </FormRowColumn>
 
-                    <FormRowColumn unit="2">
+                    <FormRowColumn unit="2" unitM="3">
                         <InputText
                             id="district"
                             title="Bairro"
@@ -160,7 +160,7 @@ export default function AddressForm(props: AddressFormProps) {
                         />
                     </FormRowColumn>
 
-                    <FormRowColumn unit="2">
+                    <FormRowColumn unit="2" unitM="6">
                         <InputText
                             id="county"
                             title="Cidade"

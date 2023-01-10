@@ -61,7 +61,7 @@ export default function BudgetDataForm(props: BudgetDataFormProps) {
                         subtitle={props.subtitle ?? "Informe os dados básicos"}
                     >
                         <FormRow>
-                            <FormRowColumn unit="1">
+                            <FormRowColumn unit="1" unitM="6">
                                 <InputText
                                     title="Status"
                                     isDisabled={true}
@@ -71,7 +71,7 @@ export default function BudgetDataForm(props: BudgetDataFormProps) {
                             </FormRowColumn>
                         </FormRow>
                         <FormRow>
-                            <FormRowColumn unit="4">
+                            <FormRowColumn unit="4" unitM="6">
                                 <InputTextAutoComplete
                                     onBlur={props.onBlur}
                                     value={props.budget.title}
@@ -92,7 +92,7 @@ export default function BudgetDataForm(props: BudgetDataFormProps) {
                                     isDisabled={props.isDisabled}
                                 />
                             </FormRowColumn>
-                            <FormRowColumn unit="2">
+                            <FormRowColumn unit="2" unitM="6">
                                 <InputText
                                     mask="date"
                                     title="Prazo"

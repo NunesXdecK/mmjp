@@ -6,15 +6,15 @@ import { useEffect, useState } from "react"
 import BudgetView from "../view/budgetView"
 import WindowModal from "../modal/windowModal"
 import FormRowColumn from "../form/formRowColumn"
+import { PlusIcon } from "@heroicons/react/solid"
+import NavBar, { NavBarPath } from "../bar/navBar"
 import BudgetDataForm from "../form/budgetDataForm"
 import ContractPrintView from "../view/contractPrintView"
 import SwiftInfoButton from "../button/switchInfoButton"
-import { PlusIcon } from "@heroicons/react/solid"
 import { FeedbackMessage } from "../modal/feedbackMessageModal"
 import { handleUTCToDateShow, handleNewDateToUTC } from "../../util/dateUtils"
 import BudgetActionBarForm, { handleSaveBudgetInner } from "../bar/budgetActionBar"
 import { Budget, BudgetPayment, Company, defaultBudget, Person } from "../../interfaces/objectInterfaces"
-import NavBar, { NavBarPath } from "../bar/navBar"
 
 interface BudgetPageProps {
     id?: string,
@@ -194,7 +194,7 @@ export default function BudgetPage(props: BudgetPageProps) {
         if (short) {
             //path = { ...path, path: "S" }
         }
-        if (budget.id?.length > 0) {
+        if (budget?.id > 0) {
             path = { ...path, path: "Orçamento-" + budget.title, onClick: null }
         }
         try {

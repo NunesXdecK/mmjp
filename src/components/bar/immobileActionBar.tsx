@@ -130,8 +130,8 @@ export default function ImmobileActionBarForm(props: ImmobileActionBarFormProps)
 
     return (
         <ActionBar className={props.className + " bg-slate-50 dark:bg-slate-800 dark:border dark:border-gray-700"}>
-            <div className="w-full flex flex-row justify-between">
-                <div className="flex flex-row gap-2">
+            <div className="w-full flex flex-row justify-between flex-wrap">
+                <div className="flex flex-row gap-2 flex-wrap">
                     <Button
                         isLoading={props.isLoading}
                         onClick={() => handleSave(props.immobile.status, true)}
@@ -144,7 +144,32 @@ export default function ImmobileActionBarForm(props: ImmobileActionBarFormProps)
                     >
                         Salvar e sair
                     </Button>
+                    <Button
+                        isLoading={props.isLoading}
+                        isHidden={props.immobile.status === "NORMAL"}
+                        isDisabled={props.immobile.status === "NORMAL"}
+                        onClick={() => handleSave("NORMAL", true)}
+                    >
+                        Normalizar imóvel
+                    </Button>
+                    <Button
+                        isLoading={props.isLoading}
+                        isHidden={props.immobile.status === "UNIFICADO"}
+                        isDisabled={props.immobile.status === "UNIFICADO"}
+                        onClick={() => handleSave("UNIFICADO", true)}
+                    >
+                        Unificar imóvel
+                    </Button>
+                    <Button
+                        isLoading={props.isLoading}
+                        isHidden={props.immobile.status === "DESMEMBRADO"}
+                        isDisabled={props.immobile.status === "DESMEMBRADO"}
+                        onClick={() => handleSave("DESMEMBRADO", true)}
+                    >
+                        Desmembrar imóvel
+                    </Button>
                 </div>
+                {/*
                 <DropDownButton
                     isLeft
                     title="..."
@@ -183,6 +208,7 @@ export default function ImmobileActionBarForm(props: ImmobileActionBarFormProps)
                         </MenuButton>
                     </div>
                 </DropDownButton>
+            */}
             </div>
         </ActionBar>
     )

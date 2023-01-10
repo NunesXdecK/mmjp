@@ -204,8 +204,8 @@ export default function ImmobilePage(props: ImmobilePageProps) {
     const handlePutRows = (element: Immobile) => {
         return (
             <FormRow>
-                <FormRowColumn unit="2">{element.name}</FormRowColumn>
-                <FormRowColumn unit="1">
+                <FormRowColumn unit="2" unitM="3">{element.name}</FormRowColumn>
+                <FormRowColumn unit="1" unitM="3" className="justify-self-center sm:justify-self-start">
                     <ImmobileStatusButton
                         id={element.id + ""}
                         immobile={element}
@@ -217,8 +217,8 @@ export default function ImmobilePage(props: ImmobilePageProps) {
                         }}
                     />
                 </FormRowColumn>
-                <FormRowColumn unit="1">{element.county}</FormRowColumn>
-                <FormRowColumn unit="2">{element.land}</FormRowColumn>
+                <FormRowColumn unit="1" className="hidden sm:block">{element.county}</FormRowColumn>
+                <FormRowColumn unit="2" className="hidden sm:block">{element.land}</FormRowColumn>
             </FormRow>
         )
     }

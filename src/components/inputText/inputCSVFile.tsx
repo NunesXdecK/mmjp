@@ -35,6 +35,9 @@ export default function InputCVSFile(props: InputCVSFileProps) {
     const handleOnChange = (event) => {
         let files = [...event.target.files]
         if (files && files.length > 0) {
+            if (files[0]?.type !== "text/csv") {
+                return
+            }
             setText(files[0].name)
             const reader = new FileReader()
             reader.readAsText(files[0])
@@ -82,6 +85,7 @@ export default function InputCVSFile(props: InputCVSFileProps) {
                         <input
                             type="file"
                             id="file-upload"
+                            accept="text/csv"
                             name="file-upload"
                             className="sr-only"
                             onChange={handleOnChange}

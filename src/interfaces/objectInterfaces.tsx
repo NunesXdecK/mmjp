@@ -143,10 +143,11 @@ export interface Immobile {
 }
 
 export interface Budget {
-    id?: string,
     title?: string,
     dateString?: string,
+    description?: string,
     status?: BudgetStatus,
+    id?: number,
     dateDue?: number,
     dateInsertUTC?: number,
     dateLastUpdateUTC?: number,
@@ -160,6 +161,7 @@ export interface BudgetService {
     value?: string,
     total?: string,
     quantity?: string,
+    id?: number,
     index?: number,
 }
 
@@ -167,6 +169,7 @@ export interface BudgetPayment {
     value?: string,
     title?: string,
     dateString?: string,
+    id?: number,
     index?: number,
     dateDue?: number,
 }
@@ -403,9 +406,10 @@ export const defaultImmobilePoint: ImmobilePoint = {
 }
 
 export const defaultBudget: Budget = {
-    id: "",
+    id: 0,
     title: "",
     dateString: "",
+    description: "",
     status: "ORÇAMENTO",
     dateDue: 0,
     dateInsertUTC: 0,
@@ -420,6 +424,7 @@ export const defaultBudgetService: BudgetService = {
     value: "0",
     total: "0",
     quantity: "1",
+    id: 0,
     index: -1,
 }
 
@@ -427,6 +432,7 @@ export const defaultBudgetPayment: BudgetPayment = {
     value: "0",
     title: "",
     dateString: "",
+    id: 0,
     index: -1,
     dateDue: 0,
 }

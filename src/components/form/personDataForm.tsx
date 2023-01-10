@@ -68,7 +68,7 @@ export default function PersonDataForm(props: PersonDataFormProps) {
                 subtitle={props.subtitle ?? "Informe os dados básicos"}
             >
                 <FormRow>
-                    <FormRowColumn unit="4">
+                    <FormRowColumn unit="4" unitM="6">
                         <InputText
                             id="person-fullname"
                             title="Nome completo"
@@ -82,7 +82,7 @@ export default function PersonDataForm(props: PersonDataFormProps) {
                         />
                     </FormRowColumn>
                     {!props.isProfile && (
-                        <FormRowColumn unit="2">
+                        <FormRowColumn unit="2" unitM="6">
                             <InputClientCode
                                 id="person-client-code"
                                 title="Codigo de cliente"
@@ -96,7 +96,7 @@ export default function PersonDataForm(props: PersonDataFormProps) {
                     )}
                 </FormRow>
                 <FormRow>
-                    <FormRowColumn unit="3">
+                    <FormRowColumn unit="3" unitM="6">
                         <InputCPF
                             id="person-cpf"
                             onSet={handleSetCPF}
@@ -153,7 +153,7 @@ export default function PersonDataForm(props: PersonDataFormProps) {
                     </FormRowColumn>
                 </FormRow>
                 <FormRow>
-                    <FormRowColumn unit="3">
+                    <FormRowColumn unit="3"  unitM="6">
                         <InputSelect
                             title="Estado Civil"
                             id="person-martial-status"
@@ -164,7 +164,7 @@ export default function PersonDataForm(props: PersonDataFormProps) {
                             options={["casado", "divorciado", "separado", "solteiro", "viuvo"]}
                         />
                     </FormRowColumn>
-                    <FormRowColumn unit="3">
+                    <FormRowColumn unit="3" unitM="6">
                         <InputText
                             title="Profissão"
                             id="person-profession"

@@ -17,7 +17,7 @@ interface DropDownButtonProps {
 export default function DropDownButton(props: DropDownButtonProps) {
     const [isOpen, setIsOpen] = useState(false)
     let HolderClassName = "relative"
-    let optionsHolderClassName = " min-w-max shadow-m dark:shadow-none mt-2 z-20 bg-transparent rounded"
+    let optionsHolderClassName = " min-w-max shadow-md dark:shadow-none mt-2 z-20 bg-transparent rounded"
     if (!props.isNotFloat) {
         optionsHolderClassName = optionsHolderClassName + " absolute"
     }
