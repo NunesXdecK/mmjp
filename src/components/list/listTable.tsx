@@ -1,11 +1,10 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import Button from "../button/button";
 import ListTableItem from "./listTableItem";
 import InputText from "../inputText/inputText";
 import WindowModal from "../modal/windowModal";
 import { handleUTCToDateShow } from "../../util/dateUtils";
 import { STYLE_FOR_INPUT_LOADING_TRANSPARENT } from "../../util/patternValidationUtil";
-import PlaceholderItemList from "./placeholderItemList";
 
 interface ListTableProps {
     list?: any[],
@@ -47,10 +46,9 @@ export default function ListTable(props: ListTableProps) {
             props.onSetIsActive(index)
         }
     }
-
     const filteredList =
-        (props.onFilter && props.onFilter(inputSearch)) ??
-        props.list?.filter((element, index) => {
+        (props?.onFilter && props?.onFilter(inputSearch)) ??
+        (props?.list?.filter && props?.list?.filter((element, index) => {
             let name = ""
             let title = ""
             let date = ""
@@ -77,7 +75,7 @@ export default function ListTable(props: ListTableProps) {
                 || date.toLowerCase().includes(inputSearch.toLowerCase())
                 || title.toLowerCase().includes(inputSearch.toLowerCase())
                 || status.toLowerCase().includes(inputSearch.toLowerCase())
-        }) ??
+        })) ??
         props.list
 
     let pagesArray = []
@@ -149,9 +147,9 @@ export default function ListTable(props: ListTableProps) {
                             <ListTableItem
                                 element={element}
                                 canDelete={props.canDelete}
-                                onTableRow={props.onTableRow}
-                                onShowClick={props.onShowClick}
-                                onEditClick={props.onEditClick}
+                                onTableRow={props?.onTableRow}
+                                onShowClick={props?.onShowClick}
+                                onEditClick={props?.onEditClick}
                                 index={(page * perPage) + (index + 1)}
                                 isLast={pagesArray[handleGetPage(pagesArray)]?.length === index + 1}
                                 isDisabled={props.isLoading || props.isDisabled}

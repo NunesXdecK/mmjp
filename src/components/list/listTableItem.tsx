@@ -1,7 +1,6 @@
 import { EyeIcon, PencilAltIcon, TrashIcon } from "@heroicons/react/outline";
 import ScrollDownTransition from "../animation/scrollDownTransition";
 import Button from "../button/button";
-import FormRow from "../form/formRow";
 
 interface ListTableItemProps {
     index?: number,
@@ -25,6 +24,7 @@ export default function ListTableItem(props: ListTableItemProps) {
     className = className + " border-b border-gray-200 dark:border-gray-700"
     if (!props.isLast) {
     }
+    console.log(props.onShowClick)
     return (
         <div
             className={className}
@@ -38,25 +38,41 @@ export default function ListTableItem(props: ListTableItemProps) {
                             color="red"
                             className="max-w-min"
                             isDisabled={props.isDisabled}
-                            onClick={() => { props.onDeleteClick(props.element) }}
+                            onClick={() => {
+                                if (props?.onDeleteClick) {
+                                    props?.onDeleteClick(props.element)
+                                }
+                            }}
                         >
                             <TrashIcon className="text-white block h-5 w-5" aria-hidden="true" />
                         </Button>
                     )}
-                    <Button
-                        className="max-w-min"
-                        isDisabled={props.isDisabled}
-                        onClick={() => { props.onEditClick(props.element, props.index) }}
-                    >
-                        <PencilAltIcon className="text-white block h-5 w-5 " aria-hidden="true" />
-                    </Button>
-                    <Button
-                        className="max-w-min"
-                        isDisabled={props.isDisabled}
-                        onClick={() => { props.onShowClick(props.element, props.index) }}
-                    >
-                        <EyeIcon className="text-white block h-5 w-5 " aria-hidden="true" />
-                    </Button>
+                    {props.onEditClick && (
+                        <Button
+                            className="max-w-min"
+                            isDisabled={props.isDisabled}
+                            onClick={() => {
+                                if (props?.onEditClick) {
+                                    props?.onEditClick(props.element, props.index)
+                                }
+                            }}
+                        >
+                            <PencilAltIcon className="text-white block h-5 w-5 " aria-hidden="true" />
+                        </Button>
+                    )}
+                    {props.onShowClick && (
+                        <Button
+                            className="max-w-min"
+                            isDisabled={props.isDisabled}
+                            onClick={() => {
+                                if (props?.onShowClick) {
+                                    props?.onShowClick(props.element, props.index)
+                                }
+                            }}
+                        >
+                            <EyeIcon className="text-white block h-5 w-5 " aria-hidden="true" />
+                        </Button>
+                    )}
                 </div>
             </ScrollDownTransition>
         </div>

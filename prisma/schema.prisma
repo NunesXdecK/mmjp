@@ -200,12 +200,10 @@ model BudgetService {
   dateUpdate DateTime @updatedAt @map("date_update")
   title      String   @db.VarChar(255)
   value      String
-  index      Int
   quantity   Int
   budget     Budget   @relation(fields: [budgetId], references: [id])
   budgetId   Int      @map("budget_id")
 
-  @@unique([budgetId, index])
   @@map("budget_service")
 }
 
@@ -215,12 +213,10 @@ model BudgetPayment {
   dateUpdate DateTime  @updatedAt @map("date_update")
   title      String    @db.VarChar(255)
   value      String
-  index      Int
   dateDue    DateTime? @map("date_due")
   budget     Budget    @relation(fields: [budgetId], references: [id])
   budgetId   Int       @map("budget_id")
 
-  @@unique([budgetId, index])
   @@map("budget_payment")
 }
 

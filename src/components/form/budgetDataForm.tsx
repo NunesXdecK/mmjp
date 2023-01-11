@@ -4,13 +4,13 @@ import { useState } from "react";
 import BudgetView from "../view/budgetView";
 import FormRowColumn from "./formRowColumn";
 import InputText from "../inputText/inputText";
-import BudgetServicesForm from "./budgetServicesForm";
 import BudgetPaymentsForm from "./budgetPaymentsForm";
 import { Budget } from "../../interfaces/objectInterfaces";
 import { NOT_NULL_MARK } from "../../util/patternValidationUtil";
 import InputTextAutoComplete from "../inputText/inputTextAutocomplete";
 import InputSelectPersonCompany from "../inputText/inputSelectPersonCompany";
 import { NavBarPath } from "../bar/navBar";
+import BudgetServicePage from "../page/BudgetServicePage";
 
 interface BudgetDataFormProps {
     title?: string,
@@ -23,6 +23,7 @@ interface BudgetDataFormProps {
     prevPath?: NavBarPath[] | any,
     onBlur?: (any) => void,
     onShowMessage?: (any) => void,
+    onSetIsLoading?: (any) => void,
     onSet?: (any, number?) => void,
 }
 
@@ -122,18 +123,22 @@ export default function BudgetDataForm(props: BudgetDataFormProps) {
                             </FormRowColumn>
                         </FormRow>
                     </Form>
-                    <BudgetServicesForm
+                    <Form
                         title="Serviços"
-                        formClassName="px-0 py-2"
-                        onSet={handleSetServices}
-                        isLoading={props.isLoading}
-                        budgetId={props?.budget?.id}
-                        isDisabled={props.isDisabled}
                         subtitle="Adicione os serviços"
-                        onShowMessage={props.onShowMessage}
-                        budgetServices={props.budget.services}
-                        id={"budget-service-form" + (props.index ? "-" + props.index : "")}
-                    />
+                    >
+                        <BudgetServicePage
+                            canSave
+                            prevPath={props.prevPath}
+                            onSet={handleSetServices}
+                            budgetId={props.budget.id}
+                            isLoading={props.isLoading}
+                            isDisabled={props.isDisabled}
+                            onShowMessage={props.onShowMessage}
+                            onSetIsLoading={props.onSetIsLoading}
+                            budgetServices={props.budget.services}
+                        />
+                    </Form>
                     <BudgetPaymentsForm
                         title="Pagamentos"
                         formClassName="px-0 py-2"
