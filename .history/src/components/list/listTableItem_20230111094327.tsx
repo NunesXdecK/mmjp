@@ -24,6 +24,7 @@ export default function ListTableItem(props: ListTableItemProps) {
     className = className + " border-b border-gray-200 dark:border-gray-700"
     if (!props.isLast) {
     }
+    console.log(props.onShowClick)
     return (
         <div
             className={className}

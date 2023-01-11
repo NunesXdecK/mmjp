@@ -12,7 +12,7 @@ const handleAddBudgetService = async (budgetService: BudgetService) => {
         index: budgetService.index,
         quantity: parseFloat(budgetService.quantity) ?? 0.0,
     }
-
+    
     try {
         if (id === 0) {
             id = await prisma.budgetService.create({
@@ -52,20 +52,6 @@ export default async function handler(req, res) {
     const { token, id, data } = JSON.parse(body)
     let resFinal = { status: "ERROR", error: {}, id: 0, message: "" }
     switch (method) {
-        case "POST":
-            let budgetService: BudgetService = data
-            if (token === "tokenbemseguro") {
-                const resAdd = await handleAddBudgetService(budgetService).then(res => res)
-                if (resAdd === 0) {
-                    resFinal = { ...resFinal, status: "ERROR" }
-                } else {
-                    resFinal = { ...resFinal, status: "SUCCESS", id: resAdd }
-                }
-            } else {
-                resFinal = { ...resFinal, status: "ERROR", message: "Token invalido!" }
-            }
-            res.status(200).json(resFinal)
-            break
         case "DELETE":
             if (token === "tokenbemseguro" && id > -1) {
                 const resDelete = await handleDelete(id).then(res => res)
@@ -80,7 +66,7 @@ export default async function handler(req, res) {
             res.status(200).json(resFinal)
             break
         default:
-            res.setHeader("Allow", ["DELETE", "POST"])
+            res.setHeader("Allow", ["DELETE"])
             res.status(405).end(`Metodo ${method} nao permitido`)
     }
 }

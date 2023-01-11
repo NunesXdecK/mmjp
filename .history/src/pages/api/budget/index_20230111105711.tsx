@@ -83,19 +83,17 @@ const handleAddBudget = async (budget: Budget) => {
         } else if (id > 0) {
             data = {
                 ...data,
+                budgetService: { upsert: [...dataBudgetService] },
+                budgetPayment: { upsert: [...dataBudgetPayment] },
             }
             id = await prisma.budget.update({
                 where: { id: id },
                 data: data,
+                include: {
+                    budgetService: true,
+                    budgetPayment: true,
+                },
             }).then(res => res.id)
-            /*
-            budgetService: { upsert: [...dataBudgetService] },
-            budgetPayment: { upsert: [...dataBudgetPayment] },
-            include: {
-                budgetService: true,
-                budgetPayment: true,
-            },
-            */
         }
     } catch (error) {
         console.error(error)

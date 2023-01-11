@@ -167,9 +167,9 @@ export default function BudgetServicePage(props: BudgetServicePageProps) {
         return (
             <FormRow>
                 <FormRowColumn unit="2">Nome</FormRowColumn>
-                <FormRowColumn unit="1" className="text-center">Valor</FormRowColumn>
-                <FormRowColumn unit="1" className="text-center">Quantidade</FormRowColumn>
-                <FormRowColumn unit="2" className="text-center">Total</FormRowColumn>
+                <FormRowColumn unit="1">Valor</FormRowColumn>
+                <FormRowColumn unit="1">Quantidade</FormRowColumn>
+                <FormRowColumn unit="2">Total</FormRowColumn>
             </FormRow>
         )
     }
@@ -179,9 +179,9 @@ export default function BudgetServicePage(props: BudgetServicePageProps) {
         return (
             <FormRow>
                 <FormRowColumn unit="2">{element.title}</FormRowColumn>
-                <FormRowColumn unit="1" className="text-center">{element.value}</FormRowColumn>
-                <FormRowColumn unit="1" className="text-center">{element.quantity}</FormRowColumn>
-                <FormRowColumn unit="2" className="text-center">{element.total}</FormRowColumn>
+                <FormRowColumn unit="1" className="text-right">{element.value}</FormRowColumn>
+                <FormRowColumn unit="1">{element.quantity}</FormRowColumn>
+                <FormRowColumn unit="2">{element.total}</FormRowColumn>
             </FormRow>
         )
     }

@@ -101,17 +101,16 @@ export default function BudgetServicePage(props: BudgetServicePageProps) {
     }
 
     const handleAfterSave = (feedbackMessage: FeedbackMessage, budgetService: BudgetService, isForCloseModal) => {
-        const i = index - 1
-        console.log(i)
+        console.log(index)
         let list: BudgetService[] = [
             budgetService,
             ...props?.budgetServices,
         ]
-        if (i > -1) {
+        if (index > -1) {
             list = [
                 budgetService,
-                ...props?.budgetServices.slice(0, i),
-                ...props?.budgetServices.slice(i + 1, props?.budgetServices.length),
+                ...props?.budgetServices.slice(0, index),
+                ...props?.budgetServices.slice(index + 1, props?.budgetServices.length),
             ]
         }
         handleOnSet(list)
@@ -166,22 +165,17 @@ export default function BudgetServicePage(props: BudgetServicePageProps) {
     const handlePutHeaders = () => {
         return (
             <FormRow>
-                <FormRowColumn unit="2">Nome</FormRowColumn>
-                <FormRowColumn unit="1" className="text-center">Valor</FormRowColumn>
-                <FormRowColumn unit="1" className="text-center">Quantidade</FormRowColumn>
-                <FormRowColumn unit="2" className="text-center">Total</FormRowColumn>
+                <FormRowColumn unit="3">Nome</FormRowColumn>
+                <FormRowColumn unit="3">Valor</FormRowColumn>
             </FormRow>
         )
     }
 
     const handlePutRows = (element: BudgetService) => {
-        console.log(element)
         return (
             <FormRow>
-                <FormRowColumn unit="2">{element.title}</FormRowColumn>
-                <FormRowColumn unit="1" className="text-center">{element.value}</FormRowColumn>
-                <FormRowColumn unit="1" className="text-center">{element.quantity}</FormRowColumn>
-                <FormRowColumn unit="2" className="text-center">{element.total}</FormRowColumn>
+                <FormRowColumn unit="3">{element.title}</FormRowColumn>
+                <FormRowColumn unit="3">{element.value}</FormRowColumn>
             </FormRow>
         )
     }

@@ -108,18 +108,16 @@ export default function BudgetServiceActionBarForm(props: BudgetServiceActionBar
                 <div className="flex flex-row gap-2">
                     <Button
                         isLoading={props.isLoading}
-                        onClick={() => handleSave(false)}
+                        onClick={() => handleSave(true)}
                     >
                         Salvar
                     </Button>
-                    {/*
                     <Button
                         isLoading={props.isLoading}
                         onClick={() => handleSave(false)}
                     >
                         Salvar e sair
                     </Button>
-                    */}
                 </div>
             </div>
         </ActionBar>
