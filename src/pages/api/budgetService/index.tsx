@@ -1,18 +1,18 @@
-import { BudgetService } from "../../../interfaces/objectInterfaces"
 import prisma from "../../../prisma/prisma"
+import { handleRemoveCurrencyMask } from "../../../util/maskUtil"
+import { BudgetService } from "../../../interfaces/objectInterfaces"
 
-const handleAddBudgetService = async (budgetService: BudgetService) => {
+const handleAddBudgetService = async (budgetService: BudgetService, budgetId: number) => {
     if (!budgetService) {
         return 0
     }
     let id = budgetService?.id ?? 0
     let data: any = {
+        budgetId: budgetId,
         title: budgetService.title,
-        value: budgetService.value,
-        index: budgetService.index,
+        value: handleRemoveCurrencyMask(budgetService.value),
         quantity: parseFloat(budgetService.quantity) ?? 0.0,
     }
-
     try {
         if (id === 0) {
             id = await prisma.budgetService.create({
@@ -38,6 +38,7 @@ const handleDelete = async (id) => {
     try {
         await prisma.budgetService.delete({
             where: {
+                id: id
             },
         })
         return true
@@ -54,8 +55,8 @@ export default async function handler(req, res) {
     switch (method) {
         case "POST":
             let budgetService: BudgetService = data
-            if (token === "tokenbemseguro") {
-                const resAdd = await handleAddBudgetService(budgetService).then(res => res)
+            if (token === "tokenbemseguro" && id > 0) {
+                const resAdd = await handleAddBudgetService(budgetService, id).then(res => res)
                 if (resAdd === 0) {
                     resFinal = { ...resFinal, status: "ERROR" }
                 } else {

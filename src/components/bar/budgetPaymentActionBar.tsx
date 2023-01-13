@@ -1,26 +1,26 @@
 import ActionBar from "./actionBar";
 import Button from "../button/button";
 import { FeedbackMessage } from "../modal/feedbackMessageModal";
-import { BudgetService, defaultBudgetService } from "../../interfaces/objectInterfaces";
+import { BudgetPayment, defaultBudgetPayment } from "../../interfaces/objectInterfaces";
 import { handleValidationOnlyTextNotNull, ValidationReturn } from "../../util/validationUtil";
 
-interface BudgetServiceActionBarFormProps {
+interface BudgetPaymentActionBarFormProps {
     className?: string,
     budgetId?: number,
     isLoading?: boolean,
     isMultiple?: boolean,
     isDisabled?: boolean,
-    budgetService?: BudgetService,
+    budgetPayment?: BudgetPayment,
     onSet?: (any) => void,
     onSetIsLoading?: (boolean) => void,
     onAfterSave?: (object, any?, boolean?) => void,
     onShowMessage?: (FeedbackMessage) => void,
 }
 
-export const handleBudgetServiceValidationForDB = (budgetService: BudgetService) => {
+export const handleBudgetPaymentValidationForDB = (budgetPayment: BudgetPayment) => {
     let validation: ValidationReturn = { validation: false, messages: [] }
     let titleCheck = true
-    if (!handleValidationOnlyTextNotNull(budgetService?.title)) {
+    if (!handleValidationOnlyTextNotNull(budgetPayment?.title)) {
         validation = { ...validation, messages: [...validation.messages, "O campo nome está em branco."] }
         titleCheck = false
     }
@@ -28,28 +28,28 @@ export const handleBudgetServiceValidationForDB = (budgetService: BudgetService)
     return validation
 }
 
-export const handleBudgetServiceForDB = (budgetService: BudgetService) => {
-    budgetService = {
-        ...budgetService,
+export const handleBudgetPaymentForDB = (budgetPayment: BudgetPayment) => {
+    budgetPayment = {
+        ...budgetPayment,
     }
-    return budgetService
+    return budgetPayment
 }
 
-export const handleSaveBudgetServiceInner = async (budgetService, budgetId, history) => {
-    let res = { status: "ERROR", id: 0, budgetService: budgetService }
-    budgetService = handleBudgetServiceForDB(budgetService)
+export const handleSaveBudgetPaymentInner = async (budgetPayment, budgetId, history) => {
+    let res = { status: "ERROR", id: 0, budgetPayment: budgetPayment }
+    budgetPayment = handleBudgetPaymentForDB(budgetPayment)
     try {
-        const saveRes = await fetch("api/budgetService", {
+        const saveRes = await fetch("api/budgetPayment", {
             method: "POST",
             body: JSON.stringify({
                 token: "tokenbemseguro",
-                data: budgetService,
+                data: budgetPayment,
                 id: budgetId,
                 history: history
             }),
         }).then((res) => res.json())
         if (saveRes.status === "SUCCESS") {
-            res = { ...res, status: "SUCCESS", id: saveRes.id, budgetService: { ...budgetService, id: saveRes.id } }
+            res = { ...res, status: "SUCCESS", id: saveRes.id, budgetPayment: { ...budgetPayment, id: saveRes.id } }
         }
     } catch (e) {
         console.error("Error adding document: ", e)
@@ -57,7 +57,7 @@ export const handleSaveBudgetServiceInner = async (budgetService, budgetId, hist
     return res
 }
 
-export default function BudgetServiceActionBarForm(props: BudgetServiceActionBarFormProps) {
+export default function BudgetPaymentActionBarForm(props: BudgetPaymentActionBarFormProps) {
     const handleSetIsLoading = (value: boolean) => {
         if (props.onSetIsLoading) {
             props.onSetIsLoading(value)
@@ -72,8 +72,8 @@ export default function BudgetServiceActionBarForm(props: BudgetServiceActionBar
 
     const handleSave = async (isForCloseModal) => {
         handleSetIsLoading(true)
-        let budgetService = props.budgetService
-        const isValid = handleBudgetServiceValidationForDB(budgetService)
+        let budgetPayment = props.budgetPayment
+        const isValid = handleBudgetPaymentValidationForDB(budgetPayment)
         if (!isValid.validation) {
             handleSetIsLoading(false)
             const feedbackMessage: FeedbackMessage = { messages: isValid.messages, messageType: "ERROR" }
@@ -81,8 +81,8 @@ export default function BudgetServiceActionBarForm(props: BudgetServiceActionBar
             return
         }
         if (props.budgetId > 0) {
-            let res = await handleSaveBudgetServiceInner(budgetService, props?.budgetId ?? 0, true)
-            budgetService = { ...budgetService, id: res.id }
+            let res = await handleSaveBudgetPaymentInner(budgetPayment, props?.budgetId ?? 0, true)
+            budgetPayment = { ...budgetPayment, id: res.id }
             if (res.status === "ERROR") {
                 const feedbackMessage: FeedbackMessage = { messages: ["Algo deu errado!"], messageType: "ERROR" }
                 handleShowMessage(feedbackMessage)
@@ -94,12 +94,12 @@ export default function BudgetServiceActionBarForm(props: BudgetServiceActionBar
         const feedbackMessage: FeedbackMessage = { messages: ["Sucesso!"], messageType: "SUCCESS" }
         handleShowMessage(feedbackMessage)
         if (props.isMultiple && props.onSet) {
-            props.onSet(defaultBudgetService)
+            props.onSet(defaultBudgetPayment)
         } else if (isForCloseModal) {
-            props.onSet(budgetService)
+            props.onSet(budgetPayment)
         }
         if (props.onAfterSave) {
-            props.onAfterSave(feedbackMessage, budgetService, isForCloseModal)
+            props.onAfterSave(feedbackMessage, budgetPayment, isForCloseModal)
         }
     }
 

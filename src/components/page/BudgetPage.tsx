@@ -240,7 +240,7 @@ export default function BudgetPage(props: BudgetPageProps) {
                         }}
                     />
                 </FormRowColumn>
-                <FormRowColumn className="hidden sm:block" unit="1">{handleUTCToDateShow(element.dateDue?.toString())}</FormRowColumn>
+                <FormRowColumn className="hidden sm:block" unit="1">{element.dateString}</FormRowColumn>
             </FormRow>
         )
     }
@@ -371,6 +371,7 @@ export default function BudgetPage(props: BudgetPageProps) {
                         onSet={setBudget}
                         isLoading={props.isLoading}
                         onShowMessage={handleShowMessage}
+                        onSetIsLoading={handleSetIsLoading}
                         prevPath={(handlePutModalTitle(true))}
                         isDisabled={
                             budget.status === "VENCIDO" ||

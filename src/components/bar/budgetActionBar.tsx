@@ -28,8 +28,6 @@ export const handleBudgetValidationForDB = (budget: Budget) => {
     let validation: ValidationReturn = { validation: false, messages: [] }
     let nameCheck = handleValidationNotNull(budget.title)
     let clientsCheck = budget?.clients?.length > 0 ?? false
-    let servicesCheck = budget?.services?.length > 0 ?? false
-    let paymentsCheck = budget?.payments?.length > 0 ?? false
     let clientsOnBaseCheck = true
     let serviceOnBaseCheck = true
     let paymentOnBaseCheck = true
@@ -42,45 +40,46 @@ export const handleBudgetValidationForDB = (budget: Budget) => {
         validation = { ...validation, messages: [...validation.messages, "O serviço precisa de um cliente."] }
     }
 
-    if (!servicesCheck) {
-        validation = { ...validation, messages: [...validation.messages, "O serviço precisa de ao menos um serviço."] }
-    }
-
-    if (!paymentsCheck) {
-        validation = { ...validation, messages: [...validation.messages, "O serviço precisa de ao menos um pagamento."] }
-    }
-
     budget.clients.map((element, index) => {
         if (!handleValidationNotNull(element.id) || element.id === 0) {
             clientsOnBaseCheck = false
             validation = { ...validation, messages: [...validation.messages, "O serviço precisa de um cliente."] }
         }
     })
-
+    /*
+        let servicesCheck = budget?.services?.length > 0 ?? false
+        let paymentsCheck = budget?.payments?.length > 0 ?? false
+        if (!servicesCheck) {
+            validation = { ...validation, messages: [...validation.messages, "O serviço precisa de ao menos um serviço."] }
+        }
+        if (!paymentsCheck) {
+            validation = { ...validation, messages: [...validation.messages, "O serviço precisa de ao menos um pagamento."] }
+        }
     budget.services.map((element, index) => {
         if (!handleValidationNotNull(element.title)) {
             serviceOnBaseCheck = false
             validation = { ...validation, messages: [...validation.messages, "O serviço " + (index + 1) + " está sem titulo."] }
         }
     })
-
+    
     budget.payments.map((element, index) => {
         if (!handleValidationNotNull(element.title)) {
             paymentOnBaseCheck = false
             validation = { ...validation, messages: [...validation.messages, "O pagamento " + (index + 1) + " está sem titulo."] }
         }
+        serviceOnBaseCheck &&
+        paymentOnBaseCheck
+        servicesCheck &&
+        paymentsCheck &&
     })
+    */
 
     validation = {
         ...validation,
         validation:
             nameCheck &&
             clientsCheck &&
-            servicesCheck &&
-            paymentsCheck &&
-            clientsOnBaseCheck &&
-            serviceOnBaseCheck &&
-            paymentOnBaseCheck
+            clientsOnBaseCheck
     }
     return validation
 }
@@ -233,7 +232,7 @@ export default function BudgetActionBarForm(props: BudgetActionBarFormProps) {
     return (
         <ActionBar className={props.className + " bg-slate-50 dark:bg-slate-800 dark:border dark:border-gray-700"}>
             <div className="w-full flex flex-row justify-between">
-                <div className="flex flex-row gap-2">
+                <div className="flex flex-row gap-2 flex-wrap">
                     <Button
                         isLoading={props.isLoading}
                         isDisabled={props.isDisabled}
@@ -248,72 +247,76 @@ export default function BudgetActionBarForm(props: BudgetActionBarFormProps) {
                     >
                         Salvar e sair
                     </Button>
-                    <StartProjectButton
-                        budget={props.budget}
-                        isLoading={props.isLoading}
-                        canStartProject={hasProject}
-                        onAfterClick={() => handleSetIsLoading(true)}
-                        onBeforeClick={() => {
-                            handleSetIsLoading(false)
-                            const feedbackMessage: FeedbackMessage = { messages: ["Sucesso!"], messageType: "SUCCESS" }
-                            handleShowMessage(feedbackMessage)
-                            if (props.onAfterSave) {
-                                let budget = props.budget
-                                if (budget.dateString?.length > 0) {
-                                    budget = { ...budget, dateDue: handleGetDateFormatedToUTC(budget.dateString) }
-                                }
-                                props.onAfterSave(feedbackMessage, budget, false)
-                            }
-                        }}
-                    />
-                    <Button
-                        isLoading={props.isLoading}
-                        isHidden={props.budget.status === "APROVADO"}
-                        isDisabled={props.budget.status === "APROVADO"}
-                        onClick={() => {
-                            handleSave("APROVADO", true)
-                        }}
-                    >
-                        Aprovar orçamento
-                    </Button>
-                    <Button
-                        isLoading={props.isLoading}
-                        isHidden={props.budget.status === "NEGOCIANDO"}
-                        isDisabled={props.budget.status === "NEGOCIANDO"}
-                        onClick={() => {
-                            handleSave("NEGOCIANDO", true)
-                        }}
-                    >
-                        Negociar orçamento
-                    </Button>
-                    <Button
-                        isLoading={props.isLoading}
-                        isHidden={props.budget.status === "REJEITADO"}
-                        isDisabled={props.budget.status === "REJEITADO"}
-                        onClick={() => {
-                            handleSave("REJEITADO", true)
-                        }}
-                    >
-                        Rejeitar orçamento
-                    </Button>
-                    <Button
-                        isLoading={props.isLoading}
-                        onClick={props.onPrintBudget}
-                        isHidden={!props.onPrintBudget}
-                    >
-                        Imprimir orçamento
-                    </Button>
-                    <Button
-                        isLoading={props.isLoading}
-                        onClick={props.onPrintContract}
-                        isHidden={!props.onPrintContract}
-                    >
-                        Imprimir contrato
-                    </Button>
+                    {props?.budget?.id > 0 &&
+                        <>
+                            <StartProjectButton
+                                budget={props.budget}
+                                isLoading={props.isLoading}
+                                canStartProject={hasProject}
+                                onAfterClick={() => handleSetIsLoading(true)}
+                                onBeforeClick={() => {
+                                    handleSetIsLoading(false)
+                                    const feedbackMessage: FeedbackMessage = { messages: ["Sucesso!"], messageType: "SUCCESS" }
+                                    handleShowMessage(feedbackMessage)
+                                    if (props.onAfterSave) {
+                                        let budget = props.budget
+                                        if (budget.dateString?.length > 0) {
+                                            budget = { ...budget, dateDue: handleGetDateFormatedToUTC(budget.dateString) }
+                                        }
+                                        props.onAfterSave(feedbackMessage, budget, false)
+                                    }
+                                }}
+                            />
+                            <Button
+                                isLoading={props.isLoading}
+                                isHidden={props.budget.status === "APROVADO"}
+                                isDisabled={props.budget.status === "APROVADO"}
+                                onClick={() => {
+                                    handleSave("APROVADO", true)
+                                }}
+                            >
+                                Aprovar orçamento
+                            </Button>
+                            <Button
+                                isLoading={props.isLoading}
+                                isHidden={props.budget.status === "NEGOCIANDO"}
+                                isDisabled={props.budget.status === "NEGOCIANDO"}
+                                onClick={() => {
+                                    handleSave("NEGOCIANDO", true)
+                                }}
+                            >
+                                Negociar orçamento
+                            </Button>
+                            <Button
+                                isLoading={props.isLoading}
+                                isHidden={props.budget.status === "REJEITADO"}
+                                isDisabled={props.budget.status === "REJEITADO"}
+                                onClick={() => {
+                                    handleSave("REJEITADO", true)
+                                }}
+                            >
+                                Rejeitar orçamento
+                            </Button>
+                            <Button
+                                isLoading={props.isLoading}
+                                onClick={props.onPrintBudget}
+                                isHidden={!props.onPrintBudget}
+                            >
+                                Imprimir orçamento
+                            </Button>
+                            <Button
+                                isLoading={props.isLoading}
+                                onClick={props.onPrintContract}
+                                isHidden={!props.onPrintContract}
+                            >
+                                Imprimir contrato
+                            </Button>
+                        </>
+                    }
                 </div>
                 {/*
                 <DropDownButton
-                    isLeft
+                isLeft
                     title="..."
                     isLoading={props.isLoading}
                 >

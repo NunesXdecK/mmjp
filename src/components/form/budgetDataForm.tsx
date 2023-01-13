@@ -1,16 +1,18 @@
 import Form from "./form";
 import FormRow from "./formRow";
 import { useState } from "react";
+import { NavBarPath } from "../bar/navBar";
 import BudgetView from "../view/budgetView";
 import FormRowColumn from "./formRowColumn";
 import InputText from "../inputText/inputText";
-import BudgetPaymentsForm from "./budgetPaymentsForm";
-import { Budget } from "../../interfaces/objectInterfaces";
+import BudgetPaymentPage from "../page/BudgetPaymentPage";
+import BudgetServicePage from "../page/BudgetServicePage";
+import { Budget, BudgetService } from "../../interfaces/objectInterfaces";
 import { NOT_NULL_MARK } from "../../util/patternValidationUtil";
 import InputTextAutoComplete from "../inputText/inputTextAutocomplete";
 import InputSelectPersonCompany from "../inputText/inputSelectPersonCompany";
-import { NavBarPath } from "../bar/navBar";
-import BudgetServicePage from "../page/BudgetServicePage";
+import CurrencyTextView from "../text/currencyTextView";
+import { handleRemoveCurrencyMask, handleValueStringToInt } from "../../util/maskUtil";
 
 interface BudgetDataFormProps {
     title?: string,
@@ -48,6 +50,15 @@ export default function BudgetDataForm(props: BudgetDataFormProps) {
 
     const handleChangeFormValidation = (isValid) => {
         setIsFormValid(isValid)
+    }
+
+    const handleGetTotal = (list: BudgetService[]) => {
+
+        let total = 0
+        list?.map((element: BudgetService, index) => {
+            total = total + handleValueStringToInt(((parseInt(handleRemoveCurrencyMask(element.value)) ?? 0) * (parseInt(element.quantity) ?? 0)).toString())
+        })
+        return total.toString()
     }
 
     return (
@@ -123,35 +134,50 @@ export default function BudgetDataForm(props: BudgetDataFormProps) {
                             </FormRowColumn>
                         </FormRow>
                     </Form>
-                    <Form
-                        title="Serviços"
-                        subtitle="Adicione os serviços"
-                    >
-                        <BudgetServicePage
-                            canSave
-                            canDelete
-                            prevPath={props.prevPath}
-                            onSet={handleSetServices}
-                            budgetId={props.budget.id}
-                            isLoading={props.isLoading}
-                            isDisabled={props.isDisabled}
-                            onShowMessage={props.onShowMessage}
-                            onSetIsLoading={props.onSetIsLoading}
-                            budgetServices={props.budget.services}
-                        />
-                    </Form>
-                    <BudgetPaymentsForm
-                        title="Pagamentos"
-                        formClassName="px-0 py-2"
-                        onSet={handleSetPayments}
-                        isLoading={props.isLoading}
-                        budgetId={props?.budget?.id}
-                        isDisabled={props.isDisabled}
-                        subtitle="Adicione os pagamentos"
-                        onShowMessage={props.onShowMessage}
-                        budgetPayments={props.budget.payments}
-                        id={"budget-payment-form" + (props.index ? "-" + props.index : "")}
-                    />
+                    {props?.budget.id > 0 &&
+                        <>
+                            <Form
+                                title="Serviços"
+                                subtitle="Adicione os serviços"
+                            >
+                                <BudgetServicePage
+                                    canSave
+                                    canDelete
+                                    prevPath={props.prevPath}
+                                    onSet={handleSetServices}
+                                    budgetId={props.budget.id}
+                                    isLoading={props.isLoading}
+                                    isDisabled={props.isDisabled}
+                                    onShowMessage={props.onShowMessage}
+                                    onSetIsLoading={props.onSetIsLoading}
+                                    budgetServices={props.budget.services}
+                                />
+
+
+                                <div className="p-2 text-gray-800 dark:text-gray-200">
+                                    <span className="text-lg font-bold">VALOR TOTAL: </span>
+                                    <CurrencyTextView className="text-lg">{handleGetTotal(props?.budget?.services ?? [])}</CurrencyTextView>
+                                </div>
+                            </Form>
+                            <Form
+                                title="Pagamentos"
+                                subtitle="Adicione os pagamentos"
+                            >
+                                <BudgetPaymentPage
+                                    canSave
+                                    canDelete
+                                    prevPath={props.prevPath}
+                                    onSet={handleSetPayments}
+                                    budgetId={props.budget.id}
+                                    isLoading={props.isLoading}
+                                    isDisabled={props.isDisabled}
+                                    onShowMessage={props.onShowMessage}
+                                    onSetIsLoading={props.onSetIsLoading}
+                                    budgetPayments={props.budget.payments}
+                                />
+                            </Form>
+                        </>
+                    }
                 </>
             )}
         </>

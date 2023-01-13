@@ -1,4 +1,4 @@
-import MenuButton from "./menuButton"
+import Button from "./button"
 import { handlePaymentForDB } from "../bar/paymentActionBar"
 import { Budget, BudgetPayment, BudgetService, defaultPayment, defaultProfessional, defaultProject, defaultService, Payment, Professional, Project, Service } from "../../interfaces/objectInterfaces"
 
@@ -28,7 +28,7 @@ export default function StartProjectButton(props: StartProjectButtonProps) {
             let number = ""
             number = number + year + "-"
             props.budget?.clients?.map((element, index) => {
-                if (element?.clientCode?.length > 0) {
+                if (element?.clientCode > 0) {
                     number = number + element.clientCode + "-"
                 }
             })
@@ -36,7 +36,7 @@ export default function StartProjectButton(props: StartProjectButtonProps) {
             number = number + numberOfProjectsInYear
             //mount client
             let client = props.budget.clients[0]
-            if (client?.id?.length > 0) {
+            if (client?.id > 0) {
                 if ("cpf" in client) {
                     client = { id: client.id, cpf: "" }
                 } else if ("cnpj" in client) {
@@ -123,14 +123,14 @@ export default function StartProjectButton(props: StartProjectButtonProps) {
     return (
         <>
             {!props.canStartProject && (
-                <MenuButton
+                <Button
                     isLoading={props.isLoading}
                     onClick={handleCreateProject}
                     isHidden={props.budget.status !== "APROVADO"}
                     isDisabled={props.budget.status !== "APROVADO"}
                 >
                     Iniciar projeto
-                </MenuButton>
+                </Button>
             )}
         </>
     )
