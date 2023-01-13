@@ -1,16 +1,14 @@
 import { ONLY_NUMBERS_PATTERN_TWO } from "./patternValidationUtil";
 
-export const handleOnlyDate = (date: string) => {
-    return date?.split("T")[0] ?? ""
-}
-
 export const handleDateToShow = (date: string) => {
-    let dateFinal = handleOnlyDate(date)
-    if (dateFinal.length > 0) {
-        const array = dateFinal.split("-")
-        dateFinal = array[2] + "/" + array[1] + "/" + array[0]
+    let dateFinal = date
+    console.log(date)
+    const arrayDate = date?.split("T")[0] ?? ""
+    if (arrayDate.length > 0) {
+        const array = arrayDate.split("-")
+
     }
-    return dateFinal
+    return date
 }
 
 export const handleNewDateToUTCOld = () => {

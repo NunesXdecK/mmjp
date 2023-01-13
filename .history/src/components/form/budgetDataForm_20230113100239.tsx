@@ -13,6 +13,7 @@ import InputTextAutoComplete from "../inputText/inputTextAutocomplete";
 import InputSelectPersonCompany from "../inputText/inputSelectPersonCompany";
 import CurrencyTextView from "../text/currencyTextView";
 import { handleRemoveCurrencyMask, handleValueStringToInt } from "../../util/maskUtil";
+import { handleDateToShow } from "../../util/dateUtils";
 
 interface BudgetDataFormProps {
     title?: string,
@@ -33,7 +34,7 @@ export default function BudgetDataForm(props: BudgetDataFormProps) {
     const [isFormValid, setIsFormValid] = useState(true)
 
     const handleSetTitle = (value) => { handleSet({ ...props.budget, title: value }) }
-    const handleSetDate = (value) => { handleSet({ ...props.budget, dateDue: value }) }
+    const handleSetDate = (value) => { handleSet({ ...props.budget, dateString: value }) }
     const handleSetClient = (value) => { handleSet({ ...props.budget, clients: [value] }) }
     const handleSetPayments = (value) => { handleSet({ ...props.budget, payments: value }) }
     const handleSetServices = (value) => { handleSet({ ...props.budget, services: value }) }
@@ -112,9 +113,9 @@ export default function BudgetDataForm(props: BudgetDataFormProps) {
                                     onBlur={props.onBlur}
                                     onSetText={handleSetDate}
                                     isLoading={props.isLoading}
-                                    value={props.budget.dateDue}
                                     isDisabled={props.isDisabled}
                                     onValidate={handleChangeFormValidation}
+                                    value={handleDateToShow(props.budget.dateDue)}
                                     id={"budget-date" + (props.index ? "-" + props.index : "")}
                                 />
                             </FormRowColumn>

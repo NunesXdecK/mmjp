@@ -5,9 +5,10 @@ export const handleOnlyDate = (date: string) => {
 }
 
 export const handleDateToShow = (date: string) => {
-    let dateFinal = handleOnlyDate(date)
-    if (dateFinal.length > 0) {
-        const array = dateFinal.split("-")
+    let dateFinal = date
+    const arrayDate = date?.split("T")[0] ?? ""
+    if (arrayDate.length > 0) {
+        const array = arrayDate.split("-")
         dateFinal = array[2] + "/" + array[1] + "/" + array[0]
     }
     return dateFinal

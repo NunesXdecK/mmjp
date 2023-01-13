@@ -33,7 +33,7 @@ export default function BudgetDataForm(props: BudgetDataFormProps) {
     const [isFormValid, setIsFormValid] = useState(true)
 
     const handleSetTitle = (value) => { handleSet({ ...props.budget, title: value }) }
-    const handleSetDate = (value) => { handleSet({ ...props.budget, dateDue: value }) }
+    const handleSetDate = (value) => { handleSet({ ...props.budget, dateString: value }) }
     const handleSetClient = (value) => { handleSet({ ...props.budget, clients: [value] }) }
     const handleSetPayments = (value) => { handleSet({ ...props.budget, payments: value }) }
     const handleSetServices = (value) => { handleSet({ ...props.budget, services: value }) }
@@ -112,7 +112,7 @@ export default function BudgetDataForm(props: BudgetDataFormProps) {
                                     onBlur={props.onBlur}
                                     onSetText={handleSetDate}
                                     isLoading={props.isLoading}
-                                    value={props.budget.dateDue}
+                                    value={props.budget.dateString}
                                     isDisabled={props.isDisabled}
                                     onValidate={handleChangeFormValidation}
                                     id={"budget-date" + (props.index ? "-" + props.index : "")}

@@ -431,10 +431,10 @@ export const defaultBudgetService: BudgetService = {
 export const defaultBudgetPayment: BudgetPayment = {
     value: "0",
     title: "",
-    dateDue: "",
     dateString: "",
     id: 0,
     index: -1,
+    dateDue: 0,
 }
 
 export const defaultProject: Project = {

@@ -12,7 +12,7 @@ import BudgetDataForm from "../form/budgetDataForm"
 import ContractPrintView from "../view/contractPrintView"
 import SwiftInfoButton from "../button/switchInfoButton"
 import { FeedbackMessage } from "../modal/feedbackMessageModal"
-import { handleUTCToDateShow, handleNewDateToUTC, handleDateToShow, handleOnlyDate } from "../../util/dateUtils"
+import { handleUTCToDateShow, handleNewDateToUTC, handleDateToShow } from "../../util/dateUtils"
 import BudgetActionBarForm, { handleSaveBudgetInner } from "../bar/budgetActionBar"
 import { Budget, BudgetPayment, Company, defaultBudget, Person } from "../../interfaces/objectInterfaces"
 
@@ -118,9 +118,15 @@ export default function BudgetPage(props: BudgetPageProps) {
         handleSetIsLoading(true)
         setIsForShow(false)
         let localBudget: Budget = await fetch("api/budget/" + budget?.id).then((res) => res.json()).then((res) => res.data)
+        let localPayments = []
+        if (localBudget?.payments?.length > 0) {
+            localBudget.payments.map((element: BudgetPayment, index) => {
+                localPayments = [...localPayments, { ...element }]
+            })
+        }
         localBudget = {
             ...localBudget,
-            dateDue: handleOnlyDate(localBudget.dateDue)
+            payments: localPayments,
         }
         handleSetIsLoading(false)
         setIsRegister(true)

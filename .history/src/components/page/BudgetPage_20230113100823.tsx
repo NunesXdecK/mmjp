@@ -118,8 +118,15 @@ export default function BudgetPage(props: BudgetPageProps) {
         handleSetIsLoading(true)
         setIsForShow(false)
         let localBudget: Budget = await fetch("api/budget/" + budget?.id).then((res) => res.json()).then((res) => res.data)
+        let localPayments = []
+        if (localBudget?.payments?.length > 0) {
+            localBudget.payments.map((element: BudgetPayment, index) => {
+                localPayments = [...localPayments, { ...element, dateDue: handleOnlyDate(element.dateDue) }]
+            })
+        }
         localBudget = {
             ...localBudget,
+            payments: localPayments,
             dateDue: handleOnlyDate(localBudget.dateDue)
         }
         handleSetIsLoading(false)
