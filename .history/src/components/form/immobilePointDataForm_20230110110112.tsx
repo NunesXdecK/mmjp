@@ -59,7 +59,7 @@ export default function ImmobilePointDataForm(props: ImmobilePointDataFormProps)
             subtitle={props.subtitle ?? "Informe os dados básicos"}
         >
             <FormRow>
-                <FormRowColumn unit="3" unitM="6">
+                <FormRowColumn unit="4" unitM="6">
                     <InputPointId
                         id="immobile-point-id"
                         onSet={handleSetPointId}
@@ -69,7 +69,7 @@ export default function ImmobilePointDataForm(props: ImmobilePointDataFormProps)
                         value={props.immobilePoint.pointId}
                     />
                 </FormRowColumn>
-                <FormRowColumn unit="3" unitM="6">
+                <FormRowColumn unit="2" unitM="6">
                     <InputText
                         title="Epoch"
                         isDisabled={true}

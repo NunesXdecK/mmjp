@@ -83,7 +83,7 @@ export default function BudgetDataForm(props: BudgetDataFormProps) {
                             </FormRowColumn>
                         </FormRow>
                         <FormRow>
-                            <FormRowColumn unit="3" unitM="6">
+                            <FormRowColumn unit="6" unitM="6">
                                 <InputTextAutoComplete
                                     onBlur={props.onBlur}
                                     value={props.budget.title}
@@ -104,7 +104,7 @@ export default function BudgetDataForm(props: BudgetDataFormProps) {
                                     isDisabled={props.isDisabled}
                                 />
                             </FormRowColumn>
-                            <FormRowColumn unit="3" unitM="6">
+                            <FormRowColumn unit="2" unitM="6">
                                 <InputText
                                     type="date"
                                     title="Prazo"

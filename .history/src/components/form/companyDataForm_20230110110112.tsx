@@ -66,7 +66,7 @@ export default function CompanyDataForm(props: CompanyDataFormProps) {
                 subtitle={props.subtitle ?? "Informe os dados básicos"}
             >
                 <FormRow>
-                    <FormRowColumn unit="3" unitM="6">
+                    <FormRowColumn unit="4" unitM="6">
                         <InputText
                             id="company-fullname"
                             title="Nome completo"
@@ -79,7 +79,7 @@ export default function CompanyDataForm(props: CompanyDataFormProps) {
                             validationMessage="O nome não pode ficar em branco."
                         />
                     </FormRowColumn>
-                    <FormRowColumn unit="3" unitM="6">
+                    <FormRowColumn unit="2" unitM="6">
                         <InputClientCode
                             id="company-client-code"
                             title="Codigo de cliente"

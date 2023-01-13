@@ -68,7 +68,7 @@ export default function PersonDataForm(props: PersonDataFormProps) {
                 subtitle={props.subtitle ?? "Informe os dados básicos"}
             >
                 <FormRow>
-                    <FormRowColumn unit="3" unitM="6">
+                    <FormRowColumn unit="4">
                         <InputText
                             id="person-fullname"
                             title="Nome completo"
@@ -81,19 +81,17 @@ export default function PersonDataForm(props: PersonDataFormProps) {
                             validationMessage="O nome não pode ficar em branco."
                         />
                     </FormRowColumn>
-                    {!props.isProfile && (
-                        <FormRowColumn unit="3" unitM="6">
-                            <InputClientCode
-                                id="person-client-code"
-                                title="Codigo de cliente"
-                                elementId={props.person.id}
-                                isLoading={props.isLoading}
-                                onSet={handleSetClientCode}
-                                isDisabled={props.isDisabled}
-                                value={props.person.clientCode?.toString()}
-                            />
-                        </FormRowColumn>
-                    )}
+                    <FormRowColumn unit="2" unitM="6">
+                        <InputClientCode
+                            id="person-client-code"
+                            title="Codigo de cliente"
+                            elementId={props.person.id}
+                            isLoading={props.isLoading}
+                            onSet={handleSetClientCode}
+                            isDisabled={props.isDisabled}
+                            value={props.person.clientCode?.toString()}
+                        />
+                    </FormRowColumn>
                 </FormRow>
                 <FormRow>
                     <FormRowColumn unit="3" unitM="6">
@@ -153,7 +151,7 @@ export default function PersonDataForm(props: PersonDataFormProps) {
                     </FormRowColumn>
                 </FormRow>
                 <FormRow>
-                    <FormRowColumn unit="3"  unitM="6">
+                    <FormRowColumn unit="3" unitM="6">
                         <InputSelect
                             title="Estado Civil"
                             id="person-martial-status"

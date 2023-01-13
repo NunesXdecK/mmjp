@@ -130,7 +130,7 @@ export default function UserDataForm(props: UserDataFormProps) {
         >
             {!props.isProfile && (
                 <FormRow>
-                    <FormRowColumn unit="3" unitM="6">
+                    <FormRowColumn unit="3">
                         <InputCheckbox
                             title="bloqueado?"
                             id="user-is-blocked"
@@ -143,7 +143,7 @@ export default function UserDataForm(props: UserDataFormProps) {
                 </FormRow>
             )}
             <FormRow>
-                <FormRowColumn unit="3" unitM="6">
+                <FormRowColumn unit="3">
                     <InputText
                         id="user-name"
                         title="Username"
@@ -162,7 +162,7 @@ export default function UserDataForm(props: UserDataFormProps) {
                         validationMessage="O username não pode ficar em branco, ou inválido."
                     />
                 </FormRowColumn>
-                <FormRowColumn unit="3" unitM="6">
+                <FormRowColumn unit="3">
                     <InputText
                         title="E-mail"
                         id="user-e-mail"
@@ -183,7 +183,7 @@ export default function UserDataForm(props: UserDataFormProps) {
                 </FormRowColumn>
             </FormRow>
             <FormRow>
-                <FormRowColumn unit="3" unitM="6">
+                <FormRowColumn unit="3">
                     <InputSelect
                         title="Cargo"
                         id="user-office"
@@ -194,25 +194,9 @@ export default function UserDataForm(props: UserDataFormProps) {
                         options={["visitante", "secretaria", "projetista", "gerente", "administrador"]}
                     />
                 </FormRowColumn>
-                {!props.isProfile && (
-                    <FormRowColumn unit="3" unitM="6" className="">
-                        <InputSelectPerson
-                            title="Pessoa"
-                            onBlur={props.onBlur}
-                            onSet={handleSetPerson}
-                            prevPath={props.prevPath}
-                            isLoading={props.isLoading}
-                            isDisabled={props.isDisabled}
-                            value={props.user?.person?.name}
-                            onShowMessage={props.onShowMessage}
-                            onSetLoading={props.onSetIsLoading}
-                            id={"user-person" + (props.index ? "-" + props.index : "")}
-                        />
-                    </FormRowColumn>
-                )}
             </FormRow>
             <FormRow>
-                <FormRowColumn unit="3" unitM="6">
+                <FormRowColumn unit="3">
                     <InputText
                         title="Senha"
                         type="password"
@@ -225,7 +209,7 @@ export default function UserDataForm(props: UserDataFormProps) {
                         validationMessage="A senha não pode ficar em branco."
                     />
                 </FormRowColumn>
-                <FormRowColumn unit="3" unitM="6">
+                <FormRowColumn unit="3">
                     <InputText
                         type="password"
                         title="Confirme a senha"
@@ -239,8 +223,27 @@ export default function UserDataForm(props: UserDataFormProps) {
                     />
                 </FormRowColumn>
             </FormRow>
+            {!props.isProfile && (
+                <FormRow>
+                    <FormRowColumn unit="6" className="">
+                        <InputSelectPerson
+                            title="Pessoa"
+                            onBlur={props.onBlur}
+                            onSet={handleSetPerson}
+                            prevPath={props.prevPath}
+                            isLoading={props.isLoading}
+                            isDisabled={props.isDisabled}
+                            value={props.user?.person?.name}
+                            onShowMessage={props.onShowMessage}
+                            onSetLoading={props.onSetIsLoading}
+                            id={"user-person" + (props.index ? "-" + props.index : "")}
+                        />
+                    </FormRowColumn>
+                </FormRow>
+            )}
+
             <FormRow>
-                <FormRowColumn unit="6" className="">
+                <FormRowColumn unit="3" className="">
                     <InputTextArea
                         title="Descrição"
                         onBlur={props.onBlur}

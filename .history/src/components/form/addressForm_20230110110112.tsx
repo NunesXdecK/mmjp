@@ -108,7 +108,7 @@ export default function AddressForm(props: AddressFormProps) {
                 subtitle={props.subtitle}>
 
                 <FormRow>
-                    <FormRowColumn unit="3" unitM="6">
+                    <FormRowColumn unit="2" unitM="6">
                         <InputText
                             id="cep"
                             mask="cep"
@@ -122,7 +122,7 @@ export default function AddressForm(props: AddressFormProps) {
                         />
                     </FormRowColumn>
 
-                    <FormRowColumn unit="3" unitM="6">
+                    <FormRowColumn unit="4" unitM="6">
                         <InputText
                             id="public-place"
                             title="Logradouro"

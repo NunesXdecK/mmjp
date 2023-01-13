@@ -78,7 +78,7 @@ export default function BudgetServiceForm(props: BudgetServiceFormProps) {
     return (
         <>
             <FormRow>
-                <FormRowColumn unit="2" unitM="6">
+                <FormRowColumn unit="3" unitM="6">
                     <InputTextAutoComplete
                         title="Titulo"
                         onBlur={props.onBlur}
@@ -93,7 +93,7 @@ export default function BudgetServiceForm(props: BudgetServiceFormProps) {
                         sugestions={["Ambiental", "Desmembramento", "Georeferenciamento", "União", "Licenciamento"]}
                     />
                 </FormRowColumn>
-                <FormRowColumn unit="2" unitM="3">
+                <FormRowColumn unit="3" unitM="6">
                     <InputTextCurrency
                         title="Valor"
                         onBlur={props.onBlur}
@@ -105,7 +105,7 @@ export default function BudgetServiceForm(props: BudgetServiceFormProps) {
                         id={"budget-service-value" + (props.index ?? 0) + "-" + props.id}
                     />
                 </FormRowColumn>
-                <FormRowColumn unit="2" unitM="3">
+                <FormRowColumn unit="3" unitM="6">
                     <InputText
                         title="Quantidade"
                         onBlur={props.onBlur}
@@ -120,7 +120,7 @@ export default function BudgetServiceForm(props: BudgetServiceFormProps) {
                 </FormRowColumn>
             </FormRow>
             <FormRow>
-                <FormRowColumn unit="6" unitM="6">
+                <FormRowColumn unit="3" unitM="3">
                     <InputTextCurrency
                         isDisabled
                         title="Total"

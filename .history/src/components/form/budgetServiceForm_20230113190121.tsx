@@ -120,7 +120,7 @@ export default function BudgetServiceForm(props: BudgetServiceFormProps) {
                 </FormRowColumn>
             </FormRow>
             <FormRow>
-                <FormRowColumn unit="6" unitM="6">
+                <FormRowColumn unit="3" unitM="3">
                     <InputTextCurrency
                         isDisabled
                         title="Total"

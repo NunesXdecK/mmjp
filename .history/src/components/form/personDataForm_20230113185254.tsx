@@ -82,7 +82,7 @@ export default function PersonDataForm(props: PersonDataFormProps) {
                         />
                     </FormRowColumn>
                     {!props.isProfile && (
-                        <FormRowColumn unit="3" unitM="6">
+                        <FormRowColumn unit="2" unitM="6">
                             <InputClientCode
                                 id="person-client-code"
                                 title="Codigo de cliente"

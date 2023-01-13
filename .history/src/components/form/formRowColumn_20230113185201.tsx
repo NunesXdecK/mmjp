@@ -11,7 +11,6 @@ export default function FormRowColumn(props: FormRowColumnProps) {
     let colSpanClassNameMobile = ""
     if (props.unit) {
         colSpanClassName =
-            " sm:col-span-" + props.unit +
             " md:col-span-" + props.unit +
             " lg:col-span-" + props.unit +
             " xl:col-span-" + props.unit +
@@ -20,13 +19,12 @@ export default function FormRowColumn(props: FormRowColumnProps) {
         colSpanClassNameMobile = " col-span-" + props.unit
     } else {
         colSpanClassName =
-            " sm:col-span-6 " +
             " md:col-span-6" +
             " lg:col-span-6" +
             " xl:col-span-6" +
             " 2xl:col-span-6" +
             " print:col-span-6"
-        colSpanClassNameMobile = " col-span-6"
+        colSpanClassNameMobile = " sm:col-span-6"
     }
     if (props.unitM) {
         colSpanClassNameMobile = " col-span-" + props.unitM
