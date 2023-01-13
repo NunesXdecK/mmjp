@@ -145,6 +145,7 @@ export interface Immobile {
 export interface Budget {
     title?: string,
     dateDue?: string,
+    dateString?: string,
     description?: string,
     status?: BudgetStatus,
     id?: number,
@@ -168,6 +169,7 @@ export interface BudgetPayment {
     value?: string,
     title?: string,
     dateDue?: string,
+    dateString?: string,
     id?: number,
     index?: number,
 }

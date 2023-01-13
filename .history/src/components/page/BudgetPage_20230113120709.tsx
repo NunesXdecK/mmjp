@@ -12,9 +12,9 @@ import BudgetDataForm from "../form/budgetDataForm"
 import ContractPrintView from "../view/contractPrintView"
 import SwiftInfoButton from "../button/switchInfoButton"
 import { FeedbackMessage } from "../modal/feedbackMessageModal"
-import { handleDateToShow, handleOnlyDate } from "../../util/dateUtils"
-import { Budget, defaultBudget } from "../../interfaces/objectInterfaces"
+import { handleUTCToDateShow, handleNewDateToUTC, handleDateToShow, handleOnlyDate } from "../../util/dateUtils"
 import BudgetActionBarForm, { handleSaveBudgetInner } from "../bar/budgetActionBar"
+import { Budget, BudgetPayment, Company, defaultBudget, Person } from "../../interfaces/objectInterfaces"
 
 interface BudgetPageProps {
     id?: string,
@@ -33,7 +33,13 @@ interface BudgetPageProps {
 
 export default function BudgetPage(props: BudgetPageProps) {
     const [budget, setBudget] = useState<Budget>(defaultBudget)
-    const [budgets, setBudgets] = useState<Budget[]>([])
+    const [budgets, setBudgets] = useState<Promise<Budget[]>>(async () => {
+        return await fetch("api/budgets").then((res) => res.json()).then((res) => {
+            setIsFirst(old => false)
+            handleSetIsLoading(false)
+            return res.list ?? []
+        })
+    })
     const [index, setIndex] = useState(-1)
     const [isFirst, setIsFirst] = useState(props.getInfo)
     const [isForShow, setIsForShow] = useState(false)
@@ -72,8 +78,8 @@ export default function BudgetPage(props: BudgetPageProps) {
             feedbackMessage = { messages: ["Algo deu errado"], messageType: "ERROR" }
         }
         const list = [
-            ...budgets.slice(0, (index - 1)),
-            ...budgets.slice(index, budgets.length),
+            ...budgets?.slice(0, (index - 1)),
+            ...budgets?.slice(index, budgets.length),
         ]
         setBudgets(list)
         handleSetIsLoading(false)
@@ -239,10 +245,9 @@ export default function BudgetPage(props: BudgetPageProps) {
     }
 
     useEffect(() => {
-        if (isFirst) {
+        if (false) {
             handleSetIsLoading(true)
             fetch("api/budgets").then((res) => res.json()).then((res) => {
-                console.log(res.list)
                 setBudgets(res.list ?? [])
                 setIsFirst(old => false)
                 handleSetIsLoading(false)

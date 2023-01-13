@@ -39,8 +39,8 @@ export default function BudgetView(props: BudgetViewProps) {
         budget.clients?.length > 0
     const hasData =
         hasHideData ||
-        budget?.dateDue?.length > 0 ||
-        budget?.title?.length > 0
+        budget?.dateDue > 0 ||
+        budget?.title?.length
 
     const handlePutOwner = (owner) => {
         return (

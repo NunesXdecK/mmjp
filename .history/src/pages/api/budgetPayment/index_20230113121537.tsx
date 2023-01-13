@@ -11,7 +11,7 @@ const handleAddBudgetPayment = async (budgetPayment: BudgetPayment, budgetId: nu
         budgetId: budgetId,
         title: budgetPayment.title,
         value: handleRemoveCurrencyMask(budgetPayment.value),
-        dateDue: budgetPayment?.dateDue?.length > 0 ? new Date(budgetPayment.dateDue) : null,
+        dateDue: budgetPayment?.dateDue?.length > 0 ? new Date(budgetPayment.dateString) : null,
     }
     try {
         if (id === 0) {

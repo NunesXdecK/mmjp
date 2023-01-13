@@ -12,9 +12,9 @@ import BudgetDataForm from "../form/budgetDataForm"
 import ContractPrintView from "../view/contractPrintView"
 import SwiftInfoButton from "../button/switchInfoButton"
 import { FeedbackMessage } from "../modal/feedbackMessageModal"
-import { handleDateToShow, handleOnlyDate } from "../../util/dateUtils"
-import { Budget, defaultBudget } from "../../interfaces/objectInterfaces"
+import { handleUTCToDateShow, handleNewDateToUTC, handleDateToShow, handleOnlyDate } from "../../util/dateUtils"
 import BudgetActionBarForm, { handleSaveBudgetInner } from "../bar/budgetActionBar"
+import { Budget, BudgetPayment, Company, defaultBudget, Person } from "../../interfaces/objectInterfaces"
 
 interface BudgetPageProps {
     id?: string,
@@ -32,8 +32,14 @@ interface BudgetPageProps {
 }
 
 export default function BudgetPage(props: BudgetPageProps) {
-    const [budget, setBudget] = useState<Budget>(defaultBudget)
-    const [budgets, setBudgets] = useState<Budget[]>([])
+    const [budget, setBudget] = useState<Budget>()
+    const [budgets, setBudgets] = useState(async () => {
+        return await fetch("api/budgets").then((res) => res.json()).then((res) => {
+            setBudgets(res.list ?? [])
+            setIsFirst(old => false)
+            handleSetIsLoading(false)
+        })
+    })
     const [index, setIndex] = useState(-1)
     const [isFirst, setIsFirst] = useState(props.getInfo)
     const [isForShow, setIsForShow] = useState(false)
@@ -241,12 +247,7 @@ export default function BudgetPage(props: BudgetPageProps) {
     useEffect(() => {
         if (isFirst) {
             handleSetIsLoading(true)
-            fetch("api/budgets").then((res) => res.json()).then((res) => {
-                console.log(res.list)
-                setBudgets(res.list ?? [])
-                setIsFirst(old => false)
-                handleSetIsLoading(false)
-            })
+            
         }
     })
 

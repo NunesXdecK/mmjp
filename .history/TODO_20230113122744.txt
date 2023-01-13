@@ -1,6 +1,5 @@
 ULTIMO PENSAMENTO:
 ERRO NA VERCEL ME SALVOU KKKKKKKKK, ARRUMAR DEPOIS
-ARRUMAR UNIT E MUNIT PARA OS FORMS
 TRABALHAR COM AS DATAS NA PARTE DE PROJETO
 Colocar opções de status na actionbar
 Colocar botão salvar e salvar e sair em todas as action bar

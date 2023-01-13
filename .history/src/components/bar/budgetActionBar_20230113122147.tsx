@@ -208,6 +208,9 @@ export default function BudgetActionBarForm(props: BudgetActionBarFormProps) {
             props.onSet(budget)
         }
         if (props.onAfterSave) {
+            if (budget.dateString?.length > 0) {
+                budget = { ...budget, dateDue: handleGetDateFormatedToUTC(budget.dateString) }
+            }
             props.onAfterSave(feedbackMessage, budget, isForCloseModal)
         }
     }
@@ -252,6 +255,9 @@ export default function BudgetActionBarForm(props: BudgetActionBarFormProps) {
                                     handleShowMessage(feedbackMessage)
                                     if (props.onAfterSave) {
                                         let budget = props.budget
+                                        if (budget.dateString?.length > 0) {
+                                            budget = { ...budget, dateDue: handleGetDateFormatedToUTC(budget.dateString) }
+                                        }
                                         props.onAfterSave(feedbackMessage, budget, false)
                                     }
                                 }}

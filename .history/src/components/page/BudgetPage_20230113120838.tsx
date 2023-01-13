@@ -242,7 +242,6 @@ export default function BudgetPage(props: BudgetPageProps) {
         if (isFirst) {
             handleSetIsLoading(true)
             fetch("api/budgets").then((res) => res.json()).then((res) => {
-                console.log(res.list)
                 setBudgets(res.list ?? [])
                 setIsFirst(old => false)
                 handleSetIsLoading(false)

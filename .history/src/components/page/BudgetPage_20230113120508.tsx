@@ -12,9 +12,9 @@ import BudgetDataForm from "../form/budgetDataForm"
 import ContractPrintView from "../view/contractPrintView"
 import SwiftInfoButton from "../button/switchInfoButton"
 import { FeedbackMessage } from "../modal/feedbackMessageModal"
-import { handleDateToShow, handleOnlyDate } from "../../util/dateUtils"
-import { Budget, defaultBudget } from "../../interfaces/objectInterfaces"
+import { handleUTCToDateShow, handleNewDateToUTC, handleDateToShow, handleOnlyDate } from "../../util/dateUtils"
 import BudgetActionBarForm, { handleSaveBudgetInner } from "../bar/budgetActionBar"
+import { Budget, BudgetPayment, Company, defaultBudget, Person } from "../../interfaces/objectInterfaces"
 
 interface BudgetPageProps {
     id?: string,
@@ -239,10 +239,9 @@ export default function BudgetPage(props: BudgetPageProps) {
     }
 
     useEffect(() => {
-        if (isFirst) {
+        if (false) {
             handleSetIsLoading(true)
             fetch("api/budgets").then((res) => res.json()).then((res) => {
-                console.log(res.list)
                 setBudgets(res.list ?? [])
                 setIsFirst(old => false)
                 handleSetIsLoading(false)

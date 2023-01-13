@@ -7,12 +7,13 @@ import WindowModal from "../modal/windowModal"
 import FormRowColumn from "../form/formRowColumn"
 import { PlusIcon } from "@heroicons/react/solid"
 import NavBar, { NavBarPath } from "../bar/navBar"
-import BudgetServiceForm from "../form/budgetServiceForm"
+import BudgetPaymentForm from "../form/budgetPaymentForm"
 import { FeedbackMessage } from "../modal/feedbackMessageModal"
-import BudgetServiceActionBarForm from "../bar/budgetServiceActionBar"
-import { BudgetService, defaultBudgetService } from "../../interfaces/objectInterfaces"
+import BudgetPaymentActionBarForm from "../bar/budgetPaymentActionBar"
+import { BudgetPayment, defaultBudgetPayment } from "../../interfaces/objectInterfaces"
+import { handleDateToShow, handleOnlyDate } from "../../util/dateUtils"
 
-interface BudgetServicePageProps {
+interface BudgetPaymentPageProps {
     id?: string,
     budgetId?: number,
     canSave?: boolean,
@@ -21,14 +22,14 @@ interface BudgetServicePageProps {
     isLoading?: boolean,
     isDisabled?: boolean,
     prevPath?: NavBarPath[],
-    budgetServices?: BudgetService[],
+    budgetPayments?: BudgetPayment[],
     onSet?: (any) => void,
     onSetIsLoading?: (any) => void,
     onShowMessage?: (FeedbackMessage) => void,
 }
 
-export default function BudgetServicePage(props: BudgetServicePageProps) {
-    const [budgetService, setBudgetService] = useState<BudgetService>(defaultBudgetService)
+export default function BudgetPaymentPage(props: BudgetPaymentPageProps) {
+    const [budgetPayment, setBudgetPayment] = useState<BudgetPayment>(defaultBudgetPayment)
     const [index, setIndex] = useState(-1)
     const [isRegister, setIsRegister] = useState(false)
 
@@ -42,7 +43,7 @@ export default function BudgetServicePage(props: BudgetServicePageProps) {
         if (event) {
             event.preventDefault()
         }
-        setBudgetService(defaultBudgetService)
+        setBudgetPayment(defaultBudgetPayment)
         setIndex(-1)
         setIsRegister(false)
     }
@@ -53,24 +54,24 @@ export default function BudgetServicePage(props: BudgetServicePageProps) {
         }
     }
 
-    const handleDeleteClick = async (budgetService, index) => {
+    const handleDeleteClick = async (budgetPayment, index) => {
         handleSetIsLoading(true)
         let feedbackMessage: FeedbackMessage = { messages: ["Algo deu errado"], messageType: "ERROR" }
         let res = { status: "SUCCESS" }
-        if (budgetService?.id > 0) {
-            res = await fetch("api/budgetService", {
+        if (budgetPayment?.id > 0) {
+            res = await fetch("api/budgetPayment", {
                 method: "DELETE",
                 body: JSON.stringify({
                     token: "tokenbemseguro",
-                    id: budgetService.id,
+                    id: budgetPayment.id,
                 }),
             }).then((res) => res.json())
         }
         if (res.status === "SUCCESS") {
             feedbackMessage = { messages: ["Removido com sucesso!"], messageType: "SUCCESS" }
             const list = [
-                ...props?.budgetServices.slice(0, (index - 1)),
-                ...props?.budgetServices.slice(index, props?.budgetServices.length),
+                ...props?.budgetPayments.slice(0, (index - 1)),
+                ...props?.budgetPayments.slice(index, props?.budgetPayments.length),
             ]
             handleOnSet(list)
         } else {
@@ -81,8 +82,8 @@ export default function BudgetServicePage(props: BudgetServicePageProps) {
     }
 
     const handleNewClick = async () => {
-        setBudgetService({
-            ...defaultBudgetService,
+        setBudgetPayment({
+            ...defaultBudgetPayment,
         })
         setIsRegister(true)
         setIndex(-1)
@@ -92,25 +93,30 @@ export default function BudgetServicePage(props: BudgetServicePageProps) {
         setIsRegister(value)
     }
 
-    const handleEditClick = async (budgetService, index?) => {
+    const handleEditClick = async (budgetPayment, index?) => {
         setIndex(index)
         handleSetIsLoading(true)
         handleSetIsLoading(false)
         setIsRegister(true)
-        setBudgetService(budgetService)
+        const local = {
+            ...budgetPayment,
+            dateDue: handleOnlyDate(budgetPayment.dateDue)
+        }
+        console.log(local)
+        setBudgetPayment(local)
     }
 
-    const handleAfterSave = (feedbackMessage: FeedbackMessage, budgetService: BudgetService, isForCloseModal) => {
+    const handleAfterSave = (feedbackMessage: FeedbackMessage, budgetPayment: BudgetPayment, isForCloseModal) => {
         const i = index - 1
-        let list: BudgetService[] = [
-            budgetService,
-            ...props?.budgetServices,
+        let list: BudgetPayment[] = [
+            budgetPayment,
+            ...props?.budgetPayments,
         ]
         if (i > -1) {
             list = [
-                budgetService,
-                ...props?.budgetServices.slice(0, i),
-                ...props?.budgetServices.slice(i + 1, props?.budgetServices.length),
+                budgetPayment,
+                ...props?.budgetPayments.slice(0, i),
+                ...props?.budgetPayments.slice(i + 1, props?.budgetPayments.length),
             ]
         }
         handleOnSet(list)
@@ -135,8 +141,8 @@ export default function BudgetServicePage(props: BudgetServicePageProps) {
         if (short) {
             //path = { ...path, path: "S" }
         }
-        if (budgetService?.id > 0) {
-            path = { ...path, path: "Serviço-" + budgetService.title, onClick: null }
+        if (budgetPayment?.id > 0) {
+            path = { ...path, path: "Serviço-" + budgetPayment.title, onClick: null }
         }
         try {
             if (props.prevPath?.length > 0) {
@@ -166,20 +172,19 @@ export default function BudgetServicePage(props: BudgetServicePageProps) {
         return (
             <FormRow>
                 <FormRowColumn unit="2">Nome</FormRowColumn>
-                <FormRowColumn unit="1" className="text-center">Valor</FormRowColumn>
-                <FormRowColumn unit="1" className="text-center">Quantidade</FormRowColumn>
-                <FormRowColumn unit="2" className="text-center">Total</FormRowColumn>
+                <FormRowColumn unit="2" className="text-center">Valor</FormRowColumn>
+                <FormRowColumn unit="2" className="text-center">Vencimento</FormRowColumn>
             </FormRow>
         )
     }
 
-    const handlePutRows = (element: BudgetService) => {
+    const handlePutRows = (element: BudgetPayment) => {
+        console.log(element)
         return (
             <FormRow>
                 <FormRowColumn unit="2">{element.title}</FormRowColumn>
-                <FormRowColumn unit="1" className="text-center">{element.value}</FormRowColumn>
-                <FormRowColumn unit="1" className="text-center">{element.quantity}</FormRowColumn>
-                <FormRowColumn unit="2" className="text-center">{element.total}</FormRowColumn>
+                <FormRowColumn unit="2" className="text-center">{element.value}</FormRowColumn>
+                <FormRowColumn unit="2" className="text-center">{handleDateToShow(element.dateDue)}</FormRowColumn>
             </FormRow>
         )
     }
@@ -200,13 +205,13 @@ export default function BudgetServicePage(props: BudgetServicePageProps) {
                 </Button>
             </ActionBar>
             <ListTable
-                title="Serviços"
+                title="Pagamentos"
                 isActive={index}
                 onSetIsActive={setIndex}
                 onTableRow={handlePutRows}
                 canDelete={props.canDelete}
                 isLoading={props.isLoading}
-                list={props.budgetServices}
+                list={props.budgetPayments}
                 onEditClick={handleEditClick}
                 isDisabled={props.isDisabled}
                 onTableHeader={handlePutHeaders}
@@ -214,18 +219,18 @@ export default function BudgetServicePage(props: BudgetServicePageProps) {
             />
             <WindowModal
                 max
-                id="budgetService-register-modal"
+                id="budgetPayment-register-modal"
                 setIsOpen={handleCloseModal}
                 isOpen={isRegister}
                 title={(handlePutModalTitle(false))}
                 headerBottom={(
                     <div className="p-4 pb-0">
                         {isRegister && (
-                            <BudgetServiceActionBarForm
-                                onSet={setBudgetService}
+                            <BudgetPaymentActionBarForm
+                                onSet={setBudgetPayment}
                                 budgetId={props.budgetId}
                                 isLoading={props.isLoading}
-                                budgetService={budgetService}
+                                budgetPayment={budgetPayment}
                                 onAfterSave={handleAfterSave}
                                 onShowMessage={handleShowMessage}
                                 onSetIsLoading={handleSetIsLoading}
@@ -235,10 +240,10 @@ export default function BudgetServicePage(props: BudgetServicePageProps) {
                 )}
             >
                 {isRegister && (
-                    <BudgetServiceForm
-                        onSet={setBudgetService}
+                    <BudgetPaymentForm
+                        onSet={setBudgetPayment}
                         isLoading={props.isLoading}
-                        budgetService={budgetService}
+                        budgetPayment={budgetPayment}
                         isDisabled={props.isDisabled}
                         onShowMessage={handleShowMessage}
                     />

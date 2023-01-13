@@ -5,8 +5,6 @@ const handleAddBudget = async (budget: Budget) => {
     if (!budget) {
         return 0
     }
-    console.log(budget.dateDue)
-    console.log(new Date(budget.dateDue))
     let id = budget?.id ?? 0
     let data: any = {
         title: budget.title,
@@ -14,7 +12,7 @@ const handleAddBudget = async (budget: Budget) => {
         description: budget.description,
         personId: "cpf" in budget?.clients[0] ? budget?.clients[0]?.id : null,
         companyId: "cnpj" in budget?.clients[0] ? budget?.clients[0]?.id : null,
-        dateDue: budget?.dateDue?.length > 0 ? new Date(budget.dateDue) : null,
+        dateDue: budget?.dateDue?.length > 0 ? new Date(budget.dateString) : null,
     }
     /*
     let dataBudgetService: any[] = []

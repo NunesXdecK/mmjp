@@ -38,7 +38,7 @@ export default function BudgetPaymentForm(props: BudgetPaymentFormProps) {
             handleSet({ ...props.budgetPayment, value: value })
         }
     }
-    const handleSetDate = (value) => { handleSet({ ...props.budgetPayment, dateDue: value }) }
+    const handleSetDate = (value) => { handleSet({ ...props.budgetPayment, dateString: value }) }
     const handleSetDescription = (value) => { handleSet({ ...props.budgetPayment, title: value }) }
 
     const handleSet = (element) => {

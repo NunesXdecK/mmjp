@@ -8,7 +8,7 @@ import PlaceholderItemList from "../list/placeholderItemList"
 import ScrollDownTransition from "../animation/scrollDownTransition"
 import { ChevronDownIcon, ChevronRightIcon } from "@heroicons/react/outline"
 import { defaultBudget, Budget, Service } from "../../interfaces/objectInterfaces"
-import { handleDateToShow, handleUTCToDateShow } from "../../util/dateUtils"
+import { handleUTCToDateShow } from "../../util/dateUtils"
 import SwitchTextButton from "../button/switchTextButton"
 import BudgetServicesView from "./budgetServicesView"
 import BudgetPaymentsView from "./budgetPaymentsView"
@@ -39,8 +39,8 @@ export default function BudgetView(props: BudgetViewProps) {
         budget.clients?.length > 0
     const hasData =
         hasHideData ||
-        budget?.dateDue?.length > 0 ||
-        budget?.title?.length > 0
+        budget?.dateDue > 0 ||
+        budget?.title?.length
 
     const handlePutOwner = (owner) => {
         return (
@@ -157,7 +157,7 @@ export default function BudgetView(props: BudgetViewProps) {
                                 classNameContentHolder={props.classNameContentHolder}
                             >
                                 <InfoView title="Orçamento">{budget.title}</InfoView>
-                                <InfoView title="Data">{handleDateToShow(budget.dateDue)}</InfoView>
+                                <InfoView title="Data">{budget.dateString?.toString()}</InfoView>
                                 <ScrollDownTransition isOpen={false}>
                                     {/*
                                     <InfoView title="Data criação">{handleUTCToDateShow(budget.dateInsertUTC.toString())}</InfoView>
