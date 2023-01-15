@@ -11,6 +11,7 @@ import BudgetServiceForm from "../form/budgetServiceForm"
 import { FeedbackMessage } from "../modal/feedbackMessageModal"
 import BudgetServiceActionBarForm from "../bar/budgetServiceActionBar"
 import { BudgetService, defaultBudgetService } from "../../interfaces/objectInterfaces"
+import { handleMaskCurrency } from "../inputText/inputText"
 
 interface BudgetServicePageProps {
     id?: string,
@@ -22,8 +23,9 @@ interface BudgetServicePageProps {
     isDisabled?: boolean,
     prevPath?: NavBarPath[],
     budgetServices?: BudgetService[],
-    onSet?: (any) => void,
-    onSetIsLoading?: (any) => void,
+    onSet?: (arg0) => void,
+    onAfterSave?: (arg0) => void,
+    onSetIsLoading?: (arg0) => void,
     onShowMessage?: (FeedbackMessage) => void,
 }
 
@@ -113,7 +115,11 @@ export default function BudgetServicePage(props: BudgetServicePageProps) {
                 ...props?.budgetServices.slice(i + 1, props?.budgetServices.length),
             ]
         }
-        handleOnSet(list)
+        if (props.onAfterSave) {
+            props.onAfterSave(list)
+        } else {
+            handleOnSet(list)
+        }
         handleShowMessage(feedbackMessage)
         if (!isForCloseModal) {
             handleBackClick()
@@ -177,9 +183,9 @@ export default function BudgetServicePage(props: BudgetServicePageProps) {
         return (
             <FormRow>
                 <FormRowColumn unit="2">{element.title}</FormRowColumn>
-                <FormRowColumn unit="1" className="text-center">{element.value}</FormRowColumn>
+                <FormRowColumn unit="1" className="text-center">{handleMaskCurrency(element.value)}</FormRowColumn>
                 <FormRowColumn unit="1" className="text-center">{element.quantity}</FormRowColumn>
-                <FormRowColumn unit="2" className="text-center">{element.total}</FormRowColumn>
+                <FormRowColumn unit="2" className="text-center">{handleMaskCurrency(element.total)}</FormRowColumn>
             </FormRow>
         )
     }

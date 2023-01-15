@@ -7,12 +7,14 @@ import FormRowColumn from "./formRowColumn";
 import InputText from "../inputText/inputText";
 import BudgetPaymentPage from "../page/BudgetPaymentPage";
 import BudgetServicePage from "../page/BudgetServicePage";
-import { Budget, BudgetService } from "../../interfaces/objectInterfaces";
+import { Budget, BudgetPayment, BudgetService } from "../../interfaces/objectInterfaces";
 import { NOT_NULL_MARK } from "../../util/patternValidationUtil";
 import InputTextAutoComplete from "../inputText/inputTextAutocomplete";
 import InputSelectPersonCompany from "../inputText/inputSelectPersonCompany";
 import CurrencyTextView from "../text/currencyTextView";
 import { handleRemoveCurrencyMask, handleValueStringToInt } from "../../util/maskUtil";
+import { handleSaveBudgetPaymentInner } from "../bar/budgetPaymentActionBar";
+import InputTextArea from "../inputText/inputTextArea";
 
 interface BudgetDataFormProps {
     title?: string,
@@ -37,6 +39,14 @@ export default function BudgetDataForm(props: BudgetDataFormProps) {
     const handleSetClient = (value) => { handleSet({ ...props.budget, clients: [value] }) }
     const handleSetPayments = (value) => { handleSet({ ...props.budget, payments: value }) }
     const handleSetServices = (value) => { handleSet({ ...props.budget, services: value }) }
+    const handleSetDescription = (value) => { handleSet({ ...props.budget, description: value }) }
+    const handleSetServicesPayments = (services, payments) => { handleSet({ ...props.budget, services: services, payments: payments }) }
+
+    const handleSetIsLoading = (value) => {
+        if (props.onSetIsLoading) {
+            props.onSetIsLoading(value)
+        }
+    }
 
     const handleSet = (value: Budget) => {
         if (props.onSet) {
@@ -52,8 +62,41 @@ export default function BudgetDataForm(props: BudgetDataFormProps) {
         setIsFormValid(isValid)
     }
 
-    const handleGetTotal = (list: BudgetService[]) => {
+    const handleAfterSave = async (services) => {
+        let total = 0
+        services?.map((element: BudgetService, index) => {
+            total = total + handleValueStringToInt(((parseInt(handleRemoveCurrencyMask(element.value)) ?? 0) * (parseInt(element.quantity) ?? 0)).toString())
+        })
+        if (props.budget?.payments?.length === 0) {
+            handleSetIsLoading(true)
+            const entryPayment: BudgetPayment = {
+                id: 0,
+                index: 0,
+                dateDue: "",
+                title: "Entrada",
+                value: handleRemoveCurrencyMask((total / 2).toString()),
+            }
+            const endingPayment: BudgetPayment = {
+                id: 0,
+                index: 0,
+                dateDue: "",
+                title: "Final",
+                value: handleRemoveCurrencyMask((total / 2).toString()),
+            }
+            const resEntry = await handleSaveBudgetPaymentInner(entryPayment, props.budget.id, false)
+            const resEnd = await handleSaveBudgetPaymentInner(endingPayment, props.budget.id, false)
+            const payments = [
+                { ...entryPayment, id: resEntry.id },
+                { ...endingPayment, id: resEnd.id }
+            ]
+            handleSetServicesPayments(services, payments)
+            handleSetIsLoading(false)
+        } else {
+            handleSetServices(services)
+        }
+    }
 
+    const handleGetTotal = (list: BudgetService[]) => {
         let total = 0
         list?.map((element: BudgetService, index) => {
             total = total + handleValueStringToInt(((parseInt(handleRemoveCurrencyMask(element.value)) ?? 0) * (parseInt(element.quantity) ?? 0)).toString())
@@ -133,6 +176,19 @@ export default function BudgetDataForm(props: BudgetDataFormProps) {
                                 />
                             </FormRowColumn>
                         </FormRow>
+                        <FormRow>
+                    <FormRowColumn unit="6" className="">
+                        <InputTextArea
+                            title="Descrição"
+                            onBlur={props.onBlur}
+                            id="budget-description"
+                            isLoading={props.isLoading}
+                            isDisabled={props.isDisabled}
+                            onSetText={handleSetDescription}
+                            value={props.budget.description}
+                        />
+                    </FormRowColumn>
+                </FormRow>
                     </Form>
                     {props?.budget.id > 0 &&
                         <>
@@ -148,12 +204,11 @@ export default function BudgetDataForm(props: BudgetDataFormProps) {
                                     budgetId={props.budget.id}
                                     isLoading={props.isLoading}
                                     isDisabled={props.isDisabled}
+                                    onAfterSave={handleAfterSave}
                                     onShowMessage={props.onShowMessage}
                                     onSetIsLoading={props.onSetIsLoading}
                                     budgetServices={props.budget.services}
                                 />
-
-
                                 <div className="p-2 text-gray-800 dark:text-gray-200">
                                     <span className="text-lg font-bold">VALOR TOTAL: </span>
                                     <CurrencyTextView className="text-lg">{handleGetTotal(props?.budget?.services ?? [])}</CurrencyTextView>

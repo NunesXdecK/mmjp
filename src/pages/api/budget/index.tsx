@@ -5,8 +5,6 @@ const handleAddBudget = async (budget: Budget) => {
     if (!budget) {
         return 0
     }
-    console.log(budget.dateDue)
-    console.log(new Date(budget.dateDue))
     let id = budget?.id ?? 0
     let data: any = {
         title: budget.title,

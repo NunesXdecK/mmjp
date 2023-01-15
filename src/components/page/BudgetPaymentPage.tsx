@@ -12,6 +12,7 @@ import { FeedbackMessage } from "../modal/feedbackMessageModal"
 import BudgetPaymentActionBarForm from "../bar/budgetPaymentActionBar"
 import { BudgetPayment, defaultBudgetPayment } from "../../interfaces/objectInterfaces"
 import { handleDateToShow, handleOnlyDate } from "../../util/dateUtils"
+import { handleMaskCurrency } from "../inputText/inputText"
 
 interface BudgetPaymentPageProps {
     id?: string,
@@ -102,7 +103,6 @@ export default function BudgetPaymentPage(props: BudgetPaymentPageProps) {
             ...budgetPayment,
             dateDue: handleOnlyDate(budgetPayment.dateDue)
         }
-        console.log(local)
         setBudgetPayment(local)
     }
 
@@ -182,7 +182,7 @@ export default function BudgetPaymentPage(props: BudgetPaymentPageProps) {
         return (
             <FormRow>
                 <FormRowColumn unit="2">{element.title}</FormRowColumn>
-                <FormRowColumn unit="2" className="text-center">{element.value}</FormRowColumn>
+                <FormRowColumn unit="2" className="text-center">{handleMaskCurrency(element.value)}</FormRowColumn>
                 <FormRowColumn unit="2" className="text-center">{handleDateToShow(element.dateDue)}</FormRowColumn>
             </FormRow>
         )

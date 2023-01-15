@@ -144,71 +144,73 @@ export default function ImmobileActionBarForm(props: ImmobileActionBarFormProps)
                     >
                         Salvar e sair
                     </Button>
-                    <Button
-                        isLoading={props.isLoading}
-                        isHidden={props.immobile.status === "NORMAL"}
-                        isDisabled={props.immobile.status === "NORMAL"}
-                        onClick={() => handleSave("NORMAL", true)}
-                    >
-                        Normalizar imóvel
-                    </Button>
-                    <Button
-                        isLoading={props.isLoading}
-                        isHidden={props.immobile.status === "UNIFICADO"}
-                        isDisabled={props.immobile.status === "UNIFICADO"}
-                        onClick={() => handleSave("UNIFICADO", true)}
-                    >
-                        Unificar imóvel
-                    </Button>
-                    <Button
-                        isLoading={props.isLoading}
-                        isHidden={props.immobile.status === "DESMEMBRADO"}
-                        isDisabled={props.immobile.status === "DESMEMBRADO"}
-                        onClick={() => handleSave("DESMEMBRADO", true)}
-                    >
-                        Desmembrar imóvel
-                    </Button>
-                </div>
-                {/*
-                <DropDownButton
-                    isLeft
-                    title="..."
-                    isLoading={props.isLoading}
-                >
-                    <div className="w-full flex flex-col">
-                        <MenuButton
+                    <div className="hidden sm:flex sm:flex-row gap-2 flex-wrap">
+                        <Button
                             isLoading={props.isLoading}
                             isHidden={props.immobile.status === "NORMAL"}
                             isDisabled={props.immobile.status === "NORMAL"}
-                            onClick={() => {
-                                handleSave("NORMAL", true)
-                            }}
+                            onClick={() => handleSave("NORMAL", true)}
                         >
                             Normalizar imóvel
-                        </MenuButton>
-                        <MenuButton
+                        </Button>
+                        <Button
                             isLoading={props.isLoading}
                             isHidden={props.immobile.status === "UNIFICADO"}
                             isDisabled={props.immobile.status === "UNIFICADO"}
-                            onClick={() => {
-                                handleSave("UNIFICADO", true)
-                            }}
+                            onClick={() => handleSave("UNIFICADO", true)}
                         >
                             Unificar imóvel
-                        </MenuButton>
-                        <MenuButton
+                        </Button>
+                        <Button
                             isLoading={props.isLoading}
                             isHidden={props.immobile.status === "DESMEMBRADO"}
                             isDisabled={props.immobile.status === "DESMEMBRADO"}
-                            onClick={() => {
-                                handleSave("DESMEMBRADO", true)
-                            }}
+                            onClick={() => handleSave("DESMEMBRADO", true)}
                         >
                             Desmembrar imóvel
-                        </MenuButton>
+                        </Button>
                     </div>
-                </DropDownButton>
-            */}
+                </div>
+                <div className="block sm:hidden">
+                    <DropDownButton
+                        isLeft
+                        title="..."
+                        isLoading={props.isLoading}
+                    >
+                        <div className="w-full flex flex-col">
+                            <MenuButton
+                                isLoading={props.isLoading}
+                                isHidden={props.immobile.status === "NORMAL"}
+                                isDisabled={props.immobile.status === "NORMAL"}
+                                onClick={() => {
+                                    handleSave("NORMAL", true)
+                                }}
+                            >
+                                Normalizar imóvel
+                            </MenuButton>
+                            <MenuButton
+                                isLoading={props.isLoading}
+                                isHidden={props.immobile.status === "UNIFICADO"}
+                                isDisabled={props.immobile.status === "UNIFICADO"}
+                                onClick={() => {
+                                    handleSave("UNIFICADO", true)
+                                }}
+                            >
+                                Unificar imóvel
+                            </MenuButton>
+                            <MenuButton
+                                isLoading={props.isLoading}
+                                isHidden={props.immobile.status === "DESMEMBRADO"}
+                                isDisabled={props.immobile.status === "DESMEMBRADO"}
+                                onClick={() => {
+                                    handleSave("DESMEMBRADO", true)
+                                }}
+                            >
+                                Desmembrar imóvel
+                            </MenuButton>
+                        </div>
+                    </DropDownButton>
+                </div>
             </div>
         </ActionBar>
     )
