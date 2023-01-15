@@ -175,8 +175,7 @@ export default function ImmobilePointPage(props: ImmobilePointPageProps) {
     const handlePutHeaders = () => {
         return (
             <FormRow>
-                <FormRowColumn unit="1">ID</FormRowColumn>
-                <FormRowColumn unit="2">Epoch</FormRowColumn>
+                <FormRowColumn unit="3">ID e Epoch</FormRowColumn>
                 <FormRowColumn unit="1">X</FormRowColumn>
                 <FormRowColumn unit="1">Y</FormRowColumn>
                 <FormRowColumn unit="1">Z</FormRowColumn>
@@ -187,8 +186,7 @@ export default function ImmobilePointPage(props: ImmobilePointPageProps) {
     const handlePutRows = (element: ImmobilePoint) => {
         return (
             <FormRow>
-                <FormRowColumn unit="1" unitM="3">{element.pointId}</FormRowColumn>
-                <FormRowColumn unit="2" unitM="3">{element.epoch}</FormRowColumn>
+                <FormRowColumn unit="3" unitM="6">{element.pointId + " " + element.epoch}</FormRowColumn>
                 <FormRowColumn unit="1" className="hidden sm:block">{element.eastingX}</FormRowColumn>
                 <FormRowColumn unit="1" className="hidden sm:block">{element.northingY}</FormRowColumn>
                 <FormRowColumn unit="1" className="hidden sm:block">{element.elipseHeightZ}</FormRowColumn>
