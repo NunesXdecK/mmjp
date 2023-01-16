@@ -18,13 +18,11 @@ export default async function handler(req, res) {
             let { token, data, history } = JSON.parse(body)
             let serviceStage: ServiceStage = {}
             if (token === "tokenbemseguro") {
+                /*
                 try {
                     serviceStage = data
                     let nowID = data?.id ?? ""
                     const isSave = nowID === ""
-                    if (serviceStage?.dateString) {
-                        delete serviceStage.dateString
-                    }
                     if (serviceStage?.priorityView) {
                         delete serviceStage.priorityView
                     }
@@ -75,6 +73,7 @@ export default async function handler(req, res) {
                         resPOST = { ...resPOST, status: "ERROR", error: err }
                     }
                 }
+                */
             } else {
                 resPOST = { ...resPOST, status: "ERROR", message: "Token invalido!" }
             }

@@ -20,7 +20,8 @@ export default async function handler(req, res) {
                     let payment: Payment = (await getDoc(docRef)).data()
                     let status = payment.status
                     const dateNow = handleNewDateToUTC()
-                    if (status === "EM ABERTO" && payment.dateDue > 0 && dateNow > payment.dateDue) {
+                    /*
+                    if (status === "EM ABERTO" && payment.dateDue?.length > 0 && dateNow > payment.dateDue) {
                         status = "ATRASADO"
                     }
                     if (payment.id?.length > 0 && status !== payment.status) {
@@ -30,6 +31,7 @@ export default async function handler(req, res) {
                         const dataForHistory = { ...PaymentConversor.toFirestore(payment), databaseid: payment.id, databasename: PAYMENT_COLLECTION_NAME }
                         await addDoc(historyCollection, dataForHistory)
                     }
+                    */
                     resGET = { status: "SUCCESS", error: {}, data: status }
                 }
             } catch (err) {

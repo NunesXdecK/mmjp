@@ -21,6 +21,7 @@ export default async function handler(req, res) {
             let serviceNowID = ""
             let service: Service = {}
             if (token === "tokenbemseguro") {
+                /*
                 try {
                     service = data
                     serviceNowID = data?.id ?? ""
@@ -65,6 +66,7 @@ export default async function handler(req, res) {
                         resPOST = { ...resPOST, status: "ERROR", error: err }
                     }
                 }
+                */
                 resPOST = { ...resPOST, status: "SUCCESS", id: serviceNowID }
             } else {
                 resPOST = { ...resPOST, status: "ERROR", message: "Token invalido!" }

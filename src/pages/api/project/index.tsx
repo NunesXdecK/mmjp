@@ -21,9 +21,6 @@ export default async function handler(req, res) {
                 let project: Project = data
                 if (token === "tokenbemseguro") {
                     let nowID = data?.id ?? ""
-                    if (project.dateString) {
-                        delete project.dateString
-                    }
                     if (project.priorityView) {
                         delete project.priorityView
                     }
@@ -31,6 +28,7 @@ export default async function handler(req, res) {
                         delete project.oldData
                     }
                     const isSave = nowID === ""
+                    /*
                     if (isSave) {
                         project = { ...project, dateInsertUTC: handleNewDateToUTC() }
                         const docRef = await addDoc(projectCollection, ProjectConversor.toFirestore(project))
@@ -40,6 +38,7 @@ export default async function handler(req, res) {
                         const docRef = doc(projectCollection, nowID)
                         await updateDoc(docRef, ProjectConversor.toFirestore(project))
                     }
+                    */
                     if (history) {
                         const dataForHistory = { ...ProjectConversor.toFirestore(project), databaseid: nowID, databasename: PROJECT_COLLECTION_NAME }
                         await addDoc(historyCollection, dataForHistory)

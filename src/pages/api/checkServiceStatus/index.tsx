@@ -21,7 +21,7 @@ export default async function handler(req, res) {
                     let service: Service = (await getDoc(docRef)).data()
                     let status = service.status
 
-                    if (service.id?.length > 0) {
+                    if (service.id > 0) {
                         let isFinish = false
                         let isPendency = false
                         let isExecuting = false
@@ -49,7 +49,8 @@ export default async function handler(req, res) {
                             service = { ...service, status: "PENDENTE" }
                         }
                     }
-                    if (service.id?.length > 0 && status !== service.status) {
+                    /*
+                    if (service.id > 0 && status !== service.status) {
                         status = service.status
                         service = { ...service, dateLastUpdateUTC: handleNewDateToUTC() }
                         const docRef = doc(serviceCollection, service.id)
@@ -57,6 +58,7 @@ export default async function handler(req, res) {
                         const dataForHistory = { ...ServiceConversor.toFirestore(service), databaseid: service.id, databasename: SERVICE_COLLECTION_NAME }
                         await addDoc(historyCollection, dataForHistory)
                     }
+                    */
                     resGET = { status: "SUCCESS", error: {}, data: status }
                 }
             } catch (err) {

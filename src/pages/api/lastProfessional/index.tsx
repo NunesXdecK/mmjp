@@ -23,9 +23,11 @@ export default async function handler(req, res) {
                         professional = localService.professional
                     }
                 })
-                if (professional && "id" in professional && professional?.id?.length) {
+                if (professional && "id" in professional && professional?.id > 0) {
+                    /*
                     const docRef = doc(professionalCollection, professional.id)
                     professional = (await getDoc(docRef)).data()
+                    */
                 } else {
                     const queryProfessional = await query(professionalCollection,
                         orderBy("dateInsertUTC", "desc"),
@@ -33,7 +35,7 @@ export default async function handler(req, res) {
                     const querySnapshotProfessional = await getDocs(queryProfessional)
                     querySnapshotProfessional.forEach((doc) => {
                         const localProfessional: Professional = doc.data()
-                        if (localProfessional && "id" in localProfessional && localProfessional?.id?.length) {
+                        if (localProfessional && "id" in localProfessional && localProfessional?.id > 0) {
                             professional = localProfessional
                         }
                     })

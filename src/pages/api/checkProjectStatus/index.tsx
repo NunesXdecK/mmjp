@@ -22,7 +22,7 @@ export default async function handler(req, res) {
                     let project: Project = (await getDoc(docRef)).data()
                     let status = project.status
 
-                    if (project.id?.length > 0) {
+                    if (project.id > 0) {
                         let isPayed = true
                         let isFinish = false
                         let isPendency = false
@@ -64,7 +64,8 @@ export default async function handler(req, res) {
                             project = { ...project, status: "PENDENTE" }
                         }
                     }
-                    if (project.id?.length > 0 && status !== project.status) {
+                    /*
+                    if (project.id > 0 && status !== project.status) {
                         status = project.status
                         project = { ...project, dateLastUpdateUTC: handleNewDateToUTC() }
                         const docRef = doc(projectCollection, project.id)
@@ -72,6 +73,7 @@ export default async function handler(req, res) {
                         const dataForHistory = { ...ProjectConversor.toFirestore(project), databaseid: project.id, databasename: PROJECT_COLLECTION_NAME }
                         await addDoc(historyCollection, dataForHistory)
                     }
+                    */
                     resGET = { status: "SUCCESS", error: {}, data: status }
                 }
             } catch (err) {

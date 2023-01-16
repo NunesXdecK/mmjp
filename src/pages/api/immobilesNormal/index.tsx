@@ -17,6 +17,7 @@ export default async function handler(req, res) {
                 querySnapshot.forEach((doc) => {
                     list = [...list, doc.data()]
                 })
+                /*
                 list = list.sort((elementOne: Immobile, elementTwo: Immobile) => {
                     let dateOne = elementOne.dateInsertUTC
                     let dateTwo = elementTwo.dateInsertUTC
@@ -28,6 +29,7 @@ export default async function handler(req, res) {
                     }
                     return dateTwo - dateOne
                 })
+                */
                 resGET = { ...resGET, status: "SUCCESS", list: list }
             } catch (err) {
                 console.error(err)

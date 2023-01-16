@@ -21,14 +21,14 @@ export default async function handler(req, res) {
                     if (serviceStage.responsible?.id?.length > 0) {
                         const userDocRef = doc(userCollection, serviceStage.responsible?.id)
                         let user: User = (await getDoc(userDocRef)).data()
-                        if (user?.id?.length > 0) {
+                        if (user?.id > 0) {
                             serviceStage = { ...serviceStage, responsible: user }
                         }
                     }
                     if (serviceStage.service?.id?.length > 0) {
                         const serviceDocRef = doc(serviceCollection, serviceStage.service?.id)
                         let service: Service = (await getDoc(serviceDocRef)).data()
-                        if (service?.id?.length > 0) {
+                        if (service?.id > 0) {
                             serviceStage = { ...serviceStage, service: service }
                         }
                     }
