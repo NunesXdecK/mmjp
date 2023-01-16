@@ -89,9 +89,7 @@ export const handleSavePersonInner = async (person, history) => {
             method: "POST",
             body: JSON.stringify({ token: "tokenbemseguro", data: person, history: history }),
         }).then((res) => res.json())
-        if (saveRes.status === "SUCCESS") {
-            res = { ...res, status: "SUCCESS", id: saveRes.id, person: { ...person, id: saveRes.id } }
-        }
+        res = { ...res, status: saveRes.status, id: saveRes.id, person: { ...person, id: saveRes.id } }
     } catch (e) {
         console.error("Error adding document: ", e)
     }
@@ -124,13 +122,13 @@ export default function PersonActionBarForm(props: PersonActionBarFormProps) {
             return
         }
         let res = await handleSavePersonInner(person, true)
-        person = { ...person, id: res.id }
         if (res.status === "ERROR") {
             const feedbackMessage: FeedbackMessage = { messages: ["Algo deu errado!"], messageType: "ERROR" }
             handleShowMessage(feedbackMessage)
             handleSetIsLoading(false)
             return
         }
+        person = { ...person, id: res.id }
         handleSetIsLoading(false)
         const feedbackMessage: FeedbackMessage = { messages: ["Sucesso!"], messageType: "SUCCESS" }
         handleShowMessage(feedbackMessage)

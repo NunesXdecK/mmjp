@@ -65,7 +65,6 @@ export default function ProfileActionBarForm(props: ProfileActionBarFormProps) {
             handleSetIsLoading(false)
             return
         }
-        user = { ...user, person: { id: resPerson.id } }
         let resUser = await handleSaveUserInner(user, true)
         if (resUser.status === "ERROR") {
             const feedbackMessage: FeedbackMessage = { messages: ["Algo deu errado!"], messageType: "ERROR" }
@@ -73,6 +72,7 @@ export default function ProfileActionBarForm(props: ProfileActionBarFormProps) {
             handleSetIsLoading(false)
             return
         }
+        user = { ...user, person: { id: resPerson.id } }
         handleSetIsLoading(false)
         const feedbackMessage: FeedbackMessage = { messages: ["Sucesso!"], messageType: "SUCCESS" }
         handleShowMessage(feedbackMessage)

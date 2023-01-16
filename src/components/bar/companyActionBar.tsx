@@ -64,7 +64,7 @@ export const handleSaveCompanyInner = async (company, history) => {
             method: "POST",
             body: JSON.stringify({ token: "tokenbemseguro", data: company, history: history }),
         }).then((res) => res.json())
-        res = { ...res, status: "SUCCESS", id: saveRes.id, company: { ...company, id: saveRes.id } }
+        res = { ...res, status: saveRes.status, id: saveRes.id, company: { ...company, id: saveRes.id } }
     } catch (e) {
         console.error("Error adding document: ", e)
     }
@@ -120,13 +120,13 @@ export default function CompanyActionBarForm(props: CompanyActionBarFormProps) {
             return
         }
         let res = await handleSaveCompanyInner(company, true)
-        company = { ...company, id: res.id }
         if (res.status === "ERROR") {
             const feedbackMessage: FeedbackMessage = { messages: ["Algo deu errado!"], messageType: "ERROR" }
             handleShowMessage(feedbackMessage)
             handleSetIsLoading(false)
             return
         }
+        company = { ...company, id: res.id }
         handleSetIsLoading(false)
         const feedbackMessage: FeedbackMessage = { messages: ["Sucesso!"], messageType: "SUCCESS" }
         handleShowMessage(feedbackMessage)

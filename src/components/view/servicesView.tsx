@@ -9,10 +9,10 @@ import FormRowColumn from "../form/formRowColumn"
 interface ServicesViewProps {
     id?: string,
     title?: string,
-    elementId?: string,
     classNameTitle?: string,
     classNameHolder?: string,
     classNameContentHolder?: string,
+    elementId?: number,
     dataInside?: boolean,
     hideBorder?: boolean,
     services?: Service[],

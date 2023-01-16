@@ -4,7 +4,7 @@ import { useEffect, useState } from "react"
 import InfoHolderView from "./infoHolderView"
 import SwitchTextButton from "../button/switchTextButton"
 import UserStatusButton from "../button/userStatusButton"
-import { handleUTCToDateShow } from "../../util/dateUtils"
+import { handleDateToShow, handleUTCToDateShow } from "../../util/dateUtils"
 import PlaceholderItemList from "../list/placeholderItemList"
 import ScrollDownTransition from "../animation/scrollDownTransition"
 import { defaultUser, User } from "../../interfaces/objectInterfaces"
@@ -91,8 +91,6 @@ export default function UserView(props: UserViewProps) {
                                 </InfoView>
                                 <ScrollDownTransition isOpen={isShowInfo}>
                                     <InfoView title="Cargo">{user.office}</InfoView>
-                                    {user.dateInsertUTC > 0 && <InfoView title="Data inserção">{handleUTCToDateShow(user.dateInsertUTC.toString())}</InfoView>}
-                                    {user.dateLastUpdateUTC > 0 && <InfoView title="Data atualização">{handleUTCToDateShow(user.dateLastUpdateUTC.toString())}</InfoView>}
                                     {props.dataInside && handlePutData()}
                                 </ScrollDownTransition>
                                 {props.canShowHideData && props.hideData && hasHideData && (

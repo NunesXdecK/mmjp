@@ -1,37 +1,32 @@
-import { ServicePayment } from "../../../interfaces/objectInterfaces"
-import { collection, doc, getDocs, query, where } from "firebase/firestore"
-import { ProjectConversor, ServiceConversor, ServicePaymentConversor } from "../../../db/converters"
-import { db, PROJECT_COLLECTION_NAME, SERVICE_COLLECTION_NAME, SERVICE_PAYMENT_COLLECTION_NAME } from "../../../db/firebaseDB"
+import prisma from "../../../prisma/prisma"
+
+const main = async (id) => {
+    try {
+        return await prisma.service.findMany({
+            where: {
+                projectId: id,
+            },
+            include: {
+                project: true
+            }
+        })
+    } catch (error) {
+        console.error(error)
+        return []
+    }
+}
 
 export default async function handler(req, res) {
-    const { method } = req
-    const serviceCollection = collection(db, SERVICE_COLLECTION_NAME).withConverter(ServiceConversor)
-    const projectCollection = collection(db, PROJECT_COLLECTION_NAME).withConverter(ProjectConversor)
-
+    const { method, query } = req
+    const { id } = query
     switch (method) {
         case 'GET':
             let resGET = { status: "ERROR", error: {}, message: "", list: [] }
-            let list = []
-            try {
-                const { id } = req.query
-                const projectDocRef = doc(projectCollection, id)
-                const queryService = query(serviceCollection, where("project", "==", { id: id }))
-                const querySnapshot = await getDocs(queryService)
-                querySnapshot.forEach((doc) => {
-                    list = [...list, doc.data()]
-                })
-                list = list.sort((elementOne: ServicePayment, elementTwo: ServicePayment) => {
-                    let indexOne = elementOne.index
-                    let indexTwo = elementTwo.index
-
-                    return indexTwo - indexOne
-                })
-                resGET = { ...resGET, status: "SUCCESS", list: list }
-            } catch (err) {
-                console.error(err)
-                resGET = { ...resGET, status: "ERROR", error: err }
+            if (parseInt(id)) {
+                const services = await main(parseInt(id)).then(res => res)
+                resGET = { ...resGET, list: services }
             }
-            res.status(200).json(resGET)
+            res.status(200).json({ ...resGET })
             break
         default:
             res.setHeader("Allow", ["GET"])

@@ -1,75 +1,64 @@
-import { PaymentConversor } from "../../../db/converters"
-import { handleNewDateToUTC } from "../../../util/dateUtils"
+import prisma from "../../../prisma/prisma"
 import { Payment } from "../../../interfaces/objectInterfaces"
-import { addDoc, collection, deleteDoc, doc, updateDoc } from "firebase/firestore"
-import { db, HISTORY_COLLECTION_NAME, PAYMENT_COLLECTION_NAME } from "../../../db/firebaseDB"
+import { handleRemoveCurrencyMask } from "../../../util/maskUtil"
+
+const handleAddPayment = async (payment: Payment) => {
+    if (!payment) {
+        return 0
+    }
+    let id = payment?.id ?? 0
+    let data: any = {
+        title: payment.title,
+        status: payment.status,
+        description: payment.description,
+        value: handleRemoveCurrencyMask(payment.value),
+        dateDue: payment?.dateDue?.length > 0 ? new Date(payment.dateDue) : null
+    }
+    try {
+        if (id === 0) {
+            id = await prisma.payment.create({
+                data: {
+                    ...data,
+                }
+            }).then(res => res.id)
+        } else {
+            id = await prisma.payment.update({
+                where: {
+                    id: id,
+                },
+                data: {
+                    ...data,
+                }
+            }).then(res => res.id)
+        }
+    } catch (error) {
+        console.error(error)
+        id = 0
+    }
+    return id
+}
 
 export default async function handler(req, res) {
     const { method, body } = req
-
-    const historyCollection = collection(db, HISTORY_COLLECTION_NAME)
-    const paymentCollection = collection(db, PAYMENT_COLLECTION_NAME).withConverter(PaymentConversor)
-
+    const { token, data } = JSON.parse(body)
+    let resFinal = { status: "ERROR", error: {}, id: 0, message: "" }
     switch (method) {
         case "POST":
-            let resPOST = { status: "ERROR", error: {}, id: "", message: "", pstatus: "" }
-            let { token, data, history } = JSON.parse(body)
-            let nowID = data?.id ?? ""
             let payment: Payment = data
-            if (payment.dateString) {
-                delete payment.dateString
-            }
             if (token === "tokenbemseguro") {
-                try {
-                    const isSave = nowID === ""
-                    const dateNow = handleNewDateToUTC()
-                    let status = payment.status
-                    if (payment.status !== "PAGO" && payment.dateDue > 0) {
-                        status = payment.dateDue < dateNow ? "ATRASADO" : "EM ABERTO"
-                        payment = { ...payment, status: status }
-                    }
-                    if (isSave) {
-                        payment = { ...payment, dateInsertUTC: handleNewDateToUTC() }
-                        const docRef = await addDoc(paymentCollection, PaymentConversor.toFirestore(payment))
-                        nowID = docRef.id
-                    } else {
-                        payment = { ...payment, dateLastUpdateUTC: handleNewDateToUTC() }
-                        const docRef = doc(paymentCollection, nowID)
-                        await updateDoc(docRef, PaymentConversor.toFirestore(payment))
-                    }
-                    if (history) {
-                        const dataForHistory = { ...PaymentConversor.toFirestore(payment), databaseid: nowID, databasename: PAYMENT_COLLECTION_NAME }
-                        await addDoc(historyCollection, dataForHistory)
-                    }
-                    resPOST = { ...resPOST, status: "SUCCESS", id: nowID, pstatus: status }
-                } catch (err) {
-                    console.error(err)
-                    resPOST = { ...resPOST, status: "ERROR", error: err }
+                const resAdd = await handleAddPayment(payment).then(res => res)
+                if (resAdd === 0) {
+                    resFinal = { ...resFinal, status: "ERROR" }
+                } else {
+                    resFinal = { ...resFinal, status: "SUCCESS", id: resAdd }
                 }
             } else {
-                resPOST = { ...resPOST, status: "ERROR", message: "Token invalido!" }
+                resFinal = { ...resFinal, status: "ERROR", message: "Token invalido!" }
             }
-            res.status(200).json(resPOST)
-            break
-        case "DELETE":
-            let resDELETE = { status: "ERROR", error: {}, message: "" }
-            try {
-                const { token, id } = JSON.parse(body)
-                if (token === "tokenbemseguro") {
-                    const docRef = doc(paymentCollection, id)
-                    await deleteDoc(docRef)
-                    resDELETE = { ...resDELETE, status: "SUCCESS" }
-                } else {
-                    resDELETE = { ...resDELETE, status: "ERROR", message: "Token invalido!" }
-                }
-            } catch (err) {
-                console.error(err)
-                resDELETE = { ...resDELETE, status: "ERROR", error: err }
-            }
-            res.status(200).json(resDELETE)
+            res.status(200).json(resFinal)
             break
         default:
-            res.setHeader("Allow", ["PUT", "UPDATE", "DELETE"])
+            res.setHeader("Allow", ["POST"])
             res.status(405).end(`Metodo ${method} nao permitido`)
     }
 }

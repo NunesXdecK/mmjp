@@ -205,7 +205,13 @@ export default function UserPage(props: UserPageProps) {
     const handlePutRows = (element: User) => {
         return (
             <FormRow>
-                <FormRowColumn unit="2" unitM="3"><PersonNameListItem id={element?.personId} complement={"/" + element.username} /></FormRowColumn>
+                <FormRowColumn className="break-words" unit="2" unitM="3">
+                    {element?.person?.name ? element?.person?.name + "/" : ""}
+                    {element.username}
+                    {/*
+                    <PersonNameListItem id={element?.personId} complement={"/" + element.username} />
+                    */}
+                </FormRowColumn>
                 <FormRowColumn unit="2" className="hidden sm:block">{element.email}</FormRowColumn>
                 <FormRowColumn unit="2" unitM="3" className="justify-self-end">
                     <UserStatusButton

@@ -7,7 +7,7 @@ import WindowModal from "../modal/windowModal"
 import FormRowColumn from "../form/formRowColumn"
 import { PlusIcon } from "@heroicons/react/solid"
 import ServiceDataForm from "../form/serviceDataForm"
-import { handleUTCToDateShow } from "../../util/dateUtils"
+import { handleDateToShow, handleUTCToDateShow } from "../../util/dateUtils"
 import { handleMountNumberCurrency } from "../../util/maskUtil"
 import ServiceStatusButton from "../button/serviceStatusButton"
 import { FeedbackMessage } from "../modal/feedbackMessageModal"
@@ -16,11 +16,12 @@ import { Service, defaultService } from "../../interfaces/objectInterfaces"
 import ServiceActionBarForm, { handleSaveServiceInner } from "../bar/serviceActionBar"
 import NavBar, { NavBarPath } from "../bar/navBar"
 import ServiceView from "../view/serviceView"
+import { handleMaskCurrency } from "../inputText/inputText"
 
 interface ServicePageProps {
     id?: string,
-    projectId?: string,
     userId?: number,
+    projectId?: number,
     canSave?: boolean,
     getInfo?: boolean,
     canDelete?: boolean,
@@ -183,7 +184,7 @@ export default function ServicePage(props: ServicePageProps) {
         if (short) {
             //path = { ...path, path: "S" }
         }
-        if (service.id?.length > 0) {
+        if (service.id > 0) {
             path = { ...path, path: "Serviço-" + service.title, onClick: null }
         }
         try {
@@ -213,9 +214,8 @@ export default function ServicePage(props: ServicePageProps) {
     const handlePutHeaders = () => {
         return (
             <FormRow>
-                <FormRowColumn unit={!props.userId ? "2" : "2"}>Titulo</FormRowColumn>
-                <FormRowColumn unit={!props.userId ? "1" : "2"}>Projeto</FormRowColumn>
-                <FormRowColumn unit={!props.userId ? "1" : "2"}>Status</FormRowColumn>
+                <FormRowColumn unit="2" unitM="3">Titulo</FormRowColumn>
+                <FormRowColumn unit="2" unitM="3">Status</FormRowColumn>
                 {!props.userId && (
                     <>
                         <FormRowColumn unit="1">Valor</FormRowColumn>
@@ -229,14 +229,22 @@ export default function ServicePage(props: ServicePageProps) {
     const handlePutRows = (element: Service) => {
         return (
             <FormRow>
-                <FormRowColumn unit={!props.userId ? "2" : "2"}>{element.title}</FormRowColumn>
-                <FormRowColumn unit={!props.userId ? "1" : "2"}><ProjectNumberListItem id={element.project.id} /></FormRowColumn>
-                <FormRowColumn unit={!props.userId ? "1" : "2"}>
+                <FormRowColumn className="break-words" unit="2" unitM="3">
+                    {element?.project?.title ? element?.project?.title + "/" : ""}
+                    {element.title}
+                    {/*
+                    <ProjectNumberListItem
+                        text={element.title}
+                        elementId={element.projectId}
+                    />
+                    */}
+                </FormRowColumn>
+                <FormRowColumn unit="2" unitM="3">
                     <ServiceStatusButton
-                        id={element.id}
                         service={element}
                         value={element.status}
                         onAfter={handleAfterSave}
+                        id={element?.id?.toString()}
                         isDisabled={props.isDisabled || props.isStatusDisabled}
                         onClick={async (value) => {
                             handleStatusClick(element, value)
@@ -245,8 +253,8 @@ export default function ServicePage(props: ServicePageProps) {
                 </FormRowColumn>
                 {!props.userId && (
                     <>
-                        <FormRowColumn unit="1">{handleMountNumberCurrency(element.total.toString(), ".", ",", 3, 2)}</FormRowColumn>
-                        <FormRowColumn className="hidden sm:block" unit="1">{handleUTCToDateShow(element.dateDue?.toString())}</FormRowColumn>
+                        <FormRowColumn className="hidden sm:block" unit="1">{handleMaskCurrency(((parseInt(element.value) ?? 0) * (parseInt(element.quantity) ?? 0)).toString())}</FormRowColumn>
+                        <FormRowColumn className="hidden sm:block" unit="1">{element?.dateDue ? handleDateToShow(element?.dateDue) : "n/a"}</FormRowColumn>
                     </>
                 )}
             </FormRow>
@@ -255,8 +263,7 @@ export default function ServicePage(props: ServicePageProps) {
 
     useEffect(() => {
         if (isFirst) {
-            if (props.projectId?.length > 0) {
-                handleSetIsLoading(true)
+            if (props.projectId > 0) {
                 fetch("api/services/" + props.projectId).then((res) => res.json()).then((res) => {
                     setServices(res.list ?? [])
                     setIsFirst(old => false)

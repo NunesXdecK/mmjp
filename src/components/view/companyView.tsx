@@ -39,13 +39,21 @@ export default function CompanyView(props: CompanyViewProps) {
     const handlePutData = () => {
         return (
             <div className="w-full">
-                {company.owners?.map((owner, index) => (
+                <PersonView
+                    hideData
+                    dataInside
+                    canShowHideData
+                    title={"Representante"}
+                    person={company?.person}
+                    addressTitle={"Endereço"}
+                />
+                {false && company.owners?.map((owner, index) => (
                     <PersonView
                         hideData
                         dataInside
                         person={owner}
                         canShowHideData
-                        key={index + owner.id}
+                        key={index + owner?.id}
                         title={"Representante"}
                         addressTitle={"Endereço"}
                     />
@@ -60,7 +68,7 @@ export default function CompanyView(props: CompanyViewProps) {
 
     useEffect(() => {
         if (isFirst) {
-            if (props.elementId && props.elementId > 0) {
+            if (props.elementId && props.elementId > 0 && company?.id === 0) {
                 fetch("api/company/" + props.elementId).then((res) => res.json()).then((res) => {
                     setIsFirst(old => false)
                     setCompany(res.data)

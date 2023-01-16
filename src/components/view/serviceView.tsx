@@ -18,11 +18,11 @@ import ServiceStatusButton from "../button/serviceStatusButton"
 interface ServiceViewProps {
     id?: string,
     title?: string,
-    elementId?: string,
     addressTitle?: string,
     classNameTitle?: string,
     classNameHolder?: string,
     classNameContentHolder?: string,
+    elementId?: number,
     hideData?: boolean,
     dataInside?: boolean,
     hideBorder?: boolean,
@@ -47,7 +47,7 @@ export default function ServiceView(props: ServiceViewProps) {
         service.immobilesOrigin?.length > 0
     const hasData =
         hasHideData ||
-        service?.dateDue > 0 ||
+        service?.dateDue?.length > 0 ||
         service?.value?.length ||
         service?.total?.length ||
         service?.title?.length ||
@@ -168,7 +168,7 @@ export default function ServiceView(props: ServiceViewProps) {
 
     useEffect(() => {
         if (isFirst) {
-            if (props.elementId && props.elementId.length !== 0 && service.id?.length === 0) {
+            if (props.elementId && props.elementId !== 0 && service?.id === 0) {
                 fetch("api/service/" + props.elementId).then((res) => res.json()).then((res) => {
                     setIsFirst(old => false)
                     setService(res.data)
@@ -179,7 +179,7 @@ export default function ServiceView(props: ServiceViewProps) {
 
     return (
         <>
-            {service.id?.length === 0 ? (
+            {service?.id === 0 ? (
                 <div className="mt-6 w-full">
                     <PlaceholderItemList />
                 </div>

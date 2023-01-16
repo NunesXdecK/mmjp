@@ -40,7 +40,7 @@ export const handleSaveUserInner = async (user, history) => {
             method: "POST",
             body: JSON.stringify({ token: "tokenbemseguro", data: user, history: history }),
         }).then((res) => res.json())
-        res = { ...res, status: "SUCCESS", id: saveRes.id, user: { ...user, id: saveRes.id } }
+        res = { ...res, status: saveRes.status, id: saveRes.id, user: { ...user, id: saveRes.id } }
     } catch (e) {
         console.error("Error adding document: ", e)
     }
@@ -135,13 +135,13 @@ export default function UserActionBarForm(props: UserActionBarFormProps) {
             return
         }
         let res = await handleSaveUserInner(user, true)
-        user = { ...user, id: res.id }
         if (res.status === "ERROR") {
             const feedbackMessage: FeedbackMessage = { messages: ["Algo deu errado!"], messageType: "ERROR" }
             handleShowMessage(feedbackMessage)
             handleSetIsLoading(false)
             return
         }
+        user = { ...user, id: res.id }
         handleSetIsLoading(false)
         const feedbackMessage: FeedbackMessage = { messages: ["Sucesso!"], messageType: "SUCCESS" }
         handleShowMessage(feedbackMessage)

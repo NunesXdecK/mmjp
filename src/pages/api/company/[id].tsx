@@ -1,5 +1,5 @@
 import prisma from "../../../prisma/prisma"
-import { handleMaskCEP, handleMaskCNPJ } from "../../../util/maskUtil"
+import { handleMaskCEP, handleMaskCNPJ, handleMaskCPF } from "../../../util/maskUtil"
 
 export const handleGetCompany = async (id: number) => {
     try {
@@ -18,6 +18,7 @@ export const handleGetCompany = async (id: number) => {
             owners: [company?.person],
             telephones: company?.telephone,
             cnpj: handleMaskCNPJ(company?.cnpj),
+            person: { ...company?.person, cpf: handleMaskCPF(company?.person?.cpf) },
             address: { ...company?.address[0], cep: handleMaskCEP(company?.address[0]?.cep) },
         }
     } catch (err) {

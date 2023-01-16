@@ -8,7 +8,7 @@ import { PlusIcon } from "@heroicons/react/solid"
 import FormRowColumn from "../form/formRowColumn"
 import UserNameListItem from "../list/userNameListItem"
 import SwiftInfoButton from "../button/switchInfoButton"
-import { handleUTCToDateShow } from "../../util/dateUtils"
+import { handleDateToShow, handleUTCToDateShow } from "../../util/dateUtils"
 import ServiceNameListItem from "../list/serviceNameListItem"
 import { FeedbackMessage } from "../modal/feedbackMessageModal"
 import ServiceStageDataForm from "../form/serviceStageDataForm"
@@ -154,7 +154,6 @@ export default function ServiceStagePage(props: ServiceStagePageProps) {
             ...defaultServiceStage,
             status: "PARADO",
             index: serviceStages.length,
-            dateString: "",
         })
         setIsRegister(true)
         setIndex(-1)
@@ -203,7 +202,6 @@ export default function ServiceStagePage(props: ServiceStagePageProps) {
         let localServiceStage: ServiceStage = await fetch("api/serviceStage/" + serviceStage?.id).then((res) => res.json()).then((res) => res.data)
         localServiceStage = {
             ...localServiceStage,
-            dateString: handleUTCToDateShow(localServiceStage?.dateDue?.toString()),
         }
         handleSetIsLoading(false)
         setIsRegister(true)
@@ -251,7 +249,7 @@ export default function ServiceStagePage(props: ServiceStagePageProps) {
         if (short) {
             //path = { ...path, path: "E" }
         }
-        if (serviceStage.id?.length > 0) {
+        if (serviceStage?.id > 0) {
             path = { ...path, path: "Etapa-" + serviceStage.title, onClick: null }
         }
         try {
@@ -281,15 +279,11 @@ export default function ServiceStagePage(props: ServiceStagePageProps) {
     const handlePutHeaders = () => {
         return (
             <FormRow>
-                {/*
-                <FormRowColumn unit="1"></FormRowColumn>
-                */}
-                <FormRowColumn unit={!props.userId ? "2" : "2"}>Titulo</FormRowColumn>
-                <FormRowColumn unit={!props.userId ? "1" : "2"}>Serviço</FormRowColumn>
+                <FormRowColumn className="break-words" unit="2" unitM="3">Titulo</FormRowColumn>
+                <FormRowColumn unit="2" unitM="3">Status</FormRowColumn>
                 {!props.userId && (
-                    <FormRowColumn unit="1">Responsável</FormRowColumn>
+                    <FormRowColumn className="hidden sm:block" unit="1">Responsável</FormRowColumn>
                 )}
-                <FormRowColumn unit={!props.userId ? "1" : "2"}>Status</FormRowColumn>
                 {!props.userId && (
                     <FormRowColumn className="hidden sm:block" unit="1">Prazo</FormRowColumn>
                 )}
@@ -312,12 +306,21 @@ export default function ServiceStagePage(props: ServiceStagePageProps) {
                     : ""}
                 </FormRowColumn>
                     */}
-                <FormRowColumn unit={!props.userId ? "2" : "2"}>{element.title}</FormRowColumn>
-                <FormRowColumn unit={!props.userId ? "1" : "2"}><ServiceNameListItem id={element.service.id} /></FormRowColumn>
+                <FormRowColumn unit="2" unitM="3">
+                    {element?.service?.title ? element?.service?.title + "/" : ""}
+                    {element.title}
+                    {/*
+                    <ServiceNameListItem
+                        elementId={element.service.id}
+                    />
+                    */}
+                </FormRowColumn>
                 {!props.userId && (
-                    <FormRowColumn unit="1"><UserNameListItem id={element.responsible?.id} /></FormRowColumn>
+                    <FormRowColumn className="hidden sm:block" unit="1">
+                        <UserNameListItem id={element.responsible?.id} />
+                    </FormRowColumn>
                 )}
-                <FormRowColumn unit={!props.userId ? "1" : "2"}>
+                <FormRowColumn unit="2" unitM="3">
                     <SwiftInfoButton
                         id={element.id + "-"}
                         value={element.status}
@@ -334,7 +337,7 @@ export default function ServiceStagePage(props: ServiceStagePageProps) {
                     />
                 </FormRowColumn>
                 {!props.userId && (
-                    <FormRowColumn className="hidden sm:block" unit="1">{handleUTCToDateShow(element.dateDue?.toString())}</FormRowColumn>
+                    <FormRowColumn className="hidden sm:block" unit="1">{element.dateDue ? handleDateToShow(element.dateDue) : "n/a"}</FormRowColumn>
                 )}
             </FormRow>
         )

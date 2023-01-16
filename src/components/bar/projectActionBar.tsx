@@ -46,11 +46,6 @@ export const handleProjectValidationForDB = (project: Project) => {
 }
 
 export const handleProjectForDB = (project: Project) => {
-    if (project?.dateString?.length > 0) {
-        project = { ...project, dateDue: handleGetDateFormatedToUTC(project.dateString) }
-    } else {
-        project = { ...project, dateDue: 0 }
-    }
     let clients = []
     if (project.clients && project.clients.length) {
         project.clients?.map((element, index) => {
@@ -72,7 +67,7 @@ export const handleProjectForDB = (project: Project) => {
 }
 
 export const handleSaveProjectInner = async (project, history) => {
-    let res = { status: "ERROR", id: "", project: project }
+    let res = { status: "ERROR", id: 0, project: project }
     project = handleProjectForDB(project)
     try {
         const saveRes = await fetch("api/project", {
@@ -129,9 +124,6 @@ export default function ProjectActionBarForm(props: ProjectActionBarFormProps) {
             props.onSet(project)
         }
         if (props.onAfterSave) {
-            if (project.dateString?.length > 0) {
-                project = { ...project, dateDue: handleGetDateFormatedToUTC(project.dateString) }
-            }
             props.onAfterSave(feedbackMessage, project, isForCloseModal)
         }
     }

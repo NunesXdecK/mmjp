@@ -42,7 +42,7 @@ export default async function handler(req, res) {
             res.status(200).json(resGET)
             break
         default:
-            res.setHeader("Allow", ["PUT", "UPDATE", "DELETE"])
+            res.setHeader("Allow", ["GET"])
             res.status(405).end(`Metodo ${method} nao permitido`)
     }
 }

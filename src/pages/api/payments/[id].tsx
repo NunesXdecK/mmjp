@@ -1,33 +1,32 @@
-import { PaymentConversor } from "../../../db/converters"
-import { Payment } from "../../../interfaces/objectInterfaces"
-import { db, PAYMENT_COLLECTION_NAME } from "../../../db/firebaseDB"
-import { collection, doc, getDocs, query, where } from "firebase/firestore"
+import prisma from "../../../prisma/prisma"
+
+const main = async (id) => {
+    try {
+        return await prisma.payment.findMany({
+            where: {
+                projectId: id,
+            },
+            include: {
+                project: true
+            }
+        })
+    } catch (error) {
+        console.error(error)
+        return []
+    }
+}
 
 export default async function handler(req, res) {
-    const { method } = req
-    const PaymentCollection = collection(db, PAYMENT_COLLECTION_NAME).withConverter(PaymentConversor)
+    const { method, query } = req
+    const { id } = query
     switch (method) {
         case 'GET':
             let resGET = { status: "ERROR", error: {}, message: "", list: [] }
-            let list = []
-            try {
-                const { id } = req.query
-                const queryPayment = query(PaymentCollection, where("project", "==", { id: id }))
-                const querySnapshot = await getDocs(queryPayment)
-                querySnapshot.forEach((doc) => {
-                    list = [...list, doc.data()]
-                })
-                list = list.sort((elementOne: Payment, elementTwo: Payment) => {
-                    let indexOne = elementOne.index
-                    let indexTwo = elementTwo.index
-                    return indexTwo - indexOne
-                })
-                resGET = { ...resGET, status: "SUCCESS", list: list }
-            } catch (err) {
-                console.error(err)
-                resGET = { ...resGET, status: "ERROR", error: err }
+            if (parseInt(id)) {
+                const payments = await main(parseInt(id)).then(res => res)
+                resGET = { ...resGET, list: payments }
             }
-            res.status(200).json(resGET)
+            res.status(200).json({ ...resGET })
             break
         default:
             res.setHeader("Allow", ["GET"])

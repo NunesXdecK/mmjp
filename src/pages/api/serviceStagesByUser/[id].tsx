@@ -1,30 +1,22 @@
-import { collection, getDocs, query, where } from "firebase/firestore"
-import { ServiceStageConversor } from "../../../db/converters"
-import { db, SERVICE_STAGE_COLLECTION_NAME } from "../../../db/firebaseDB"
+import prisma from "../../../prisma/prisma"
+
+const main = async (id: number) => {
+    try {
+        return await prisma.serviceStage.findMany()
+    } catch (error) {
+        console.error(error)
+        return []
+    }
+}
 
 export default async function handler(req, res) {
-    const { method } = req
-    const serviceStageCollection = collection(db, SERVICE_STAGE_COLLECTION_NAME).withConverter(ServiceStageConversor)
-
+    const { method, query } = req
+    const { id } = query
     switch (method) {
-        case 'GET':
+        case "GET":
             let resGET = { status: "ERROR", error: {}, message: "", list: [] }
-            let list = []
-            const { id } = req.query
-            try {
-                if (id) {
-                    const queryServiceStage = query(serviceStageCollection, where("responsible", "==", { id: id }))
-                    const querySnapshot = await getDocs(queryServiceStage)
-                    querySnapshot.forEach((doc) => {
-                        list = [...list, doc.data()]
-                    })
-                    resGET = { ...resGET, status: "SUCCESS", list: list }
-                }
-            } catch (err) {
-                console.error(err)
-                resGET = { ...resGET, status: "ERROR", error: err }
-            }
-            res.status(200).json(resGET)
+            const serviceStages = await main(id).then(res => res)
+            res.status(200).json({ ...resGET, list: serviceStages })
             break
         default:
             res.setHeader("Allow", ["GET"])

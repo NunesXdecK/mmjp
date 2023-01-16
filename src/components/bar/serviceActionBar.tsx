@@ -9,7 +9,7 @@ import { handleMountNumberCurrency, handleRemoveCurrencyMask } from "../../util/
 import { Service, defaultService, ServiceStatus } from "../../interfaces/objectInterfaces";
 
 interface ServiceActionBarFormProps {
-    projectId?: string,
+    projectId?: number,
     className?: string,
     isLoading?: boolean,
     isMultiple?: boolean,
@@ -62,11 +62,6 @@ export const handleServiceValidationForDB = (service: Service, isForValidateImmo
 }
 
 export const handleServiceForDB = (service: Service) => {
-    if (service?.dateString?.length > 0) {
-        service = { ...service, dateDue: handleGetDateFormatedToUTC(service.dateString) }
-    } else {
-        service = { ...service, dateDue: 0 }
-    }
     if (service.title?.length > 0) {
         service = { ...service, title: service.title?.trim() }
     }
@@ -111,7 +106,7 @@ export const handleServiceForDB = (service: Service) => {
 }
 
 export const handleSaveServiceInner = async (service, history) => {
-    let res = { status: "ERROR", id: "", service: service }
+    let res = { status: "ERROR", id: 0, service: service }
     service = handleServiceForDB(service)
     try {
         const saveRes = await fetch("api/service", {
@@ -151,7 +146,7 @@ export default function ServiceActionBarForm(props: ServiceActionBarFormProps) {
             service = { ...service, status: status }
         }
         let serviceOld = { ...service }
-        if (props.projectId?.length > 0) {
+        if (props.projectId > 0) {
             service = { ...service, project: { id: props.projectId } }
         }
         let res = await handleSaveServiceInner(service, true)
@@ -177,9 +172,6 @@ export default function ServiceActionBarForm(props: ServiceActionBarFormProps) {
             })
         }
         if (props.onAfterSave) {
-            if (service.dateString?.length > 0) {
-                service = { ...service, dateDue: handleGetDateFormatedToUTC(service.dateString) }
-            }
             props.onAfterSave(feedbackMessage, service, isForCloseModal)
         }
     }

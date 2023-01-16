@@ -17,7 +17,7 @@ export default function BudgetPaymentView(props: BudgetPaymentViewProps) {
     const hasData =
         props.budgetPayment?.title?.length ||
         props.budgetPayment?.value?.length ||
-        props.budgetPayment?.dateDue > 0
+        props.budgetPayment?.dateDue?.length > 0
 
     return (
         <>

@@ -55,7 +55,7 @@ export default function ImmobilePointView(props: ImmobilePointViewProps) {
 
     useEffect(() => {
         if (isFirst) {
-            if (props.elementId && props.elementId > 0) {
+            if (props.elementId && props.elementId > 0 && immobilePoint?.id === 0) {
                 fetch("api/point/" + props.elementId).then((res) => res.json()).then((res) => {
                     setIsFirst(old => false)
                     setImmobilePoint(res.data)

@@ -15,11 +15,11 @@ import SwiftInfoButton from "../button/switchInfoButton"
 interface ServiceStageViewProps {
     id?: string,
     title?: string,
-    elementId?: string,
     addressTitle?: string,
     classNameTitle?: string,
     classNameHolder?: string,
     classNameContentHolder?: string,
+    elementId?: number,
     hideData?: boolean,
     dataInside?: boolean,
     hideBorder?: boolean,
@@ -42,7 +42,7 @@ export default function ServiceStageView(props: ServiceStageViewProps) {
 
     const hasData =
         hasHideData ||
-        serviceStage?.dateDue > 0 ||
+        serviceStage?.dateDue.length > 0 ||
         serviceStage?.title?.length
 
     const handlePutService = () => {
@@ -84,7 +84,7 @@ export default function ServiceStageView(props: ServiceStageViewProps) {
 
     useEffect(() => {
         if (isFirst) {
-            if (props.elementId && props.elementId.length !== 0 && serviceStage.id?.length === 0) {
+            if (props.elementId && props.elementId !== 0 && serviceStage?.id === 0) {
                 fetch("api/serviceStage/" + props.elementId).then((res) => res.json()).then((res) => {
                     setIsFirst(old => false)
                     setServiceStage(res.data)
@@ -95,7 +95,7 @@ export default function ServiceStageView(props: ServiceStageViewProps) {
 
     return (
         <>
-            {serviceStage.id?.length === 0 ? (
+            {serviceStage.id === 0 ? (
                 <div className="mt-6 w-full">
                     <PlaceholderItemList />
                 </div>

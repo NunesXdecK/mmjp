@@ -1,27 +1,23 @@
 import InfoView from "./infoView"
-import Button from "../button/button"
 import PersonView from "./personView"
 import CompanyView from "./companyView"
 import { useEffect, useState } from "react"
 import InfoHolderView from "./infoHolderView"
-import PlaceholderItemList from "../list/placeholderItemList"
-import ScrollDownTransition from "../animation/scrollDownTransition"
-import { ChevronDownIcon, ChevronRightIcon } from "@heroicons/react/outline"
-import { defaultProject, Payment, Project, Service } from "../../interfaces/objectInterfaces"
-import { handleUTCToDateShow } from "../../util/dateUtils"
-import ServiceView from "./serviceView"
 import SwitchTextButton from "../button/switchTextButton"
+import { handleUTCToDateShow } from "../../util/dateUtils"
+import PlaceholderItemList from "../list/placeholderItemList"
 import ProjectStatusButton from "../button/projectStatusButton"
-import PaymentView from "./paymentView"
+import ScrollDownTransition from "../animation/scrollDownTransition"
+import { defaultProject, Project } from "../../interfaces/objectInterfaces"
 
 interface ProjectViewProps {
     id?: string,
     title?: string,
-    elementId?: string,
     addressTitle?: string,
     classNameTitle?: string,
     classNameHolder?: string,
     classNameContentHolder?: string,
+    elementId?: number,
     hideData?: boolean,
     dataInside?: boolean,
     hideBorder?: boolean,
@@ -35,14 +31,12 @@ export default function ProjectView(props: ProjectViewProps) {
     const [isFirst, setIsFirst] = useState(true)
     const [isShowInfo, setIsShowInfo] = useState(props.hideData ? false : true)
     const [project, setProject] = useState<Project>(props.project ?? defaultProject)
-    const [services, setServices] = useState<Service[]>([])
-    const [payments, setPayments] = useState<Payment[]>([])
 
     const hasHideData =
         project.clients?.length > 0
     const hasData =
         hasHideData ||
-        project?.dateDue > 0 ||
+        project?.dateDue?.length > 0 ||
         project?.number?.length ||
         project?.title?.length
 
@@ -76,29 +70,29 @@ export default function ProjectView(props: ProjectViewProps) {
             </>
         )
     }
+    const sortByIndex = (elementOne, elementTwo) => {
+        let dateOne = 0
+        let dateTwo = 0
+        if ("index" in elementOne) {
+            dateOne = elementOne.index
+        }
+        if ("index" in elementTwo) {
+            dateTwo = elementTwo.index
+        }
+        return dateTwo - dateOne
+    }
+    const sortByData = (elementOne, elementTwo) => {
+        let dateOne = 0
+        let dateTwo = 0
+        if ("dateInsertUTC" in elementOne) {
+            dateOne = elementOne.dateInsertUTC
+        }
+        if ("dateInsertUTC" in elementTwo) {
+            dateTwo = elementTwo.dateInsertUTC
+        }
+        return dateTwo - dateOne
+    }
     const handlePutData = () => {
-        let listClients = project?.clients?.sort((elementOne, elementTwo) => {
-            let dateOne = 0
-            let dateTwo = 0
-            if ("dateInsertUTC" in elementOne) {
-                dateOne = elementOne.dateInsertUTC
-            }
-            if ("dateInsertUTC" in elementTwo) {
-                dateTwo = elementTwo.dateInsertUTC
-            }
-            return dateTwo - dateOne
-        }) ?? []
-        let listServices = services?.sort((elementOne, elementTwo) => {
-            let dateOne = 0
-            let dateTwo = 0
-            if ("index" in elementOne) {
-                dateOne = elementOne.index
-            }
-            if ("index" in elementTwo) {
-                dateTwo = elementTwo.index
-            }
-            return dateTwo - dateOne
-        }) ?? []
         return (
             <div className="w-full">
                 {/*
@@ -127,8 +121,6 @@ export default function ProjectView(props: ProjectViewProps) {
                         {handlePutOwner(owner)}
                     </div>
                 ))}
-
-            */}
                 {listServices?.map((service, index) => (
                     <ServiceView
                         hideData
@@ -140,8 +132,7 @@ export default function ProjectView(props: ProjectViewProps) {
                         title={"Serviço " + (index + 1)}
                     />
                 ))}
-                
-                {payments?.map((payment, index) => (
+                {project?.payments?.map((payment, index) => (
                     <PaymentView
                         hideData
                         dataInside
@@ -152,22 +143,17 @@ export default function ProjectView(props: ProjectViewProps) {
                         title={"Pagamento " + (index + 1)}
                     />
                 ))}
+                */}
             </div>
         )
     }
 
     useEffect(() => {
         if (isFirst) {
-            if (props.elementId && props.elementId.length !== 0 && project.id?.length === 0) {
-                fetch("api/projectview/" + props.elementId).then((res) => res.json()).then((res) => {
+            if (props.elementId && props.elementId !== 0 && project?.id === 0) {
+                fetch("api/project/" + props.elementId).then((res) => res.json()).then((res) => {
                     setIsFirst(old => false)
                     setProject(res.data)
-                    fetch("api/services/" + res.data.id).then((res) => res.json()).then((res) => {
-                        setServices(res.list)
-                    })
-                    fetch("api/payments/" + res.data.id).then((res) => res.json()).then((res) => {
-                        setPayments(res.list)
-                    })
                 })
             }
         }
@@ -175,7 +161,7 @@ export default function ProjectView(props: ProjectViewProps) {
 
     return (
         <>
-            {project.id?.length === 0 ? (
+            {project?.id === 0 ? (
                 <div className="mt-6 w-full">
                     <PlaceholderItemList />
                 </div>

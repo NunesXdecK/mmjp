@@ -48,9 +48,7 @@ export const handleSaveBudgetServiceInner = async (budgetService, budgetId, hist
                 history: history
             }),
         }).then((res) => res.json())
-        if (saveRes.status === "SUCCESS") {
-            res = { ...res, status: "SUCCESS", id: saveRes.id, budgetService: { ...budgetService, id: saveRes.id } }
-        }
+        res = { ...res, status: saveRes.status, id: saveRes.id, budgetService: { ...budgetService, id: saveRes.id } }
     } catch (e) {
         console.error("Error adding document: ", e)
     }
@@ -82,13 +80,13 @@ export default function BudgetServiceActionBarForm(props: BudgetServiceActionBar
         }
         if (props.budgetId > 0) {
             let res = await handleSaveBudgetServiceInner(budgetService, props?.budgetId ?? 0, true)
-            budgetService = { ...budgetService, id: res.id }
             if (res.status === "ERROR") {
                 const feedbackMessage: FeedbackMessage = { messages: ["Algo deu errado!"], messageType: "ERROR" }
                 handleShowMessage(feedbackMessage)
                 handleSetIsLoading(false)
                 return
             }
+            budgetService = { ...budgetService, id: res.id }
         }
         handleSetIsLoading(false)
         const feedbackMessage: FeedbackMessage = { messages: ["Sucesso!"], messageType: "SUCCESS" }

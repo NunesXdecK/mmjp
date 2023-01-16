@@ -7,7 +7,7 @@ import WindowModal from "../modal/windowModal"
 import FormRowColumn from "../form/formRowColumn"
 import ProjectDataForm from "../form/projectDataForm"
 import ProjectActionBarForm, { handleSaveProjectInner } from "../bar/projectActionBar"
-import { handleUTCToDateShow } from "../../util/dateUtils"
+import { handleDateToShow, handleUTCToDateShow } from "../../util/dateUtils"
 import { PlusIcon, RefreshIcon } from "@heroicons/react/solid"
 import { FeedbackMessage } from "../modal/feedbackMessageModal"
 import ProjectStatusButton from "../button/projectStatusButton"
@@ -102,7 +102,6 @@ export default function ProjectPage(props: ProjectPageProps) {
     const handleNewClick = async () => {
         setProject({
             ...defaultProject,
-            dateString: ""
         })
         setIsRegister(true)
         setIndex(-1)
@@ -124,28 +123,8 @@ export default function ProjectPage(props: ProjectPageProps) {
         handleSetIsLoading(true)
         setIsForShow(false)
         let localProject: Project = await fetch("api/project/" + project?.id).then((res) => res.json()).then((res) => res.data)
-        let localClients = []
-        if (localProject?.clients?.length > 0) {
-            await Promise.all(
-                localProject.clients.map(async (element, index) => {
-                    if (element && element?.id?.length) {
-                        let localClient: (Person | Company) = {}
-                        if ("cpf" in element) {
-                            localClient = await fetch("api/person/" + element.id).then((res) => res.json()).then((res) => res.data)
-                        } else if ("cnpj" in element) {
-                            localClient = await fetch("api/company/" + element.id).then((res) => res.json()).then((res) => res.data)
-                        }
-                        if (localClient && "id" in localClient && localClient?.id?.length) {
-                            localClients = [...localClients, localClient]
-                        }
-                    }
-                })
-            )
-        }
         localProject = {
             ...localProject,
-            clients: localClients,
-            dateString: handleUTCToDateShow(localProject?.dateDue?.toString()),
         }
         handleSetIsLoading(false)
         setIsRegister(true)
@@ -193,7 +172,7 @@ export default function ProjectPage(props: ProjectPageProps) {
         if (short) {
             //path = { ...path, path: "S" }
         }
-        if (project.id?.length > 0) {
+        if (project?.id > 0) {
             path = { ...path, path: "Projeto-" + project.title, onClick: null }
         }
         try {
@@ -223,10 +202,9 @@ export default function ProjectPage(props: ProjectPageProps) {
     const handlePutHeaders = () => {
         return (
             <FormRow>
-                <FormRowColumn unit="3">Nome</FormRowColumn>
-                <FormRowColumn unit="1">Número</FormRowColumn>
-                <FormRowColumn unit="1">Status</FormRowColumn>
-                <FormRowColumn className="hidden sm:block" unit="1">Prazo</FormRowColumn>
+                <FormRowColumn unit="2" unitM="3">Nome</FormRowColumn>
+                <FormRowColumn unit="2" unitM="3">Status</FormRowColumn>
+                <FormRowColumn className="hidden sm:block" unit="2">Prazo</FormRowColumn>
             </FormRow>
         )
     }
@@ -234,11 +212,10 @@ export default function ProjectPage(props: ProjectPageProps) {
     const handlePutRows = (element: Project) => {
         return (
             <FormRow>
-                <FormRowColumn unit="3">{element.title}</FormRowColumn>
-                <FormRowColumn unit="1">{element.number}</FormRowColumn>
-                <FormRowColumn unit="1">
+                <FormRowColumn className="break-words" unit="2" unitM="3">{element.title + "/" + element.number}</FormRowColumn>
+                <FormRowColumn unit="2" unitM="3">
                     <ProjectStatusButton
-                        id={element.id}
+                        id={element.id.toString()}
                         project={element}
                         value={element.status}
                         onAfter={handleAfterSave}
@@ -248,7 +225,7 @@ export default function ProjectPage(props: ProjectPageProps) {
                         }}
                     />
                 </FormRowColumn>
-                <FormRowColumn className="hidden sm:block" unit="1">{handleUTCToDateShow(element.dateDue?.toString())}</FormRowColumn>
+                <FormRowColumn className="hidden sm:block" unit="2">{element.dateDue ? handleDateToShow(element.dateDue) : "n/a"}</FormRowColumn>
             </FormRow>
         )
     }

@@ -3,7 +3,7 @@ import Button from "../button/button";
 import ListTableItem from "./listTableItem";
 import InputText from "../inputText/inputText";
 import WindowModal from "../modal/windowModal";
-import { handleUTCToDateShow } from "../../util/dateUtils";
+import { handleDateToShow, handleUTCToDateShow } from "../../util/dateUtils";
 import { STYLE_FOR_INPUT_LOADING_TRANSPARENT } from "../../util/patternValidationUtil";
 
 interface ListTableProps {
@@ -53,28 +53,33 @@ export default function ListTable(props: ListTableProps) {
             let title = ""
             let date = ""
             let status = ""
+            let dateDue = ""
             if (element) {
                 if (typeof element === "string") {
                     name = element
                 } else if (typeof element === "object") {
                     if ("name" in element) {
-                        name = element.name.toString()
+                        name = element?.name?.toString()
                     }
                     if ("title" in element) {
-                        title = element.title.toString()
+                        title = element?.title?.toString()
                     }
                     if ("status" in element) {
-                        status = element.status.toString()
+                        status = element?.status?.toString()
+                    }
+                    if ("dateDue" in element) {
+                        dateDue = handleDateToShow(element?.dateDue ?? "")
                     }
                     if ("date" in element) {
-                        date = handleUTCToDateShow(element.date)
+                        date = handleUTCToDateShow(element?.date ?? "")
                     }
                 }
             }
-            return name.toLowerCase().includes(inputSearch.toLowerCase())
-                || date.toLowerCase().includes(inputSearch.toLowerCase())
-                || title.toLowerCase().includes(inputSearch.toLowerCase())
-                || status.toLowerCase().includes(inputSearch.toLowerCase())
+            return name?.toLowerCase().includes(inputSearch.toLowerCase())
+                || date?.toLowerCase().includes(inputSearch.toLowerCase())
+                || title?.toLowerCase().includes(inputSearch.toLowerCase())
+                || status?.toLowerCase().includes(inputSearch.toLowerCase())
+                || dateDue?.toLowerCase().includes(inputSearch.toLowerCase())
         })) ??
         props.list
 

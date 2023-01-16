@@ -50,6 +50,7 @@ export interface Company {
     personId?: number,
     clientCode?: number,
     oldData?: any,
+    person?: Person,
     address?: Address,
     owners?: any[],
     telephones?: Telephone[],
@@ -159,11 +160,11 @@ export interface BudgetPayment {
 }
 
 export interface Project {
-    id?: string,
     title?: string,
     number?: string,
+    dateDue?: string,
     description?: string,
-    dateDue?: number,
+    id?: number,
     priority?: number,
     priorityView?: number,
     budget?: Budget,
@@ -171,22 +172,22 @@ export interface Project {
     oldData?: any,
     clients?: any[],
     services?: Service[],
+    payments?: Payment[],
 }
 
 export interface Service {
-    id?: string,
     title?: string,
     value?: string,
     total?: string,
+    dateDue?: string,
     quantity?: string,
     dateString?: string,
     description?: string,
-    dateDue?: number,
+    id?: number,
     index?: number,
     priority?: number,
+    projectId?: number,
     priorityView?: number,
-    dateInsertUTC?: number,
-    dateLastUpdateUTC?: number,
     status?: ServiceStatus,
     project?: any,
     professional?: any,
@@ -197,34 +198,30 @@ export interface Service {
 }
 
 export interface ServiceStage {
-    id?: string,
     title?: string,
-    dateString?: string,
+    dateDue?: string,
     description?: string,
+    id?: number,
     index?: number,
-    dateDue?: number,
     priority?: number,
+    serviceId?: number,
     priorityView?: number,
-    dateInsertUTC?: number,
-    dateLastUpdateUTC?: number,
     status?: ServiceStageStatus,
     service?: any,
     responsible?: any,
 }
 
 export interface Payment {
-    id?: string,
     value?: string,
     title?: string,
-    dateString?: string,
+    dateDue?: string,
     description?: string,
+    id?: number,
     index?: number,
-    dateDue?: number,
     priority?: number,
-    dateInsertUTC?: number,
-    dateLastUpdateUTC?: number,
+    projectId?: number,
+    project?: Project,
     status?: PaymentStatus,
-    project?: any,
 }
 
 export interface ServicePayment {
@@ -403,12 +400,12 @@ export const defaultBudgetPayment: BudgetPayment = {
 }
 
 export const defaultProject: Project = {
-    id: "",
     title: "",
     number: "",
+    dateDue: "",
     description: "",
     status: "PARADO",
-    dateDue: 0,
+    id: 0,
     priority: 0,
     priorityView: 0,
     oldData: {},
@@ -416,20 +413,18 @@ export const defaultProject: Project = {
 }
 
 export const defaultService: Service = {
-    id: "",
     title: "",
     value: "0",
     total: "0",
+    dateDue: "",
     quantity: "1",
     dateString: "",
     description: "",
     status: "PARADO",
-    dateDue: 0,
+    id: 0,
     index: -1,
     priority: 0,
     priorityView: 0,
-    dateInsertUTC: 0,
-    dateLastUpdateUTC: 0,
     project: defaultProject,
     professional: defaultProfessional,
     serviceStages: [],
@@ -439,32 +434,27 @@ export const defaultService: Service = {
 }
 
 export const defaultServiceStage: ServiceStage = {
-    id: "",
     title: "",
-    dateString: "",
+    dateDue: "",
     description: "",
     status: "PARADO",
+    id: 0,
     index: -1,
     priority: 0,
     priorityView: 0,
-    dateInsertUTC: 0,
-    dateLastUpdateUTC: 0,
     service: defaultService,
     responsible: defaultProfessional,
 }
 
 export const defaultPayment: Payment = {
-    id: "",
     title: "",
     value: "0",
-    dateString: "",
+    dateDue: "",
     description: "",
     status: "EM ABERTO",
     index: -1,
-    dateDue: 0,
+    id: 0,
     priority: 0,
-    dateInsertUTC: 0,
-    dateLastUpdateUTC: 0,
     project: defaultProject,
 }
 

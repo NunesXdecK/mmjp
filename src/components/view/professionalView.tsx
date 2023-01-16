@@ -50,7 +50,7 @@ export default function ProfessionalView(props: ProfessionalViewProps) {
 
     useEffect(() => {
         if (isFirst) {
-            if (props.elementId && props?.elementId > 0 && professional?.id > 0) {
+            if (props.elementId && props?.elementId > 0 && professional?.id === 0) {
                 fetch("api/professional/" + props.elementId).then((res) => res.json()).then((res) => {
                     setIsFirst(old => false)
                     setProfessional(res.data)

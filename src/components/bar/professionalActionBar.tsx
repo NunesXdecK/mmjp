@@ -51,7 +51,7 @@ export const handleSaveProfessionalInner = async (professional, history) => {
             method: "POST",
             body: JSON.stringify({ token: "tokenbemseguro", data: professional, history: history }),
         }).then((res) => res.json())
-        res = { ...res, status: "SUCCESS", id: saveRes.id, professional: { ...professional, id: saveRes.id } }
+        res = { ...res, status: saveRes.status, id: saveRes.id, professional: { ...professional, id: saveRes.id } }
     } catch (e) {
         console.error("Error adding document: ", e)
     }
@@ -82,13 +82,13 @@ export default function ProfessionalActionBarForm(props: ProfessionalActionBarFo
             return
         }
         let res = await handleSaveProfessionalInner(professional, true)
-        professional = { ...professional, id: res.id }
         if (res.status === "ERROR") {
             const feedbackMessage: FeedbackMessage = { messages: ["Algo deu errado!"], messageType: "ERROR" }
             handleShowMessage(feedbackMessage)
             handleSetIsLoading(false)
             return
         }
+        professional = { ...professional, id: res.id }
         handleSetIsLoading(false)
         const feedbackMessage: FeedbackMessage = { messages: ["Sucesso!"], messageType: "SUCCESS" }
         handleShowMessage(feedbackMessage)

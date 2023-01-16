@@ -3,7 +3,7 @@ import ProjectView from "./projectView"
 import { useEffect, useState } from "react"
 import InfoHolderView from "./infoHolderView"
 import SwitchTextButton from "../button/switchTextButton"
-import { handleUTCToDateShow } from "../../util/dateUtils"
+import { handleDateToShow, handleUTCToDateShow } from "../../util/dateUtils"
 import PlaceholderItemList from "../list/placeholderItemList"
 import { handleMountNumberCurrency } from "../../util/maskUtil"
 import ScrollDownTransition from "../animation/scrollDownTransition"
@@ -13,7 +13,7 @@ import PaymentStatusButton from "../button/paymentStatusButton"
 interface PaymentViewProps {
     id?: string,
     title?: string,
-    elementId?: string,
+    elementId?: number,
     addressTitle?: string,
     classNameTitle?: string,
     classNameHolder?: string,
@@ -38,24 +38,24 @@ export default function PaymentView(props: PaymentViewProps) {
 
     const hasData =
         hasHideData ||
-        payment?.dateDue > 0 ||
+        payment?.dateDue?.length > 0 ||
         payment?.title?.length
 
     const handlePutProject = () => {
         return (
             <>
-                {payment?.project?.id?.length && (
+                {payment?.projectId > 0 && (
                     <ProjectView
                         hideData
                         dataInside
                         classNameHolder="min-w-full"
+                        elementId={payment.projectId}
                         hideBorder={props.showMoreInfo}
                         classNameContentHolder="min-w-full"
-                        elementId={payment.project.id}
                         canShowHideData={!props.showMoreInfo}
                         hidePaddingMargin={props.showMoreInfo}
+                        id={payment.id + "-" + payment.projectId}
                         title={props.showMoreInfo ? "" : "Projeto"}
-                        id={payment.id + "-" + payment.project.id}
                     />
                 )}
             </>
@@ -72,7 +72,7 @@ export default function PaymentView(props: PaymentViewProps) {
 
     useEffect(() => {
         if (isFirst) {
-            if (props.elementId && props.elementId.length !== 0 && payment.id?.length === 0) {
+            if (props.elementId && props.elementId !== 0 && payment?.id === 0) {
                 fetch("api/payment/" + props.elementId).then((res) => res.json()).then((res) => {
                     setIsFirst(old => false)
                     setPayment(res.data)
@@ -83,7 +83,7 @@ export default function PaymentView(props: PaymentViewProps) {
 
     return (
         <>
-            {payment.id?.length === 0 ? (
+            {payment.id === 0 ? (
                 <div className="mt-6 w-full">
                     <PlaceholderItemList />
                 </div>
@@ -101,7 +101,7 @@ export default function PaymentView(props: PaymentViewProps) {
                             >
                                 <InfoView title="Pagamento">{payment.title}</InfoView>
                                 <InfoView title="Valor">{handleMountNumberCurrency(payment.value.toString(), ".", ",", 3, 2)}</InfoView>
-                                <InfoView title="Data">{handleUTCToDateShow(payment.dateDue?.toString())}</InfoView>
+                                <InfoView title="Data">{handleDateToShow(payment.dateDue)}</InfoView>
                                 <InfoView title="Status">
                                     <PaymentStatusButton
                                         isDisabled={true}

@@ -130,7 +130,7 @@ export const handleSaveBudgetInner = async (budget, history) => {
             method: "POST",
             body: JSON.stringify({ token: "tokenbemseguro", data: budgetForDB, history: history }),
         }).then((res) => res.json())
-        res = { ...res, status: "SUCCESS", id: saveRes.id, budget: { ...budgetForDB, id: saveRes.id } }
+        res = { ...res, status: saveRes.status, id: saveRes.id, budget: { ...budgetForDB, id: saveRes.id } }
     } catch (e) {
         console.error("Error adding document: ", e)
     }
@@ -188,16 +188,13 @@ export default function BudgetActionBarForm(props: BudgetActionBarFormProps) {
             budget = { ...budget, status: status }
         }
         let res = await handleSaveBudgetInner(budget, true)
-        budget = {
-            ...budget,
-            id: res.id,
-        }
         if (res.status === "ERROR") {
             const feedbackMessage: FeedbackMessage = { messages: ["Algo deu errado!"], messageType: "ERROR" }
             handleShowMessage(feedbackMessage)
             handleSetIsLoading(false)
             return
         }
+        budget = { ...budget, id: res.id }
         handleSetIsLoading(false)
         const feedbackMessage: FeedbackMessage = { messages: ["Sucesso!"], messageType: "SUCCESS" }
         handleShowMessage(feedbackMessage)

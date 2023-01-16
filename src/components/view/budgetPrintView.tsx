@@ -2,7 +2,7 @@ import PersonView from "./personView"
 import ServicesView from "./servicesView"
 import { useEffect, useState } from "react"
 import InfoHolderView from "./infoHolderView"
-import { handleUTCToDateShow } from "../../util/dateUtils"
+import { handleDateToShow, handleUTCToDateShow } from "../../util/dateUtils"
 import PlaceholderItemList from "../list/placeholderItemList"
 import { Company, defaultProject, Person, Project, Service } from "../../interfaces/objectInterfaces"
 import CompanyView from "./companyView"
@@ -10,7 +10,7 @@ import InfoView from "./infoView"
 
 interface BudgetPrintViewProps {
     id?: string,
-    elementId?: string,
+    elementId?: number,
     dataInside?: boolean,
     client?: Person | Company,
     project?: Project,
@@ -54,7 +54,7 @@ export default function BudgetPrintView(props: BudgetPrintViewProps) {
 
     useEffect(() => {
         if (isFirst) {
-            if (props.elementId && props.elementId?.length && project.id?.length === 0) {
+            if (props.elementId && props.elementId > 0 && project?.id === 0) {
                 fetch("../api/projectview/" + props.elementId).then((res) => res.json()).then((res) => {
                     setIsFirst(old => false)
                     let client = res.data?.clients[0] ?? {}
@@ -111,8 +111,7 @@ export default function BudgetPrintView(props: BudgetPrintViewProps) {
                         title="Dados do orçamento">
                         {project.number && (<InfoView title="Codigo">{project.number}</InfoView>)}
                         {project.title && (<InfoView title="Titulo">{project.title}</InfoView>)}
-                        {project.dateDue === 0 && project.dateString?.length && (<InfoView title="Data">{project.dateString}</InfoView>)}
-                        {project.dateDue > 0 && (<InfoView title="Data">{handleUTCToDateShow(project.dateDue?.toString())}</InfoView>)}
+                        <InfoView title="Data">{handleDateToShow(project.dateDue)}</InfoView>
                         {props.dataInside && handlePutData()}
                     </InfoHolderView>
                     {!props.dataInside && handlePutData()}

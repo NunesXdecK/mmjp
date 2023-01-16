@@ -1,14 +1,15 @@
-import Form from "./form";
-import FormRow from "./formRow";
-import { useState } from "react";
-import FormRowColumn from "./formRowColumn";
-import InputText from "../inputText/inputText";
-import { Payment } from "../../interfaces/objectInterfaces";
-import InputTextCurrency from "../inputText/inputTextCurrency";
-import { NOT_NULL_MARK } from "../../util/patternValidationUtil";
-import InputTextAutoComplete from "../inputText/inputTextAutocomplete";
-import InputTextArea from "../inputText/inputTextArea";
-import { NavBarPath } from "../bar/navBar";
+import Form from "./form"
+import FormRow from "./formRow"
+import { useState } from "react"
+import { NavBarPath } from "../bar/navBar"
+import FormRowColumn from "./formRowColumn"
+import InputText from "../inputText/inputText"
+import { handleOnlyDate } from "../../util/dateUtils"
+import InputTextArea from "../inputText/inputTextArea"
+import { Payment } from "../../interfaces/objectInterfaces"
+import InputTextCurrency from "../inputText/inputTextCurrency"
+import { NOT_NULL_MARK } from "../../util/patternValidationUtil"
+import InputTextAutoComplete from "../inputText/inputTextAutocomplete"
 
 interface PaymentDataFormProps {
     id?: string,
@@ -37,7 +38,7 @@ export default function PaymentDataForm(props: PaymentDataFormProps) {
         }
     }
     const handleSetTitle = (value) => { handleSet({ ...props.payment, title: value }) }
-    const handleSetDate = (value) => { handleSet({ ...props.payment, dateString: value }) }
+    const handleSetDate = (value) => { handleSet({ ...props.payment, dateDue: value }) }
     const handleSetDescription = (value) => { handleSet({ ...props.payment, description: value }) }
 
     const handleSet = (element) => {
@@ -60,7 +61,7 @@ export default function PaymentDataForm(props: PaymentDataFormProps) {
             subtitle={props.subtitle ?? "Informe os dados básicos"}
         >
             <FormRow>
-                <FormRowColumn unit="1">
+                <FormRowColumn unit="2" unitM="6">
                     <InputText
                         title="Status"
                         isDisabled={true}
@@ -86,34 +87,32 @@ export default function PaymentDataForm(props: PaymentDataFormProps) {
                     />
                 </FormRowColumn>
             </FormRow>
-
             <FormRow>
                 <FormRowColumn unit="3">
                     <InputTextCurrency
                         title="Valor"
                         onBlur={props.onBlur}
-                        isLoading={props.isLoading}
-                        isDisabled={props.isDisabled}
-                        value={props.payment.value}
                         onSet={handleSetValue}
+                        isLoading={props.isLoading}
+                        value={props.payment?.value}
+                        isDisabled={props.isDisabled}
                         onValidate={handleChangeFormValidation}
                         id={"payment-value" + (props.index ?? 0) + "-" + props.id}
                         validationMessage="O titulo da etapa não pode ficar em branco."
                     />
                 </FormRowColumn>
-
                 <FormRowColumn unit="3" className="flex flex-col sm:flex-row">
                     <InputText
-                        mask="date"
+                        type="date"
+                        title="Prazo"
                         maxLength={10}
-                        title="Vencimento"
                         onBlur={props.onBlur}
+                        onSetText={handleSetDate}
                         isLoading={props.isLoading}
                         isDisabled={props.isDisabled}
-                        onSetText={handleSetDate}
                         onValidate={handleChangeFormValidation}
-                        id={"payment-date-due" + (props.index ?? 0) + "-" + props.id}
-                        value={props.payment.dateString}
+                        value={handleOnlyDate(props.payment?.dateDue) ?? ""}
+                        id={"payment-date" + (props.index ? "-" + props.index : "")}
                     />
                 </FormRowColumn>
             </FormRow>
@@ -124,8 +123,8 @@ export default function PaymentDataForm(props: PaymentDataFormProps) {
                         onBlur={props.onBlur}
                         isLoading={props.isLoading}
                         isDisabled={props.isDisabled}
-                        value={props.payment.description}
                         onSetText={handleSetDescription}
+                        value={props.payment?.description}
                         id={"payment-description" + (props.index ? "-" + props.index : "") + (props.id ? "-" + props.id : "")}
                     />
                 </FormRowColumn>

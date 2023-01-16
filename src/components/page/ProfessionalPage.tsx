@@ -87,9 +87,9 @@ export default function ProfessionalPage(props: ProfessionalPageProps) {
         setIsForShow(value)
     }
 
-    const handleShowClick = (project) => {
+    const handleShowClick = (professional) => {
         handleSetIsLoading(true)
-        setProfessional({ ...defaultProfessional, ...project })
+        setProfessional({ ...defaultProfessional, ...professional })
         setIsForShow(true)
         handleSetIsLoading(false)
     }
@@ -186,7 +186,13 @@ export default function ProfessionalPage(props: ProfessionalPageProps) {
     const handlePutRows = (element: Professional) => {
         return (
             <FormRow>
-                <FormRowColumn unit="4"><PersonNameListItem id={element.personId} complement={"/" + element.title} /></FormRowColumn>
+                <FormRowColumn className="break-words" unit="4">
+                    {element?.person?.name ? element?.person?.name + "/" : ""}
+                    {element.title}
+                    {/*
+                    <PersonNameListItem id={element.personId} complement={"/" + element.title} />
+                    */}
+                </FormRowColumn>
                 <FormRowColumn unit="1">{element.creaNumber}</FormRowColumn>
                 <FormRowColumn unit="1">{element.credentialCode}</FormRowColumn>
             </FormRow>

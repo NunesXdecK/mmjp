@@ -1,36 +1,38 @@
-import { collection, doc, getDoc } from "firebase/firestore"
-import { Payment, Project } from "../../../interfaces/objectInterfaces"
-import { PaymentConversor, ProjectConversor } from "../../../db/converters"
-import { db, PAYMENT_COLLECTION_NAME, PROJECT_COLLECTION_NAME } from "../../../db/firebaseDB"
+import { handleMaskCurrency } from "../../../components/inputText/inputText"
+import prisma from "../../../prisma/prisma"
+
+export const handleGetPayment = async (id: number) => {
+    try {
+        let payment: any = await prisma.payment.findFirst({
+            where: {
+                id: id
+            },
+        })
+        return {
+            ...payment,
+            value: handleMaskCurrency(payment.value),
+        }
+    } catch (err) {
+        console.error(err)
+    }
+    return { id: 0 }
+}
 
 export default async function handler(req, res) {
     const { query, method } = req
-
-    const paymentCollection = collection(db, PAYMENT_COLLECTION_NAME).withConverter(PaymentConversor)
-    const projectCollection = collection(db, PROJECT_COLLECTION_NAME).withConverter(ProjectConversor)
-
     switch (method) {
         case "GET":
             let resGET = { status: "ERROR", error: {}, message: "", data: {} }
             const { id } = query
-            if (id) {
-                try {
-                    const docRef = doc(paymentCollection, id)
-                    let payment: Payment = (await getDoc(docRef)).data()
-                    if (payment.project?.id?.length > 0) {
-                        const projectDocRef = doc(projectCollection, payment.project.id)
-                        let project: Project = (await getDoc(projectDocRef)).data()
-                        if (project?.id?.length > 0) {
-                            payment = { ...payment, project: project }
-                        }
-                    }
-                    resGET = { ...resGET, status: "SUCCESS", data: payment }
-                } catch (err) {
-                    console.error(err)
-                    resGET = { ...resGET, status: "ERROR", error: err }
+            if (id && parseInt(id)) {
+                const data = await handleGetPayment(parseInt(id))
+                if (data?.id > 0) {
+                    resGET = { ...resGET, status: "SUCCESS", data: data }
+                } else {
+                    resGET = { ...resGET, status: "ERROR", message: "Não encontrado" }
                 }
             } else {
-                resGET = { ...resGET, status: "ERROR", message: "Token invalido!" }
+                resGET = { ...resGET, status: "ERROR", message: "ID invalido!" }
             }
             res.status(200).json(resGET)
             break

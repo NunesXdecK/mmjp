@@ -2,24 +2,24 @@ import FormRow from "../form/formRow"
 import Button from "../button/button"
 import ActionBar from "../bar/actionBar"
 import ListTable from "../list/listTable"
-import NavBar, { NavBarPath } from "../bar/navBar"
 import { useEffect, useState } from "react"
+import PaymentView from "../view/paymentView"
 import WindowModal from "../modal/windowModal"
 import { PlusIcon } from "@heroicons/react/solid"
 import FormRowColumn from "../form/formRowColumn"
+import NavBar, { NavBarPath } from "../bar/navBar"
 import PaymentDataForm from "../form/paymentDataForm"
-import { handleUTCToDateShow } from "../../util/dateUtils"
 import { FeedbackMessage } from "../modal/feedbackMessageModal"
 import { handleMountNumberCurrency } from "../../util/maskUtil"
 import PaymentStatusButton from "../button/paymentStatusButton"
-import ProjectNumberListItem from "../list/projectNumberListItem"
 import { Payment, defaultPayment } from "../../interfaces/objectInterfaces"
+import { handleDateToShow, handleUTCToDateShow } from "../../util/dateUtils"
 import PaymentActionBarForm, { handleSavePaymentInner } from "../bar/paymentActionBar"
-import PaymentView from "../view/paymentView"
+import { handleMaskCurrency } from "../inputText/inputText"
 
 interface PaymentPageProps {
     id?: string,
-    projectId?: string,
+    projectId?: number,
     canSave?: boolean,
     getInfo?: boolean,
     canDelete?: boolean,
@@ -107,7 +107,6 @@ export default function PaymentPage(props: PaymentPageProps) {
         setPayment({
             ...defaultPayment,
             status: "EM ABERTO",
-            dateString: "",
         })
         setIsRegister(true)
         setIndex(-1)
@@ -128,20 +127,17 @@ export default function PaymentPage(props: PaymentPageProps) {
     const handleEditClick = async (payment, index?) => {
         handleSetIsLoading(true)
         setIsForShow(false)
-        let localPayment: Payment = await fetch("api/payment/" + payment?.id).then((res) => res.json()).then((res) => res.data)
-        localPayment = {
-            ...localPayment,
-            index: payments.length,
-            dateString: handleUTCToDateShow(localPayment?.dateDue?.toString()),
-            value: handleMountNumberCurrency(localPayment?.value?.toString(), ".", ",", 3, 2),
-        }
         handleSetIsLoading(false)
         setIsRegister(true)
-        setPayment(localPayment)
+        setPayment({
+            ...payment,
+            value: handleMaskCurrency(payment?.value),
+        })
     }
 
     const handleAfterSave = (feedbackMessage: FeedbackMessage, payment: Payment, isForCloseModal) => {
         let localIndex = -1
+        console.log(payment)
         payments.map((element, index) => {
             if (element.id === payment.id) {
                 localIndex = index
@@ -181,7 +177,7 @@ export default function PaymentPage(props: PaymentPageProps) {
         if (short) {
             //path = { ...path, path: "S" }
         }
-        if (payment.id?.length > 0) {
+        if (payment?.id > 0) {
             path = { ...path, path: "Pagamento-" + payment.title, onClick: null }
         }
         try {
@@ -211,11 +207,10 @@ export default function PaymentPage(props: PaymentPageProps) {
     const handlePutHeaders = () => {
         return (
             <FormRow>
-                <FormRowColumn unit="2">Titulo</FormRowColumn>
-                <FormRowColumn unit="1">Projeto</FormRowColumn>
-                <FormRowColumn unit="1">Valor</FormRowColumn>
-                <FormRowColumn unit="1">Status</FormRowColumn>
+                <FormRowColumn unit="2" unitM="3">Titulo</FormRowColumn>
+                <FormRowColumn className="hidden sm:block" unit="1">Valor</FormRowColumn>
                 <FormRowColumn className="hidden sm:block" unit="1">Prazo</FormRowColumn>
+                <FormRowColumn unit="2" unitM="3">Status</FormRowColumn>
             </FormRow>
         )
     }
@@ -223,14 +218,20 @@ export default function PaymentPage(props: PaymentPageProps) {
     const handlePutRows = (element: Payment) => {
         return (
             <FormRow>
-                <FormRowColumn unit="2">{element.title}</FormRowColumn>
-                <FormRowColumn unit="1"><ProjectNumberListItem id={element.project.id} /></FormRowColumn>
-                <FormRowColumn unit="1">{handleMountNumberCurrency(element.value.toString(), ".", ",", 3, 2)}</FormRowColumn>
-                <FormRowColumn unit="1">
+                <FormRowColumn className="break-words" unit="2" unitM="3">
+                    {element?.project?.title ? element?.project?.title + "/" : ""}
+                    {element.title}
+                    {/*
+                    <ProjectNumberListItem text={element.title} elementId={element.projectId} />
+                    */}
+                </FormRowColumn>
+                <FormRowColumn className="hidden sm:block" unit="1">{handleMountNumberCurrency(element.value.toString(), ".", ",", 3, 2)}</FormRowColumn>
+                <FormRowColumn className="hidden sm:block" unit="1">{element.dateDue ? handleDateToShow(element.dateDue) : "n/a"}</FormRowColumn>
+                <FormRowColumn unit="2" unitM="3">
                     <PaymentStatusButton
-                        id={element.id}
+                        id={element.id.toString()}
                         payment={element}
-                        value={element.status}
+                        value={element.status?.toUpperCase()}
                         onAfter={handleAfterSave}
                         isDisabled={props.isDisabled || props.isStatusDisabled}
                         onClick={async (value) => {
@@ -238,15 +239,13 @@ export default function PaymentPage(props: PaymentPageProps) {
                         }}
                     />
                 </FormRowColumn>
-                <FormRowColumn className="hidden sm:block" unit="1">{handleUTCToDateShow(element.dateDue?.toString())}</FormRowColumn>
             </FormRow>
         )
     }
 
     useEffect(() => {
         if (isFirst) {
-            if (props.projectId?.length > 0) {
-                handleSetIsLoading(true)
+            if (props?.projectId > 0) {
                 fetch("api/payments/" + props.projectId).then((res) => res.json()).then((res) => {
                     setPayments(res.list ?? [])
                     setIsFirst(old => false)

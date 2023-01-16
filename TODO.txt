@@ -1,7 +1,8 @@
 ULTIMO PENSAMENTO:
 ERRO NA VERCEL ME SALVOU KKKKKKKKK, ARRUMAR DEPOIS
-ARRUMAR UNIT E MUNIT PARA OS FORMS
+FAZER COMPONENTE PARA MOSTRAR SERVICOS E PAGAMENTOS PELO ID DO PROJETO
 TRABALHAR COM AS DATAS NA PARTE DE PROJETO
+ARRUMAR UNIT E MUNIT PARA OS FORMS
 Colocar opções de status na actionbar
 Colocar botão salvar e salvar e sair em todas as action bar
 Unificar informações do projeto com títulos nas tabelas número do projeto/nome projeto/pagamento, serviço

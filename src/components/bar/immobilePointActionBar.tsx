@@ -57,9 +57,7 @@ export const handleSaveImmobilePointInner = async (immobilePoint, history) => {
             method: "POST",
             body: JSON.stringify({ token: "tokenbemseguro", data: immobilePoint, history: history }),
         }).then((res) => res.json())
-        if (saveRes.status === "SUCCESS") {
-            res = { ...res, status: "SUCCESS", id: saveRes.id, immobilePoint: { ...immobilePoint, id: saveRes.id } }
-        }
+        res = { ...res, status: saveRes.status, id: saveRes.id, immobilePoint: { ...immobilePoint, id: saveRes.id } }
     } catch (e) {
         console.error("Error adding document: ", e)
     }
@@ -91,13 +89,13 @@ export default function ImmobilePointActionBarForm(props: ImmobilePointActionBar
             return
         }
         let res = await handleSaveImmobilePointInner(immobilePoint, true)
-        immobilePoint = { ...immobilePoint, id: res.id }
         if (res.status === "ERROR") {
             const feedbackMessage: FeedbackMessage = { messages: ["Algo deu errado!"], messageType: "ERROR" }
             handleShowMessage(feedbackMessage)
             handleSetIsLoading(false)
             return
         }
+        immobilePoint = { ...immobilePoint, id: res.id }
         handleSetIsLoading(false)
         const feedbackMessage: FeedbackMessage = { messages: ["Sucesso!"], messageType: "SUCCESS" }
         handleShowMessage(feedbackMessage)

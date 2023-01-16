@@ -233,7 +233,7 @@ export default function BudgetPage(props: BudgetPageProps) {
                         }}
                     />
                 </FormRowColumn>
-                <FormRowColumn className="hidden sm:block" unit="1">{handleDateToShow(element.dateDue)}</FormRowColumn>
+                <FormRowColumn className="hidden sm:block" unit="1">{element.dateDue ? handleDateToShow(element.dateDue) : "n/a"}</FormRowColumn>
             </FormRow>
         )
     }

@@ -17,10 +17,11 @@ interface PaymentStatusButtonProps {
 
 export default function PaymentStatusButton(props: PaymentStatusButtonProps) {
     const [lastValue, setLastValue] = useState(props.value)
-    const [isFirst, setIsFirst] = useState(props.value === "EM ABERTO")
+    const [isFirst, setIsFirst] = useState(false && props.value === "EM ABERTO")
 
     useEffect(() => {
         if (isFirst || props?.value !== lastValue) {
+            /*
                 fetch("api/checkPaymentStatus", {
                     method: "POST",
                     body: JSON.stringify({ token: "tokenbemseguro", id: props?.payment?.id }),
@@ -28,21 +29,19 @@ export default function PaymentStatusButton(props: PaymentStatusButtonProps) {
                     setIsFirst(false)
                     if (res.status === "SUCCESS" && res.data?.length > 0) {
                         setLastValue(res.data)
-                        /*
                         const payment = { ...props.payment, status: res.data }
                         if (props.onAfter) {
                             props.onAfter(null, payment, false)
                         }
-                        */
                     }
                 })
+                */
         }
     })
     let values = ["EM ABERTO", "PAGO", "ATRASADO"]
     if (props.value === "ATRASADO") {
         values = ["PAGO", "ATRASADO"]
     }
-
     return (
         <>
             {isFirst ? (

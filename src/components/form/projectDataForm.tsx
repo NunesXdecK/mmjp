@@ -32,8 +32,8 @@ export default function ProjectDataForm(props: ProjectDataFormProps) {
     const [isFormValid, setIsFormValid] = useState(true)
 
     const handleSetTitle = (value) => { handleSet({ ...props.project, title: value }) }
+    const handleSetDate = (value) => { handleSet({ ...props.project, dateDue: value }) }
     const handleSetNumber = (value) => { handleSet({ ...props.project, number: value }) }
-    const handleSetDate = (value) => { handleSet({ ...props.project, dateString: value }) }
     const handleSetClient = (value) => { handleSet({ ...props.project, clients: [value] }) }
     const handleSetServices = (value) => { handleSet({ ...props.project, services: value }) }
     const handleSetDescription = (value) => { handleSet({ ...props.project, description: value }) }
@@ -115,7 +115,7 @@ export default function ProjectDataForm(props: ProjectDataFormProps) {
                             onBlur={props.onBlur}
                             onSetText={handleSetDate}
                             isLoading={props.isLoading}
-                            value={props.project.dateString}
+                            value={props.project.dateDue}
                             onValidate={handleChangeFormValidation}
                             id={"project-date" + (props.index ? "-" + props.index : "")}
                             isDisabled={
@@ -156,7 +156,7 @@ export default function ProjectDataForm(props: ProjectDataFormProps) {
                     </FormRowColumn>
                 </FormRow>
             </Form>
-            {props.project?.id?.length > 0 && (
+            {props.project?.id > 0 && (
                 <>
                     <Form
                         title="Serviços"
@@ -171,10 +171,10 @@ export default function ProjectDataForm(props: ProjectDataFormProps) {
                             onSetPage={handleSetServices}
                             onShowMessage={props.onShowMessage}
                             onSetIsLoading={props.onSetIsLoading}
-                            getInfo={props.project.id.length > 0}
+                            getInfo={props?.project?.id > 0}
                             isDisabled={
                                 props.isDisabled ||
-                                props.project?.id?.length === 0 ||
+                                props?.project?.id === 0 ||
                                 (props.project?.status === "FINALIZADO" || props.project?.status === "ARQUIVADO")
                             }
                         />
@@ -192,10 +192,10 @@ export default function ProjectDataForm(props: ProjectDataFormProps) {
                             onSetPage={handleSetServices}
                             onShowMessage={props.onShowMessage}
                             onSetIsLoading={props.onSetIsLoading}
-                            getInfo={props.project.id.length > 0}
+                            getInfo={props?.project?.id > 0}
                             isDisabled={
                                 props.isDisabled ||
-                                props.project?.id?.length === 0 ||
+                                props?.project?.id === 0 ||
                                 (props.project?.status === "FINALIZADO" || props.project?.status === "ARQUIVADO")
                             }
                         />

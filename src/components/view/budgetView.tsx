@@ -76,12 +76,14 @@ export default function BudgetView(props: BudgetViewProps) {
         let listClients = budget?.clients?.sort((elementOne, elementTwo) => {
             let dateOne = 0
             let dateTwo = 0
+            /*
             if ("dateInsertUTC" in elementOne) {
                 dateOne = elementOne.dateInsertUTC
             }
             if ("dateInsertUTC" in elementTwo) {
                 dateTwo = elementTwo.dateInsertUTC
             }
+            */
             return dateOne - dateTwo
         }) ?? []
         let listServices = budget?.services?.sort((elementOne, elementTwo) => {

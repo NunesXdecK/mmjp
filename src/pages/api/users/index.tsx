@@ -2,7 +2,11 @@ import prisma from "../../../prisma/prisma"
 
 const main = async () => {
     try {
-        return await prisma.user.findMany()
+        return await prisma.user.findMany({
+            include: {
+                person: true,
+            }
+        })
     } catch (error) {
         console.error(error)
         return []

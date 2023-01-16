@@ -63,7 +63,7 @@ export default function InputTextAutoComplete(props: InputTextAutoCompleteProps)
 
     const handleCheckSugestion = (text) => {
         let finalSugestions = []
-        if (text.length > 0) {
+        if (text?.length > 0) {
             finalSugestions =
                 (props.onFilter && props.onFilter(props.sugestions, text)) ??
                 props?.sugestions?.filter((element, index) => {
@@ -176,7 +176,7 @@ export default function InputTextAutoComplete(props: InputTextAutoCompleteProps)
                 id={props.id + "-suggestions-holder"}
                 className="absolute shadow-md dark:shadow-none mt-2 z-40 bg-slate-50 dark:bg-gray-800 dark:text-slate-200 rounded"
             >
-                {(props.value.length > 0 && !props.isDisabled) && (
+                {(props.value?.length > 0 && !props.isDisabled) && (
                     <div
                         ref={divRef}
                         onClick={() => {
