@@ -9,7 +9,6 @@ import FormRowColumn from "../form/formRowColumn"
 import UserNameListItem from "../list/userNameListItem"
 import SwiftInfoButton from "../button/switchInfoButton"
 import { handleDateToShow, handleUTCToDateShow } from "../../util/dateUtils"
-import ServiceNameListItem from "../list/serviceNameListItem"
 import { FeedbackMessage } from "../modal/feedbackMessageModal"
 import ServiceStageDataForm from "../form/serviceStageDataForm"
 import { ServiceStage, defaultServiceStage } from "../../interfaces/objectInterfaces"
@@ -19,8 +18,8 @@ import ServiceStageView from "../view/serviceStageView"
 
 interface ServiceStagePageProps {
     id?: string,
-    serviceId?: string,
     userId?: number,
+    serviceId?: number,
     canSave?: boolean,
     getInfo?: boolean,
     canDelete?: boolean,
@@ -352,7 +351,7 @@ export default function ServiceStagePage(props: ServiceStagePageProps) {
                     setIsFirst(old => false)
                     handleSetIsLoading(false)
                 })
-            } else if (props.serviceId?.length > 0) {
+            } else if (props?.serviceId > 0) {
                 handleSetIsLoading(true)
                 fetch("api/serviceStages/" + props.serviceId).then((res) => res.json()).then((res) => {
                     setServiceStages(res.list ?? [])

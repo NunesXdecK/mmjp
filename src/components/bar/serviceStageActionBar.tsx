@@ -3,13 +3,12 @@ import Button from "../button/button";
 import MenuButton from "../button/menuButton";
 import DropDownButton from "../button/dropDownButton";
 import { FeedbackMessage } from "../modal/feedbackMessageModal";
-import { handleGetDateFormatedToUTC } from "../../util/dateUtils";
 import { handleValidationNotNull, ValidationReturn } from "../../util/validationUtil";
 import { ServiceStage, defaultServiceStage, ServiceStageStatus } from "../../interfaces/objectInterfaces";
 
 interface ServiceStageActionBarFormProps {
-    serviceId?: string,
     className?: string,
+    serviceId?: number,
     isLoading?: boolean,
     isMultiple?: boolean,
     isDisabled?: boolean,
@@ -100,7 +99,7 @@ export default function ServiceStageActionBarForm(props: ServiceStageActionBarFo
             serviceStage = { ...serviceStage, status: status }
         }
         serviceStage = handleServiceStageForDB(serviceStage)
-        if (props.serviceId?.length > 0) {
+        if (props?.serviceId > 0) {
             serviceStage = { ...serviceStage, service: { id: props.serviceId } }
         }
         let res = await handleSaveServiceStageInner(serviceStage, true)

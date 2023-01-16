@@ -9,6 +9,7 @@ import { ServiceStage } from "../../interfaces/objectInterfaces";
 import { NOT_NULL_MARK } from "../../util/patternValidationUtil";
 import InputTextAutoComplete from "../inputText/inputTextAutocomplete";
 import { NavBarPath } from "../bar/navBar";
+import { handleOnlyDate } from "../../util/dateUtils";
 
 interface ServiceStageDataFormProps {
     id?: string,
@@ -30,7 +31,7 @@ export default function ServiceStageDataForm(props: ServiceStageDataFormProps) {
     const [isFormValid, setIsFormValid] = useState(true)
 
     const handleSetTitle = (value) => { handleSet({ ...props.serviceStage, title: value }) }
-    const handleSetDate = (value) => { handleSet({ ...props.serviceStage, dateString: value }) }
+    const handleSetDate = (value) => { handleSet({ ...props.serviceStage, dateDue: value }) }
     const handleSetDescription = (value) => { handleSet({ ...props.serviceStage, description: value }) }
     const handleSetResponsible = (value) => { handleSet({ ...props.serviceStage, responsible: value }) }
 
@@ -89,8 +90,8 @@ export default function ServiceStageDataForm(props: ServiceStageDataFormProps) {
                         onSetText={handleSetDate}
                         isLoading={props.isLoading}
                         isDisabled={props.isDisabled}
-                        value={props.serviceStage.dateString}
                         onValidate={handleChangeFormValidation}
+                        value={handleOnlyDate(props.serviceStage?.dateDue) ?? ""}
                         id={"date-due-stages" + (props.index ? "-" + props.index : "") + (props.id ? "-" + props.id : "")}
                     />
                 </FormRowColumn>

@@ -197,7 +197,7 @@ export default function ServiceDataForm(props: ServiceDataFormProps) {
                     </FormRowColumn>
                 </FormRow>
             </Form>
-            {props.service?.id?.length > 0 && (
+            {props.service?.id > 0 && (
                 <>
                     <SelectImmobileTOForm
                         title="Imóveis"
@@ -224,7 +224,7 @@ export default function ServiceDataForm(props: ServiceDataFormProps) {
                             onSetPage={handleSetServiceStage}
                             onShowMessage={props.onShowMessage}
                             onSetIsLoading={props.onSetIsLoading}
-                            getInfo={props.service?.id?.length > 0}
+                            getInfo={props.service?.id > 0}
                         />
                     </Form>
                 </>
