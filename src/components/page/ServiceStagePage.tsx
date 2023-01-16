@@ -345,14 +345,12 @@ export default function ServiceStagePage(props: ServiceStagePageProps) {
     useEffect(() => {
         if (isFirst) {
             if (props?.userId > 0) {
-                handleSetIsLoading(true)
                 fetch("api/serviceStagesByUser/" + props.userId).then((res) => res.json()).then((res) => {
                     setServiceStages(res.list ?? [])
                     setIsFirst(old => false)
                     handleSetIsLoading(false)
                 })
             } else if (props?.serviceId > 0) {
-                handleSetIsLoading(true)
                 fetch("api/serviceStages/" + props.serviceId).then((res) => res.json()).then((res) => {
                     setServiceStages(res.list ?? [])
                     setIsFirst(old => false)

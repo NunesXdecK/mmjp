@@ -93,7 +93,7 @@ export default function ServiceDataForm(props: ServiceDataFormProps) {
                 subtitle="informe os dados básicos"
             >
                 <FormRow>
-                    <FormRowColumn unit="1">
+                    <FormRowColumn unit="2" unitM="6">
                         <InputText
                             title="Status"
                             isDisabled={true}
@@ -103,7 +103,7 @@ export default function ServiceDataForm(props: ServiceDataFormProps) {
                     </FormRowColumn>
                 </FormRow>
                 <FormRow>
-                    <FormRowColumn unit="4">
+                    <FormRowColumn unit="3" unitM="6">
                         <InputTextAutoComplete
                             title="Titulo"
                             onBlur={props.onBlur}
@@ -118,7 +118,7 @@ export default function ServiceDataForm(props: ServiceDataFormProps) {
                             sugestions={["Ambiental", "Desmembramento", "Georeferenciamento", "União", "Licenciamento"]}
                         />
                     </FormRowColumn>
-                    <FormRowColumn unit="2">
+                    <FormRowColumn unit="3" unitM="6">
                         <InputText
                             mask="date"
                             title="Prazo"
@@ -134,7 +134,7 @@ export default function ServiceDataForm(props: ServiceDataFormProps) {
                     </FormRowColumn>
                 </FormRow>
                 <FormRow>
-                    <FormRowColumn unit="2">
+                    <FormRowColumn unit="2" unitM="6">
                         <InputTextCurrency
                             title="Valor"
                             onBlur={props.onBlur}
@@ -146,7 +146,7 @@ export default function ServiceDataForm(props: ServiceDataFormProps) {
                             id={"service-value" + (props.index ?? 0) + "-" + props.id}
                         />
                     </FormRowColumn>
-                    <FormRowColumn unit="2">
+                    <FormRowColumn unit="2" unitM="3">
                         <InputText
                             title="Quantidade"
                             onBlur={props.onBlur}
@@ -159,7 +159,7 @@ export default function ServiceDataForm(props: ServiceDataFormProps) {
                             id={"service-quantity" + (props.index ?? 0) + "-" + props.id}
                         />
                     </FormRowColumn>
-                    <FormRowColumn unit="2" className="flex flex-col sm:flex-row">
+                    <FormRowColumn unit="2" unitM="3" className="flex flex-col sm:flex-row">
                         <InputTextCurrency
                             isDisabled
                             title="Total"
@@ -191,7 +191,7 @@ export default function ServiceDataForm(props: ServiceDataFormProps) {
                             isLoading={props.isLoading}
                             isDisabled={props.isDisabled}
                             onSetText={handleSetDescription}
-                            value={props.service.description}
+                            value={props.service.description ?? ""}
                             id={"service-description" + props.index + "-" + props.id}
                         />
                     </FormRowColumn>

@@ -132,12 +132,14 @@ export default function ServicePage(props: ServicePageProps) {
         setIsForShow(false)
         let localService: Service = await fetch("api/service/" + service?.id).then((res) => res.json()).then((res) => res.data)
         localService = {
+            ...defaultService,
             ...localService,
             index: services.length,
             dateString: handleUTCToDateShow(localService?.dateDue?.toString()),
             value: handleMountNumberCurrency(localService?.value?.toString(), ".", ",", 3, 2),
             total: handleMountNumberCurrency(localService?.total?.toString(), ".", ",", 3, 2),
         }
+        console.log(localService)
         handleSetIsLoading(false)
         setIsRegister(true)
         setService(localService)

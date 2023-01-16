@@ -192,14 +192,8 @@ export default function ServiceActionBarForm(props: ServiceActionBarFormProps) {
                     >
                         Salvar e sair
                     </Button>
-                </div>
-                <DropDownButton
-                    isLeft
-                    title="..."
-                    isLoading={props.isLoading}
-                >
-                    <div className="w-full flex flex-col">
-                        <MenuButton
+                    <div className="hidden sm:flex sm:flex-row gap-2 flex-wrap">
+                        <Button
                             isLoading={props.isLoading}
                             isHidden={props.service.status !== "PARADO" && props.service.status !== "EM ANDAMENTO"}
                             isDisabled={props.service.status !== "PARADO" && props.service.status !== "EM ANDAMENTO"}
@@ -207,9 +201,9 @@ export default function ServiceActionBarForm(props: ServiceActionBarFormProps) {
                                 handleSave("FINALIZADO", true)
                             }}
                         >
-                            Finalizar etapa
-                        </MenuButton>
-                        <MenuButton
+                            Finalizar serviço
+                        </Button>
+                        <Button
                             isLoading={props.isLoading}
                             isHidden={props.service.status !== "PARADO" && props.service.status !== "EM ANDAMENTO"}
                             isDisabled={props.service.status !== "PARADO" && props.service.status !== "EM ANDAMENTO"}
@@ -218,8 +212,8 @@ export default function ServiceActionBarForm(props: ServiceActionBarFormProps) {
                             }}
                         >
                             Colocar em pendencia
-                        </MenuButton>
-                        <MenuButton
+                        </Button>
+                        <Button
                             isLoading={props.isLoading}
                             isHidden={props.service.status === "PARADO"}
                             isDisabled={props.service.status === "PARADO"}
@@ -228,8 +222,8 @@ export default function ServiceActionBarForm(props: ServiceActionBarFormProps) {
                             }}
                         >
                             Colocar em andamento
-                        </MenuButton>
-                        <MenuButton
+                        </Button>
+                        <Button
                             isLoading={props.isLoading}
                             isHidden={props.service.status === "PARADO"}
                             isDisabled={props.service.status === "PARADO"}
@@ -237,10 +231,60 @@ export default function ServiceActionBarForm(props: ServiceActionBarFormProps) {
                                 handleSave("PARADO", true)
                             }}
                         >
-                            Parar etapa
-                        </MenuButton>
+                            Parar serviço
+                        </Button>
                     </div>
-                </DropDownButton>
+                </div>
+                <div className="block sm:hidden">
+                    <DropDownButton
+                        isLeft
+                        title="..."
+                        isLoading={props.isLoading}
+                    >
+                        <div className="w-full flex flex-col">
+                            <MenuButton
+                                isLoading={props.isLoading}
+                                isHidden={props.service.status !== "PARADO" && props.service.status !== "EM ANDAMENTO"}
+                                isDisabled={props.service.status !== "PARADO" && props.service.status !== "EM ANDAMENTO"}
+                                onClick={() => {
+                                    handleSave("FINALIZADO", true)
+                                }}
+                            >
+                                Finalizar serviço
+                            </MenuButton>
+                            <MenuButton
+                                isLoading={props.isLoading}
+                                isHidden={props.service.status !== "PARADO" && props.service.status !== "EM ANDAMENTO"}
+                                isDisabled={props.service.status !== "PARADO" && props.service.status !== "EM ANDAMENTO"}
+                                onClick={() => {
+                                    handleSave("PENDENTE", true)
+                                }}
+                            >
+                                Colocar em pendencia
+                            </MenuButton>
+                            <MenuButton
+                                isLoading={props.isLoading}
+                                isHidden={props.service.status === "PARADO"}
+                                isDisabled={props.service.status === "PARADO"}
+                                onClick={() => {
+                                    handleSave("EM ANDAMENTO", true)
+                                }}
+                            >
+                                Colocar em andamento
+                            </MenuButton>
+                            <MenuButton
+                                isLoading={props.isLoading}
+                                isHidden={props.service.status === "PARADO"}
+                                isDisabled={props.service.status === "PARADO"}
+                                onClick={() => {
+                                    handleSave("PARADO", true)
+                                }}
+                            >
+                                Parar serviço
+                            </MenuButton>
+                        </div>
+                    </DropDownButton>
+                </div>
             </div>
         </ActionBar>
     )

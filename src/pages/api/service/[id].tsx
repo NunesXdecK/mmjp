@@ -5,8 +5,17 @@ export const handleGetService = async (id: number) => {
         const service = await prisma.service.findFirst({
             where: {
                 id: id,
+            },
+            include: {
+                servicestage: true,
+                serviceimmobile: {
+                    include: {
+                        immobile: true,
+                    }
+                }
             }
         })
+        console.log(service)
         return {
             ...service,
         }
