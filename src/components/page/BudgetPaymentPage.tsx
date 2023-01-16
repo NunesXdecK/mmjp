@@ -183,7 +183,7 @@ export default function BudgetPaymentPage(props: BudgetPaymentPageProps) {
             <FormRow>
                 <FormRowColumn unit="2">{element.title}</FormRowColumn>
                 <FormRowColumn unit="2" className="text-center">{handleMaskCurrency(element.value)}</FormRowColumn>
-                <FormRowColumn unit="2" className="text-center">{handleDateToShow(element.dateDue)}</FormRowColumn>
+                <FormRowColumn unit="2" className="text-center">{element.dateDue ? handleDateToShow(element.dateDue) : "n/a"}</FormRowColumn>
             </FormRow>
         )
     }

@@ -137,7 +137,6 @@ export default function PaymentPage(props: PaymentPageProps) {
 
     const handleAfterSave = (feedbackMessage: FeedbackMessage, payment: Payment, isForCloseModal) => {
         let localIndex = -1
-        console.log(payment)
         payments.map((element, index) => {
             if (element.id === payment.id) {
                 localIndex = index

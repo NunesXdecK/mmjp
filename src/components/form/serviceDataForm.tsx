@@ -120,23 +120,23 @@ export default function ServiceDataForm(props: ServiceDataFormProps) {
                     </FormRowColumn>
                     <FormRowColumn unit="3" unitM="6">
                         <InputText
-                            mask="date"
+                            type="date"
                             title="Prazo"
                             maxLength={10}
                             onBlur={props.onBlur}
                             onSetText={handleSetDate}
                             isLoading={props.isLoading}
+                            value={props.service.dateDue}
                             isDisabled={props.isDisabled}
-                            value={props.service.dateString}
                             onValidate={handleChangeFormValidation}
-                            id={"service-date-due" + props.index + "-" + props.id}
+                            id={"service-date" + (props.index ? "-" + props.index : "")}
                         />
                     </FormRowColumn>
                 </FormRow>
                 <FormRow>
                     <FormRowColumn unit="2" unitM="6">
                         <InputTextCurrency
-                            title="Valor"
+                            title="Valor unitário"
                             onBlur={props.onBlur}
                             onSet={handleSetValue}
                             isLoading={props.isLoading}

@@ -1,3 +1,4 @@
+import { handleMaskCurrency } from "../../../components/inputText/inputText"
 import prisma from "../../../prisma/prisma"
 
 export const handleGetService = async (id: number) => {
@@ -7,6 +8,7 @@ export const handleGetService = async (id: number) => {
                 id: id,
             },
             include: {
+                professional: true,
                 servicestage: true,
                 serviceimmobile: {
                     include: {
@@ -15,9 +17,10 @@ export const handleGetService = async (id: number) => {
                 }
             }
         })
-        console.log(service)
         return {
             ...service,
+            value: handleMaskCurrency(service.value), 
+            total: handleMaskCurrency(((parseInt(service.value) ?? 0) * service.quantity).toString())
         }
     } catch (err) {
         console.error(err)

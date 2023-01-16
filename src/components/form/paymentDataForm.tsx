@@ -104,7 +104,7 @@ export default function PaymentDataForm(props: PaymentDataFormProps) {
                 <FormRowColumn unit="3" className="flex flex-col sm:flex-row">
                     <InputText
                         type="date"
-                        title="Prazo"
+                        title="Vencimento"
                         maxLength={10}
                         onBlur={props.onBlur}
                         onSetText={handleSetDate}

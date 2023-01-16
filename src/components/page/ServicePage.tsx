@@ -139,7 +139,6 @@ export default function ServicePage(props: ServicePageProps) {
             value: handleMountNumberCurrency(localService?.value?.toString(), ".", ",", 3, 2),
             total: handleMountNumberCurrency(localService?.total?.toString(), ".", ",", 3, 2),
         }
-        console.log(localService)
         handleSetIsLoading(false)
         setIsRegister(true)
         setService(localService)

@@ -95,7 +95,7 @@ export default function BudgetServiceForm(props: BudgetServiceFormProps) {
                 </FormRowColumn>
                 <FormRowColumn unit="2" unitM="3">
                     <InputTextCurrency
-                        title="Valor"
+                        title="Valor unitário"
                         onBlur={props.onBlur}
                         onSet={handleSetValue}
                         isLoading={props.isLoading}

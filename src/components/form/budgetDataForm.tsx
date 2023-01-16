@@ -5,16 +5,16 @@ import { NavBarPath } from "../bar/navBar";
 import BudgetView from "../view/budgetView";
 import FormRowColumn from "./formRowColumn";
 import InputText from "../inputText/inputText";
+import InputTextArea from "../inputText/inputTextArea";
+import CurrencyTextView from "../text/currencyTextView";
 import BudgetPaymentPage from "../page/BudgetPaymentPage";
 import BudgetServicePage from "../page/BudgetServicePage";
-import { Budget, BudgetPayment, BudgetService } from "../../interfaces/objectInterfaces";
 import { NOT_NULL_MARK } from "../../util/patternValidationUtil";
 import InputTextAutoComplete from "../inputText/inputTextAutocomplete";
 import InputSelectPersonCompany from "../inputText/inputSelectPersonCompany";
-import CurrencyTextView from "../text/currencyTextView";
-import { handleRemoveCurrencyMask, handleValueStringToInt } from "../../util/maskUtil";
 import { handleSaveBudgetPaymentInner } from "../bar/budgetPaymentActionBar";
-import InputTextArea from "../inputText/inputTextArea";
+import { handleRemoveCurrencyMask, handleValueStringToInt } from "../../util/maskUtil";
+import { Budget, BudgetPayment, BudgetService } from "../../interfaces/objectInterfaces";
 
 interface BudgetDataFormProps {
     title?: string,
@@ -63,37 +63,55 @@ export default function BudgetDataForm(props: BudgetDataFormProps) {
     }
 
     const handleAfterSave = async (services) => {
-        let total = 0
+        handleSetIsLoading(true)
+        let payments = []
+        let total = 0.0
         services?.map((element: BudgetService, index) => {
-            total = total + handleValueStringToInt(((parseInt(handleRemoveCurrencyMask(element.value)) ?? 0) * (parseInt(element.quantity) ?? 0)).toString())
+            total = total + handleValueStringToInt(((parseFloat(handleRemoveCurrencyMask(element.value)) ?? 0) * (parseFloat(element.quantity) ?? 0))?.toString())
         })
         if (props.budget?.payments?.length === 0) {
-            handleSetIsLoading(true)
+            total = total / 2
             const entryPayment: BudgetPayment = {
                 id: 0,
                 index: 0,
                 dateDue: "",
                 title: "Entrada",
-                value: handleRemoveCurrencyMask((total / 2).toString()),
+                value: handleRemoveCurrencyMask(total.toString()),
             }
             const endingPayment: BudgetPayment = {
                 id: 0,
                 index: 0,
                 dateDue: "",
                 title: "Final",
-                value: handleRemoveCurrencyMask((total / 2).toString()),
+                value: handleRemoveCurrencyMask(total?.toString()),
             }
             const resEntry = await handleSaveBudgetPaymentInner(entryPayment, props.budget.id, false)
             const resEnd = await handleSaveBudgetPaymentInner(endingPayment, props.budget.id, false)
-            const payments = [
+            payments = [
                 { ...entryPayment, id: resEntry.id },
                 { ...endingPayment, id: resEnd.id }
             ]
+        } if (props.budget?.payments?.length > 0) {
+            total = Math.round(total / props.budget?.payments?.length)
+            await Promise.all(
+                props.budget?.payments?.map(async (element, index) => {
+                    const payment = {
+                        ...element,
+                        value: handleRemoveCurrencyMask(total?.toString())
+                    }
+                    const res = await handleSaveBudgetPaymentInner(payment, props.budget.id, false)
+                    if (res.status === "SUCCESS") {
+                        payments = [...payments, payment]
+                    }
+                })
+            )
+        }
+        if (payments?.length > 0) {
             handleSetServicesPayments(services, payments)
-            handleSetIsLoading(false)
         } else {
             handleSetServices(services)
         }
+        handleSetIsLoading(false)
     }
 
     const handleGetTotal = (list: BudgetService[]) => {
@@ -177,18 +195,18 @@ export default function BudgetDataForm(props: BudgetDataFormProps) {
                             </FormRowColumn>
                         </FormRow>
                         <FormRow>
-                    <FormRowColumn unit="6" className="">
-                        <InputTextArea
-                            title="Descrição"
-                            onBlur={props.onBlur}
-                            id="budget-description"
-                            isLoading={props.isLoading}
-                            isDisabled={props.isDisabled}
-                            onSetText={handleSetDescription}
-                            value={props.budget.description}
-                        />
-                    </FormRowColumn>
-                </FormRow>
+                            <FormRowColumn unit="6" className="">
+                                <InputTextArea
+                                    title="Descrição"
+                                    onBlur={props.onBlur}
+                                    id="budget-description"
+                                    isLoading={props.isLoading}
+                                    isDisabled={props.isDisabled}
+                                    onSetText={handleSetDescription}
+                                    value={props.budget.description}
+                                />
+                            </FormRowColumn>
+                        </FormRow>
                     </Form>
                     {props?.budget.id > 0 &&
                         <>
